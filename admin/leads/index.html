@@ -6,28 +6,56 @@
 <title>EV Exec Leads</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-black text-white min-h-screen p-6">
+<body class="bg-[#020813] text-white min-h-screen p-6">
 <div class="max-w-6xl mx-auto">
-<h1 class="text-4xl font-bold mb-6">EV Exec Leads</h1>
-<div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
-<input id="password" type="password" placeholder="Admin Password" class="w-full p-3 rounded bg-zinc-950 border border-zinc-700 mb-4">
-<button onclick="loadLeads()" class="bg-white text-black px-5 py-3 rounded-xl font-semibold">Load Leads</button>
+<div class="flex flex-col gap-2 mb-8">
+<p class="text-[#d5a538] uppercase tracking-[0.3em] text-xs">EV Exec Admin</p>
+<h1 class="text-4xl font-bold">Leads Dashboard</h1>
+<p class="text-zinc-400">View quote requests, contact messages and update booking status.</p>
 </div>
-<div id="results" class="space-y-4"></div>
+<div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-6 mb-6">
+<input id="password" type="password" placeholder="Admin Password" class="w-full p-3 rounded bg-zinc-950 border border-zinc-700 mb-4 outline-none focus:border-[#d5a538]">
+<button onclick="loadLeads()" class="bg-[#d5a538] text-black px-5 py-3 rounded-xl font-semibold">Load Leads</button>
+<p id="notice" class="text-sm text-zinc-400 mt-4"></p>
+</div>
+<div id="results" class="space-y-8"></div>
 </div>
 <script>
+const statuses=['new','contacted','quoted','booked','lost'];
+function esc(value){return String(value||'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function statusSelect(item,table){return `<select class="mt-3 bg-zinc-950 border border-zinc-700 rounded p-2" onchange="updateStatus('${table}','${item.id}',this.value)">${statuses.map(s=>`<option value="${s}" ${s===(item.status||'new')?'selected':''}>${s}</option>`).join('')}</select>`;}
+async function updateStatus(table,id,status){
+const password=document.getElementById('password').value;
+const res=await fetch('/api/update-status',{method:'PATCH',headers:{'Content-Type':'application/json','x-admin-password':password},body:JSON.stringify({table,id,status})});
+const data=await res.json();
+document.getElementById('notice').textContent=data.success?'Status updated':'Update failed: '+(data.error||'Unknown error');
+}
+function leadCard(item,table){
+const isQuote=table==='quote_requests';
+return `<div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-5">
+<div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+<div>
+<p class="text-xs uppercase tracking-[0.2em] text-[#d5a538]">${isQuote?'Quote Request':'Contact Message'}</p>
+<h2 class="text-2xl font-semibold mt-1">${esc(item.customer_name||item.name)}</h2>
+<p class="text-zinc-300 mt-1">${esc(item.phone)} ${item.email?' · '+esc(item.email):''}</p>
+${isQuote?`<p class="text-zinc-400 mt-3">${esc(item.pickup_location)} → ${esc(item.destination)}</p><p class="text-zinc-400">${esc(item.pickup_date)} ${esc(item.pickup_time)}</p>`:`<p class="text-zinc-400 mt-3">${esc(item.message)}</p>`}
+<p class="text-xs text-zinc-500 mt-3">${esc(item.created_at)}</p>
+</div>
+<div>${statusSelect(item,table)}</div>
+</div>
+</div>`;
+}
 async function loadLeads(){
 const password=document.getElementById('password').value;
-const res=await fetch('/api/admin/leads',{headers:{'x-admin-password':password}});
+const notice=document.getElementById('notice');
+notice.textContent='Loading leads...';
+const res=await fetch('/api/admin-leads',{headers:{'x-admin-password':password}});
 const data=await res.json();
-const wrap=document.getElementById('results');
-wrap.innerHTML='';
-(data.quote_requests||[]).forEach(item=>{
-const el=document.createElement('div');
-el.className='bg-zinc-900 border border-zinc-800 rounded-2xl p-5';
-el.innerHTML=`<h2 class="text-xl font-semibold">${item.customer_name}</h2><p>${item.phone}</p><p>${item.pickup_location||''} → ${item.destination||''}</p><p>Status: ${item.status||'new'}</p>`;
-wrap.appendChild(el);
-});
+if(!res.ok){notice.textContent=data.error||'Failed to load leads';return;}
+const quotes=data.quote_requests||[];
+const contacts=data.contact_messages||[];
+document.getElementById('results').innerHTML=`<section><h2 class="text-2xl font-bold mb-4">Quote Requests</h2><div class="space-y-4">${quotes.map(i=>leadCard(i,'quote_requests')).join('')||'<p class="text-zinc-500">No quote requests yet.</p>'}</div></section><section><h2 class="text-2xl font-bold mb-4">Contact Messages</h2><div class="space-y-4">${contacts.map(i=>leadCard(i,'contact_messages')).join('')||'<p class="text-zinc-500">No contact messages yet.</p>'}</div></section>`;
+notice.textContent=`Loaded ${quotes.length+contacts.length} leads`;
 }
 </script>
 </body>
