@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Exec Leads</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen p-6">
+<div class="max-w-6xl mx-auto">
+<h1 class="text-4xl font-bold mb-6">EV Exec Leads</h1>
+<div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-6">
+<input id="password" type="password" placeholder="Admin Password" class="w-full p-3 rounded bg-zinc-950 border border-zinc-700 mb-4">
+<button onclick="loadLeads()" class="bg-white text-black px-5 py-3 rounded-xl font-semibold">Load Leads</button>
+</div>
+<div id="results" class="space-y-4"></div>
+</div>
+<script>
+async function loadLeads(){
+const password=document.getElementById('password').value;
+const res=await fetch('/api/admin/leads',{headers:{'x-admin-password':password}});
+const data=await res.json();
+const wrap=document.getElementById('results');
+wrap.innerHTML='';
+(data.quote_requests||[]).forEach(item=>{
+const el=document.createElement('div');
+el.className='bg-zinc-900 border border-zinc-800 rounded-2xl p-5';
+el.innerHTML=`<h2 class="text-xl font-semibold">${item.customer_name}</h2><p>${item.phone}</p><p>${item.pickup_location||''} → ${item.destination||''}</p><p>Status: ${item.status||'new'}</p>`;
+wrap.appendChild(el);
+});
+}
+</script>
+</body>
+</html>
