@@ -1,1 +1,72 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>EV Exec</title><script src="https://cdn.tailwindcss.com"></script></head><body style="background:#020813;color:white;font-family:Arial,sans-serif"><main style="max-width:900px;margin:auto;padding:40px"><h1 style="font-size:48px;font-weight:700">EV Exec</h1><p>Premium airport transfers.</p><form id="quote-form"><input name="customer_name" placeholder="Name" required><input name="phone" placeholder="Phone" required><button type="submit">Submit</button></form><script>document.getElementById('quote-form').addEventListener('submit',async(e)=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.target).entries());await fetch('/api/quote-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});alert('Submitted')})</script></main></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EV Exec | Premium Airport Transfers</title>
+<meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast.">
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#020813] text-white min-h-screen font-sans">
+<main class="max-w-5xl mx-auto px-6 py-16">
+<section class="mb-12">
+<p class="text-[#d5a538] uppercase tracking-[0.3em] text-xs mb-4">EV Exec</p>
+<h1 class="text-5xl md:text-7xl font-bold leading-tight mb-5">Premium Airport Transfers</h1>
+<p class="text-zinc-300 text-lg max-w-2xl">Reliable airport transfers from Blackpool and the Fylde Coast with fixed prices, comfort and professional service.</p>
+</section>
+<section class="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 max-w-3xl">
+<h2 class="text-3xl font-bold mb-2">Request a quote</h2>
+<p class="text-zinc-400 mb-6">Send your details and EV Exec will contact you shortly.</p>
+<form id="quote-form" class="grid gap-4">
+<div class="grid md:grid-cols-2 gap-4">
+<input class="field" name="customer_name" placeholder="Name" required>
+<input class="field" name="phone" placeholder="Phone" required>
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+<input class="field" name="email" placeholder="Email optional">
+<input class="field" name="passengers" placeholder="Passengers" type="number" min="1" value="1">
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+<input class="field" name="pickup_location" placeholder="Pickup location">
+<input class="field" name="destination" placeholder="Destination">
+</div>
+<div class="grid md:grid-cols-2 gap-4">
+<input class="field" name="pickup_date" type="date">
+<input class="field" name="pickup_time" type="time">
+</div>
+<input class="field" name="luggage" placeholder="Luggage / cases">
+<textarea class="field min-h-28 py-3" name="notes" placeholder="Extra details"></textarea>
+<button id="submit-button" class="bg-[#d5a538] text-black px-6 py-4 rounded-xl font-bold" type="submit">Submit quote request</button>
+<p id="form-message" class="text-sm text-zinc-300"></p>
+</form>
+</section>
+</main>
+<style>
+.field{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;color:white;outline:none}.field:focus{border-color:#d5a538}.field::placeholder{color:rgba(255,255,255,.55)}
+</style>
+<script>
+const form=document.getElementById('quote-form');
+const msg=document.getElementById('form-message');
+const btn=document.getElementById('submit-button');
+form.addEventListener('submit',async(event)=>{
+event.preventDefault();
+msg.textContent='Sending request...';
+btn.disabled=true;
+btn.textContent='Sending...';
+try{
+const data=Object.fromEntries(new FormData(form).entries());
+const res=await fetch('/api/quote-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+const json=await res.json();
+if(!res.ok||!json.success){throw new Error(json.error||'Request failed');}
+msg.textContent='Thanks — your request has been received. EV Exec will contact you shortly.';
+form.reset();
+}catch(error){
+msg.textContent='Sorry, something went wrong. Please call or WhatsApp EV Exec directly.';
+}finally{
+btn.disabled=false;
+btn.textContent='Submit quote request';
+}
+});
+</script>
+</body>
+</html>
