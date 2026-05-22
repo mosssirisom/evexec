@@ -1,0 +1,7 @@
+POST /api/contact
+Expected fields:
+- name
+- phone
+- email
+- message
+Stores contact requests in Supabase.
