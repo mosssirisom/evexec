@@ -1,72 +1,227 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EV Exec | Premium Airport Transfers</title>
-<meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast.">
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#020813] text-white min-h-screen font-sans">
-<main class="max-w-5xl mx-auto px-6 py-16">
-<section class="mb-12">
-<p class="text-[#d5a538] uppercase tracking-[0.3em] text-xs mb-4">EV Exec</p>
-<h1 class="text-5xl md:text-7xl font-bold leading-tight mb-5">Premium Airport Transfers</h1>
-<p class="text-zinc-300 text-lg max-w-2xl">Reliable airport transfers from Blackpool and the Fylde Coast with fixed prices, comfort and professional service.</p>
-</section>
-<section class="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 max-w-3xl">
-<h2 class="text-3xl font-bold mb-2">Request a quote</h2>
-<p class="text-zinc-400 mb-6">Send your details and EV Exec will contact you shortly.</p>
-<form id="quote-form" class="grid gap-4">
-<div class="grid md:grid-cols-2 gap-4">
-<input class="field" name="customer_name" placeholder="Name" required>
-<input class="field" name="phone" placeholder="Phone" required>
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<input class="field" name="email" placeholder="Email optional">
-<input class="field" name="passengers" placeholder="Passengers" type="number" min="1" value="1">
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<input class="field" name="pickup_location" placeholder="Pickup location">
-<input class="field" name="destination" placeholder="Destination">
-</div>
-<div class="grid md:grid-cols-2 gap-4">
-<input class="field" name="pickup_date" type="date">
-<input class="field" name="pickup_time" type="time">
-</div>
-<input class="field" name="luggage" placeholder="Luggage / cases">
-<textarea class="field min-h-28 py-3" name="notes" placeholder="Extra details"></textarea>
-<button id="submit-button" class="bg-[#d5a538] text-black px-6 py-4 rounded-xl font-bold" type="submit">Submit quote request</button>
-<p id="form-message" class="text-sm text-zinc-300"></p>
-</form>
-</section>
-</main>
-<style>
-.field{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px;color:white;outline:none}.field:focus{border-color:#d5a538}.field::placeholder{color:rgba(255,255,255,.55)}
-</style>
-<script>
-const form=document.getElementById('quote-form');
-const msg=document.getElementById('form-message');
-const btn=document.getElementById('submit-button');
-form.addEventListener('submit',async(event)=>{
-event.preventDefault();
-msg.textContent='Sending request...';
-btn.disabled=true;
-btn.textContent='Sending...';
-try{
-const data=Object.fromEntries(new FormData(form).entries());
-const res=await fetch('/api/quote-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
-const json=await res.json();
-if(!res.ok||!json.success){throw new Error(json.error||'Request failed');}
-msg.textContent='Thanks — your request has been received. EV Exec will contact you shortly.';
-form.reset();
-}catch(error){
-msg.textContent='Sorry, something went wrong. Please call or WhatsApp EV Exec directly.';
-}finally{
-btn.disabled=false;
-btn.textContent='Submit quote request';
-}
-});
-</script>
-</body>
-</html>
+
+
+￼
+EV EXEC
+Premium Airport Transfers
+Home Our Services Prices Areas Covered About Me Reviews Contact
+07721 070370
+Premium. Reliable. Local.
+Premium Airport Transfers Blackpool & The Fylde Coast
+Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, reliable and always on time.
+Book Now View Prices
+
+Fixed
+Prices
+
+Flight
+Monitoring
+
+Premium
+Tesla Vehicle
+
+Local &
+Reliable
+
+5Star Rated
+Service
+Book Your Airport Transfer
+Pickup Location Destination AirportSelect airportManchester AirportLiverpool AirportLeeds Bradford AirportBirmingham Airport Date Time Passengers1 passenger234 Luggage Return Journey?No ↔Yes Contact MethodWhatsAppPhone CallEmail Book Now
+No hidden fees. Fixed prices. Professional service.
+Why Choose EV Exec?
+Airport transfer specialists you can rely on.
+Fixed & Transparent Prices
+No hidden costs. What we quote is what you pay.
+Flight Monitoring Included
+We track your flight in real-time for perfect timing.
+Luxury Tesla Model Y
+Travel in comfort in our premium electric vehicle.
+Local & Professional Driver
+Polite, experienced and dedicated to your journey.
+5 Star Rated Service
+Hundreds of happy customers across Blackpool & Fylde.
+Eco-Friendly Travel
+Zero emissions. Better for you, better for the planet.
+EV Exec Experience
+The Journey Begins the Moment We Arrive.
+From the second your driver pulls up, everything is taken care of. Your luggage, your comfort, your time.
+
+We Arrive Early
+Your driver is always there before you are. Smartly dressed, vehicle immaculate, ready to go. No waiting. No stress.
+
+Your Comfort, First
+Settle into premium heated leather seating. WiFi connected. Refreshments waiting. Climate set to your preference.
+
+We Track Your Flight
+Every booking includes live flight monitoring. Delays, early arrivals — we adapt so you never wait at the airport.
+
+A Quiet, Smooth Journey
+The Tesla cabin is whisper-quiet. No engine noise. No stress. Just a smooth, effortless ride to your destination.
+
+Door to Departure
+We drop you at the terminal entrance. Luggage handled. Departure stress-free.
+￼
+Onboard Comfort
+Premium Comfort, Every Mile
+Your Tesla Model Y, appointed for first-class travel.
+In-Vehicle Entertainment
+Stream your favourite content on the Tesla’s rear entertainment screen. Netflix, YouTube, Spotify and more — available on longer journeys for a truly first-class experience.
+Luxury Individual Seating
+Sink into premium heated leather seats with generous legroom.
+Refreshments Included
+Chilled water and refreshments on every transfer. Complimentary, always.
+Device Charging
+USB-A, USB-C and wireless charging. Arrive with a full battery.
+Climate Comfort
+Whisper-quiet Tesla cabin. Your perfect temperature, every journey.
+Eco-Conscious Travel
+Premium electric travel with zero tailpipe emissions across the Fylde Coast.
+Popular Airport Routes
+Fixed prices from Blackpool & the Fylde Coast
+View Full Price List
+Manchester Airport
+EV EXEC ROUTE
+Blackpool to Manchester Airport
+One way
+£90 one way
+Return
+£180 return
+Book Now
+Liverpool Airport
+EV EXEC ROUTE
+Blackpool to Liverpool Airport
+One way
+£95 one way
+Return
+£190 return
+Book Now
+Leeds Bradford Airport
+EV EXEC ROUTE
+Blackpool to Leeds Bradford Airport
+One way
+£135 one way
+Return
+£270 return
+Book Now
+Birmingham Airport
+EV EXEC ROUTE
+Blackpool to Birmingham Airport
+One way
+£215 one way
+Return
+£430 return
+Book Now
+Newcastle Airport
+EV EXEC ROUTE
+Blackpool to Newcastle Airport
+One way
+£250 one way
+Return
+£500 return
+Book Now
+
+All major UK airports covered
+Heathrow, Gatwick, Stansted, Luton, Edinburgh & more
+Full Airport Price List
+Transparent fixed pricing.
+Premium airport transfer pricing redesigned for clarity, speed and trust.
+Book Now
+AIRPORT
+ONE WAY
+RETURN
+Manchester Airport
+£90
+£180
+Liverpool Airport
+£95
+£190
+Leeds Bradford Airport
+£135
+£270
+Birmingham Airport
+£215
+£430
+Newcastle Airport
+£250
+£500
+Prices are fixed and include flight monitoring, airport drop-off/pick-up fees, refreshments, and travel for up to 4 passengers.
+book@evexec.co.uk • 07721 070370 • evexec.co.uk
+Book Now
+Book in 3 Simple Steps
+Reserving your premium transfer takes under 2 minutes.
+01
+Request
+Complete our simple booking form with your journey details — pickup address, airport, date, time and passenger count.
+02
+Confirm
+Receive your SMS confirmation with a fixed, all-inclusive price. No surprises. No hidden charges. Your booking is secured.
+03
+Travel
+Your driver arrives early, every time. Sit back, relax and enjoy the EV Exec experience from door to departure.
+￼
+Built on Trust. Driven by Excellence.
+An independent, owner-operated service — where every journey matters.
+Professional
+Impeccably presented drivers. Smart dress, polished vehicles, a warm welcome — every single time. No call centres. No compromises.
+Eco-Conscious
+100% electric Tesla fleet. Zero emissions. The greenest premium transfer on the Fylde Coast — luxury travel with a conscience.
+Reliable
+Real-time flight tracking on every booking. Early or delayed — your driver is always there, waiting for you.
+	•	Fully Licensed & Insured
+	•	Enhanced DBS Checked
+	•	12+ Years Experience
+	•	Polite, Punctual & Professional
+	•	100% Electric Fleet
+￼
+Premium EV Travel
+A cleaner, calmer way to travel.
+The Tesla Model Y gives EV Exec its modern, quiet and premium feel — practical enough for airport transfers, polished enough for business travel.
+
+Tesla Model Y
+Electric, smooth, spacious and immaculately presented.
+
+Airport Ready
+Comfortable space for passengers and luggage, with fixed airport pricing.
+Google Reviews
+Real Google reviews should be added here once connected or copied from your verified Google Business Profile.
+
+Reviewer name
+Paste a real Google review here from your EV Exec Google Business Profile.
+
+Reviewer name
+Paste a real Google review here from your EV Exec Google Business Profile.
+
+Reviewer name
+Paste a real Google review here from your EV Exec Google Business Profile.
+View more on Google
+￼
+Book Your Transfer
+Limited daily availability — book early to secure your preferred time.
+Book Now Call to Book: 07721070370
+￼
+EV EXEC
+Premium Airport Transfers
+Premium airport transfers from Blackpool & the Fylde Coast to all major UK airports.
+
+
+
+Quick Links
+	•	Home
+	•	Our Services
+	•	Prices
+	•	Areas Covered
+	•	Reviews
+	•	Contact
+Popular Routes
+	•	Blackpool to Manchester Airport
+	•	Blackpool to Liverpool Airport
+	•	Lytham to Manchester Airport
+	•	Poulton to Manchester Airport
+	•	Fleetwood to Liverpool Airport
+	•	View All Prices
+Contact
+	•	07721 070370
+	•	WhatsApp Us
+	•	book@evexec.co.uk
+	•	Blackpool, Lancashire, FY Postcode Areas
+© 2024 EV Exec. All rights reserved.
+Privacy Policy    |    Terms & Conditions
