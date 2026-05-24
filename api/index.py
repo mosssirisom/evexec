@@ -1,78 +1,103 @@
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
+import re
 
 PATCH = r'''
-<script id="evexec-pricing-swap-fix">
+<script id="evexec-pricing-swap-fix-v2">
 (function () {
   function cleanText(el) {
     return (el && el.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
   }
 
-  function nearestSection(el) {
+  function meaningfulContainer(el) {
     if (!el) return null;
-    return el.closest('section') || el.closest('[class*="section"]') || el.closest('[class*="pricing"]') || el.closest('[class*="routes"]') || el.parentElement;
+    var candidates = [];
+    var cur = el;
+    for (var i = 0; cur && i < 8; i++, cur = cur.parentElement) {
+      var t = cleanText(cur);
+      var classes = (cur.className || '').toString().toLowerCase();
+      if (cur.tagName && cur.tagName.toLowerCase() === 'section') candidates.push(cur);
+      if (classes.indexOf('section') !== -1 || classes.indexOf('pricing') !== -1 || classes.indexOf('routes') !== -1 || classes.indexOf('airport') !== -1) candidates.push(cur);
+      if (t.indexOf('popular airport routes') !== -1 && t.length < 5000) candidates.push(cur);
+      if (t.indexOf('transparent fixed pricing') !== -1 && t.length < 5000) candidates.push(cur);
+      if (t.indexOf('full airport price list') !== -1 && t.length < 5000) candidates.push(cur);
+    }
+    return candidates[candidates.length - 1] || el.closest('section') || el.parentElement;
   }
 
-  function findSmallTextNode(phrases) {
-    var nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,p,span,div'));
+  function findHeadingContaining(phrases) {
+    var selectors = 'h1,h2,h3,h4,h5,p,span,div';
+    var nodes = Array.from(document.querySelectorAll(selectors));
     return nodes.find(function (el) {
       var t = cleanText(el);
-      if (!t || t.length > 220) return false;
+      if (!t || t.length > 260) return false;
       return phrases.some(function (phrase) { return t.indexOf(phrase) !== -1; });
     });
   }
 
-  function removeAirportRouteImages() {
-    Array.from(document.querySelectorAll('img')).forEach(function (img) {
-      var src = (img.getAttribute('src') || '').toLowerCase();
-      var alt = (img.getAttribute('alt') || '').toLowerCase();
-      var isAirportRoute =
-        src.indexOf('manchester-airport') !== -1 ||
-        src.indexOf('liverpool-airport') !== -1 ||
-        src.indexOf('leeds-bradford-airport') !== -1 ||
-        src.indexOf('birmingham-airport') !== -1 ||
-        src.indexOf('newcastle-airport') !== -1 ||
-        alt.indexOf('airport') !== -1 && alt.indexOf('tesla') !== -1;
-
-      if (isAirportRoute) {
-        var card = img.closest('article') || img.closest('[class*="card"]') || img.closest('[class*="route"]') || img.parentElement;
-        if (card) card.remove();
+  function removeAirportRouteCards() {
+    var airportWords = ['manchester airport','liverpool airport','leeds bradford airport','birmingham airport','newcastle airport'];
+    Array.from(document.querySelectorAll('article, [class*="card"], [class*="route"]')).forEach(function (card) {
+      var t = cleanText(card);
+      var hasAirport = airportWords.some(function (word) { return t.indexOf(word) !== -1; });
+      var hasPrice = t.indexOf('one way') !== -1 || t.indexOf('return') !== -1 || t.indexOf('from') !== -1;
+      var hasImage = card.querySelector('img');
+      if (hasAirport && (hasImage || hasPrice)) {
+        card.remove();
       }
     });
   }
 
   function run() {
-    var popularHeading = findSmallTextNode(['popular airport routes']);
-    var pricingHeading = findSmallTextNode(['transparent fixed pricing', 'transparent pricing', 'full airport price list']);
-    var popularSection = nearestSection(popularHeading);
-    var pricingSection = nearestSection(pricingHeading);
+    var popularHeading = findHeadingContaining(['popular airport routes']);
+    var pricingHeading = findHeadingContaining(['transparent fixed pricing', 'transparent pricing', 'full airport price list']);
+    var popularBlock = meaningfulContainer(popularHeading);
+    var pricingBlock = meaningfulContainer(pricingHeading);
 
-    if (popularSection && pricingSection && popularSection !== pricingSection) {
-      popularSection.parentNode.insertBefore(pricingSection, popularSection);
-      popularSection.remove();
-    } else if (popularSection && !pricingSection) {
-      popularSection.remove();
+    if (popularBlock && pricingBlock && popularBlock !== pricingBlock) {
+      popularBlock.parentNode.insertBefore(pricingBlock, popularBlock);
+      popularBlock.remove();
+    } else if (popularBlock) {
+      popularBlock.remove();
     }
 
-    removeAirportRouteImages();
+    removeAirportRouteCards();
 
-    Array.from(document.querySelectorAll('a')).forEach(function (a) {
-      var t = cleanText(a);
-      var href = (a.getAttribute('href') || '').toLowerCase();
-      if (t.indexOf('popular airport routes') !== -1 || href.indexOf('popular-routes') !== -1) {
-        a.remove();
+    Array.from(document.querySelectorAll('*')).forEach(function (el) {
+      var t = cleanText(el);
+      if (t === 'popular airport routes') {
+        var block = meaningfulContainer(el);
+        if (block) block.remove();
       }
     });
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', run);
-  } else {
-    run();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+  else run();
 })();
 </script>
 '''
+
+
+def server_side_patch(html: str) -> str:
+    # Remove previous injected versions so the live page always gets the newest patch.
+    html = re.sub(
+        r'<!-- EVEXEC_PRICING_SWAP_FIX_START -->.*?<!-- EVEXEC_PRICING_SWAP_FIX_END -->',
+        '',
+        html,
+        flags=re.S | re.I,
+    )
+    html = re.sub(
+        r'<script id="evexec-pricing-swap-fix[^"]*">.*?</script>',
+        '',
+        html,
+        flags=re.S | re.I,
+    )
+
+    if '</body>' in html:
+        return html.replace('</body>', PATCH + '\n</body>', 1)
+    return html + PATCH
+
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -88,12 +113,7 @@ class handler(BaseHTTPRequestHandler):
             return
 
         html = html_path.read_text(encoding='utf-8', errors='ignore')
-
-        if 'evexec-pricing-swap-fix' not in html:
-            if '</body>' in html:
-                html = html.replace('</body>', PATCH + '\n</body>', 1)
-            else:
-                html += PATCH
+        html = server_side_patch(html)
 
         self.send_response(200)
         self.send_header('content-type', 'text/html; charset=utf-8')
