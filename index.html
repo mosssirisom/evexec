@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>EV Exec | Premium Airport Transfers Blackpool &amp; The Fylde Coast</title>
+<meta content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." name="description"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&amp;family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{
+  --bg:#020813;
+  --panel:#07111f;
+  --panel2:#0b1524;
+  --gold:#d5a538;
+  --gold2:#f2c66d;
+  --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 65% 5%, rgba(48,99,160,.22), transparent 30%),
+    radial-gradient(circle at 25% 20%, rgba(213,165,56,.08), transparent 28%),
+    #020813;
+  color:#fff;
+  font-family:Inter,Arial,sans-serif;
+}
+.serif{font-family:'Cormorant Garamond',serif}
+.gold{color:var(--gold)}
+.glass{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid var(--line);
+  box-shadow:0 22px 70px rgba(0,0,0,.35);
+  backdrop-filter:blur(18px);
+}
+.btn-gold{
+  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
+  color:#06101c;
+  box-shadow:0 16px 38px rgba(213,165,56,.18);
+}
+.hero{
+  min-height:760px;
+  background:
+    linear-gradient(90deg,rgba(2,8,19,.98) 0%,rgba(2,8,19,.72) 43%,rgba(2,8,19,.24) 100%),
+    linear-gradient(0deg,#020813 0%,rgba(2,8,19,.24) 45%),
+    url('./public/images/ev-exec-image-1.jpg');
+  background-size:cover;
+  background-position:center;
+}
+.navlink{position:relative}
+.navlink:after{
+  content:"";
+  position:absolute;
+  left:0;right:100%;bottom:-8px;height:2px;
+  background:var(--gold);
+  transition:.25s ease;
+}
+.navlink:hover:after,.navlink.active:after{right:0}
+.icon-pill{
+  display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.75)
+}
+.icon{
+  width:28px;height:28px;border-radius:50%;
+  display:grid;place-items:center;
+  border:1px solid rgba(213,165,56,.75);
+  color:var(--gold);
+  font-weight:900;
+}
+.input{
+  width:100%;
+  min-height:48px;
+  border-radius:7px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.08);
+  color:white;
+  padding:0 14px;
+  outline:none;
+}
+.input::placeholder{color:rgba(255,255,255,.6)}
+.route-img{
+  height:145px;
+  background:#0b1422;
+  border-radius:7px 7px 0 0;
+  overflow:hidden;
+}
+.route-img img{width:100%;height:100%;object-fit:cover}
+.route-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;
+  overflow:hidden;
+}
+.footer-line{border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:900px){
+  .hero{min-height:auto;background-position:60% center}
+}
+
+.clean-icon{
+  width:34px;height:34px;
+  color:var(--gold);
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.7;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.clean-icon-lg{
+  width:54px;height:54px;
+  color:var(--gold);
+  stroke:currentColor;
+  fill:none;
+  stroke-width:1.5;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.route-img.airport-art{
+  position:relative;
+  background:
+    linear-gradient(180deg,rgba(12,27,47,.10),rgba(3,10,20,.88)),
+    linear-gradient(135deg,#142b45,#06111f);
+}
+.route-img.airport-art svg{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.owner-small{
+  width:132px!important;
+  height:132px!important;
+  border:1px solid rgba(213,165,56,.24);
+  box-shadow:0 18px 50px rgba(0,0,0,.35);
+  background:radial-gradient(circle,rgba(213,165,56,.08),transparent 65%);
+}
+.subtle-profile-wrap{
+  width:160px;
+  height:160px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(circle,rgba(213,165,56,.13),rgba(255,255,255,.025) 55%,transparent 72%);
+}
+.tesla-strip{
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+  min-height:220px;
+  background:linear-gradient(90deg,rgba(5,12,23,.95),rgba(5,12,23,.45)),url('./public/images/ev-exec-image-2.jpg');
+  background-size:cover;
+  background-position:center;
+  border:1px solid rgba(213,165,56,.22);
+}
+.tesla-strip:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,rgba(2,8,19,.78),transparent 60%);
+  pointer-events:none;
+}
+
+
+/* Premium interaction layer */
+body{
+  background-attachment: fixed;
+}
+#siteHeader nav{
+  transition: background .45s ease, border-color .45s ease, box-shadow .45s ease, transform .45s ease;
+}
+#siteHeader.scrolled nav{
+  background:rgba(2,8,19,.72);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(22px);
+  box-shadow:0 18px 55px rgba(0,0,0,.38);
+}
+.reveal{
+  opacity:0;
+  transform:translateY(26px);
+  transition:opacity .85s cubic-bezier(.2,.8,.2,1), transform .85s cubic-bezier(.2,.8,.2,1);
+  will-change:opacity,transform;
+}
+.reveal.in-view{
+  opacity:1;
+  transform:translateY(0);
+}
+.reveal-delay-1{transition-delay:.08s}
+.reveal-delay-2{transition-delay:.16s}
+.reveal-delay-3{transition-delay:.24s}
+.image-reveal{
+  opacity:0;
+  transform:translateY(24px) scale(.985);
+  filter:blur(6px);
+  transition:opacity .95s cubic-bezier(.2,.8,.2,1), transform .95s cubic-bezier(.2,.8,.2,1), filter .95s ease;
+}
+.image-reveal.in-view{
+  opacity:1;
+  transform:translateY(0) scale(1);
+  filter:blur(0);
+}
+.glass,.route-card,.tesla-strip{
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease, background .35s ease;
+}
+.glass:hover{
+  border-color:rgba(213,165,56,.26);
+}
+.route-card:hover{
+  transform:translateY(-8px) scale(1.012);
+  border-color:rgba(213,165,56,.46);
+  box-shadow:0 28px 70px rgba(0,0,0,.42),0 0 40px rgba(213,165,56,.08);
+}
+.route-card:hover .route-img svg{
+  transform:scale(1.035);
+}
+.route-img svg{
+  transition:transform .75s cubic-bezier(.2,.8,.2,1);
+}
+.btn-gold,.btn-dark,.navlink{
+  transition:all .28s ease;
+}
+.btn-gold:hover{
+  transform:translateY(-2px);
+  box-shadow:0 22px 55px rgba(213,165,56,.24);
+}
+.btn-dark:hover{
+  border-color:rgba(213,165,56,.72);
+  color:#d5a538;
+  background:rgba(213,165,56,.06);
+}
+.clean-icon,.clean-icon-lg{
+  transition:transform .3s ease, opacity .3s ease;
+}
+.glass:hover .clean-icon,.glass:hover .clean-icon-lg,.route-card:hover .clean-icon{
+  transform:translateY(-2px);
+}
+.hero h1,.hero p,.hero .btn-gold,.hero .btn-dark{
+  animation:heroRise .8s cubic-bezier(.2,.8,.2,1) both;
+}
+.hero p{animation-delay:.08s}
+.hero .btn-gold,.hero .btn-dark{animation-delay:.16s}
+@keyframes heroRise{
+  from{opacity:0;transform:translateY(22px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.cursor-glow{
+  position:fixed;
+  width:420px;height:420px;
+  border-radius:999px;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(213,165,56,.07),transparent 62%);
+  transform:translate(-50%,-50%);
+  z-index:0;
+  opacity:.75;
+  transition:opacity .25s ease;
+}
+main,header,footer{position:relative;z-index:1}
+.premium-divider{
+  height:1px;
+  max-width:860px;
+  margin:46px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(213,165,56,.38),transparent);
+}
+.review-card{
+  min-height:190px;
+}
+.review-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(213,165,56,.38);
+  box-shadow:0 24px 70px rgba(0,0,0,.32);
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .reveal,.image-reveal{opacity:1!important;transform:none!important;filter:none!important}
+}
+@media(max-width:768px){
+  .cursor-glow{display:none}
+  .reveal,.image-reveal{transition-duration:.55s}
+  .route-card:hover{transform:none}
+}
+
+
+/* Route and pricing refinement */
+.about-profile-shell{
+  width:138px;
+  height:138px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  position:relative;
+  isolation:isolate;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(213,165,56,.20), rgba(213,165,56,.045) 52%, transparent 72%),
+    linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.025));
+  border:1px solid rgba(213,165,56,.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 18px 48px rgba(0,0,0,.38),
+    0 0 55px rgba(213,165,56,.08);
+}
+.about-profile-shell:before{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  border-radius:999px;
+  background:radial-gradient(circle, rgba(213,165,56,.13), transparent 68%);
+  filter:blur(10px);
+  z-index:-1;
+}
+.about-profile-shell img{
+  width:118px!important;
+  height:118px!important;
+  border-radius:999px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 10px 28px rgba(0,0,0,.35);
+}
+.route-card-premium{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.078),rgba(255,255,255,.035)),
+    radial-gradient(circle at 70% 0%,rgba(213,165,56,.08),transparent 42%);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease;
+}
+.route-card-premium:hover{
+  transform:translateY(-8px);
+  border-color:rgba(213,165,56,.46);
+  box-shadow:0 30px 80px rgba(0,0,0,.44),0 0 45px rgba(213,165,56,.08);
+}
+.route-image-premium{
+  position:relative;
+  height:168px;
+  overflow:hidden;
+  background:#07111f;
+}
+.route-image-premium svg,
+.route-image-premium img{
+  width:100%;
+  height:100%;
+  display:block;
+  transition:transform .8s cubic-bezier(.2,.8,.2,1), filter .8s ease;
+}
+.route-image-premium img{
+  object-fit:cover;
+}
+.route-card-premium:hover .route-image-premium svg,
+.route-image-premium img{
+  transform:scale(1.055);
+  filter:saturate(1.1) contrast(1.04);
+}
+.route-image-premium:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,rgba(2,8,19,.86),transparent 52%);
+  pointer-events:none;
+}
+.price-line{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 0;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+.price-line:first-of-type{border-top:0}
+.price-value{
+  font-size:28px;
+  font-weight:900;
+  color:var(--gold);
+  letter-spacing:-.02em;
+}
+.price-label{
+  color:rgba(255,255,255,.62);
+  font-size:13px;
+}
+.full-price-card{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.072),rgba(255,255,255,.035)),
+    radial-gradient(circle at 82% 0%,rgba(213,165,56,.10),transparent 40%);
+  border:1px solid rgba(213,165,56,.22);
+  border-radius:18px;
+  overflow:hidden;
+}
+.price-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.price-table th{
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  text-align:left;
+  padding:18px 20px;
+  background:rgba(255,255,255,.045);
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+.price-table td{
+  padding:18px 20px;
+  border-bottom:1px solid rgba(255,255,255,.075);
+}
+.price-table tr:last-child td{border-bottom:0}
+.price-table tr{
+  transition:background .25s ease;
+}
+.price-table tr:hover td{
+  background:rgba(213,165,56,.045);
+}
+.included-item{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  padding:18px;
+  border-radius:14px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+  transition:transform .3s ease,border-color .3s ease,background .3s ease;
+}
+.included-item:hover{
+  transform:translateY(-3px);
+  border-color:rgba(213,165,56,.30);
+  background:rgba(213,165,56,.055);
+}
+@media(max-width:700px){
+  .price-table thead{display:none}
+  .price-table,.price-table tbody,.price-table tr,.price-table td{display:block;width:100%}
+  .price-table tr{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .price-table td{border:0;padding:8px 18px}
+  .price-table td:before{
+    content:attr(data-label);
+    display:block;
+    color:rgba(255,255,255,.48);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    margin-bottom:4px;
+  }
+}
+
+
+/* Premium copy placement and section polishing */
+.copy-section{
+  padding:56px 24px;
+}
+.copy-grid{
+  max-width:1280px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:28px;
+  align-items:stretch;
+}
+.copy-card{
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.11);
+  border-radius:18px;
+  padding:34px;
+  box-shadow:0 20px 65px rgba(0,0,0,.28);
+}
+.copy-card:hover{
+  border-color:rgba(213,165,56,.28);
+  transform:translateY(-3px);
+}
+.copy-image{
+  min-height:420px;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(213,165,56,.22);
+  background:#07111f;
+}
+.copy-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.service-list{
+  display:grid;
+  gap:14px;
+  margin-top:24px;
+}
+.service-row{
+  display:grid;
+  grid-template-columns:44px 1fr;
+  gap:16px;
+  padding:18px;
+  border:1px solid rgba(255,255,255,.085);
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  transition:transform .3s ease,border-color .3s ease,background .3s ease;
+}
+.service-row:hover{
+  transform:translateY(-2px);
+  border-color:rgba(213,165,56,.30);
+  background:rgba(213,165,56,.045);
+}
+.service-row h3{font-weight:800;margin:0 0 6px}
+.service-row p{color:rgba(255,255,255,.64);line-height:1.55;margin:0}
+.comfort-grid{
+  max-width:1280px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+.comfort-card{
+  border-radius:18px;
+  padding:26px;
+  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.105);
+}
+.comfort-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(213,165,56,.28);
+  box-shadow:0 24px 70px rgba(0,0,0,.32);
+}
+.booking-steps{
+  max-width:1280px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+.step-card{
+  border-radius:18px;
+  padding:28px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.10);
+}
+.step-number{
+  width:42px;height:42px;border-radius:999px;
+  display:grid;place-items:center;
+  color:var(--gold);
+  border:1px solid rgba(213,165,56,.5);
+  margin-bottom:18px;
+  font-weight:900;
+}
+.reviews-note{
+  max-width:1280px;
+  margin:0 auto;
+  border-radius:18px;
+  border:1px solid rgba(213,165,56,.22);
+  background:linear-gradient(180deg,rgba(213,165,56,.06),rgba(255,255,255,.025));
+  padding:28px;
+}
+.price-table td.price-number{
+  color:var(--gold);
+  font-size:24px;
+  font-weight:900;
+}
+.price-note{
+  padding:18px 22px;
+  border-top:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.64);
+  font-size:14px;
+}
+@media(max-width:900px){
+  .copy-grid,.comfort-grid,.booking-steps{grid-template-columns:1fr}
+  .copy-card{padding:24px}
+  .copy-section{padding:42px 18px}
+}
+
+</style>
+</head>
+<body>
+<div aria-hidden="true" class="cursor-glow"></div>
+<svg height="0" style="position:absolute" width="0">
+<symbol id="i-pound" viewbox="0 0 24 24"><path d="M7 20h11M8 12h8M9 20c2.5-2.8 2.7-6 1.5-9.5C9.8 8.2 10.9 5 14 5c1.7 0 3 .8 4 2"></path></symbol>
+<symbol id="i-plane" viewbox="0 0 24 24"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"></path></symbol>
+<symbol id="i-car" viewbox="0 0 24 24"><path d="M4 14l2-5h12l2 5M5 14h14v5H5zM7 19v2M17 19v2M7 16h.1M17 16h.1"></path></symbol>
+<symbol id="i-user" viewbox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"></path></symbol>
+<symbol id="i-star" viewbox="0 0 24 24"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9L12 3z"></path></symbol>
+<symbol id="i-leaf" viewbox="0 0 24 24"><path d="M20 4c-7.5.6-12.5 3.9-15 10 5.5.6 10-1.8 13.5-7.2M5 14c1.5 2.5 3.9 4.4 7 5"></path></symbol>
+<symbol id="i-check" viewbox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"></path></symbol>
+<symbol id="i-phone" viewbox="0 0 24 24"><path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2"></path></symbol>
+<symbol id="i-mail" viewbox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></symbol>
+<symbol id="i-calendar" viewbox="0 0 24 24"><path d="M5 5h14v15H5zM8 3v4M16 3v4M5 10h14"></path></symbol>
+<symbol id="i-map" viewbox="0 0 24 24"><path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.2"></circle></symbol>
+<symbol id="i-water" viewbox="0 0 24 24"><path d="M12 3s6 6.7 6 11a6 6 0 0 1-12 0c0-4.3 6-11 6-11z"></path></symbol>
+<symbol id="i-shield" viewbox="0 0 24 24"><path d="M12 3 20 6v6c0 5-3.2 8-8 9-4.8-1-8-4-8-9V6l8-3z"></path></symbol>
+<symbol id="i-clock" viewbox="0 0 24 24"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></symbol>
+<symbol id="i-briefcase" viewbox="0 0 24 24"><path d="M8 7V5h8v2M4 8h16v11H4zM4 13h16"></path></symbol>
+<symbol id="i-screen" viewbox="0 0 24 24"><path d="M4 5h16v11H4zM9 20h6M12 16v4"></path></symbol>
+<symbol id="i-temp" viewbox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"></path></symbol>
+</svg>
+<header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4 transition-all duration-500" id="siteHeader">
+<nav class="max-w-7xl mx-auto flex items-center justify-between">
+<a class="flex items-center gap-3" href="#">
+<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
+<div>
+<div class="text-2xl font-black tracking-wide">EV EXEC</div>
+<div class="text-[10px] uppercase tracking-[.22em] text-white/60">Premium Airport Transfers</div>
+</div>
+</a>
+<div class="hidden lg:flex items-center gap-9 text-sm text-white/85">
+<a class="navlink active" href="#">Home</a>
+<a class="navlink" href="#services">Our Services</a>
+<a class="navlink" href="#prices">Prices</a>
+<a class="navlink" href="#areas">Areas Covered</a>
+<a class="navlink" href="#about">About Me</a>
+<a class="navlink" href="#reviews">Reviews</a>
+<a class="navlink" href="#contact">Contact</a>
+</div>
+<a class="btn-gold rounded-md px-6 py-3 font-bold hidden md:block" href="tel:07721070370">07721 070370</a>
+</nav>
+</header>
+<main>
+<section class="hero px-6 pt-32 pb-12">
+<div class="max-w-7xl mx-auto">
+<div class="max-w-[540px] pt-8">
+<div class="inline-flex rounded-full bg-black/35 border border-white/10 px-4 py-1.5 text-xs uppercase tracking-[.18em] text-[#d5a538] font-bold mb-5">
+        Premium. Reliable. Local.
+      </div>
+<h1 class="serif text-6xl md:text-7xl leading-[.88] font-bold">
+        Premium Airport <span class="gold">Transfers</span><br/>Blackpool &amp; The Fylde Coast
+      </h1>
+<p class="mt-6 text-lg text-white/82 leading-relaxed">
+        Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, reliable and always on time.
+      </p>
+<div class="mt-8 flex gap-4">
+<a class="btn-gold rounded-md px-7 py-4 font-bold" href="#quote">Book Now</a>
+<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold" href="#prices">View Prices</a>
+</div>
+<div class="mt-7 flex flex-wrap gap-6">
+<div class="icon-pill"><span class="icon"><svg class="clean-icon"><use href="#i-pound"></use></svg></span><span>Fixed<br/>Prices</span></div>
+<div class="icon-pill"><span class="icon"><svg class="clean-icon"><use href="#i-plane"></use></svg></span><span>Flight<br/>Monitoring</span></div>
+<div class="icon-pill"><span class="icon"><svg class="clean-icon"><use href="#i-car"></use></svg></span><span>Premium<br/>Tesla Vehicle</span></div>
+<div class="icon-pill"><span class="icon"><svg class="clean-icon"><use href="#i-user"></use></svg></span><span>Local &amp;<br/>Reliable</span></div>
+<div class="icon-pill"><span class="icon"><svg class="clean-icon"><use href="#i-star"></use></svg></span><span>5Star Rated<br/>Service</span></div>
+</div>
+</div>
+<section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote">
+<h2 class="serif text-3xl mb-5">Book Your <span class="gold font-bold">Airport Transfer</span></h2>
+<form class="grid grid-cols-1 md:grid-cols-4 gap-5">
+<label class="text-xs text-white/60">Pickup Location<input class="input mt-2" placeholder="Enter pickup location"/></label>
+<label class="text-xs text-white/60">Destination Airport<select class="input mt-2"><option>Select airport</option><option>Manchester Airport</option><option>Liverpool Airport</option><option>Leeds Bradford Airport</option><option>Birmingham Airport</option></select></label>
+<label class="text-xs text-white/60">Date<input class="input mt-2" type="date"/></label>
+<label class="text-xs text-white/60">Time<input class="input mt-2" type="time"/></label>
+<label class="text-xs text-white/60">Passengers<select class="input mt-2"><option>1 Passenger</option><option>2</option><option>3</option><option>4</option></select></label>
+<label class="text-xs text-white/60">Luggage<input class="input mt-2" placeholder="1 suitcase"/></label>
+<label class="text-xs text-white/60">Return Journey?<select class="input mt-2"><option>No ↔</option><option>Yes</option></select></label>
+<label class="text-xs text-white/60">Contact Method<select class="input mt-2"><option>WhatsApp</option><option>Phone Call</option><option>Email</option></select></label>
+<a class="btn-gold md:col-span-4 rounded-md py-4 text-center font-bold" href="https://wa.me/447721070370">Book Now</a>
+</form>
+<p class="text-center text-white/55 mt-4">No hidden fees. Fixed prices. Professional service.</p>
+</section>
+</div>
+</section>
+<section class="px-6 py-10 reveal" id="services">
+<div class="max-w-7xl mx-auto text-center">
+<h2 class="serif text-4xl">Why Choose <span class="gold">EV Exec?</span></h2>
+<p class="text-white/60 mt-1">Airport transfer specialists you can rely on.</p>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-7 mt-8">
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-pound"></use></svg><h3 class="font-bold mt-4">Fixed &amp; Transparent Prices</h3><p class="text-sm text-white/55 mt-3">No hidden costs. What we quote is what you pay.</p></div>
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-plane"></use></svg><h3 class="font-bold mt-4">Flight Monitoring Included</h3><p class="text-sm text-white/55 mt-3">We track your flight in real-time for perfect timing.</p></div>
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-car"></use></svg><h3 class="font-bold mt-4">Luxury Tesla Model Y</h3><p class="text-sm text-white/55 mt-3">Travel in comfort in our premium electric vehicle.</p></div>
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-user"></use></svg><h3 class="font-bold mt-4">Local &amp; Professional Driver</h3><p class="text-sm text-white/55 mt-3">Polite, experienced and dedicated to your journey.</p></div>
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-star"></use></svg><h3 class="font-bold mt-4">5 Star Rated Service</h3><p class="text-sm text-white/55 mt-3">Hundreds of happy customers across Blackpool &amp; Fylde.</p></div>
+<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto"><use href="#i-leaf"></use></svg><h3 class="font-bold mt-4">Eco-Friendly Travel</h3><p class="text-sm text-white/55 mt-3">Zero emissions. Better for you, better for the planet.</p></div>
+</div>
+</div>
+</section>
+<section class="copy-section reveal">
+<div class="copy-grid">
+<div class="copy-card">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">EV Exec Experience</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">The Journey Begins the Moment We Arrive.</h2>
+<p class="text-white/68 mt-5 leading-relaxed text-lg">From the second your driver pulls up, everything is taken care of. Your luggage, your comfort, your time.</p>
+<div class="service-list">
+<div class="service-row"><svg class="clean-icon"><use href="#i-clock"></use></svg><div><h3>We Arrive Early</h3><p>Your driver is always there before you are. Smartly dressed, vehicle immaculate, ready to go. No waiting. No stress.</p></div></div>
+<div class="service-row"><svg class="clean-icon"><use href="#i-user"></use></svg><div><h3>Your Comfort, First</h3><p>Settle into premium heated leather seating. WiFi connected. Refreshments waiting. Climate set to your preference.</p></div></div>
+<div class="service-row"><svg class="clean-icon"><use href="#i-plane"></use></svg><div><h3>We Track Your Flight</h3><p>Every booking includes live flight monitoring. Delays, early arrivals — we adapt so you never wait at the airport.</p></div></div>
+<div class="service-row"><svg class="clean-icon"><use href="#i-car"></use></svg><div><h3>A Quiet, Smooth Journey</h3><p>The Tesla cabin is whisper-quiet. No engine noise. No stress. Just a smooth, effortless ride to your destination.</p></div></div>
+<div class="service-row"><svg class="clean-icon"><use href="#i-map"></use></svg><div><h3>Door to Departure</h3><p>We drop you at the terminal entrance. Luggage handled. Departure stress-free.</p></div></div>
+</div>
+</div>
+<div class="copy-image image-reveal">
+<img alt="EV Exec Tesla interior" src="./public/images/ev-exec-image-4.jpg"/>
+</div>
+</div>
+</section>
+<section class="copy-section reveal">
+<div class="max-w-7xl mx-auto mb-9">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Onboard Comfort</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Premium Comfort, Every Mile</h2>
+<p class="text-white/65 mt-3 text-lg">Your Tesla Model Y, appointed for first-class travel.</p>
+</div>
+<div class="comfort-grid">
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-screen"></use></svg><h3 class="font-bold text-xl mt-5">In-Vehicle Entertainment</h3><p class="text-white/62 mt-3">Stream your favourite content on the Tesla’s rear entertainment screen. Netflix, YouTube, Spotify and more — available on longer journeys for a truly first-class experience.</p></article>
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-user"></use></svg><h3 class="font-bold text-xl mt-5">Luxury Individual Seating</h3><p class="text-white/62 mt-3">Sink into premium heated leather seats with generous legroom.</p></article>
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-water"></use></svg><h3 class="font-bold text-xl mt-5">Refreshments Included</h3><p class="text-white/62 mt-3">Chilled water and refreshments on every transfer. Complimentary, always.</p></article>
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-phone"></use></svg><h3 class="font-bold text-xl mt-5">Device Charging</h3><p class="text-white/62 mt-3">USB-A, USB-C and wireless charging. Arrive with a full battery.</p></article>
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-temp"></use></svg><h3 class="font-bold text-xl mt-5">Climate Comfort</h3><p class="text-white/62 mt-3">Whisper-quiet Tesla cabin. Your perfect temperature, every journey.</p></article>
+<article class="comfort-card reveal"><svg class="clean-icon-lg"><use href="#i-leaf"></use></svg><h3 class="font-bold text-xl mt-5">Eco-Conscious Travel</h3><p class="text-white/62 mt-3">Premium electric travel with zero tailpipe emissions across the Fylde Coast.</p></article>
+</div>
+</section>
+<section class="px-6 py-8 reveal" id="prices">
+<div class="max-w-7xl mx-auto">
+<div class="full-price-card">
+<div class="p-7 md:p-9">
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5">
+<div>
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Full Airport Price List</p>
+<h2 class="serif text-4xl md:text-5xl mt-2">Transparent Fixed Pricing.</h2>
+<p class="text-white/62 mt-3 max-w-2xl">Premium airport transfer pricing redesigned for clarity, speed and trust.</p>
+</div>
+<a class="btn-gold rounded-md px-7 py-4 text-center font-bold" href="https://wa.me/447721070370">Get A Quote</a>
+</div>
+</div>
+<div class="overflow-hidden">
+<table class="price-table">
+<thead>
+<tr>
+<th>Airport</th>
+<th>One Way</th>
+<th>Return</th>
+</tr>
+</thead>
+<tbody>
+<tr><td data-label="Airport">Manchester Airport</td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£180</td></tr>
+<tr><td data-label="Airport">Liverpool Airport</td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£190</td></tr>
+<tr><td data-label="Airport">Leeds Bradford Airport</td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£270</td></tr>
+<tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£430</td></tr>
+<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£500</td></tr>
+</tbody>
+</table>
+</div>
+<div class="price-note">
+        Prices are fixed and include flight monitoring, airport drop-off/pick-up fees, refreshments, and travel for up to 4 passengers.
+      </div>
+<div class="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-t border-white/10">
+<div class="text-white/62">
+<p>Email: book@evexec.co.uk • Phone: 07721 070370 • Website: evexec.co.uk</p>
+</div>
+<a class="btn-gold rounded-md px-8 py-4 text-center font-bold" href="https://wa.me/447721070370">Book Now</a>
+</div>
+</div>
+</div>
+</section>
+
+<section class="px-6 py-10 reveal" id="areas">
+<div class="max-w-7xl mx-auto">
+<div class="glass rounded-lg p-7 md:p-9">
+<div class="text-center max-w-3xl mx-auto">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Coverage</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Areas Covered</h2>
+<p class="text-white/62 mt-4 leading-relaxed">Premium airport transfers across Blackpool, the Fylde Coast and selected surrounding areas, with long-distance airport travel available across the UK.</p>
+</div>
+<div class="grid md:grid-cols-2 gap-6 mt-9">
+<article class="rounded-lg border border-white/10 bg-white/[.035] p-6">
+<div class="flex items-center gap-3 mb-5">
+<span class="icon"><svg class="clean-icon"><use href="#i-map"></use></svg></span>
+<h3 class="text-xl font-bold">Local Pickup Areas</h3>
+</div>
+<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<span>Blackpool</span>
+<span>Lytham St Annes</span>
+<span>Poulton-le-Fylde</span>
+<span>Fleetwood</span>
+<span>Thornton-Cleveleys</span>
+<span>Bispham</span>
+<span>Kirkham</span>
+<span>Warton</span>
+<span>Freckleton</span>
+<span>Preston</span>
+<span>South Shore</span>
+<span>North Shore</span>
+</div>
+</article>
+<article class="rounded-lg border border-white/10 bg-white/[.035] p-6">
+<div class="flex items-center gap-3 mb-5">
+<span class="icon"><svg class="clean-icon"><use href="#i-plane"></use></svg></span>
+<h3 class="text-xl font-bold">Airport Destinations</h3>
+</div>
+<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<span>Manchester Airport</span>
+<span>Liverpool Airport</span>
+<span>Leeds Bradford Airport</span>
+<span>Birmingham Airport</span>
+<span>Newcastle Airport</span>
+<span>Heathrow Airport</span>
+<span>Gatwick Airport</span>
+<span>Stansted Airport</span>
+<span>Luton Airport</span>
+<span>Edinburgh Airport</span>
+<span>All Major UK Airports</span>
+<span>Long-Distance Transfers</span>
+</div>
+</article>
+</div>
+<div class="mt-7 rounded-lg border border-[#d5a538]/25 bg-[#d5a538]/[.06] p-5 text-center text-white/70 leading-relaxed">
+For journeys outside these areas, EV Exec can usually provide a fixed quote in advance depending on availability.
+</div>
+</div>
+</div>
+</section>
+
+<section class="copy-section reveal">
+<div class="max-w-7xl mx-auto text-center mb-9">
+<h2 class="serif text-4xl md:text-5xl">Book in <span class="gold">3 Simple Steps</span></h2>
+<p class="text-white/65 mt-2">Reserving your premium transfer takes under 2 minutes.</p>
+</div>
+<div class="booking-steps">
+<article class="step-card reveal">
+<div class="step-number">01</div>
+<h3 class="text-xl font-bold">Request</h3>
+<p class="text-white/62 mt-3 leading-relaxed">Complete our simple booking form with your journey details — pickup address, airport, date, time and passenger count.</p>
+</article>
+<article class="step-card reveal reveal-delay-1">
+<div class="step-number">02</div>
+<h3 class="text-xl font-bold">Confirm</h3>
+<p class="text-white/62 mt-3 leading-relaxed">Receive your SMS confirmation with a fixed, all-inclusive price. No surprises. No hidden charges. Your booking is secured.</p>
+</article>
+<article class="step-card reveal reveal-delay-2">
+<div class="step-number">03</div>
+<h3 class="text-xl font-bold">Travel</h3>
+<p class="text-white/62 mt-3 leading-relaxed">Your driver arrives early, every time. Sit back, relax and enjoy the EV Exec experience from door to departure.</p>
+</article>
+</div>
+</section>
+<section class="px-6 py-8 reveal" id="about">
+<div class="max-w-7xl mx-auto glass rounded-lg p-8 grid md:grid-cols-[190px_1fr_380px] gap-8 items-center">
+<div class="subtle-profile-wrap mx-auto"><div class="about-profile-shell mx-auto"><img alt="EV Exec owner" src="./public/images/ev-exec-image-5.jpg"/></div></div>
+<div>
+<h2 class="serif text-4xl">Built on Trust. <span class="gold">Driven by Excellence.</span></h2>
+<p class="text-white/68 mt-4 leading-relaxed">An independent, owner-operated service — where every journey matters.</p>
+<div class="grid md:grid-cols-3 gap-4 mt-5">
+<div><h3 class="gold font-bold">Professional</h3><p class="text-white/58 mt-1">Impeccably presented drivers. Smart dress, polished vehicles, a warm welcome — every single time. No call centres. No compromises.</p></div>
+<div><h3 class="gold font-bold">Eco-Conscious</h3><p class="text-white/58 mt-1">100% Electric Tesla fleet. Zero emissions. The greenest premium transfer on the Fylde Coast — luxury travel with a conscience.</p></div>
+<div><h3 class="gold font-bold">Reliable</h3><p class="text-white/58 mt-1">Real-time flight tracking on every booking. Early or delayed — your driver is always there, waiting for you.</p></div>
+</div>
+</div>
+<ul class="space-y-3 text-white/78">
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-check"></use></svg><span>Fully Licensed &amp; Insured</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-check"></use></svg><span>Enhanced DBS Checked</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-check"></use></svg><span>12+ Years Experience</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-check"></use></svg><span>Polite, Punctual &amp; Professional</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-check"></use></svg><span>100% Electric Fleet</span></li>
+</ul>
+</div>
+</section>
+<section class="copy-section reveal">
+<div class="copy-grid">
+<div class="copy-image image-reveal"><img alt="EV Exec Tesla Model Y" src="./public/images/ev-exec-image-2.jpg"/></div>
+<div class="copy-card">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Premium EV Travel</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">A cleaner, calmer way to travel.</h2>
+<p class="text-white/68 mt-5 leading-relaxed">The Tesla Model Y gives EV Exec its modern, quiet and premium feel — practical enough for airport transfers, polished enough for business travel.</p>
+<div class="service-list">
+<div class="service-row"><svg class="clean-icon"><use href="#i-car"></use></svg><div><h3>Tesla Model Y</h3><p>Electric, smooth, spacious and immaculately presented.</p></div></div>
+<div class="service-row"><svg class="clean-icon"><use href="#i-briefcase"></use></svg><div><h3>Airport Ready</h3><p>Comfortable space for passengers and luggage, with fixed airport pricing.</p></div></div>
+</div>
+</div>
+</div>
+</section>
+<section class="px-6 py-12 reveal" id="reviews">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto">
+<h2 class="serif text-4xl md:text-5xl">Google Reviews</h2>
+<p class="text-white/60 mt-3">Recent 5-star Google reviews from EV Exec customers.</p>
+</div>
+<div class="reviews-note mt-9">
+<div class="grid md:grid-cols-3 gap-6">
+<article class="glass rounded-lg p-6">
+<div class="flex gap-1 gold mb-4"><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg></div>
+<h3 class="font-bold">David S.</h3>
+<p class="text-white/58 mt-3">Used Moss last week on a trip to Liverpool. The car was clean, on time, and everything went smoothly. Would recommend</p>
+</article>
+<article class="glass rounded-lg p-6">
+<div class="flex gap-1 gold mb-4"><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg></div>
+<h3 class="font-bold">Matthew J.</h3>
+<p class="text-white/58 mt-3">From booking to drop off first class service you can rely on! In my opinion very cheap price for the quality you get compared to others. I will never use another airport company again. Highly Recommended 🤝</p>
+</article>
+<article class="glass rounded-lg p-6">
+<div class="flex gap-1 gold mb-4"><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg><svg class="clean-icon"><use href="#i-star"></use></svg></div>
+<h3 class="font-bold">Lynn V.</h3>
+<p class="text-white/58 mt-3">Excellent airport taxi service on time, friendly and professional. Smooth journey, clean vehicle &amp; great communication. Would definitely recommend and use again. Thank you</p>
+</article>
+</div>
+<div class="mt-7 text-center">
+<a class="btn-dark glass rounded-md px-7 py-4 inline-block font-bold" href="https://www.google.com/search?q=EV+Exec+Blackpool+reviews">View more on Google</a>
+</div>
+</div>
+</div>
+</section>
+<section class="px-6 py-8 reveal">
+<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('./public/images/ev-exec-image-6.jpg');background-size:cover;background-position:center;">
+<div class="flex items-center gap-6">
+<img alt="logo" class="w-20 h-20 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
+<div>
+<h2 class="serif text-4xl">Book Your Transfer</h2><p class="text-white/75 mt-1">Limited daily availability — book early to secure your preferred time.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<a class="btn-gold rounded-md px-8 py-4 font-bold" href="https://wa.me/447721070370">Book Now</a>
+<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold" href="tel:07721070370">Call to Book: 07721070370</a>
+</div>
+</div>
+</section>
+</main>
+<footer class="px-6 py-10" id="contact">
+<div class="max-w-7xl mx-auto grid md:grid-cols-[1.2fr_.7fr_1fr_1fr] gap-10">
+<div>
+<div class="flex items-center gap-3">
+<img class="w-16 h-16 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
+<div><div class="text-3xl font-black gold">EV EXEC</div><div class="text-xs uppercase tracking-[.2em] text-white/55">Premium Airport Transfers</div></div>
+</div>
+<p class="text-white/58 mt-4 max-w-xs">Premium airport transfers from Blackpool &amp; the Fylde Coast to all major UK airports.</p>
+<div class="flex gap-3 mt-5"><span class="icon"><svg class="clean-icon"><use href="#i-phone"></use></svg></span><span class="icon"><svg class="clean-icon"><use href="#i-user"></use></svg></span><span class="icon"><svg class="clean-icon"><use href="#i-star"></use></svg></span></div>
+</div>
+<div>
+<h3 class="font-bold mb-4">Quick Links</h3>
+<ul class="space-y-2 text-white/58"><li>Home</li><li>Our Services</li><li>Prices</li><li>Areas Covered</li><li>Reviews</li><li>Contact</li></ul>
+</div>
+<div>
+<h3 class="font-bold mb-4">Popular Routes</h3>
+<ul class="space-y-2 text-white/58"><li>Blackpool to Manchester Airport</li><li>Blackpool to Liverpool Airport</li><li>Lytham to Manchester Airport</li><li>Poulton to Manchester Airport</li><li>Fleetwood to Liverpool Airport</li><li>View All Prices</li></ul>
+</div>
+<div>
+<h3 class="font-bold mb-4">Contact</h3>
+<ul class="space-y-3 text-white/70"><li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><span>07721 070370</span></li><li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><span>WhatsApp Us</span></li><li class="flex gap-3"><svg class="clean-icon"><use href="#i-mail"></use></svg><span>Book@evexec.co.uk</span></li><li class="flex gap-3"><svg class="clean-icon"><use href="#i-map"></use></svg><span>Blackpool, Lancashire, FY Postcode Areas</span></li></ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto footer-line mt-10 pt-5 flex justify-between text-xs text-white/45">
+<p>© 2024 EV Exec. All rights reserved.</p>
+<p>Privacy Policy    |    Terms &amp; Conditions</p>
+</div>
+</footer>
+<script>
+(function(){
+  const header = document.getElementById('siteHeader');
+  const glow = document.querySelector('.cursor-glow');
+
+  function onScroll(){
+    if(header){
+      header.classList.toggle('scrolled', window.scrollY > 24);
+    }
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, {passive:true});
+
+  const items = document.querySelectorAll('.reveal, .image-reveal');
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach((entry)=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, {threshold:0.14, rootMargin:'0px 0px -60px 0px'});
+
+  items.forEach((item, index)=>{
+    if(index % 3 === 1) item.classList.add('reveal-delay-1');
+    if(index % 3 === 2) item.classList.add('reveal-delay-2');
+    observer.observe(item);
+  });
+
+  if(glow && window.matchMedia('(pointer:fine)').matches){
+    window.addEventListener('mousemove', (e)=>{
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    }, {passive:true});
+  }
+})();
+</script>
+</body>
+</html>
