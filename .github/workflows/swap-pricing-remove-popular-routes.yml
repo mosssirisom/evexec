@@ -1,0 +1,129 @@
+name: Swap pricing and remove popular routes
+
+on:
+  push:
+    paths:
+      - .github/workflows/swap-pricing-remove-popular-routes.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-html:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Swap transparent pricing into popular routes position and remove popular routes
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          def find_section_bounds(html, marker):
+              m = re.search(re.escape(marker), html, flags=re.I)
+              if not m:
+                  return None
+              start = html.rfind('<section', 0, m.start())
+              end = html.find('</section>', m.end())
+              if start == -1 or end == -1:
+                  return None
+              end += len('</section>')
+              return start, end
+
+          def find_container_bounds(html, marker, class_hint=None):
+              m = re.search(re.escape(marker), html, flags=re.I)
+              if not m:
+                  return None
+              # Prefer an enclosing card/list/container if present, otherwise nearest block element.
+              starts = []
+              for tag in ['<div', '<section', '<article']:
+                  starts.append(html.rfind(tag, 0, m.start()))
+              start = max(starts)
+              if start == -1:
+                  return None
+              # Walk forward counting divs very lightly for the common HTML structure.
+              tag_match = re.match(r'<(div|section|article)\b', html[start:], flags=re.I)
+              if not tag_match:
+                  return None
+              tag = tag_match.group(1).lower()
+              close = f'</{tag}>'
+              end = html.find(close, m.end())
+              if end == -1:
+                  return None
+              end += len(close)
+              return start, end
+
+          def update_file(path):
+              if not path.exists():
+                  return False
+
+              html = path.read_text(encoding='utf-8', errors='ignore')
+              original = html
+
+              popular = find_section_bounds(html, 'Popular Airport Routes')
+              pricing = find_section_bounds(html, 'Transparent Fixed Pricing')
+              if not pricing:
+                  pricing = find_section_bounds(html, 'Full Airport Price List')
+              if not pricing:
+                  pricing = find_section_bounds(html, 'Transparent fixed pricing')
+
+              if popular and pricing and popular != pricing:
+                  ps, pe = popular
+                  ts, te = pricing
+                  pricing_html = html[ts:te]
+
+                  # Remove any popular-route heading inside the pricing replacement if copied accidentally.
+                  if ps < ts:
+                      html = html[:ps] + pricing_html + html[pe:ts] + html[te:]
+                  else:
+                      html = html[:ts] + html[te:ps] + pricing_html + html[pe:]
+
+              else:
+                  # Fallback for pages where popular routes and transparent pricing are inside one larger section.
+                  pop_match = re.search(r'Popular\s+Airport\s+Routes', html, flags=re.I)
+                  price_match = re.search(r'(Transparent\s+Fixed\s+Pricing|Full\s+Airport\s+Price\s+List|Transparent\s+fixed\s+pricing)', html, flags=re.I)
+                  if pop_match and price_match and pop_match.start() < price_match.start():
+                      # Remove only the popular routes subsection from its heading up to the pricing list heading.
+                      # Start from the nearest wrapper before the Popular heading.
+                      start_candidates = [html.rfind('<section', 0, pop_match.start()), html.rfind('<div', 0, pop_match.start())]
+                      start = max(start_candidates)
+                      if start == -1:
+                          start = pop_match.start()
+                      html = html[:start] + html[price_match.start():]
+
+              # Clean up nav links/buttons pointing to popular airport routes if they exist.
+              html = re.sub(r'<a\b[^>]*href=["\']#popular-routes["\'][^>]*>.*?</a>', '', html, flags=re.I|re.S)
+              html = re.sub(r'\s*<li>\s*<a\b[^>]*href=["\']#popular-routes["\'][^>]*>.*?</a>\s*</li>', '', html, flags=re.I|re.S)
+
+              if 'Popular Airport Routes' in html:
+                  print('Warning: Popular Airport Routes text still present after patch.')
+
+              if html != original:
+                  path.write_text(html, encoding='utf-8')
+                  print(f'Updated {path}')
+                  return True
+              print(f'No changes needed for {path}')
+              return False
+
+          changed = False
+          for p in [Path('index.html'), Path('Index.html')]:
+              changed = update_file(p) or changed
+
+          if not changed:
+              raise SystemExit('No changes made. Could not find the relevant sections.')
+          PY
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Swap transparent pricing and remove popular airport routes"
+          git push
