@@ -2,9 +2,6 @@ name: Fix airport route image references
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - .github/workflows/fix-airport-images.yml
 
 permissions:
   contents: write
@@ -15,75 +12,70 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Patch only airport route image paths
+      - name: Patch airport card image paths only
         run: |
           python <<'PY'
           from pathlib import Path
+          import re
 
-          files = [Path('index.html'), Path('Index.html')]
-
-          replacements = {
-              'EV Exec Website Pics/Manchester Airport.png': './Manchester Airport.png',
-              'EV Exec Website Pics/Liverpool Airport.png': './Liverpool Airport.png',
-              'EV Exec Website Pics/Leeds Bradford Airport.png': './Leeds Bradford Airport.png',
-              'EV Exec Website Pics/Birmingham Airport.png': './Birmingham Airport.png',
-              'EV Exec Website Pics/Newcastle Airport.png': './Newcastle Airport.png',
-              'assets/images/manchester-airport.jpg': './Manchester Airport.png',
-              'assets/images/liverpool-airport.jpg': './Liverpool Airport.png',
-              'assets/images/leeds-bradford-airport.jpg': './Leeds Bradford Airport.png',
-              'assets/images/birmingham-airport.jpg': './Birmingham Airport.png',
-              'assets/images/newcastle-airport.jpg': './Newcastle Airport.png',
-              'assets/images/manchester-airport.png': './Manchester Airport.png',
-              'assets/images/liverpool-airport.png': './Liverpool Airport.png',
-              'assets/images/leeds-bradford-airport.png': './Leeds Bradford Airport.png',
-              'assets/images/birmingham-airport.png': './Birmingham Airport.png',
-              'assets/images/newcastle-airport.png': './Newcastle Airport.png',
+          route_images = {
+              'Manchester Airport': ('./Manchester Airport.png', 'Manchester Airport EV Exec Tesla transfer'),
+              'Liverpool Airport': ('./Liverpool Airport.png', 'Liverpool Airport EV Exec Tesla transfer'),
+              'Leeds Bradford Airport': ('./Leeds Bradford Airport.png', 'Leeds Bradford Airport EV Exec Tesla transfer'),
+              'Birmingham Airport': ('./Birmingham Airport.png', 'Birmingham Airport EV Exec Tesla transfer'),
+              'Newcastle Airport': ('./Newcastle Airport.png', 'Newcastle Airport EV Exec Tesla transfer'),
           }
 
-          alt_replacements = {
-              'src="./Manchester Airport.png" alt="Manchester Airport"': 'src="./Manchester Airport.png" alt="Manchester Airport EV Exec Tesla transfer"',
-              'src="./Liverpool Airport.png" alt="Liverpool Airport"': 'src="./Liverpool Airport.png" alt="Liverpool Airport EV Exec Tesla transfer"',
-              'src="./Leeds Bradford Airport.png" alt="Leeds Bradford Airport"': 'src="./Leeds Bradford Airport.png" alt="Leeds Bradford Airport EV Exec Tesla transfer"',
-              'src="./Birmingham Airport.png" alt="Birmingham Airport"': 'src="./Birmingham Airport.png" alt="Birmingham Airport EV Exec Tesla transfer"',
-              'src="./Newcastle Airport.png" alt="Newcastle Airport"': 'src="./Newcastle Airport.png" alt="Newcastle Airport EV Exec Tesla transfer"',
-          }
+          def patch_by_title(html, title, src, alt):
+              pos = html.find(title)
+              if pos == -1:
+                  return html
+              start = max(0, pos - 3000)
+              chunk = html[start:pos]
+              imgs = list(re.finditer(r'<img\b[^>]*>', chunk, flags=re.I|re.S))
+              if not imgs:
+                  return html
+              m = imgs[-1]
+              abs_start = start + m.start()
+              abs_end = start + m.end()
+              tag = html[abs_start:abs_end]
+              tag = re.sub(r'\bsrc\s*=\s*(["\']).*?\1', f'src="{src}"', tag, count=1, flags=re.I|re.S)
+              if re.search(r'\balt\s*=', tag, flags=re.I):
+                  tag = re.sub(r'\balt\s*=\s*(["\']).*?\1', f'alt="{alt}"', tag, count=1, flags=re.I|re.S)
+              else:
+                  tag = tag[:-1] + f' alt="{alt}">'
+              return html[:abs_start] + tag + html[abs_end:]
 
           touched = False
-          for file_path in files:
-              if not file_path.exists():
+          for path in [Path('index.html'), Path('Index.html')]:
+              if not path.exists():
                   continue
-
-              html = file_path.read_text(encoding='utf-8', errors='ignore')
+              html = path.read_text(encoding='utf-8', errors='ignore')
               original = html
 
-              for old, new in replacements.items():
-                  html = html.replace(old, new)
+              html = html.replace('assets/images/manchester-airport.jpg', './Manchester Airport.png')
+              html = html.replace('assets/images/liverpool-airport.jpg', './Liverpool Airport.png')
+              html = html.replace('assets/images/leeds-bradford-airport.jpg', './Leeds Bradford Airport.png')
+              html = html.replace('assets/images/birmingham-airport.jpg', './Birmingham Airport.png')
+              html = html.replace('assets/images/newcastle-airport.jpg', './Newcastle Airport.png')
 
-              for old, new in alt_replacements.items():
-                  html = html.replace(old, new)
+              for title, vals in route_images.items():
+                  html = patch_by_title(html, title, vals[0], vals[1])
 
               if html != original:
-                  file_path.write_text(html, encoding='utf-8')
+                  path.write_text(html, encoding='utf-8')
                   touched = True
-                  print(f'Patched {file_path}')
-              else:
-                  print(f'No airport image reference changes needed in {file_path}')
+                  print(f'Patched {path}')
 
           if not touched:
-              print('No changes were required.')
+              raise SystemExit('No changes detected')
           PY
 
-      - name: Commit airport image path fixes
+      - name: Commit fixes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html Index.html || true
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "Fix airport route image references"
-            git push
-          fi
+          git commit -m "Fix airport route image references" || exit 1
+          git push
