@@ -1,0 +1,101 @@
+name: Auto fix airport images
+
+on:
+  push:
+    paths:
+      - .github/workflows/auto-fix-airport-images.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Rename images and patch HTML
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          renames = {
+              'Manchester Airport.png': 'manchester-airport.png',
+              'Liverpool Airport.png': 'liverpool-airport.png',
+              'Leeds Bradford Airport.png': 'leeds-bradford-airport.png',
+              'Birmingham Airport.png': 'birmingham-airport.png',
+              'Newcastle Airport.png': 'newcastle-airport.png',
+          }
+
+          for old, new in renames.items():
+              old_path = Path(old)
+              new_path = Path(new)
+              if old_path.exists() and not new_path.exists():
+                  old_path.rename(new_path)
+                  print(f'Renamed {old} to {new}')
+
+          src_map = {
+              'Manchester Airport.png': 'manchester-airport.png',
+              'Liverpool Airport.png': 'liverpool-airport.png',
+              'Leeds Bradford Airport.png': 'leeds-bradford-airport.png',
+              'Birmingham Airport.png': 'birmingham-airport.png',
+              'Newcastle Airport.png': 'newcastle-airport.png',
+              'assets/images/manchester-airport.jpg': 'manchester-airport.png',
+              'assets/images/liverpool-airport.jpg': 'liverpool-airport.png',
+              'assets/images/leeds-bradford-airport.jpg': 'leeds-bradford-airport.png',
+              'assets/images/birmingham-airport.jpg': 'birmingham-airport.png',
+              'assets/images/newcastle-airport.jpg': 'newcastle-airport.png',
+          }
+
+          alt_map = {
+              'manchester-airport.png': 'Manchester Airport EV Exec Tesla transfer',
+              'liverpool-airport.png': 'Liverpool Airport EV Exec Tesla transfer',
+              'leeds-bradford-airport.png': 'Leeds Bradford Airport EV Exec Tesla transfer',
+              'birmingham-airport.png': 'Birmingham Airport EV Exec Tesla transfer',
+              'newcastle-airport.png': 'Newcastle Airport EV Exec Tesla transfer',
+          }
+
+          def fix_img_tag(tag):
+              for old, new in src_map.items():
+                  if old in tag:
+                      tag = tag.replace(old, new)
+              for file_name, alt in alt_map.items():
+                  if file_name in tag:
+                      if re.search(r'\balt\s*=', tag, flags=re.I):
+                          tag = re.sub(r'\balt\s*=\s*(["\']).*?\1', f'alt="{alt}"', tag, count=1, flags=re.I|re.S)
+                      else:
+                          tag = tag[:-1] + f' alt="{alt}">'
+              return tag
+
+          for html_path in [Path('index.html'), Path('Index.html')]:
+              if not html_path.exists():
+                  continue
+              html = html_path.read_text(encoding='utf-8', errors='ignore')
+              original = html
+
+              for old, new in src_map.items():
+                  html = html.replace('./' + old, './' + new)
+                  html = html.replace('/' + old, './' + new)
+                  html = html.replace(old, new)
+
+              html = re.sub(r'<img\b[^>]*>', lambda m: fix_img_tag(m.group(0)), html, flags=re.I|re.S)
+
+              if html != original:
+                  html_path.write_text(html, encoding='utf-8')
+                  print(f'Patched {html_path}')
+          PY
+
+      - name: Commit result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Fix airport image filenames and references"
+            git push
+          fi
