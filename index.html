@@ -605,7 +605,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <label class="text-xs text-white/60">Email Address
-<input class="input mt-2" id="customerEmail" placeholder="your@email.com" type="email"/>
+<input class="input mt-2" id="customerEmail" placeholder="your@email.com" type="text" inputmode="email" autocomplete="email"/>
 </label>
 
 <label class="text-xs text-white/60">Journey Type
@@ -1308,33 +1308,33 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var origText = btn.textContent;
       btn.textContent = 'Sending…';
 
-      var toAirport = isToAirport();
-      var isRet = valueOf('returnJourney') === 'Yes';
-
-      var payload = {
-        journey_type:      valueOf('journeyType') || 'To Airport',
-        pickup_location:   toAirport ? valueOf('pickup') : null,
-        airport:           valueOf('airport') || null,
-        flight_number:     !toAirport ? valueOf('flightNumber') : null,
-        dropoff_address:   !toAirport ? valueOf('dropoff') : null,
-        travel_date:       valueOf('travelDate') || null,
-        travel_time:       valueOf('travelTime') || null,
-        passengers:        parseInt(valueOf('passengers')) || 1,
-        luggage:           valueOf('luggage') || null,
-        return_journey:    isRet,
-        return_pickup:     isRet ? valueOf('returnPickup') : null,
-        return_airport:    isRet ? valueOf('returnAirport') : null,
-        return_flight:     isRet ? valueOf('returnFlight') : null,
-        return_date:       isRet ? valueOf('returnDate') : null,
-        return_time:       isRet ? valueOf('returnTime') : null,
-        return_destination: isRet ? valueOf('returnDestination') : null,
-        contact_method:    valueOf('contactMethod') || 'WhatsApp',
-        customer_name:     name,
-        customer_phone:    phone,
-        customer_email:    valueOf('customerEmail') || null
-      };
-
       try {
+        var toAirport = isToAirport();
+        var isRet = valueOf('returnJourney') === 'Yes';
+
+        var payload = {
+          journey_type:      valueOf('journeyType') || 'To Airport',
+          pickup_location:   toAirport ? valueOf('pickup') : null,
+          airport:           valueOf('airport') || null,
+          flight_number:     !toAirport ? valueOf('flightNumber') : null,
+          dropoff_address:   !toAirport ? valueOf('dropoff') : null,
+          travel_date:       valueOf('travelDate') || null,
+          travel_time:       valueOf('travelTime') || null,
+          passengers:        parseInt(valueOf('passengers')) || 1,
+          luggage:           valueOf('luggage') || null,
+          return_journey:    isRet,
+          return_pickup:     isRet ? valueOf('returnPickup') : null,
+          return_airport:    isRet ? valueOf('returnAirport') : null,
+          return_flight:     isRet ? valueOf('returnFlight') : null,
+          return_date:       isRet ? valueOf('returnDate') : null,
+          return_time:       isRet ? valueOf('returnTime') : null,
+          return_destination: isRet ? valueOf('returnDestination') : null,
+          contact_method:    valueOf('contactMethod') || 'WhatsApp',
+          customer_name:     name,
+          customer_phone:    phone,
+          customer_email:    valueOf('customerEmail') || null
+        };
+
         var res = await fetch('/api/booking/create', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
