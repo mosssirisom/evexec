@@ -266,7 +266,14 @@ body{
     if (!value) return;
     var div = document.createElement('div');
     div.className = 'detail-row';
-    div.innerHTML = '<span class="detail-label">' + label + '</span><span class="detail-value">' + value + '</span>';
+    var labelSpan = document.createElement('span');
+    labelSpan.className = 'detail-label';
+    labelSpan.textContent = label;
+    var valueSpan = document.createElement('span');
+    valueSpan.className = 'detail-value';
+    valueSpan.textContent = String(value);
+    div.appendChild(labelSpan);
+    div.appendChild(valueSpan);
     document.getElementById('journeyDetails').appendChild(div);
   }
 

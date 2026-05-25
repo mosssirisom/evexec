@@ -23,9 +23,10 @@ function verifyStripeSignature(rawBody, sigHeader, secret) {
   }
 
   const payload  = `${timestamp}.${rawBody.toString('utf8')}`;
-  const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-
-  if (!crypto.timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(v1, 'hex'))) {
+  const expected    = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  const expectedBuf = Buffer.from(expected, 'hex');
+  const v1Buf       = Buffer.from(v1, 'hex');
+  if (expectedBuf.length !== v1Buf.length || !crypto.timingSafeEqual(expectedBuf, v1Buf)) {
     throw new Error('Signature mismatch');
   }
   return JSON.parse(rawBody.toString('utf8'));
