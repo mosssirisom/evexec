@@ -18,8 +18,54 @@
 <meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" name="twitter:title"/>
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TaxiService",
+  "@id": "https://evexec.co.uk/#taxiservice",
+  "name": "EV Exec",
+  "url": "https://evexec.co.uk/",
+  "description": "Premium all-electric Tesla airport transfers across Blackpool, Fylde and Wyre.",
+  "telephone": "+447721070370",
+  "email": "book@evexec.co.uk",
+  "priceRange": "££",
+  "image": "https://evexec.co.uk/public/images/ev-exec-image-1.jpg",
+  "areaServed": [
+    {"@type": "AdministrativeArea","name": "Blackpool"},
+    {"@type": "AdministrativeArea","name": "Fylde"},
+    {"@type": "AdministrativeArea","name": "Wyre"},
+    {"@type": "Place","name": "Lytham St Annes"},
+    {"@type": "Place","name": "Poulton-le-Fylde"},
+    {"@type": "Place","name": "Fleetwood"},
+    {"@type": "Place","name": "Thornton-Cleveleys"},
+    {"@type": "Place","name": "Preston"}
+  ],
+  "serviceType": [
+    "Airport Transfer",
+    "Executive Transfer",
+    "Private Hire",
+    "Corporate Travel",
+    "Electric Chauffeur Service"
+  ],
+  "provider": {
+    "@type": "LocalBusiness",
+    "name": "EV Exec",
+    "url": "https://evexec.co.uk/",
+    "telephone": "+447721070370",
+    "email": "book@evexec.co.uk",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Blackpool",
+      "addressRegion": "Lancashire",
+      "addressCountry": "GB"
+    }
+  }
+}
+</script>
 
 <style>
 :root{
@@ -32,6 +78,10 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+::selection{
+  background:#d5a538;
+  color:#06101c;
+}
 body{
   margin:0;overflow-x:hidden;
   background:
@@ -41,7 +91,9 @@ body{
   background-attachment:fixed;
   color:#fff;
   font-family:Inter,Arial,sans-serif;
+  overflow-x:hidden;
 }
+img{max-width:100%}
 .serif{font-family:'Cormorant Garamond',serif}
 .gold{color:var(--gold)}
 .glass{
@@ -334,9 +386,26 @@ main,header,footer{position:relative;z-index:1}
 #formMsg.success{color:#4ade80}
 @media(max-width:900px){.hero{min-height:auto;background-position:60% center}}
 @media(max-width:768px){
+  body{
+    padding-bottom:105px;
+  }
+  #siteHeader{
+    padding:12px 14px;
+  }
+  #siteHeader img{
+    width:52px!important;
+    height:52px!important;
+  }
+  #siteHeader .text-2xl{
+    font-size:28px;
+  }
+  #siteHeader .text-\[10px\]{
+    font-size:9px;
+    letter-spacing:.18em;
+  }
   .cursor-glow{display:none}
   .reveal,.image-reveal{transition-duration:.55s}
-  .copy-grid,.comfort-grid,.booking-steps{grid-template-columns:1fr}
+  .copy-grid,.comfort-grid,.booking-steps,.metrics-grid,.calculator-card{grid-template-columns:1fr}
   .copy-card{padding:24px}
   .copy-section{padding:42px 18px}
   .price-table thead{display:none}
@@ -449,7 +518,7 @@ main,header,footer{position:relative;z-index:1}
 <header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4" id="siteHeader">
 <nav class="max-w-7xl mx-auto flex items-center justify-between">
 <a class="flex items-center gap-3" href="#">
-<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
+<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg" width="64" height="64" decoding="async"/>
 <div>
 <div class="text-2xl font-black tracking-wide">EV EXEC</div>
 <div class="text-[10px] uppercase tracking-[.22em] text-white/60">Premium Airport Transfers</div>
@@ -477,6 +546,7 @@ main,header,footer{position:relative;z-index:1}
 <a href="#about">Story</a>
 <a href="#reviews">Reviews</a>
 <a href="#contact">Contact</a>
+<a href="tel:07721070370">Book Now</a>
 </div>
 </nav>
 </header>
@@ -484,7 +554,7 @@ main,header,footer{position:relative;z-index:1}
 <main>
 <section class="hero px-6 pt-32 pb-12">
 <div class="max-w-7xl mx-auto">
-<div class="max-w-[540px] pt-8">
+<div class="max-w-[560px] pt-8">
 <div class="inline-flex rounded-full bg-black/35 border border-white/10 px-4 py-1.5 text-xs uppercase tracking-[.18em] text-[#d5a538] font-bold mb-5">
 Premium. Reliable. Local.
 </div>
@@ -505,9 +575,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </div>
 
 <div class="mt-8 flex gap-4">
-<a class="btn-gold rounded-md px-7 py-4 font-bold" href="#quote">Book Now</a>
-<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold" href="#prices">View Prices</a>
+<a class="btn-gold rounded-md px-7 py-4 font-bold" href="#quote">⚡ Book Your Transfer</a>
+<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold btn-dark" href="https://wa.me/447721070370" target="_blank" rel="noopener">💬 WhatsApp Us</a>
 </div>
+
+<p class="mt-4 text-sm text-white/70">⚠ Limited daily availability to maintain our premium service standards.</p>
 
 <div class="mt-7 flex flex-wrap gap-6">
 <div class="icon-pill"><svg class="clean-icon"><use href="#i-pound"></use></svg><span>Fixed<br/>Prices</span></div>
@@ -739,7 +811,7 @@ Send Booking Request
 <div class="max-w-7xl mx-auto mb-9">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Onboard Comfort</p>
 <h2 class="serif text-4xl md:text-5xl mt-3">Premium Comfort, Every Mile</h2>
-<p class="text-white/65 mt-3 text-lg">Your Tesla Model Y, appointed for first-class travel.</p>
+<p class="text-white/65 mt-3 text-lg">Your Tesla Model Y, appointed for professional airport travel.</p>
 </div>
 
 <div class="comfort-grid">
@@ -888,6 +960,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div>
 <h2 class="serif text-4xl">Built on Trust. <span class="gold">Driven by Excellence.</span></h2>
 <p class="text-white/68 mt-4 leading-relaxed">An independent, owner-operated service — where every journey matters.</p>
+<p class="text-white/55 mt-3 leading-relaxed">You deal directly with the person driving you — no call centre, no anonymous subcontracting, just a professional local service.</p>
 
 <div class="grid md:grid-cols-3 gap-4 mt-5">
 <div><h3 class="gold font-bold">Professional</h3><p class="text-white/58 mt-1">Smart, polished, warm — every single time.</p></div>
@@ -998,7 +1071,35 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
 <div class="flex flex-col sm:flex-row gap-4">
 <a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Now</a>
-<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center" href="tel:07721070370">Call: 07721 070370</a>
+<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="tel:07721070370">Call: 07721 070370</a>
+</div>
+</div>
+</section>
+
+<section class="px-6 py-8 reveal" aria-label="EV Exec location map">
+<div class="max-w-7xl mx-auto">
+<div class="glass rounded-lg p-7 md:p-9">
+<div class="grid md:grid-cols-[.8fr_1.2fr] gap-8 items-center">
+<div>
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Based Locally</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Serving Blackpool, Fylde & Wyre.</h2>
+<p class="text-white/62 mt-4 leading-relaxed">Based on the Fylde Coast, EV Exec provides fixed-price airport transfers to Manchester, Liverpool, Leeds Bradford, Birmingham, Newcastle and other major UK airports.</p>
+<div class="mt-6 flex flex-col sm:flex-row gap-4">
+<a class="btn-gold rounded-md px-7 py-4 font-bold text-center" href="#quote">Request a Quote</a>
+<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold text-center btn-dark" href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp</a>
+</div>
+</div>
+
+<div class="map-frame">
+<iframe
+  title="EV Exec coverage map - Blackpool, Fylde and Wyre"
+  src="https://www.google.com/maps?q=Blackpool%2C%20Lancashire%2C%20UK&output=embed"
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+  allowfullscreen>
+</iframe>
+</div>
+</div>
 </div>
 </div>
 </section>
@@ -1051,9 +1152,9 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <h3 class="font-bold mb-4">Contact</h3>
 <ul class="space-y-3 text-white/70">
 <li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><a href="tel:07721070370">07721 070370</a></li>
-<li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><a href="https://wa.me/447721070370">WhatsApp Us</a></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp Us</a></li>
 <li class="flex gap-3"><svg class="clean-icon"><use href="#i-mail"></use></svg><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a></li>
-<li class="flex gap-3"><svg class="clean-icon"><use href="#i-map"></use></svg><span>FY Postcode Areas</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-map"></use></svg><span>Blackpool, Fylde & Wyre</span></li>
 </ul>
 </div>
 </div>
@@ -1170,6 +1271,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
   if(returnJourney){
     returnJourney.addEventListener('change', updateReturnFields);
+    updateReturnFields();
   }
 
   // Helpers
