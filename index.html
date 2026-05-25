@@ -654,13 +654,14 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <button class="btn-gold md:col-span-3 rounded-md py-4 text-center font-bold" type="submit">
-Send Booking Request on WhatsApp
+Send Booking Request
 </button>
 
 </form>
 
 <p id="formMsg"></p>
 <p class="text-center text-white/50 mt-3 text-sm">No hidden fees · Fixed prices · Professional service</p>
+<p class="text-center mt-2 text-sm text-white/40">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
 </section>
 </div>
 </section>
@@ -1071,9 +1072,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
 <script>
 (function(){
-  var SUPABASE_URL = 'https://yoltkmhtxwluqxxpewbl.supabase.co';
-  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo';
-
   // Header scroll
   var header = document.getElementById('siteHeader');
   function onScroll(){
@@ -1190,7 +1188,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   // Form submit
   var bookingForm = document.getElementById('bookingForm');
   if(bookingForm){
-    bookingForm.addEventListener('submit', function(e){
+    bookingForm.addEventListener('submit', async function(e){
       e.preventDefault();
 
       var name  = valueOf('customerName');
@@ -1203,89 +1201,58 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         return;
       }
 
+      var btn = bookingForm.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      var origText = btn.textContent;
+      btn.textContent = 'Sending…';
+
       var toAirport = isToAirport();
-      var isReturn  = valueOf('returnJourney') === 'Yes';
-      var returnIsFromAirport = toAirport;
+      var isRet = valueOf('returnJourney') === 'Yes';
 
-      // Build WhatsApp message
-      var msg = 'Hello EV Exec, I would like to request an airport transfer.\n\n';
-      msg += 'Name: ' + name + '\n';
-      msg += 'Phone: ' + phone + '\n';
-      if(valueOf('customerEmail')) msg += 'Email: ' + valueOf('customerEmail') + '\n';
-      msg += '\nJourney Type: ' + (valueOf('journeyType') || 'To Airport') + '\n';
-
-      if(toAirport){
-        msg += 'Pickup Location: ' + (valueOf('pickup') || 'Not provided') + '\n';
-        msg += 'Airport: ' + (valueOf('airport') || 'Not provided') + '\n';
-      } else {
-        msg += 'Airport: ' + (valueOf('airport') || 'Not provided') + '\n';
-        msg += 'Flight Number: ' + (valueOf('flightNumber') || 'Not provided') + '\n';
-        msg += 'Drop-off / Destination: ' + (valueOf('dropoff') || 'Not provided') + '\n';
-      }
-
-      msg += 'Travel Date: ' + (valueOf('travelDate') || 'Not provided') + '\n';
-      msg += 'Travel Time: ' + (valueOf('travelTime') || 'Not provided') + '\n';
-      msg += 'Passengers: ' + (valueOf('passengers') || '1 Passenger') + '\n';
-      msg += 'Luggage: ' + (valueOf('luggage') || 'Not provided') + '\n';
-      msg += 'Return Journey: ' + (isReturn ? 'Yes' : 'No') + '\n';
-      msg += 'Preferred Contact: ' + (valueOf('contactMethod') || 'WhatsApp');
-
-      if(isReturn){
-        msg += '\n\nReturn Details:\n';
-        if(returnIsFromAirport){
-          msg += 'Return Airport: ' + (valueOf('returnAirport') || 'Not provided') + '\n';
-          msg += 'Return Flight #: ' + (valueOf('returnFlight') || 'Not provided') + '\n';
-          msg += 'Return Landing Date: ' + (valueOf('returnDate') || 'Not provided') + '\n';
-          msg += 'Return Landing Time: ' + (valueOf('returnTime') || 'Not provided') + '\n';
-          msg += 'Return Drop-off: ' + (valueOf('returnDestination') || 'Not provided');
-        } else {
-          msg += 'Return Pickup: ' + (valueOf('returnPickup') || 'Not provided') + '\n';
-          msg += 'Return Airport: ' + (valueOf('returnAirport') || 'Not provided') + '\n';
-          msg += 'Return Date: ' + (valueOf('returnDate') || 'Not provided') + '\n';
-          msg += 'Return Time: ' + (valueOf('returnTime') || 'Not provided');
-        }
-      }
-
-      // Supabase lead capture (fire-and-forget)
-      var passInt = parseInt(valueOf('passengers')) || 1;
       var payload = {
-        customer_name:        name,
-        phone:                phone,
-        email:                valueOf('customerEmail') || null,
-        journey_type:         valueOf('journeyType') || 'To Airport',
-        airport:              valueOf('airport') || null,
-        pickup_location:      toAirport ? (valueOf('pickup') || null) : null,
-        destination:          toAirport ? null : (valueOf('dropoff') || null),
-        flight_number:        !toAirport ? (valueOf('flightNumber') || null) : null,
-        pickup_date:          valueOf('travelDate') || null,
-        pickup_time:          valueOf('travelTime') || null,
-        passengers:           passInt,
-        luggage:              valueOf('luggage') || null,
-        return_required:      isReturn,
-        return_airport:       isReturn ? (valueOf('returnAirport') || null) : null,
-        return_flight_number: (isReturn && returnIsFromAirport) ? (valueOf('returnFlight') || null) : null,
-        return_pickup:        (isReturn && !returnIsFromAirport) ? (valueOf('returnPickup') || null) : null,
-        return_destination:   (isReturn && returnIsFromAirport) ? (valueOf('returnDestination') || null) : null,
-        return_date:          isReturn ? (valueOf('returnDate') || null) : null,
-        return_time:          isReturn ? (valueOf('returnTime') || null) : null,
-        contact_method:       valueOf('contactMethod') || 'WhatsApp'
+        journey_type:      valueOf('journeyType') || 'To Airport',
+        pickup_location:   toAirport ? valueOf('pickup') : null,
+        airport:           valueOf('airport') || null,
+        flight_number:     !toAirport ? valueOf('flightNumber') : null,
+        dropoff_address:   !toAirport ? valueOf('dropoff') : null,
+        travel_date:       valueOf('travelDate') || null,
+        travel_time:       valueOf('travelTime') || null,
+        passengers:        parseInt(valueOf('passengers')) || 1,
+        luggage:           valueOf('luggage') || null,
+        return_journey:    isRet,
+        return_pickup:     isRet ? valueOf('returnPickup') : null,
+        return_airport:    isRet ? valueOf('returnAirport') : null,
+        return_flight:     isRet ? valueOf('returnFlight') : null,
+        return_date:       isRet ? valueOf('returnDate') : null,
+        return_time:       isRet ? valueOf('returnTime') : null,
+        return_destination: isRet ? valueOf('returnDestination') : null,
+        contact_method:    valueOf('contactMethod') || 'WhatsApp',
+        customer_name:     name,
+        customer_phone:    phone,
+        customer_email:    valueOf('customerEmail') || null
       };
 
-      fetch(SUPABASE_URL + '/rest/v1/quote_requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(payload)
-      }).catch(function(){});
-
-      sessionStorage.setItem('evexec_submitted', Date.now().toString());
-
-      showMsg('Request received — opening WhatsApp now.', 'success');
-      window.open('https://wa.me/447721070370?text=' + encodeURIComponent(msg), '_blank');
+      try {
+        var res = await fetch('/api/booking/create', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(payload)
+        });
+        var data = await res.json();
+        if(res.ok && data.success){
+          showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
+          bookingForm.reset();
+          updateMainFields();
+          sessionStorage.setItem('evexec_submitted', Date.now().toString());
+        } else {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+      } catch(err){
+        showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = origText;
+      }
     });
   }
   // CO2 calculator

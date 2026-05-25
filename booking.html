@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Your Booking | EV Exec Premium Airport Transfers</title>
+<meta name="robots" content="noindex"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{
+  --bg:#020813;
+  --gold:#d5a538;
+  --line:rgba(255,255,255,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at 65% 5%, rgba(48,99,160,.22), transparent 30%),
+    radial-gradient(circle at 25% 20%, rgba(213,165,56,.08), transparent 28%),
+    #020813;
+  background-attachment:fixed;
+  color:#fff;
+  font-family:Inter,Arial,sans-serif;
+  min-height:100vh;
+}
+.serif{font-family:'Cormorant Garamond',serif}
+.gold{color:var(--gold)}
+.glass{
+  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  border:1px solid var(--line);
+  box-shadow:0 22px 70px rgba(0,0,0,.35);
+  backdrop-filter:blur(18px);
+}
+.btn-gold{
+  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
+  color:#06101c;
+  box-shadow:0 16px 38px rgba(213,165,56,.18);
+  transition:all .28s ease;
+  border:none;cursor:pointer;
+}
+.btn-gold:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed}
+.btn-outline{
+  background:transparent;
+  border:1px solid rgba(213,165,56,.65);
+  color:#fff;
+  transition:all .28s ease;cursor:pointer;
+}
+.btn-outline:hover:not(:disabled){background:rgba(213,165,56,.08);border-color:var(--gold)}
+.btn-outline:disabled{opacity:.5;cursor:not-allowed}
+.detail-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.detail-row:last-child{border-bottom:0}
+.detail-label{color:rgba(255,255,255,.45);font-size:12px;text-transform:uppercase;letter-spacing:.12em;width:110px;flex-shrink:0;padding-top:2px}
+.detail-value{color:rgba(255,255,255,.88)}
+.status-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:999px;padding:4px 14px;font-size:12px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.status-pending{background:rgba(234,179,8,.12);color:#eab308;border:1px solid rgba(234,179,8,.30)}
+.status-accepted{background:rgba(59,130,246,.12);color:#60a5fa;border:1px solid rgba(59,130,246,.30)}
+.status-confirmed{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.30)}
+.status-rejected{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.30)}
+.skeleton{
+  background:linear-gradient(90deg,rgba(255,255,255,.04) 25%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.04) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:6px;
+}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.clean-icon{width:20px;height:20px;color:var(--gold);stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+@media(max-width:640px){
+  .payment-grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+
+<body>
+
+<!-- Header -->
+<header class="sticky top-0 z-50 px-4 md:px-6 py-4 glass" style="backdrop-filter:blur(22px);background:rgba(2,8,19,.82);border-bottom:1px solid rgba(255,255,255,.10);box-shadow:0 4px 24px rgba(0,0,0,.35);">
+<div class="max-w-3xl mx-auto flex items-center justify-between">
+  <a class="flex items-center gap-3" href="./index.html">
+    <img alt="EV Exec logo" class="w-12 h-12 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
+    <div>
+      <div class="text-xl font-black tracking-wide">EV EXEC</div>
+      <div class="text-[10px] uppercase tracking-[.20em] text-white/55">Premium Airport Transfers</div>
+    </div>
+  </a>
+  <a class="btn-outline rounded-md px-5 py-2.5 text-sm font-bold no-underline" href="./index.html">← Home</a>
+</div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 md:px-6 py-10">
+
+<!-- Loading state -->
+<div id="stateLoading">
+  <div class="skeleton h-6 w-40 mb-3"></div>
+  <div class="skeleton h-10 w-72 mb-8"></div>
+  <div class="glass rounded-xl p-7">
+    <div class="skeleton h-5 w-56 mb-4"></div>
+    <div class="skeleton h-4 w-full mb-3"></div>
+    <div class="skeleton h-4 w-3/4 mb-3"></div>
+    <div class="skeleton h-4 w-1/2"></div>
+  </div>
+</div>
+
+<!-- Error state -->
+<div id="stateError" class="hidden">
+  <h1 class="serif text-4xl font-bold mb-3">Booking <span class="gold">Not Found</span></h1>
+  <p class="text-white/65 mb-6" id="errorMsg">We couldn't load your booking details.</p>
+  <a class="btn-gold rounded-md px-7 py-3.5 font-bold inline-block" href="./index.html">← Back to Home</a>
+</div>
+
+<!-- Booking content -->
+<div id="stateContent" class="hidden">
+
+  <div class="mb-7">
+    <div class="flex items-center gap-3 mb-2">
+      <span class="text-xs uppercase tracking-[.18em] text-white/45 font-bold">Your Booking</span>
+      <span id="statusPill" class="status-pill status-pending">Pending</span>
+    </div>
+    <h1 class="serif text-4xl md:text-5xl font-bold leading-tight" id="bookingHeadline">Your Transfer</h1>
+    <p class="text-white/55 mt-2 text-sm" id="bookingSubline"></p>
+  </div>
+
+  <!-- Journey summary -->
+  <div class="glass rounded-xl p-6 mb-5">
+    <p class="text-[#d5a538] text-xs uppercase tracking-[.18em] font-bold mb-4">Journey Details</p>
+    <div id="journeyDetails"></div>
+    <div id="priceDisplay" class="hidden mt-5 pt-5 border-t border-white/10">
+      <div class="flex items-baseline gap-2">
+        <span class="serif text-5xl font-bold gold" id="priceAmount"></span>
+        <span class="text-white/50 text-sm">all-inclusive · fixed price</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending state -->
+  <div id="panelPending" class="hidden glass rounded-xl p-6 mb-5">
+    <div class="flex gap-4">
+      <div class="w-10 h-10 rounded-full bg-yellow-500/15 border border-yellow-500/30 flex items-center justify-center flex-shrink-0 text-yellow-400 font-bold text-lg">!</div>
+      <div>
+        <h2 class="font-bold text-lg mb-1">Awaiting Confirmation</h2>
+        <p class="text-white/65 leading-relaxed">Your request has been received. EV Exec will review availability and get back to you shortly with confirmation and payment options.</p>
+        <p class="text-white/45 text-sm mt-3">Need to speak with us? <a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accepted: payment options -->
+  <div id="panelPayment" class="hidden">
+    <p class="text-white/65 mb-5 leading-relaxed">Your transfer has been accepted. Please choose how you'd like to pay:</p>
+    <div class="grid gap-4 payment-grid" style="grid-template-columns:1fr 1fr">
+
+      <div class="glass rounded-xl p-6 flex flex-col gap-4">
+        <div>
+          <h2 class="font-bold text-xl mb-1">Pay by Card</h2>
+          <p class="text-white/55 text-sm leading-relaxed">Secure online payment via Stripe. Visa, Mastercard and more accepted. Confirmation sent immediately.</p>
+        </div>
+        <button class="btn-gold rounded-md py-4 font-bold text-sm w-full" id="btnCard" onclick="payByCard()">Pay by Card Online</button>
+        <p id="cardError" class="text-red-400 text-xs hidden"></p>
+      </div>
+
+      <div class="glass rounded-xl p-6 flex flex-col gap-4">
+        <div>
+          <h2 class="font-bold text-xl mb-1">Pay by Cash</h2>
+          <p class="text-white/55 text-sm leading-relaxed">Pay in cash on the day of travel. Your booking will be confirmed immediately.</p>
+        </div>
+        <button class="btn-outline rounded-md py-4 font-bold text-sm w-full" id="btnCash" onclick="payByCash()">Pay Cash on the Day</button>
+        <p id="cashError" class="text-red-400 text-xs hidden"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment processing (Stripe redirect return before webhook fires) -->
+  <div id="panelPaymentPending" class="hidden glass rounded-xl p-6 mb-5">
+    <div class="flex gap-4">
+      <div class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center flex-shrink-0 text-blue-400 font-bold text-lg">↻</div>
+      <div>
+        <h2 class="font-bold text-lg mb-1">Payment Received</h2>
+        <p class="text-white/65 leading-relaxed">Your payment has been received and your booking is being confirmed. You'll receive a confirmation via SMS or email shortly.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmed state -->
+  <div id="panelConfirmed" class="hidden glass rounded-xl p-6 mb-5" style="border-color:rgba(34,197,94,.25);background:linear-gradient(180deg,rgba(34,197,94,.05),rgba(255,255,255,.025))">
+    <div class="flex gap-4">
+      <div class="w-10 h-10 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center flex-shrink-0 text-green-400 font-bold text-lg">✓</div>
+      <div>
+        <h2 class="font-bold text-lg mb-1">Booking Confirmed</h2>
+        <p class="text-white/65 leading-relaxed" id="confirmedMsg">Your transfer is confirmed. We'll see you on the day!</p>
+        <p class="text-white/45 text-sm mt-3">Any questions? <a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment cancelled banner -->
+  <div id="panelCancelled" class="hidden glass rounded-xl p-5 mb-5" style="border-color:rgba(234,179,8,.22)">
+    <p class="text-yellow-300/80 text-sm"><strong>Payment cancelled.</strong> Your booking is still accepted — you can choose a payment method above when you're ready.</p>
+  </div>
+
+  <!-- Rejected state -->
+  <div id="panelRejected" class="hidden glass rounded-xl p-6 mb-5" style="border-color:rgba(239,68,68,.22)">
+    <div class="flex gap-4">
+      <div class="w-10 h-10 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center flex-shrink-0 text-red-400 font-bold text-lg">✕</div>
+      <div>
+        <h2 class="font-bold text-lg mb-1">Journey Unavailable</h2>
+        <p class="text-white/65 leading-relaxed">Sorry, EV Exec is unable to cover this journey. No payment has been taken. Please get in touch if you have any questions.</p>
+        <p class="text-white/45 text-sm mt-3"><a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">07721 070370</a> · <a class="gold" href="./index.html">Request another transfer</a></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+</main>
+
+<!-- Footer -->
+<footer class="px-4 md:px-6 py-8 mt-8 border-t border-white/[.08]">
+<div class="max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-white/45">
+  <p><a class="text-[#d5a538] hover:text-white transition-colors" href="mailto:book@evexec.co.uk">book@evexec.co.uk</a> &nbsp;·&nbsp; <a class="text-[#d5a538] hover:text-white transition-colors" href="tel:07721070370">07721 070370</a></p>
+  <p>© 2026 EV Exec · <a class="hover:text-white/80 transition-colors" href="./privacy.html">Privacy</a> · <a class="hover:text-white/80 transition-colors" href="./terms.html">Terms</a></p>
+</div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var bookingId = null;
+  var bookingData = null;
+
+  var params  = new URLSearchParams(window.location.search);
+  var queryId = params.get('id');
+  var payment = params.get('payment'); // 'success' | 'cancelled'
+
+  function show(id) { document.getElementById(id).classList.remove('hidden'); }
+  function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+  function fmtDate(d) {
+    if (!d) return 'TBC';
+    try {
+      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch { return d; }
+  }
+
+  function setStatusPill(status) {
+    var pill = document.getElementById('statusPill');
+    var map = {
+      pending:   ['Awaiting Confirmation', 'status-pending'],
+      accepted:  ['Accepted', 'status-accepted'],
+      confirmed: ['Confirmed', 'status-confirmed'],
+      rejected:  ['Unavailable', 'status-rejected']
+    };
+    var info = map[status] || ['Unknown', 'status-pending'];
+    pill.textContent = info[0];
+    pill.className = 'status-pill ' + info[1];
+  }
+
+  function addDetailRow(label, value) {
+    if (!value) return;
+    var div = document.createElement('div');
+    div.className = 'detail-row';
+    div.innerHTML = '<span class="detail-label">' + label + '</span><span class="detail-value">' + value + '</span>';
+    document.getElementById('journeyDetails').appendChild(div);
+  }
+
+  function renderBooking(b) {
+    bookingData  = b;
+    bookingId    = b.id;
+
+    hide('stateLoading');
+    show('stateContent');
+
+    setStatusPill(b.status);
+
+    var from, to;
+    if (b.journey_type === 'From Airport') {
+      from = b.airport || 'Airport';
+      to   = b.dropoff_address || 'Your destination';
+    } else {
+      from = b.pickup_location || 'Pickup';
+      to   = b.airport || 'Airport';
+    }
+
+    document.getElementById('bookingHeadline').textContent = from + ' → ' + to;
+    document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : '');
+
+    addDetailRow('Journey', from + ' → ' + to);
+    addDetailRow('Date',    fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : ''));
+    if (b.passengers) addDetailRow('Passengers', b.passengers);
+    if (b.luggage)    addDetailRow('Luggage', b.luggage);
+    if (b.flight_number) addDetailRow('Flight', b.flight_number);
+    if (b.return_journey) addDetailRow('Return', fmtDate(b.return_date) + (b.return_time ? ' at ' + b.return_time : ''));
+
+    if (b.quoted_price) {
+      show('priceDisplay');
+      document.getElementById('priceAmount').textContent = '£' + Number(b.quoted_price).toFixed(0);
+    }
+
+    // Status-specific panels
+    if (b.status === 'pending') {
+      show('panelPending');
+      return;
+    }
+
+    if (b.status === 'accepted') {
+      if (payment === 'success') {
+        // Stripe redirected back but webhook may not have fired yet
+        show('panelPaymentPending');
+      } else {
+        show('panelPayment');
+        if (payment === 'cancelled') show('panelCancelled');
+      }
+      return;
+    }
+
+    if (b.status === 'confirmed') {
+      show('panelConfirmed');
+      var method = b.payment_method === 'cash'
+        ? 'Payment: Cash on the day of travel.'
+        : 'Payment: Paid by card online.';
+      if (b.payment_method) {
+        document.getElementById('confirmedMsg').textContent =
+          'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
+      }
+      return;
+    }
+
+    if (b.status === 'rejected') {
+      show('panelRejected');
+      return;
+    }
+  }
+
+  function showError(msg) {
+    hide('stateLoading');
+    show('stateError');
+    document.getElementById('errorMsg').textContent = msg || 'We couldn\'t load your booking details.';
+  }
+
+  async function load() {
+    if (!queryId) {
+      showError('No booking ID in this link. Please check your confirmation message.');
+      return;
+    }
+    try {
+      var res  = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Booking not found.');
+      renderBooking(data);
+    } catch (e) {
+      showError(e.message);
+    }
+  }
+
+  window.payByCard = async function () {
+    var btn = document.getElementById('btnCard');
+    var err = document.getElementById('cardError');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting to payment…';
+    err.classList.add('hidden');
+    try {
+      var res  = await fetch('/api/payment/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: bookingId })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
+      window.location.href = data.url;
+    } catch (e) {
+      err.textContent = e.message;
+      err.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Pay by Card Online';
+    }
+  };
+
+  window.payByCash = async function () {
+    var btn = document.getElementById('btnCash');
+    var err = document.getElementById('cashError');
+    if (!confirm('Confirm cash payment on the day of travel?')) return;
+    btn.disabled = true;
+    btn.textContent = 'Confirming…';
+    err.classList.add('hidden');
+    try {
+      var res  = await fetch('/api/payment/confirm-cash', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: bookingId })
+      });
+      var data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to confirm. Please try again.');
+      // Reload to show confirmed state
+      window.location.href = '/booking?id=' + bookingId;
+    } catch (e) {
+      err.textContent = e.message;
+      err.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Pay Cash on the Day';
+    }
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>
