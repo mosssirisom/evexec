@@ -3,8 +3,20 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>EV Exec | Premium Airport Transfers Blackpool & The Fylde Coast</title>
+<title>EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre</title>
 <meta content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." name="description"/>
+<meta content="airport transfers Blackpool, Manchester airport taxi Blackpool, Fylde Coast airport transfer, Tesla airport transfer, premium taxi Blackpool, airport transfer Lytham, airport transfer Poulton" name="keywords"/>
+<meta content="EV Exec" name="author"/>
+<meta content="#020813" name="theme-color"/>
+<meta content="telephone=no" name="format-detection"/>
+<link href="https://evexec.co.uk/" rel="canonical"/>
+<meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" property="og:title"/>
+<meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast to all major UK airports." property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://evexec.co.uk/" property="og:url"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" name="twitter:title"/>
+<meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -21,7 +33,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
-  margin:0;
+  margin:0;overflow-x:hidden;
   background:
     radial-gradient(circle at 65% 5%, rgba(48,99,160,.22), transparent 30%),
     radial-gradient(circle at 25% 20%, rgba(213,165,56,.08), transparent 28%),
@@ -354,7 +366,69 @@ main,header,footer{position:relative;z-index:1}
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .reveal,.image-reveal{opacity:1!important;transform:none!important;filter:none!important}
 }
+::selection{background:rgba(213,165,56,.28);color:#fff}
+/* Metrics strip */
+.metrics-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:1px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
+}
+@media(min-width:640px){.metrics-grid{grid-template-columns:repeat(4,1fr)}}
+.metric-card{
+  background:rgba(255,255,255,.035);padding:28px 20px;text-align:center;
+  transition:background .25s ease;
+}
+.metric-card:hover{background:rgba(213,165,56,.055)}
+.metric-label{font-weight:700;font-size:15px;margin-top:10px}
+.metric-sub{color:rgba(255,255,255,.50);font-size:12px;margin-top:5px;line-height:1.45}
+/* CO2 calculator */
+.calculator-card{
+  max-width:620px;margin:0 auto;
+  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
+  border:1px solid rgba(213,165,56,.20);border-radius:18px;padding:36px;
+}
+.calc-result{
+  background:rgba(213,165,56,.06);border:1px solid rgba(213,165,56,.18);
+  border-radius:12px;padding:28px;margin-top:20px;text-align:center;
+}
+.calc-number{
+  font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:700;
+  color:var(--gold);line-height:1;
+}
+.calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
+/* Map */
+.map-frame{
+  border-radius:16px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);height:380px;background:#07111f;
+}
+.map-frame iframe{width:100%;height:100%;display:block;border:0}
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": ["TaxiService", "LocalBusiness"],
+  "name": "EV Exec",
+  "description": "Premium airport transfers from Blackpool and the Fylde Coast to all major UK airports. Fixed prices, live flight monitoring, luxury Tesla Model Y.",
+  "url": "https://evexec.co.uk",
+  "telephone": "+447721070370",
+  "email": "book@evexec.co.uk",
+  "priceRange": "££",
+  "areaServed": {"@type": "Place", "name": "Blackpool, Fylde & Wyre, Lancashire, UK"},
+  "address": {"@type": "PostalAddress", "addressLocality": "Blackpool", "addressRegion": "Lancashire", "addressCountry": "GB"},
+  "openingHours": "Mo-Su 00:00-24:00",
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Airport Transfer Services",
+    "itemListElement": [
+      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Manchester Airport Transfer"},"price":"90","priceCurrency":"GBP"},
+      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Liverpool Airport Transfer"},"price":"95","priceCurrency":"GBP"},
+      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Leeds Bradford Airport Transfer"},"price":"135","priceCurrency":"GBP"},
+      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Birmingham Airport Transfer"},"price":"215","priceCurrency":"GBP"},
+      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Newcastle Airport Transfer"},"price":"250","priceCurrency":"GBP"}
+    ]
+  }
+}
+</script>
 </head>
 
 <body>
@@ -398,6 +472,7 @@ main,header,footer{position:relative;z-index:1}
 <a class="navlink" href="#contact">Contact</a>
 </div>
 
+<a class="btn-gold hidden md:inline-block rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
 <button class="menu-button lg:hidden" id="menuToggle" type="button" aria-label="Open menu">Menu</button>
 
 <div class="mobile-menu lg:hidden" id="mobileMenu">
@@ -421,7 +496,7 @@ Premium. Reliable. Local.
 </div>
 
 <h1 class="serif text-6xl md:text-7xl leading-[.88] font-bold">
-Premium Airport <span class="gold">Transfers</span><br/>Blackpool & The Fylde Coast
+Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
 </h1>
 
 <p class="mt-6 text-lg text-white/82 leading-relaxed">
@@ -613,6 +688,34 @@ Send Booking Request on WhatsApp
 </div>
 </section>
 
+<!-- Metrics Strip -->
+<section class="px-6 py-6 reveal">
+<div class="max-w-7xl mx-auto">
+<div class="metrics-grid">
+<div class="metric-card">
+<svg class="clean-icon-lg mx-auto"><use href="#i-user"></use></svg>
+<div class="metric-label">Owner-Operated</div>
+<div class="metric-sub">Every booking personally handled by Moss</div>
+</div>
+<div class="metric-card">
+<svg class="clean-icon-lg mx-auto"><use href="#i-pound"></use></svg>
+<div class="metric-label">Fixed Pricing</div>
+<div class="metric-sub">Quoted upfront — no meters, no surprises</div>
+</div>
+<div class="metric-card">
+<svg class="clean-icon-lg mx-auto"><use href="#i-plane"></use></svg>
+<div class="metric-label">Live Flight Tracking</div>
+<div class="metric-sub">We adapt to delays so you never wait</div>
+</div>
+<div class="metric-card">
+<svg class="clean-icon-lg mx-auto"><use href="#i-car"></use></svg>
+<div class="metric-label">Tesla Model Y</div>
+<div class="metric-sub">100% electric, whisper-quiet and spotless</div>
+</div>
+</div>
+</div>
+</section>
+
 <!-- Experience -->
 <section class="copy-section reveal">
 <div class="copy-grid">
@@ -697,6 +800,34 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </div>
 </section>
 
+<!-- CO₂ Calculator -->
+<section class="px-6 py-10 reveal" id="eco">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-9">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Zero Emissions Travel</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Your CO₂ Saving</h2>
+<p class="text-white/62 mt-4">Every EV Exec journey is in a fully electric Tesla. See how much CO₂ you avoid versus a traditional petrol taxi.</p>
+</div>
+
+<div class="calculator-card">
+<label class="block text-center text-xs text-white/60 uppercase tracking-[.16em] mb-3">Select your airport</label>
+<select class="input max-w-xs mx-auto block text-center" id="co2Route">
+<option value="Manchester Airport">Manchester Airport</option>
+<option value="Liverpool Airport">Liverpool Airport</option>
+<option value="Leeds Bradford Airport">Leeds Bradford Airport</option>
+<option value="Birmingham Airport">Birmingham Airport</option>
+<option value="Newcastle Airport">Newcastle Airport</option>
+</select>
+
+<div class="calc-result">
+<div class="calc-number" id="co2Number">12</div>
+<div class="calc-small">kg of CO₂ saved per journey<br>versus a typical petrol taxi</div>
+</div>
+<p class="text-center text-white/38 text-xs mt-5">Based on UK petrol taxi average vs Tesla Model Y on the UK electricity grid.</p>
+</div>
+</div>
+</section>
+
 <!-- Coverage -->
 <section class="px-6 py-10 reveal" id="areas">
 <div class="max-w-7xl mx-auto">
@@ -732,6 +863,31 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 <div class="mt-7 rounded-lg border border-[#d5a538]/25 bg-[#d5a538]/[.06] p-5 text-center text-white/70 leading-relaxed">
 For journeys outside these areas, EV Exec can provide a fixed quote in advance depending on availability.
 </div>
+</div>
+</div>
+</section>
+
+<!-- Local Presence Map -->
+<section class="px-6 py-10 reveal" id="location">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-2xl mx-auto mb-8">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Locally Based</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Based Locally. Serving Blackpool, Fylde & Wyre.</h2>
+<p class="text-white/62 mt-4">EV Exec operates from the heart of the Fylde Coast — minutes from Blackpool, Lytham, Poulton and all surrounding areas.</p>
+</div>
+<!-- PASTE YOUR GOOGLE MAPS EMBED SRC HERE:
+     1. Go to Google Maps and find your location
+     2. Click Share > Embed a map > Copy HTML
+     3. Paste the full src="..." URL from that code below -->
+<div class="map-frame">
+<iframe
+  allowfullscreen
+  loading="lazy"
+  referrerpolicy="no-referrer-when-downgrade"
+  src="PASTE_YOUR_GOOGLE_MAPS_EMBED_SRC_HERE"
+  style="border:0;width:100%;height:100%"
+  title="EV Exec service area — Blackpool, Fylde &amp; Wyre">
+</iframe>
 </div>
 </div>
 </section>
@@ -889,6 +1045,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </div>
 </div>
 <p class="text-white/58 mt-4 max-w-xs">Premium airport transfers from Blackpool &amp; the Fylde Coast to all major UK airports.</p>
+<p class="text-white/38 mt-2 max-w-xs text-xs leading-relaxed">Local service zones include Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham, Preston and surrounding FY postcodes.</p>
 <div class="flex gap-3 mt-5">
 <a aria-label="Call EV Exec" class="icon" href="tel:07721070370"><svg class="clean-icon"><use href="#i-phone"></use></svg></a>
 <a aria-label="WhatsApp EV Exec" class="icon" href="https://wa.me/447721070370"><svg class="clean-icon"><use href="#i-user"></use></svg></a>
@@ -1042,6 +1199,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       updateReturnFields();
     });
     updateMainFields();
+    updateReturnFields();
   }
   if(returnJourney){
     returnJourney.addEventListener('change', updateReturnFields);
@@ -1161,6 +1319,22 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       window.open('https://wa.me/447721070370?text=' + encodeURIComponent(msg), '_blank');
     });
   }
+  // CO2 calculator
+  var co2Savings = {
+    'Manchester Airport': 12,
+    'Liverpool Airport': 9,
+    'Leeds Bradford Airport': 14,
+    'Birmingham Airport': 24,
+    'Newcastle Airport': 24
+  };
+  var co2Route = document.getElementById('co2Route');
+  var co2Number = document.getElementById('co2Number');
+  function updateCO2(){
+    if(!co2Route || !co2Number) return;
+    var val = co2Savings[co2Route.value];
+    if(val !== undefined) co2Number.textContent = val;
+  }
+  if(co2Route) co2Route.addEventListener('change', updateCO2);
 })();
 </script>
 </body>
