@@ -1277,7 +1277,13 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   // Helpers
   function valueOf(id){
     var el = document.getElementById(id);
-    return el && el.value ? el.value.trim() : '';
+    if(!el) return '';
+    try {
+      var v = el.value;
+      return v ? String(v).trim() : '';
+    } catch(e) {
+      return '';
+    }
   }
 
   function showMsg(text, type){
@@ -1290,7 +1296,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   // Form submit
   var bookingForm = document.getElementById('bookingForm');
   if(bookingForm){
-    bookingForm.addEventListener('submit', async function(e){
+    bookingForm.addEventListener('submit', function(e){
       e.preventDefault();
 
       var name  = valueOf('customerName');
@@ -1308,7 +1314,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var origText = btn.textContent;
       btn.textContent = 'Sending…';
 
-      try {
+      (function(){
         var toAirport = isToAirport();
         var isRet = valueOf('returnJourney') === 'Yes';
 
@@ -1335,26 +1341,32 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           customer_email:    valueOf('customerEmail') || null
         };
 
-        var res = await fetch('/api/booking/create', {
+        fetch('/api/booking/create', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
+        })
+        .then(function(res){
+          return res.json().then(function(data){ return {res: res, data: data}; });
+        })
+        .then(function(r){
+          if(r.res.ok && r.data.success){
+            showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
+            bookingForm.reset();
+            updateMainFields();
+            sessionStorage.setItem('evexec_submitted', Date.now().toString());
+          } else {
+            throw new Error(r.data.error || 'Something went wrong. Please try again.');
+          }
+        })
+        .catch(function(err){
+          showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
+        })
+        .finally(function(){
+          btn.disabled = false;
+          btn.textContent = origText;
         });
-        var data = await res.json();
-        if(res.ok && data.success){
-          showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
-          bookingForm.reset();
-          updateMainFields();
-          sessionStorage.setItem('evexec_submitted', Date.now().toString());
-        } else {
-          throw new Error(data.error || 'Something went wrong. Please try again.');
-        }
-      } catch(err){
-        showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = origText;
-      }
+      })();
     });
   }
   // CO2 calculator
