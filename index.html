@@ -481,12 +481,10 @@ main,header,footer{position:relative;z-index:1}
 <a class="navlink" href="#services">Services</a>
 <a class="navlink" href="#prices">Prices</a>
 <a class="navlink" href="#areas">Coverage</a>
-<a class="navlink" href="#about">About Me</a>
+<a class="navlink" href="#about">Story</a>
 <a class="navlink" href="#reviews">Reviews</a>
 <a class="navlink" href="#contact">Contact</a>
 </div>
-
-<a class="btn-gold rounded-md px-6 py-3 font-bold hidden md:block" href="tel:07721070370">07721 070370</a>
 
 <button class="menu-button lg:hidden" id="menuToggle" type="button" aria-label="Open menu">Menu</button>
 
@@ -495,10 +493,9 @@ main,header,footer{position:relative;z-index:1}
 <a href="#services">Services</a>
 <a href="#prices">Prices</a>
 <a href="#areas">Coverage</a>
-<a href="#about">About Me</a>
+<a href="#about">Story</a>
 <a href="#reviews">Reviews</a>
 <a href="#contact">Contact</a>
-<a href="tel:07721070370">Call 07721 070370</a>
 </div>
 </nav>
 </header>
@@ -551,7 +548,7 @@ Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, rel
 </select>
 </label>
 
-<label class="text-xs text-white/60">Pickup Location
+<label class="text-xs text-white/60" id="pickupWrap">Pickup Location
 <input class="input mt-2" id="pickup" placeholder="Enter pickup location"/>
 </label>
 
@@ -567,7 +564,7 @@ Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, rel
 </select>
 </label>
 
-<label class="text-xs text-white/60">Drop-off Address / Destination
+<label class="text-xs text-white/60 hidden" id="dropoffWrap">Drop-off Address / Destination
 <input class="input mt-2" id="dropoff" placeholder="Enter destination address"/>
 </label>
 
@@ -599,7 +596,11 @@ Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, rel
 </select>
 </label>
 
-<label class="text-xs text-white/60 hidden" id="returnAirportWrap">Return Pickup Airport
+<label class="text-xs text-white/60 hidden" id="returnPickupWrap">Return Pickup Location
+<input class="input mt-2" id="returnPickup" placeholder="Enter return pickup address"/>
+</label>
+
+<label class="text-xs text-white/60 hidden" id="returnAirportWrap">Return Airport
 <select class="input mt-2" id="returnAirport">
 <option>Select return airport</option>
 <option>Manchester Airport</option>
@@ -615,11 +616,11 @@ Fixed prices. Flight monitoring. Luxury electric Tesla travel. Professional, rel
 <input class="input mt-2" id="returnFlight" placeholder="e.g. EZY2145"/>
 </label>
 
-<label class="text-xs text-white/60 hidden" id="returnDateWrap">Return Landing Date
+<label class="text-xs text-white/60 hidden" id="returnDateWrap">Return Date
 <input class="input mt-2" id="returnDate" type="date"/>
 </label>
 
-<label class="text-xs text-white/60 hidden" id="returnTimeWrap">Return Landing Time
+<label class="text-xs text-white/60 hidden" id="returnTimeWrap">Return Time
 <input class="input mt-2" id="returnTime" type="time"/>
 </label>
 
@@ -969,9 +970,7 @@ For journeys outside these areas, EV Exec can usually provide a fixed quote in a
   const mobileMenu = document.getElementById('mobileMenu');
 
   function onScroll(){
-    if(header){
-      header.classList.toggle('scrolled', window.scrollY > 24);
-    }
+    if(header) header.classList.toggle('scrolled', window.scrollY > 24);
   }
 
   onScroll();
@@ -982,7 +981,6 @@ For journeys outside these areas, EV Exec can usually provide a fixed quote in a
       mobileMenu.classList.toggle('open');
       menuToggle.textContent = mobileMenu.classList.contains('open') ? 'Close' : 'Menu';
     });
-
     mobileMenu.querySelectorAll('a').forEach(function(link){
       link.addEventListener('click', function(){
         mobileMenu.classList.remove('open');
@@ -1014,24 +1012,54 @@ For journeys outside these areas, EV Exec can usually provide a fixed quote in a
     }, {passive:true});
   }
 
+  // Booking form dynamic field logic
+  const journeyType = document.getElementById('journeyType');
   const returnJourney = document.getElementById('returnJourney');
-  const returnFields = [
-    document.getElementById('returnAirportWrap'),
-    document.getElementById('returnFlightWrap'),
-    document.getElementById('returnDestinationWrap'),
-    document.getElementById('returnDateWrap'),
-    document.getElementById('returnTimeWrap')
-  ];
+
+  const pickupWrap = document.getElementById('pickupWrap');
+  const dropoffWrap = document.getElementById('dropoffWrap');
+  const returnPickupWrap = document.getElementById('returnPickupWrap');
+  const returnAirportWrap = document.getElementById('returnAirportWrap');
+  const returnFlightWrap = document.getElementById('returnFlightWrap');
+  const returnDateWrap = document.getElementById('returnDateWrap');
+  const returnTimeWrap = document.getElementById('returnTimeWrap');
+  const returnDestinationWrap = document.getElementById('returnDestinationWrap');
+
+  function isToAirport(){
+    return !journeyType || journeyType.value === 'To Airport';
+  }
+
+  function updateMainFields(){
+    const toAirport = isToAirport();
+    if(pickupWrap) pickupWrap.classList.toggle('hidden', !toAirport);
+    if(dropoffWrap) dropoffWrap.classList.toggle('hidden', toAirport);
+  }
+
+  function updateReturnFields(){
+    const isReturn = returnJourney && returnJourney.value === 'Yes';
+    // Return journey is opposite direction to outbound
+    const returnIsFromAirport = isToAirport();
+
+    if(returnAirportWrap) returnAirportWrap.classList.toggle('hidden', !isReturn);
+    if(returnDateWrap) returnDateWrap.classList.toggle('hidden', !isReturn);
+    if(returnTimeWrap) returnTimeWrap.classList.toggle('hidden', !isReturn);
+    // Flight number and drop-off only relevant when return is "From Airport"
+    if(returnFlightWrap) returnFlightWrap.classList.toggle('hidden', !isReturn || !returnIsFromAirport);
+    if(returnDestinationWrap) returnDestinationWrap.classList.toggle('hidden', !isReturn || !returnIsFromAirport);
+    // Return pickup location only relevant when return is "To Airport"
+    if(returnPickupWrap) returnPickupWrap.classList.toggle('hidden', !isReturn || returnIsFromAirport);
+  }
+
+  if(journeyType){
+    journeyType.addEventListener('change', function(){
+      updateMainFields();
+      updateReturnFields();
+    });
+    updateMainFields();
+  }
 
   if(returnJourney){
-    returnJourney.addEventListener('change', function(){
-      const isReturn = this.value === 'Yes';
-      returnFields.forEach((field)=>{
-        if(field){
-          field.classList.toggle('hidden', !isReturn);
-        }
-      });
-    });
+    returnJourney.addEventListener('change', updateReturnFields);
   }
 
   const bookingForm = document.getElementById('bookingForm');
@@ -1045,31 +1073,42 @@ For journeys outside these areas, EV Exec can usually provide a fixed quote in a
     bookingForm.addEventListener('submit', function(e){
       e.preventDefault();
 
+      const toAirport = isToAirport();
       const isReturn = valueOf('returnJourney') === 'Yes';
+      const returnIsFromAirport = toAirport;
 
-      let message =
-`Hello EV Exec, I would like to request an airport transfer.
+      let message = 'Hello EV Exec, I would like to request an airport transfer.\n\n';
+      message += 'Journey Type: ' + (valueOf('journeyType') || 'Not provided') + '\n';
 
-Journey Type: ${valueOf('journeyType') || 'Not provided'}
-Pickup Location: ${valueOf('pickup') || 'Not provided'}
-Airport: ${valueOf('airport') || 'Not provided'}
-Drop-off / Destination: ${valueOf('dropoff') || 'Not provided'}
-Travel Date: ${valueOf('travelDate') || 'Not provided'}
-Travel Time: ${valueOf('travelTime') || 'Not provided'}
-Passengers: ${valueOf('passengers') || 'Not provided'}
-Luggage: ${valueOf('luggage') || 'Not provided'}
-Return Journey: ${valueOf('returnJourney') || 'No'}
-Preferred Contact Method: ${valueOf('contactMethod') || 'WhatsApp'}`;
+      if(toAirport){
+        message += 'Pickup Location: ' + (valueOf('pickup') || 'Not provided') + '\n';
+        message += 'Airport: ' + (valueOf('airport') || 'Not provided') + '\n';
+      } else {
+        message += 'Airport: ' + (valueOf('airport') || 'Not provided') + '\n';
+        message += 'Drop-off / Destination: ' + (valueOf('dropoff') || 'Not provided') + '\n';
+      }
+
+      message += 'Travel Date: ' + (valueOf('travelDate') || 'Not provided') + '\n';
+      message += 'Travel Time: ' + (valueOf('travelTime') || 'Not provided') + '\n';
+      message += 'Passengers: ' + (valueOf('passengers') || 'Not provided') + '\n';
+      message += 'Luggage: ' + (valueOf('luggage') || 'Not provided') + '\n';
+      message += 'Return Journey: ' + (valueOf('returnJourney') || 'No') + '\n';
+      message += 'Preferred Contact Method: ' + (valueOf('contactMethod') || 'WhatsApp');
 
       if(isReturn){
-        message += `
-
-Return Details:
-Return Pickup Airport: ${valueOf('returnAirport') || 'Not provided'}
-Return Flight Number: ${valueOf('returnFlight') || 'Not provided'}
-Return Landing Date: ${valueOf('returnDate') || 'Not provided'}
-Return Landing Time: ${valueOf('returnTime') || 'Not provided'}
-Return Drop-off Address: ${valueOf('returnDestination') || 'Not provided'}`;
+        message += '\n\nReturn Details:\n';
+        if(returnIsFromAirport){
+          message += 'Return Pickup Airport: ' + (valueOf('returnAirport') || 'Not provided') + '\n';
+          message += 'Return Flight Number: ' + (valueOf('returnFlight') || 'Not provided') + '\n';
+          message += 'Return Landing Date: ' + (valueOf('returnDate') || 'Not provided') + '\n';
+          message += 'Return Landing Time: ' + (valueOf('returnTime') || 'Not provided') + '\n';
+          message += 'Return Drop-off Address: ' + (valueOf('returnDestination') || 'Not provided');
+        } else {
+          message += 'Return Pickup Location: ' + (valueOf('returnPickup') || 'Not provided') + '\n';
+          message += 'Return Destination Airport: ' + (valueOf('returnAirport') || 'Not provided') + '\n';
+          message += 'Return Travel Date: ' + (valueOf('returnDate') || 'Not provided') + '\n';
+          message += 'Return Travel Time: ' + (valueOf('returnTime') || 'Not provided');
+        }
       }
 
       const whatsappUrl = 'https://wa.me/447721070370?text=' + encodeURIComponent(message);
