@@ -49,13 +49,13 @@ module.exports = async function handler(req, res) {
     const firstName  = (booking.customer_name || 'there').split(' ')[0];
 
     const smsTxt = [
-      `Hi ${firstName}, your EV Exec transfer is confirmed!`,
+      `Hi ${firstName}, great news — EV Exec can take your transfer!`,
       '',
       route,
       `${date} at ${booking.travel_time || 'TBC'}`,
       price ? `Price: £${price}` : '',
       '',
-      'Choose your payment method:',
+      'Please choose your payment method to confirm:',
       paymentUrl,
       '',
       'Questions? 07721 070370'
