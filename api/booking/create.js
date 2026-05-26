@@ -85,26 +85,52 @@ module.exports = async function handler(req, res) {
     ].filter(l => l !== null).join('\n');
 
     const emailHtml = `
-<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto">
-  <div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0">
-    <h1 style="margin:0;color:#06101c;font-size:1.2rem">New Booking Request — EV Exec</h1>
+<div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:580px;margin:0 auto;background:#07111f;border-radius:16px;overflow:hidden;border:1px solid rgba(213,165,56,.25)">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#b8891f 0%,#e8b84b 45%,#c49328 100%);padding:22px 30px">
+    <p style="margin:0 0 3px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(6,16,28,.55);font-weight:700">EV Exec &nbsp;·&nbsp; New Request</p>
+    <h1 style="margin:0;color:#06101c;font-size:1.25rem;font-weight:800;letter-spacing:-.2px">Booking Request</h1>
   </div>
-  <div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px">
-    <h2 style="margin:0 0 4px;color:#fff">${route}</h2>
-    <p style="margin:0 0 ${price ? '8px' : '16px'};color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} passenger(s)${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
-    ${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}
-    <table style="border-collapse:collapse;margin-bottom:24px">
-      <tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px;white-space:nowrap">Customer</td><td style="padding:5px 0">${name}</td></tr>
-      <tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Phone</td><td style="padding:5px 0"><a href="tel:${phone}" style="color:#d5a538">${phone}</a></td></tr>
-      ${booking.customer_email ? `<tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Email</td><td style="padding:5px 0"><a href="mailto:${booking.customer_email}" style="color:#d5a538">${booking.customer_email}</a></td></tr>` : ''}
-      <tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Contact pref</td><td style="padding:5px 0">${booking.contact_method}</td></tr>
-      ${booking.return_journey ? `<tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px;white-space:nowrap">Return</td><td style="padding:5px 0">${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}${booking.return_airport ? ` &nbsp;·&nbsp; ${booking.return_airport}` : ''}${booking.return_flight ? ` flight ${booking.return_flight}` : ''}${booking.return_destination ? `<br><span style="color:rgba(255,255,255,.5);font-size:12px">Drop: ${booking.return_destination}</span>` : ''}</td></tr>` : ''}
+
+  <!-- Journey card -->
+  <div style="padding:24px 30px 0">
+    <div style="background:rgba(213,165,56,.07);border:1px solid rgba(213,165,56,.18);border-radius:12px;padding:18px 20px;margin-bottom:22px">
+      <p style="margin:0 0 8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700">Journey</p>
+      <h2 style="margin:0 0 7px;color:#fff;font-size:1.2rem;font-weight:800;line-height:1.35">${route}</h2>
+      <p style="margin:0${price ? ' 0 10px' : ''};color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
+      ${price ? `<p style="margin:0;font-size:1.75rem;font-weight:900;color:#d5a538;letter-spacing:-1px">£${price}</p>` : ''}
+    </div>
+
+    <!-- Customer details -->
+    <p style="margin:0 0 10px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700">Customer</p>
+    <table style="border-collapse:collapse;width:100%;margin-bottom:24px">
+      <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+        <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px;width:100px;vertical-align:top">Name</td>
+        <td style="padding:9px 0;color:#fff;font-size:14px;font-weight:600">${name}</td>
+      </tr>
+      <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+        <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Phone</td>
+        <td style="padding:9px 0"><a href="tel:${phone}" style="color:#d5a538;font-size:14px;font-weight:600;text-decoration:none">${phone}</a></td>
+      </tr>
+      ${booking.customer_email ? `<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Email</td><td style="padding:9px 0"><a href="mailto:${booking.customer_email}" style="color:#d5a538;font-size:14px;text-decoration:none">${booking.customer_email}</a></td></tr>` : ''}
+      <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
+        <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Contact via</td>
+        <td style="padding:9px 0;color:#fff;font-size:14px">${booking.contact_method}</td>
+      </tr>
+      ${booking.return_journey ? `<tr><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px;vertical-align:top">Return</td><td style="padding:9px 0;color:#fff;font-size:14px">${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}${booking.return_airport ? ` &nbsp;·&nbsp; ${booking.return_airport}` : ''}${booking.return_flight ? ` &nbsp;·&nbsp; flight ${booking.return_flight}` : ''}${booking.return_destination ? `<br><span style="color:rgba(255,255,255,.4);font-size:12px">Drop-off: ${booking.return_destination}</span>` : ''}</td></tr>` : ''}
     </table>
-    <table style="border-collapse:collapse;width:100%"><tr>
-      <td style="padding-right:8px"><a href="${acceptUrl}" style="display:block;text-align:center;background:#22c55e;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:bold">Accept Booking</a></td>
-      <td style="padding-left:8px"><a href="${rejectUrl}" style="display:block;text-align:center;background:#ef4444;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:bold">Reject Booking</a></td>
+
+    <!-- Action buttons -->
+    <table style="border-collapse:collapse;width:100%;margin-bottom:28px"><tr>
+      <td style="padding-right:6px"><a href="${acceptUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#15803d,#22c55e);color:#fff;padding:15px 10px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14.5px">Accept Booking</a></td>
+      <td style="padding-left:6px"><a href="${rejectUrl}" style="display:block;text-align:center;background:linear-gradient(135deg,#991b1b,#ef4444);color:#fff;padding:15px 10px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14.5px">Reject Booking</a></td>
     </tr></table>
-    <p style="margin-top:20px;font-size:11px;color:rgba(255,255,255,.25)">Booking ID: ${id}</p>
+  </div>
+
+  <!-- Footer -->
+  <div style="padding:14px 30px 18px;border-top:1px solid rgba(255,255,255,.05)">
+    <p style="margin:0;font-size:11px;color:rgba(255,255,255,.18)">Booking ID: ${id}</p>
   </div>
 </div>`;
 
