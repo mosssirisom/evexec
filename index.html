@@ -651,11 +651,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
 <!-- Row 3: Travel Details -->
 <label class="text-xs text-white/60">Travel Date
-<input class="input mt-2" id="travelDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off"/>
+<input class="input mt-2" id="travelDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY or DDMMYYYY" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60">Travel Time
-<input class="input mt-2" id="travelTime" type="text" inputmode="numeric" placeholder="e.g. 09:30" autocomplete="off"/>
+<input class="input mt-2" id="travelTime" type="text" inputmode="numeric" placeholder="e.g. 09:30 or 0930" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60">Passengers
@@ -711,11 +711,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <label class="text-xs text-white/60" id="returnDateWrap">Return Date
-<input class="input mt-2" id="returnDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off"/>
+<input class="input mt-2" id="returnDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY or DDMMYYYY" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60" id="returnTimeWrap">Return Time
-<input class="input mt-2" id="returnTime" type="text" inputmode="numeric" placeholder="e.g. 09:30" autocomplete="off"/>
+<input class="input mt-2" id="returnTime" type="text" inputmode="numeric" placeholder="e.g. 09:30 or 0930" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60 hidden md:col-span-4" id="returnDestinationWrap">Return Drop-off Address
@@ -1287,10 +1287,40 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   function parseDate(v) {
     if (!v) return null;
     v = String(v).trim();
-    var m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-    if (m) return m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+    // ISO already: YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
-    return v || null;
+    // With separators: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
+    var ms = v.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
+    if (ms) return ms[3] + '-' + ('0' + ms[2]).slice(-2) + '-' + ('0' + ms[1]).slice(-2);
+    // 8 digits DDMMYYYY
+    var d8 = v.match(/^(\d{2})(\d{2})(\d{4})$/);
+    if (d8) return d8[3] + '-' + d8[2] + '-' + d8[1];
+    // 7 digits DMMYYYY (single-digit day)
+    var d7 = v.match(/^(\d{1})(\d{2})(\d{4})$/);
+    if (d7) return d7[3] + '-' + d7[2] + '-' + '0' + d7[1];
+    return null; // unrecognised — don't pass garbage to the API
+  }
+
+  function parseTime(v) {
+    if (!v) return null;
+    v = String(v).trim();
+    // Already HH:MM or H:MM
+    if (/^\d{1,2}:\d{2}$/.test(v)) {
+      var p = v.split(':');
+      return ('0' + p[0]).slice(-2) + ':' + p[1];
+    }
+    // Dot separator HH.MM
+    if (/^\d{1,2}\.\d{2}$/.test(v)) {
+      var p2 = v.split('.');
+      return ('0' + p2[0]).slice(-2) + ':' + p2[1];
+    }
+    // 4 digits HHMM
+    var t4 = v.match(/^(\d{2})(\d{2})$/);
+    if (t4) return t4[1] + ':' + t4[2];
+    // 3 digits HMM
+    var t3 = v.match(/^(\d{1})(\d{2})$/);
+    if (t3) return '0' + t3[1] + ':' + t3[2];
+    return v; // pass through (e.g. already valid or user typed something unusual)
   }
 
   function valueOf(id){
@@ -1337,7 +1367,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         flight_number:     !toAirport ? valueOf('flightNumber') : null,
         dropoff_address:   !toAirport ? valueOf('dropoff') : null,
         travel_date:       parseDate(valueOf('travelDate')),
-        travel_time:       valueOf('travelTime') || null,
+        travel_time:       parseTime(valueOf('travelTime')),
         passengers:        parseInt(valueOf('passengers')) || 1,
         luggage:           valueOf('luggage') || null,
         return_journey:    isRet,
@@ -1345,7 +1375,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         return_airport:    isRet ? valueOf('returnAirport') : null,
         return_flight:     isRet ? valueOf('returnFlight') : null,
         return_date:       isRet ? parseDate(valueOf('returnDate')) : null,
-        return_time:       isRet ? valueOf('returnTime') : null,
+        return_time:       isRet ? parseTime(valueOf('returnTime')) : null,
         return_destination: isRet ? valueOf('returnDestination') : null,
         contact_method:    valueOf('contactMethod') || 'WhatsApp',
         customer_name:     name,
