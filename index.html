@@ -1340,7 +1340,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
         });
-        var data = await res.json();
+        var rawText = await res.text();
+        var data;
+        try { data = JSON.parse(rawText); } catch(e) {
+          throw new Error('Server error (' + res.status + '). Please contact us directly.');
+        }
         if(res.ok && data.success){
           showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
           bookingForm.reset();
