@@ -64,11 +64,16 @@ module.exports = async function handler(req, res) {
     const date  = fmtDate(booking.travel_date);
     const price = getPrice(booking);
 
+    const returnLine = booking.return_journey
+      ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
+      : null;
+
     const smsTxt = [
       'New EV Exec booking:',
       route,
       `${date} at ${booking.travel_time || 'TBC'}`,
       `${booking.passengers} passenger(s)${booking.luggage ? `, ${booking.luggage}` : ''}`,
+      returnLine,
       '',
       `Customer: ${name}`,
       `Phone: ${phone}`,
@@ -93,7 +98,7 @@ module.exports = async function handler(req, res) {
       <tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Phone</td><td style="padding:5px 0"><a href="tel:${phone}" style="color:#d5a538">${phone}</a></td></tr>
       ${booking.customer_email ? `<tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Email</td><td style="padding:5px 0"><a href="mailto:${booking.customer_email}" style="color:#d5a538">${booking.customer_email}</a></td></tr>` : ''}
       <tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Contact pref</td><td style="padding:5px 0">${booking.contact_method}</td></tr>
-      ${booking.return_journey ? `<tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px">Return</td><td style="padding:5px 0">${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}</td></tr>` : ''}
+      ${booking.return_journey ? `<tr><td style="padding:5px 16px 5px 0;color:rgba(255,255,255,.5);font-size:13px;white-space:nowrap">Return</td><td style="padding:5px 0">${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}${booking.return_airport ? ` &nbsp;·&nbsp; ${booking.return_airport}` : ''}${booking.return_flight ? ` flight ${booking.return_flight}` : ''}${booking.return_destination ? `<br><span style="color:rgba(255,255,255,.5);font-size:12px">Drop: ${booking.return_destination}</span>` : ''}</td></tr>` : ''}
     </table>
     <table style="border-collapse:collapse;width:100%"><tr>
       <td style="padding-right:8px"><a href="${acceptUrl}" style="display:block;text-align:center;background:#22c55e;color:#fff;padding:14px;border-radius:8px;text-decoration:none;font-weight:bold">Accept Booking</a></td>

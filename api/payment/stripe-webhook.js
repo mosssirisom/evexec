@@ -1,5 +1,9 @@
 'use strict';
 
+// Tell @vercel/node not to pre-parse the body — Stripe signature verification
+// requires the raw bytes exactly as received.
+module.exports.config = { api: { bodyParser: false } };
+
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
