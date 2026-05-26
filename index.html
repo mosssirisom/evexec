@@ -166,6 +166,13 @@ img{max-width:100%}
   stroke-linecap:round;
   stroke-linejoin:round;
 }
+.btn-icon{
+  display:inline-block;width:16px;height:16px;
+  stroke:currentColor;fill:none;
+  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
+  vertical-align:middle;position:relative;top:-1px;margin-right:7px;
+  flex-shrink:0;
+}
 .clean-icon-lg{
   width:54px;height:54px;
   color:var(--gold);
@@ -513,6 +520,8 @@ main,header,footer{position:relative;z-index:1}
 <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M8 7V5h8v2M4 8h16v11H4zM4 13h16"></path></symbol>
 <symbol id="i-screen" viewBox="0 0 24 24"><path d="M4 5h16v11H4zM9 20h6M12 16v4"></path></symbol>
 <symbol id="i-temp" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"></path></symbol>
+<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></symbol>
 </svg>
 
 <header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4" id="siteHeader">
@@ -575,8 +584,8 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </div>
 
 <div class="mt-8 flex gap-4">
-<a class="btn-gold rounded-md px-7 py-4 font-bold" href="#quote">⚡ Book Your Transfer</a>
-<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold btn-dark" href="https://wa.me/447721070370" target="_blank" rel="noopener">💬 WhatsApp Us</a>
+<a class="btn-gold rounded-md px-7 py-4 font-bold inline-flex items-center" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
+<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold btn-dark inline-flex items-center" href="https://wa.me/447721070370" target="_blank" rel="noopener"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>WhatsApp Us</a>
 </div>
 
 <p class="mt-4 text-sm text-white/70">⚠ Limited daily availability to maintain our premium service standards.</p>
