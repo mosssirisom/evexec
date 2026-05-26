@@ -630,8 +630,8 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <label class="text-xs text-white/60">Airport
-<select class="input mt-2" id="airport">
-<option value="">Select airport</option>
+<select class="input mt-2" id="airport" required>
+<option value="">Select airport…</option>
 <option>Manchester Airport</option>
 <option>Liverpool Airport</option>
 <option>Leeds Bradford Airport</option>
@@ -1358,13 +1358,20 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     bookingForm.addEventListener('submit', async function(e){
       e.preventDefault();
 
-      var name  = valueOf('customerName');
-      var phone = valueOf('customerPhone');
+      var name    = valueOf('customerName');
+      var phone   = valueOf('customerPhone');
+      var airport = valueOf('airport');
 
       if(!name || !phone){
         showMsg('Please enter your name and phone number to continue.', 'error');
         if(!name) document.getElementById('customerName').focus();
         else document.getElementById('customerPhone').focus();
+        return;
+      }
+
+      if(!airport){
+        showMsg('Please select an airport.', 'error');
+        document.getElementById('airport').focus();
         return;
       }
 
