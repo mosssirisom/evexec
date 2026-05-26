@@ -98,8 +98,11 @@ module.exports = async function handler(req, res) {
     <div style="background:rgba(213,165,56,.07);border:1px solid rgba(213,165,56,.18);border-radius:12px;padding:18px 20px;margin-bottom:22px">
       <p style="margin:0 0 8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700">Journey</p>
       <h2 style="margin:0 0 7px;color:#fff;font-size:1.2rem;font-weight:800;line-height:1.35">${route}</h2>
-      <p style="margin:0${price ? ' 0 10px' : ''};color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
-      ${price ? `<p style="margin:0;font-size:1.75rem;font-weight:900;color:#d5a538;letter-spacing:-1px">£${price}</p>` : ''}
+      <p style="margin:0 0 6px;color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
+      ${booking.airport ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Airport:</span> &nbsp;${booking.airport}</p>` : ''}
+      ${booking.dropoff_address ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Drop-off:</span> &nbsp;${booking.dropoff_address}</p>` : ''}
+      ${booking.flight_number ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Flight:</span> &nbsp;${booking.flight_number}</p>` : ''}
+      ${price ? `<p style="margin:8px 0 0;font-size:1.75rem;font-weight:900;color:#d5a538;letter-spacing:-1px">£${price}</p>` : ''}
     </div>
 
     <!-- Customer details -->
