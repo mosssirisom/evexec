@@ -642,11 +642,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
 <!-- Row 3: Travel Details -->
 <label class="text-xs text-white/60">Travel Date
-<input class="input mt-2" id="travelDate" type="date"/>
+<input class="input mt-2" id="travelDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60">Travel Time
-<input class="input mt-2" id="travelTime" type="time"/>
+<input class="input mt-2" id="travelTime" type="text" inputmode="numeric" placeholder="e.g. 09:30" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60">Passengers
@@ -702,11 +702,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <label class="text-xs text-white/60" id="returnDateWrap">Return Date
-<input class="input mt-2" id="returnDate" type="date"/>
+<input class="input mt-2" id="returnDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60" id="returnTimeWrap">Return Time
-<input class="input mt-2" id="returnTime" type="time"/>
+<input class="input mt-2" id="returnTime" type="text" inputmode="numeric" placeholder="e.g. 09:30" autocomplete="off"/>
 </label>
 
 <label class="text-xs text-white/60 hidden md:col-span-4" id="returnDestinationWrap">Return Drop-off Address
@@ -1275,6 +1275,17 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
 
   // Helpers
+  function parseDate(v) {
+    if (!v) return null;
+    v = String(v).trim();
+    // DD/MM/YYYY or DD-MM-YYYY
+    var m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (m) return m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
+    // Already YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+    return v || null;
+  }
+
   function valueOf(id){
     var el = document.getElementById(id);
     if(!el) return '';
@@ -1324,7 +1335,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           airport:           valueOf('airport') || null,
           flight_number:     !toAirport ? valueOf('flightNumber') : null,
           dropoff_address:   !toAirport ? valueOf('dropoff') : null,
-          travel_date:       valueOf('travelDate') || null,
+          travel_date:       parseDate(valueOf('travelDate')),
           travel_time:       valueOf('travelTime') || null,
           passengers:        parseInt(valueOf('passengers')) || 1,
           luggage:           valueOf('luggage') || null,
@@ -1332,7 +1343,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           return_pickup:     isRet ? valueOf('returnPickup') : null,
           return_airport:    isRet ? valueOf('returnAirport') : null,
           return_flight:     isRet ? valueOf('returnFlight') : null,
-          return_date:       isRet ? valueOf('returnDate') : null,
+          return_date:       isRet ? parseDate(valueOf('returnDate')) : null,
           return_time:       isRet ? valueOf('returnTime') : null,
           return_destination: isRet ? valueOf('returnDestination') : null,
           contact_method:    valueOf('contactMethod') || 'WhatsApp',
