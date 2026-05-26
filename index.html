@@ -1278,24 +1278,17 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   function parseDate(v) {
     if (!v) return null;
     v = String(v).trim();
-    // DD/MM/YYYY or DD-MM-YYYY
     var m = v.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
     if (m) return m[3] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2);
-    // Already YYYY-MM-DD
     if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
     return v || null;
   }
 
   function valueOf(id){
     var el = document.getElementById(id);
-    if(!el) return '';
-    try {
-      var v = el.value;
-      return v ? String(v).trim() : '';
-    } catch(e) {
-      return '';
-    }
+    return el && el.value ? el.value.trim() : '';
   }
+
 
   function showMsg(text, type){
     var el = document.getElementById('formMsg');
@@ -1307,7 +1300,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   // Form submit
   var bookingForm = document.getElementById('bookingForm');
   if(bookingForm){
-    bookingForm.addEventListener('submit', function(e){
+    bookingForm.addEventListener('submit', async function(e){
       e.preventDefault();
 
       var name  = valueOf('customerName');
@@ -1325,59 +1318,57 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var origText = btn.textContent;
       btn.textContent = 'Sending…';
 
-      (function(){
-        var toAirport = isToAirport();
-        var isRet = valueOf('returnJourney') === 'Yes';
+      var toAirport = isToAirport();
+      var isRet = valueOf('returnJourney') === 'Yes';
 
-        var payload = {
-          journey_type:      valueOf('journeyType') || 'To Airport',
-          pickup_location:   toAirport ? valueOf('pickup') : null,
-          airport:           valueOf('airport') || null,
-          flight_number:     !toAirport ? valueOf('flightNumber') : null,
-          dropoff_address:   !toAirport ? valueOf('dropoff') : null,
-          travel_date:       parseDate(valueOf('travelDate')),
-          travel_time:       valueOf('travelTime') || null,
-          passengers:        parseInt(valueOf('passengers')) || 1,
-          luggage:           valueOf('luggage') || null,
-          return_journey:    isRet,
-          return_pickup:     isRet ? valueOf('returnPickup') : null,
-          return_airport:    isRet ? valueOf('returnAirport') : null,
-          return_flight:     isRet ? valueOf('returnFlight') : null,
-          return_date:       isRet ? parseDate(valueOf('returnDate')) : null,
-          return_time:       isRet ? valueOf('returnTime') : null,
-          return_destination: isRet ? valueOf('returnDestination') : null,
-          contact_method:    valueOf('contactMethod') || 'WhatsApp',
-          customer_name:     name,
-          customer_phone:    phone,
-          customer_email:    valueOf('customerEmail') || null
-        };
+      var payload = {
+        journey_type:      valueOf('journeyType') || 'To Airport',
+        pickup_location:   toAirport ? valueOf('pickup') : null,
+        airport:           valueOf('airport') || null,
+        flight_number:     !toAirport ? valueOf('flightNumber') : null,
+        dropoff_address:   !toAirport ? valueOf('dropoff') : null,
+        travel_date:       parseDate(valueOf('travelDate')),
+        travel_time:       valueOf('travelTime') || null,
+        passengers:        parseInt(valueOf('passengers')) || 1,
+        luggage:           valueOf('luggage') || null,
+        return_journey:    isRet,
+        return_pickup:     isRet ? valueOf('returnPickup') : null,
+        return_airport:    isRet ? valueOf('returnAirport') : null,
+        return_flight:     isRet ? valueOf('returnFlight') : null,
+        return_date:       isRet ? parseDate(valueOf('returnDate')) : null,
+        return_time:       isRet ? valueOf('returnTime') : null,
+        return_destination: isRet ? valueOf('returnDestination') : null,
+        contact_method:    valueOf('contactMethod') || 'WhatsApp',
+        customer_name:     name,
+        customer_phone:    phone,
+        customer_email:    valueOf('customerEmail') || null
+      };
 
-        fetch('/api/booking/create', {
+      try {
+        var res = await fetch('/api/booking/create', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(payload)
-        })
-        .then(function(res){
-          return res.json().then(function(data){ return {res: res, data: data}; });
-        })
-        .then(function(r){
-          if(r.res.ok && r.data.success){
-            showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
-            bookingForm.reset();
-            updateMainFields();
-            sessionStorage.setItem('evexec_submitted', Date.now().toString());
-          } else {
-            throw new Error(r.data.error || 'Something went wrong. Please try again.');
-          }
-        })
-        .catch(function(err){
-          showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
-        })
-        .finally(function(){
-          btn.disabled = false;
-          btn.textContent = origText;
         });
-      })();
+        var rawText = await res.text();
+        var data;
+        try { data = JSON.parse(rawText); } catch(e) {
+          throw new Error('Server error (' + res.status + '). Please contact us directly.');
+        }
+        if(res.ok && data.success){
+          showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
+          bookingForm.reset();
+          updateMainFields();
+          sessionStorage.setItem('evexec_submitted', Date.now().toString());
+        } else {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+      } catch(err){
+        showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = origText;
+      }
     });
   }
   // CO2 calculator
