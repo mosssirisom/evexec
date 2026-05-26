@@ -1321,7 +1321,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     ['travelTime','returnTime'].forEach(function(id) {
       var s = document.getElementById(id); if (!s) return;
       for (var h = 0; h < 24; h++) {
-        for (var m = 0; m < 60; m += 30) {
+        for (var m = 0; m < 60; m += 15) {
           var o = document.createElement('option');
           var hh = ('0' + h).slice(-2), mm = ('0' + m).slice(-2);
           o.value = hh + ':' + mm; o.textContent = hh + ':' + mm; s.appendChild(o);
