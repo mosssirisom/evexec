@@ -651,11 +651,15 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
 <!-- Row 3: Travel Details -->
 <label class="text-xs text-white/60">Travel Date
-<input class="input mt-2" id="travelDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY or DDMMYYYY" autocomplete="off"/>
+<div class="grid grid-cols-3 gap-2 mt-2">
+  <select class="input" id="travelDay"><option value="">Day</option></select>
+  <select class="input" id="travelMonth"><option value="">Month</option></select>
+  <select class="input" id="travelYear"><option value="">Year</option></select>
+</div>
 </label>
 
 <label class="text-xs text-white/60">Travel Time
-<input class="input mt-2" id="travelTime" type="text" inputmode="numeric" placeholder="e.g. 09:30 or 0930" autocomplete="off"/>
+<select class="input mt-2" id="travelTime"><option value="">Select time…</option></select>
 </label>
 
 <label class="text-xs text-white/60">Passengers
@@ -711,11 +715,15 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </label>
 
 <label class="text-xs text-white/60" id="returnDateWrap">Return Date
-<input class="input mt-2" id="returnDate" type="text" inputmode="numeric" placeholder="DD/MM/YYYY or DDMMYYYY" autocomplete="off"/>
+<div class="grid grid-cols-3 gap-2 mt-2">
+  <select class="input" id="returnDay"><option value="">Day</option></select>
+  <select class="input" id="returnMonth"><option value="">Month</option></select>
+  <select class="input" id="returnYear"><option value="">Year</option></select>
+</div>
 </label>
 
 <label class="text-xs text-white/60" id="returnTimeWrap">Return Time
-<input class="input mt-2" id="returnTime" type="text" inputmode="numeric" placeholder="e.g. 09:30 or 0930" autocomplete="off"/>
+<select class="input mt-2" id="returnTime"><option value="">Select time…</option></select>
 </label>
 
 <label class="text-xs text-white/60 hidden md:col-span-4" id="returnDestinationWrap">Return Drop-off Address
@@ -1283,44 +1291,52 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     updateReturnFields();
   }
 
-  // Helpers
-  function parseDate(v) {
-    if (!v) return null;
-    v = String(v).trim();
-    // ISO already: YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
-    // With separators: DD/MM/YYYY, DD-MM-YYYY, DD.MM.YYYY
-    var ms = v.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})$/);
-    if (ms) return ms[3] + '-' + ('0' + ms[2]).slice(-2) + '-' + ('0' + ms[1]).slice(-2);
-    // 8 digits DDMMYYYY
-    var d8 = v.match(/^(\d{2})(\d{2})(\d{4})$/);
-    if (d8) return d8[3] + '-' + d8[2] + '-' + d8[1];
-    // 7 digits DMMYYYY (single-digit day)
-    var d7 = v.match(/^(\d{1})(\d{2})(\d{4})$/);
-    if (d7) return d7[3] + '-' + d7[2] + '-' + '0' + d7[1];
-    return null; // unrecognised — don't pass garbage to the API
-  }
+  // Populate date dropdowns (day 01-31, month Jan-Dec, year now+2) and time slots
+  (function() {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var now = new Date();
+    var curYear = now.getFullYear();
 
-  function parseTime(v) {
-    if (!v) return null;
-    v = String(v).trim();
-    // Already HH:MM or H:MM
-    if (/^\d{1,2}:\d{2}$/.test(v)) {
-      var p = v.split(':');
-      return ('0' + p[0]).slice(-2) + ':' + p[1];
-    }
-    // Dot separator HH.MM
-    if (/^\d{1,2}\.\d{2}$/.test(v)) {
-      var p2 = v.split('.');
-      return ('0' + p2[0]).slice(-2) + ':' + p2[1];
-    }
-    // 4 digits HHMM
-    var t4 = v.match(/^(\d{2})(\d{2})$/);
-    if (t4) return t4[1] + ':' + t4[2];
-    // 3 digits HMM
-    var t3 = v.match(/^(\d{1})(\d{2})$/);
-    if (t3) return '0' + t3[1] + ':' + t3[2];
-    return v; // pass through (e.g. already valid or user typed something unusual)
+    ['travelDay','returnDay'].forEach(function(id) {
+      var s = document.getElementById(id); if (!s) return;
+      for (var d = 1; d <= 31; d++) {
+        var o = document.createElement('option');
+        o.value = ('0' + d).slice(-2); o.textContent = ('0' + d).slice(-2); s.appendChild(o);
+      }
+    });
+    ['travelMonth','returnMonth'].forEach(function(id) {
+      var s = document.getElementById(id); if (!s) return;
+      months.forEach(function(name, i) {
+        var o = document.createElement('option');
+        o.value = ('0' + (i + 1)).slice(-2); o.textContent = name; s.appendChild(o);
+      });
+    });
+    ['travelYear','returnYear'].forEach(function(id) {
+      var s = document.getElementById(id); if (!s) return;
+      for (var y = curYear; y <= curYear + 2; y++) {
+        var o = document.createElement('option');
+        o.value = String(y); o.textContent = String(y); s.appendChild(o);
+      }
+    });
+    ['travelTime','returnTime'].forEach(function(id) {
+      var s = document.getElementById(id); if (!s) return;
+      for (var h = 0; h < 24; h++) {
+        for (var m = 0; m < 60; m += 30) {
+          var o = document.createElement('option');
+          var hh = ('0' + h).slice(-2), mm = ('0' + m).slice(-2);
+          o.value = hh + ':' + mm; o.textContent = hh + ':' + mm; s.appendChild(o);
+        }
+      }
+    });
+  })();
+
+  // Helpers
+  function buildDate(dayId, monthId, yearId) {
+    var d = document.getElementById(dayId).value;
+    var m = document.getElementById(monthId).value;
+    var y = document.getElementById(yearId).value;
+    if (!d || !m || !y) return null;
+    return y + '-' + m + '-' + d;
   }
 
   function valueOf(id){
@@ -1366,16 +1382,16 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         airport:           valueOf('airport') || null,
         flight_number:     !toAirport ? valueOf('flightNumber') : null,
         dropoff_address:   !toAirport ? valueOf('dropoff') : null,
-        travel_date:       parseDate(valueOf('travelDate')),
-        travel_time:       parseTime(valueOf('travelTime')),
+        travel_date:       buildDate('travelDay', 'travelMonth', 'travelYear'),
+        travel_time:       valueOf('travelTime') || null,
         passengers:        parseInt(valueOf('passengers')) || 1,
         luggage:           valueOf('luggage') || null,
         return_journey:    isRet,
         return_pickup:     isRet ? valueOf('returnPickup') : null,
         return_airport:    isRet ? valueOf('returnAirport') : null,
         return_flight:     isRet ? valueOf('returnFlight') : null,
-        return_date:       isRet ? parseDate(valueOf('returnDate')) : null,
-        return_time:       isRet ? parseTime(valueOf('returnTime')) : null,
+        return_date:       isRet ? buildDate('returnDay', 'returnMonth', 'returnYear') : null,
+        return_time:       isRet ? valueOf('returnTime') : null,
         return_destination: isRet ? valueOf('returnDestination') : null,
         contact_method:    valueOf('contactMethod') || 'WhatsApp',
         customer_name:     name,
