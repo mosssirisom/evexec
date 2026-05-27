@@ -52,7 +52,7 @@ module.exports = async function handler(req, res) {
       customer_phone:    phone,
       customer_email:    body.customer_email ? body.customer_email.trim() : null,
       status:            'pending',
-      quoted_price:      lookupPrice(airport)
+      quoted_price:      lookupPrice(airport, Boolean(body.return_journey))
     });
 
     const id        = booking.id;
