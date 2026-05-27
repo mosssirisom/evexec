@@ -4,7 +4,7 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendRejectionNotice } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate } = require('../../lib/format');
-const { operatorPage } = require('../../lib/pages');
+const { operatorPage, esc } = require('../../lib/pages');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -47,8 +47,8 @@ module.exports = async function handler(req, res) {
     await sendRejectionNotice(booking);
 
     res.end(operatorPage('Booking Rejected', `
-      <p>Booking for <strong>${booking.customer_name}</strong> has been rejected.</p>
-      <p>${route}<br>${date}</p>
+      <p>Booking for <strong>${esc(booking.customer_name)}</strong> has been rejected.</p>
+      <p>${esc(route)}<br>${esc(date)}</p>
       <p>The customer has been notified. No payment has been taken.</p>
     `, false));
   } catch (err) {

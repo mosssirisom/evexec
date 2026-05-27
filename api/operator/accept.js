@@ -4,7 +4,7 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendSMS, sendEmail } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, getPrice } = require('../../lib/format');
-const { operatorPage } = require('../../lib/pages');
+const { operatorPage, esc } = require('../../lib/pages');
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -87,8 +87,8 @@ module.exports = async function handler(req, res) {
     ].filter(Boolean));
 
     res.end(operatorPage('Booking Accepted ✓', `
-      <p>Booking for <strong>${booking.customer_name}</strong> accepted.</p>
-      <p>${route}<br>${date} at ${booking.travel_time || 'TBC'}</p>
+      <p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p>
+      <p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>
       ${price ? `<p class="price">£${price}</p>` : ''}
       <p>The customer has been notified and sent a payment link.</p>
     `));
