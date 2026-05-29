@@ -1,7 +1,7 @@
 'use strict';
 
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail } = require('../../lib/notify');
+const { sendEmail } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, getPrice } = require('../../lib/format');
 const { operatorPage, esc } = require('../../lib/pages');
@@ -48,19 +48,6 @@ module.exports = async function handler(req, res) {
     const price      = getPrice(booking);
     const firstName  = (booking.customer_name || 'there').split(' ')[0];
 
-    const smsTxt = [
-      `Hi ${firstName}, great news — EV Exec can take your transfer!`,
-      '',
-      route,
-      `${date} at ${booking.travel_time || 'TBC'}`,
-      price ? `Price: £${price}` : '',
-      '',
-      'Please choose your payment method to confirm:',
-      paymentUrl,
-      '',
-      'Questions? 07721 070370'
-    ].filter(l => l !== null).join('\n');
-
     const emailHtml = `
 <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto">
   <div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0">
@@ -77,14 +64,13 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
-    await Promise.allSettled([
-      booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null,
-      booking.customer_email ? sendEmail({
+    if (booking.customer_email) {
+      await sendEmail({
         to: booking.customer_email,
         subject: `EV Exec Transfer Accepted — ${route}`,
         html: emailHtml
-      }) : null
-    ].filter(Boolean));
+      });
+    }
 
     res.end(operatorPage('Booking Accepted ✓', `
       <p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p>
