@@ -3,6 +3,8 @@
   "builds": [
     { "src": "api/**/*.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.xml", "use": "@vercel/static" },
+    { "src": "*.txt", "use": "@vercel/static" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
@@ -11,6 +13,12 @@
     { "src": "/terms", "dest": "/terms.html" },
     { "src": "/privacy", "dest": "/privacy.html" },
     { "src": "/manchester-airport-transfer-blackpool", "dest": "/manchester-airport-transfer-blackpool.html" },
+    { "src": "/liverpool-airport-transfer-blackpool", "dest": "/liverpool-airport-transfer-blackpool.html" },
+    { "src": "/leeds-bradford-airport-transfer-blackpool", "dest": "/leeds-bradford-airport-transfer-blackpool.html" },
+    { "src": "/birmingham-airport-transfer-blackpool", "dest": "/birmingham-airport-transfer-blackpool.html" },
+    { "src": "/newcastle-airport-transfer-blackpool", "dest": "/newcastle-airport-transfer-blackpool.html" },
+    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
     { "src": "/", "dest": "/index.html" }
   ]

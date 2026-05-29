@@ -14,9 +14,11 @@
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast to all major UK airports." property="og:description"/>
 <meta content="website" property="og:type"/>
 <meta content="https://evexec.co.uk/" property="og:url"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" name="twitter:title"/>
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" name="twitter:image"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -504,6 +506,13 @@ main,header,footer{position:relative;z-index:1}
   color:var(--gold);line-height:1;
 }
 .calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.08);padding:20px 0}
+.faq-item:last-child{border-bottom:0;padding-bottom:0}
+.faq-q{font-weight:700;font-size:15px;color:rgba(255,255,255,.92);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;user-select:none}
+.faq-q::after{content:"+";color:var(--gold);font-size:22px;font-weight:400;flex-shrink:0;transition:transform .25s ease}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:15px;color:rgba(255,255,255,.65);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .35s ease,margin .25s ease;margin-top:0}
+.faq-item.open .faq-a{max-height:300px;margin-top:12px}
 </style>
 <script type="application/ld+json">
 {
@@ -529,6 +538,20 @@ main,header,footer{position:relative;z-index:1}
       {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Newcastle Airport Transfer"},"price":"250","priceCurrency":"GBP"}
     ]
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How much does an airport transfer cost?","acceptedAnswer":{"@type":"Answer","text":"EV Exec offers fixed prices for all routes. One-way fares start at £90 to Manchester Airport, £95 to Liverpool, £135 to Leeds Bradford, £215 to Birmingham, and £250 to Newcastle. The price is per vehicle for up to 4 passengers — no hidden fees."}},
+    {"@type":"Question","name":"Do you monitor flights for delays?","acceptedAnswer":{"@type":"Answer","text":"Yes — live flight monitoring is included as standard on all inbound transfers. We track your flight in real time and adjust your pickup time if your flight is delayed or arrives early."}},
+    {"@type":"Question","name":"Which areas do you cover for pickup?","acceptedAnswer":{"@type":"Answer","text":"We cover the full Blackpool, Fylde and Wyre area, including Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham, Freckleton, Warton and Preston."}},
+    {"@type":"Question","name":"What vehicle do you use?","acceptedAnswer":{"@type":"Answer","text":"EV Exec operates a fully electric Tesla Model Y — a premium vehicle seating up to 4 passengers with generous luggage space, heated seats, wireless charging and complimentary refreshments."}},
+    {"@type":"Question","name":"Is the price per person or per vehicle?","acceptedAnswer":{"@type":"Answer","text":"The fixed price is per vehicle, not per person. Up to 4 passengers travel for the same price."}},
+    {"@type":"Question","name":"Is EV Exec licensed and insured?","acceptedAnswer":{"@type":"Answer","text":"Yes. EV Exec holds a valid private hire vehicle licence, full hire and reward insurance and a clean enhanced DBS certificate."}}
+  ]
 }
 </script>
 </head>
@@ -573,6 +596,7 @@ main,header,footer{position:relative;z-index:1}
 <a class="navlink" href="#areas">Coverage</a>
 <a class="navlink" href="#about">Story</a>
 <a class="navlink" href="#reviews">Reviews</a>
+<a class="navlink" href="#faq">FAQ</a>
 <a class="navlink" href="#contact">Contact</a>
 </div>
 
@@ -1153,6 +1177,61 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </div>
 </div>
 </section>
+
+<!-- FAQ -->
+<section class="px-6 py-16 reveal" id="faq" style="border-top:1px solid rgba(255,255,255,.07)">
+<div class="max-w-7xl mx-auto">
+  <div class="max-w-2xl mb-10">
+    <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:700;margin-bottom:8px">FAQ</p>
+    <h2 class="serif font-bold" style="font-size:clamp(2rem,4.5vw,2.8rem);margin:0 0 10px">Frequently Asked Questions</h2>
+    <p style="color:rgba(255,255,255,.60);font-size:15px">Everything you need to know about booking a premium airport transfer with EV Exec.</p>
+  </div>
+
+  <div style="background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:8px 32px;max-w-3xl">
+
+    <div class="faq-item">
+      <p class="faq-q">How much does an airport transfer cost?</p>
+      <p class="faq-a">EV Exec offers fixed prices for all routes — no surge pricing, no hidden fees. One-way fares start at <strong style="color:rgba(255,255,255,.88)">£90 to Manchester Airport</strong>, £95 to Liverpool, £135 to Leeds Bradford, £215 to Birmingham, and £250 to Newcastle. Return fares are double the one-way price. Your price is confirmed before you travel.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Do you monitor flights for delays?</p>
+      <p class="faq-a">Yes — live flight monitoring is included as standard on all inbound transfers. We track your flight in real time and adjust your pickup time if your flight is delayed or arrives early. You will never be left waiting at the airport.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Which areas do you cover for pickup?</p>
+      <p class="faq-a">We cover the full Blackpool, Fylde and Wyre area, including Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Bispham, Kirkham, Freckleton, Warton and Preston. If your area isn't listed, <a class="gold" href="tel:07721070370">contact us</a> — we can often accommodate nearby pickups for an agreed price.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">What vehicle do you use?</p>
+      <p class="faq-a">EV Exec operates a <strong style="color:rgba(255,255,255,.88)">Tesla Model Y</strong> — a fully electric, immaculately presented premium vehicle. It seats up to 4 passengers with generous luggage space, heated seats, wireless charging and complimentary refreshments on every journey.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Is the price per person or per vehicle?</p>
+      <p class="faq-a">The fixed price is <strong style="color:rgba(255,255,255,.88)">per vehicle</strong>, not per person. Up to 4 passengers travel for the same price — making EV Exec excellent value for families and groups compared to per-person taxi or train fares.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">How do I confirm my booking?</p>
+      <p class="faq-a">Once you request a booking via our form, WhatsApp or phone, we confirm your fixed price, pickup time and journey details in writing. You will receive a written confirmation before your travel date — no ambiguity, no last-minute surprises.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Is EV Exec licensed and insured?</p>
+      <p class="faq-a">Yes. EV Exec holds a valid private hire vehicle licence, full hire and reward insurance and a clean enhanced DBS certificate. You can travel with complete peace of mind.</p>
+    </div>
+
+    <div class="faq-item">
+      <p class="faq-q">Can I pay by card or cash?</p>
+      <p class="faq-a">Both are accepted. You can pay by cash on the day or by card — the payment method is confirmed at the time of booking. No payment is taken upfront before your journey is confirmed.</p>
+    </div>
+
+  </div>
+</div>
+</section>
 </main>
 
 <footer class="px-6 py-10" id="contact">
@@ -1189,12 +1268,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div>
 <h3 class="font-bold mb-4">Popular Routes</h3>
 <ul class="space-y-2 text-white/58">
-<li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester Airport</a></li>
-<li><a href="#prices">Blackpool to Liverpool Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Lytham to Manchester Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Poulton to Manchester Airport</a></li>
-<li><a href="#prices">Fleetwood to Liverpool Airport</a></li>
-<li><a href="#prices">View All Prices</a></li>
+<li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester — £90</a></li>
+<li><a href="./liverpool-airport-transfer-blackpool.html">Blackpool to Liverpool — £95</a></li>
+<li><a href="./leeds-bradford-airport-transfer-blackpool.html">Blackpool to Leeds Bradford — £135</a></li>
+<li><a href="./birmingham-airport-transfer-blackpool.html">Blackpool to Birmingham — £215</a></li>
+<li><a href="./newcastle-airport-transfer-blackpool.html">Blackpool to Newcastle — £250</a></li>
 </ul>
 </div>
 
@@ -1484,6 +1562,16 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
   if(co2Route) co2Route.addEventListener('change', updateCO2);
 })();
+</script>
+<script>
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    var item=this.closest('.faq-item');
+    var wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el){el.classList.remove('open')});
+    if(!wasOpen)item.classList.add('open');
+  });
+});
 </script>
 <script src="/public/js/cookie-notice.js"></script>
 </body>

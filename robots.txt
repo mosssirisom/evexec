@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Disallow: /api/
+Disallow: /booking
+
+Sitemap: https://evexec.co.uk/sitemap.xml
