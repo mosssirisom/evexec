@@ -60,7 +60,11 @@ module.exports = async function handler(req, res) {
     <p style="margin:0 0 ${price ? '8px' : '20px'};color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>
     ${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}
     <a href="${paymentUrl}" style="display:block;text-align:center;background:#d5a538;color:#06101c;padding:16px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem">Choose Payment Method</a>
-    <p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">Questions? <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p>
+    <p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">
+      <a href="tel:+447721070370" style="color:#d5a538;text-decoration:none">📞 Call: 07721 070370</a>
+      &nbsp;&nbsp;|&nbsp;&nbsp;
+      <a href="https://wa.me/447721070370" style="color:#25d366;text-decoration:none">💬 WhatsApp us</a>
+    </p>
   </div>
 </div>`;
 
