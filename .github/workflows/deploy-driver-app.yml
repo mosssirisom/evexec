@@ -25,16 +25,27 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Set Supabase env vars
+      - name: Deploy to evexecdriverapp
         working-directory: driver-app
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
-          vercel env rm NEXT_PUBLIC_SUPABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
-          printf 'https://yoltkmhtxwluqxxpewbl.supabase.co' | vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
-          vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
-          printf 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo' | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+          # Point CLI at the existing evexecdriverapp Vercel project
+          mkdir -p .vercel
+          echo '{"projectId":"prj_YQeE3KKh8kwOe65m5wMjgvUw4fZc","orgId":"team_j5oMNS3chhJVz7zmZj3qAQfC"}' \
+            > .vercel/project.json
 
-      - name: Deploy to new Vercel project
-        working-directory: driver-app
-        run: |
-          URL=$(vercel --prod --yes --name=evexec-driver-app --token=${{ secrets.VERCEL_TOKEN }})
+          # Set Supabase public env vars (rm first to avoid duplicate errors)
+          vercel env rm NEXT_PUBLIC_SUPABASE_URL production \
+            --yes --token="${VERCEL_TOKEN}" 2>/dev/null || true
+          echo 'https://yoltkmhtxwluqxxpewbl.supabase.co' | \
+            vercel env add NEXT_PUBLIC_SUPABASE_URL production --token="${VERCEL_TOKEN}"
+
+          vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production \
+            --yes --token="${VERCEL_TOKEN}" 2>/dev/null || true
+          echo 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo' | \
+            vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token="${VERCEL_TOKEN}"
+
+          # Deploy to production
+          URL=$(vercel --prod --yes --token="${VERCEL_TOKEN}")
           echo "Deployed to: $URL"
