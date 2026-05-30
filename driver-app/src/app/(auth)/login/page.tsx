@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import Link from 'next/link';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -94,6 +95,15 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+          </div>
+
+          <div className="flex justify-end -mt-1">
+            <Link
+              href="/forgot-password"
+              className="text-[11px] text-white/35 hover:text-[#d5a538] transition-colors"
+            >
+              Forgot password?
+            </Link>
           </div>
 
           <button

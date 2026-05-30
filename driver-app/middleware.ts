@@ -31,6 +31,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const url = request.nextUrl.clone();
+  // /forgot-password and /reset-password are accessible regardless of auth state
   const isAuthRoute = url.pathname === '/login';
   const isProtectedRoute =
     url.pathname.startsWith('/dashboard') ||
@@ -43,6 +44,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Redirect logged-in users away from login, but NOT from forgot/reset-password
   if (user && isAuthRoute) {
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

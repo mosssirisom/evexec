@@ -26,7 +26,7 @@ export default async function DashboardPage() {
         .select('*')
         .eq('assigned_driver_id', user.id)
         .eq('travel_date', today)
-        .in('status', ['accepted', 'en_route', 'arrived', 'active'])
+        .eq('status', 'accepted')
         .order('travel_time', { ascending: true }),
 
       supabase
