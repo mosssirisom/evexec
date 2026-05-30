@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Briefcase, User } from 'lucide-react';
+import { LayoutDashboard, Briefcase, Car, User } from 'lucide-react';
 
 const NAV = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Home' },
-  { href: '/jobs',      icon: Briefcase,        label: 'Jobs'  },
-  { href: '/profile',   icon: User,             label: 'Me'    },
+  { href: '/dashboard', icon: LayoutDashboard, label: 'Home'   },
+  { href: '/jobs',      icon: Briefcase,       label: 'Board'  },
+  { href: '/my-jobs',   icon: Car,             label: 'Active' },
+  { href: '/profile',   icon: User,            label: 'Me'     },
 ];
 
 export default function BottomNav() {

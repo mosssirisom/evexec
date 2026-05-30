@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import AcceptJobButton from '@/components/AcceptJobButton';
 import StatusStepper from '@/components/StatusStepper';
+import DriverNotesInput from '@/components/DriverNotesInput';
 import type { Booking } from '@/lib/types';
-import { ArrowLeft, Clock, Users, Plane, Phone, MessageSquare, Car, RotateCcw } from 'lucide-react';
+import { ArrowLeft, Clock, Users, Plane, Phone, MessageSquare, Car, RotateCcw, Navigation } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 function fmtDate(d: string) {
@@ -58,6 +59,18 @@ export default async function JobDetailPage({
     b.journey_type === 'From Airport'
       ? b.dropoff_address || 'Destination'
       : b.airport || 'Airport';
+
+  // Address the driver should navigate to, context-aware by status
+  const pickupAddr = b.journey_type === 'To Airport' ? b.pickup_location : b.airport;
+  const dropoffAddr = b.journey_type === 'To Airport' ? b.airport : b.dropoff_address;
+  const navAddr = ['accepted', 'en_route', 'arrived'].includes(b.status)
+    ? pickupAddr
+    : b.status === 'active'
+    ? dropoffAddr
+    : null;
+  const navLabel = ['accepted', 'en_route', 'arrived'].includes(b.status)
+    ? 'Directions to Pickup'
+    : 'Directions to Dropoff';
 
   return (
     <div className="pb-6">
@@ -115,6 +128,21 @@ export default async function JobDetailPage({
         )}
       </div>
 
+      {/* Directions — only for assigned driver, context-aware */}
+      {isAssignedToMe && navAddr && (
+        <div className="mx-5 mb-4">
+          <a
+            href={`https://maps.google.com/?q=${encodeURIComponent(navAddr)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-[#0B1525] border border-white/8 hover:border-[#d5a538]/30 rounded-2xl py-4 text-sm text-white/60 hover:text-white/80 font-medium transition-all"
+          >
+            <Navigation size={15} className="text-[#d5a538]" />
+            {navLabel}
+          </a>
+        </div>
+      )}
+
       {/* Customer contact — only after accepting */}
       {isAssignedToMe && (
         <div className="mx-5 mb-4 bg-[#0B1525] border border-white/8 rounded-2xl px-5 py-1">
@@ -143,6 +171,11 @@ export default async function JobDetailPage({
             </div>
           )}
         </div>
+      )}
+
+      {/* Driver notes — private, only visible to assigned driver */}
+      {isAssignedToMe && (
+        <DriverNotesInput bookingId={b.id} initialNotes={b.driver_notes} />
       )}
 
       {/* CTA / stepper */}

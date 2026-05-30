@@ -1,25 +1,11 @@
 import { redirect } from 'next/navigation';
-import type { ReactNode } from 'react';
 import { createClient } from '@/lib/supabase/server';
 import AppHeader from '@/components/AppHeader';
 import OnlineToggle from '@/components/OnlineToggle';
 import SignOutButton from '@/components/SignOutButton';
+import ProfileEditor from '@/components/ProfileEditor';
 import type { Driver } from '@/lib/types';
-import { User, Phone, Car, Hash, Award } from 'lucide-react';
-
-function ProfileRow({ icon, label, value }: { icon: ReactNode; label: string; value?: string | null }) {
-  return (
-    <div className="flex items-center gap-4 py-4 border-b border-white/5 last:border-0">
-      <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/25 flex-shrink-0">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">{label}</p>
-        <p className="text-sm text-white font-medium truncate">{value ?? '—'}</p>
-      </div>
-    </div>
-  );
-}
+import { User, Award } from 'lucide-react';
 
 export default async function ProfilePage() {
   const supabase = await createClient();
@@ -53,14 +39,30 @@ export default async function ProfilePage() {
         {d && <OnlineToggle driverId={user.id} initialOnline={d.is_online} />}
       </div>
 
-      {/* Details */}
+      {/* Read-only info */}
       <div className="mx-5 mb-4 bg-[#0B1525] border border-white/8 rounded-2xl px-5 py-1">
-        <ProfileRow icon={<User size={15} />}  label="Full Name"     value={d?.full_name} />
-        <ProfileRow icon={<Phone size={15} />} label="Phone"         value={d?.phone} />
-        <ProfileRow icon={<Car size={15} />}   label="Vehicle"       value={d?.vehicle_model} />
-        <ProfileRow icon={<Hash size={15} />}  label="Registration"  value={d?.vehicle_registration} />
-        <ProfileRow icon={<Award size={15} />} label="Driver ID"     value={user.id.slice(0, 8).toUpperCase()} />
+        <div className="flex items-center gap-4 py-4 border-b border-white/5">
+          <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/25 flex-shrink-0">
+            <User size={15} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Full Name</p>
+            <p className="text-sm text-white font-medium truncate">{d?.full_name ?? '—'}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4 py-4">
+          <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white/25 flex-shrink-0">
+            <Award size={15} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">Driver ID</p>
+            <p className="text-sm text-white font-medium truncate">{user.id.slice(0, 8).toUpperCase()}</p>
+          </div>
+        </div>
       </div>
+
+      {/* Editable details */}
+      {d && <ProfileEditor driver={d} />}
 
       {/* Sign out */}
       <div className="mx-5">
