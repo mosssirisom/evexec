@@ -10,10 +10,6 @@ on:
       - '.github/workflows/deploy-driver-app.yml'
   workflow_dispatch:
 
-env:
-  VERCEL_ORG_ID: team_j5oMNS3chhJVz7zmZj3qAQfC
-  VERCEL_PROJECT_ID: prj_FsYq0kcVQlClqkxbM0vJQsjl8o6y
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -29,21 +25,7 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
 
-      - name: Configure Vercel project via API
-        run: |
-          echo "=== Current project state ==="
-          curl -sf "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -m json.tool || true
-
-          echo "=== Removing deployment protection ==="
-          curl -s -X PATCH \
-            "https://api.vercel.com/v9/projects/$VERCEL_PROJECT_ID?teamId=$VERCEL_ORG_ID" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{"ssoProtection": null, "passwordProtection": null, "framework": "nextjs"}' \
-            | python3 -m json.tool || true
-
-      - name: Set Supabase env vars on Vercel project
+      - name: Set Supabase env vars
         working-directory: driver-app
         run: |
           vercel env rm NEXT_PUBLIC_SUPABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
@@ -51,12 +33,8 @@ jobs:
           vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
           printf 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo' | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=${{ secrets.VERCEL_TOKEN }}
 
-      - name: Deploy to Vercel
+      - name: Deploy to new Vercel project
         working-directory: driver-app
         run: |
-          echo "=== Deploying ==="
-          vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }} 2>&1 || true
-
-          echo "=== Checking latest deployment state ==="
-          curl -sf "https://api.vercel.com/v6/deployments?projectId=$VERCEL_PROJECT_ID&teamId=$VERCEL_ORG_ID&limit=1" \
-            -H "Authorization: Bearer ${{ secrets.VERCEL_TOKEN }}" | python3 -m json.tool || true
+          URL=$(vercel --prod --yes --name=evexec-driver-app --token=${{ secrets.VERCEL_TOKEN }})
+          echo "Deployed to: $URL"
