@@ -1,0 +1,50 @@
+name: Deploy Driver App
+
+on:
+  push:
+    branches: [main]
+    paths: ['driver-app/**']
+  workflow_dispatch:
+
+env:
+  VERCEL_ORG_ID: team_j5oMNS3chhJVz7zmZj3qAQfC
+  VERCEL_PROJECT_ID: prj_FsYq0kcVQlClqkxbM0vJQsjl8o6y
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: driver-app/package-lock.json
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      # Set env vars on the Vercel project (idempotent — safe to re-run)
+      - name: Set Supabase env vars on Vercel project
+        working-directory: driver-app
+        run: |
+          vercel env rm NEXT_PUBLIC_SUPABASE_URL production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
+          printf 'https://yoltkmhtxwluqxxpewbl.supabase.co' | vercel env add NEXT_PUBLIC_SUPABASE_URL production --token=${{ secrets.VERCEL_TOKEN }}
+          vercel env rm NEXT_PUBLIC_SUPABASE_ANON_KEY production --yes --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null || true
+          printf 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo' | vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Pull Vercel project settings
+        working-directory: driver-app
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build
+        working-directory: driver-app
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to production
+        working-directory: driver-app
+        run: |
+          URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "Deployed: $URL"
+          echo "Production: https://ev-exec-driver.vercel.app"
