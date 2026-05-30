@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Car, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,16 +36,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 bg-[#020813]">
       {/* Brand mark */}
       <div className="mb-10 text-center">
-        <div
-          className="w-16 h-16 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-lg"
-          style={{
-            background: 'linear-gradient(135deg, #f1c56a, #d5a538 55%, #a97918)',
-            boxShadow: '0 8px 32px rgba(213,165,56,0.25)',
-          }}
-        >
-          <Car className="w-8 h-8 text-[#020813]" strokeWidth={2.5} />
-        </div>
-        <h1 className="font-serif text-3xl font-bold text-white tracking-tight">EV Exec</h1>
+        <Image
+          src="/logo.jpg"
+          alt="EV Exec"
+          width={140}
+          height={140}
+          className="mx-auto mb-2"
+          priority
+        />
         <p className="text-sm text-white/40 mt-1 tracking-widest uppercase text-xs">Driver Portal</p>
       </div>
 
