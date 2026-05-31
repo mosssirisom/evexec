@@ -25,11 +25,13 @@
 <meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" name="twitter:image"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
-<link rel="preload" as="image" href="./public/images/ev-exec-image-1.jpg"/>
+<link rel="preload" as="image" href="./public/images/ev-exec-image-1.jpg" fetchpriority="high"/>
+<link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="./public/css/tw.min.css"/>
 
 <script type="application/ld+json">
 {
@@ -102,6 +104,14 @@
           {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Birmingham Airport Transfer"},"price":"215","priceCurrency":"GBP"},
           {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Newcastle Airport Transfer"},"price":"250","priceCurrency":"GBP"}
         ]
+      },
+      "founder": {
+        "@type": "Person",
+        "@id": "https://evexec.co.uk/#founder",
+        "name": "Moss",
+        "jobTitle": "Founder & Driver",
+        "worksFor": {"@id": "https://evexec.co.uk/#business"},
+        "knowsAbout": ["Airport Transfers", "Electric Vehicles", "Luxury Chauffeur Service", "Blackpool", "Lancashire"]
       }
     }
   ]
