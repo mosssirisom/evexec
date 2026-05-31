@@ -1,7 +1,7 @@
 'use strict';
 
 const { dbInsert, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail } = require('../../lib/notify');
+const { sendEmail } = require('../../lib/notify');
 const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
@@ -64,26 +64,6 @@ module.exports = async function handler(req, res) {
     const date  = fmtDate(booking.travel_date);
     const price = getPrice(booking);
 
-    const returnLine = booking.return_journey
-      ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
-      : null;
-
-    const smsTxt = [
-      'New EV Exec booking:',
-      route,
-      `${date} at ${booking.travel_time || 'TBC'}`,
-      `${booking.passengers} passenger(s)${booking.luggage ? `, ${booking.luggage}` : ''}`,
-      returnLine,
-      '',
-      `Customer: ${name}`,
-      `Phone: ${phone}`,
-      booking.customer_email ? `Email: ${booking.customer_email}` : '',
-      '',
-      `Accept: ${acceptUrl}`,
-      '',
-      `Reject: ${rejectUrl}`
-    ].filter(l => l !== null).join('\n');
-
     const emailHtml = `
 <div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:580px;margin:0 auto;background:#07111f;border-radius:16px;overflow:hidden;border:1px solid rgba(213,165,56,.25)">
 
@@ -137,14 +117,9 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
-    await Promise.allSettled([
-      process.env.OPERATOR_PHONE
-        ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
-        : null,
-      process.env.OPERATOR_EMAIL
-        ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
-        : null
-    ].filter(Boolean));
+    if (process.env.OPERATOR_EMAIL) {
+      await sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml });
+    }
 
     res.statusCode = 200;
     res.end(JSON.stringify({ success: true, bookingId: id }));

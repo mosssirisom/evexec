@@ -13,14 +13,20 @@
 <meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" property="og:title"/>
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast to all major UK airports." property="og:description"/>
 <meta content="website" property="og:type"/>
+<meta property="og:locale" content="en_GB"/>
+<meta property="og:site_name" content="EV Exec"/>
 <meta content="https://evexec.co.uk/" property="og:url"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" property="og:image"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" name="twitter:title"/>
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" name="twitter:image"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/public/css/tw.css"/>
+<link rel="icon" href="/public/images/favicon.svg" type="image/svg+xml"/>
+<link rel="apple-touch-icon" href="/public/images/ev-exec-image-1.jpg"/>
 
 <script type="application/ld+json">
 {
@@ -51,16 +57,49 @@
     "Corporate Travel",
     "Electric Chauffeur Service"
   ],
+  "sameAs": ["https://maps.app.goo.gl/fh43R1T6Z6fyWPCUA"],
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "5",
+    "reviewCount": "3",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {"@type": "Person", "name": "David S."},
+      "datePublished": "2025-03",
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "reviewBody": "Used Moss last week on a trip to Liverpool. Clean car, on time, everything went smoothly. Would recommend."
+    },
+    {
+      "@type": "Review",
+      "author": {"@type": "Person", "name": "Matthew J."},
+      "datePublished": "2025-02",
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "reviewBody": "From booking to drop off — first class. Great price for the quality you get. Highly recommended."
+    },
+    {
+      "@type": "Review",
+      "author": {"@type": "Person", "name": "Lynn V."},
+      "datePublished": "2025-01",
+      "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"},
+      "reviewBody": "Excellent service. On time, friendly and professional. Smooth journey, clean vehicle, great communication."
+    }
+  ],
   "provider": {
     "@type": "LocalBusiness",
     "name": "EV Exec",
     "url": "https://evexec.co.uk/",
     "telephone": "+447721070370",
     "email": "book@evexec.co.uk",
+    "sameAs": ["https://maps.app.goo.gl/fh43R1T6Z6fyWPCUA"],
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Blackpool",
       "addressRegion": "Lancashire",
+      "postalCode": "FY1",
       "addressCountry": "GB"
     }
   }
@@ -472,6 +511,13 @@ main,header,footer{position:relative;z-index:1}
   color:var(--gold);line-height:1;
 }
 .calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
+.faq-item{border-bottom:1px solid rgba(255,255,255,.08);padding:20px 0}
+.faq-item:last-child{border-bottom:0;padding-bottom:0}
+.faq-q{background:none;border:none;padding:0;width:100%;text-align:left;font-family:inherit;font-weight:700;font-size:15px;color:rgba(255,255,255,.92);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;user-select:none}
+.faq-q::after{content:"+";color:var(--gold);font-size:22px;font-weight:400;flex-shrink:0;transition:transform .25s ease}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{font-size:15px;color:rgba(255,255,255,.65);line-height:1.75;max-height:0;overflow:hidden;transition:max-height .35s ease,margin .25s ease;margin-top:0}
+.faq-item.open .faq-a{max-height:300px;margin-top:12px}
 </style>
 <script type="application/ld+json">
 {
@@ -484,7 +530,7 @@ main,header,footer{position:relative;z-index:1}
   "email": "book@evexec.co.uk",
   "priceRange": "££",
   "areaServed": {"@type": "Place", "name": "Blackpool, Fylde & Wyre, Lancashire, UK"},
-  "address": {"@type": "PostalAddress", "addressLocality": "Blackpool", "addressRegion": "Lancashire", "addressCountry": "GB"},
+  "address": {"@type": "PostalAddress", "addressLocality": "Blackpool", "addressRegion": "Lancashire", "postalCode": "FY1", "addressCountry": "GB"},
   "openingHours": "Mo-Su 00:00-24:00",
   "hasOfferCatalog": {
     "@type": "OfferCatalog",
@@ -499,9 +545,24 @@ main,header,footer{position:relative;z-index:1}
   }
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How much does an airport transfer cost?","acceptedAnswer":{"@type":"Answer","text":"EV Exec offers fixed prices for all routes. One-way fares start at £90 to Manchester Airport, £95 to Liverpool, £135 to Leeds Bradford, £215 to Birmingham, and £250 to Newcastle. The price is per vehicle for up to 4 passengers — no hidden fees."}},
+    {"@type":"Question","name":"Do you monitor flights for delays?","acceptedAnswer":{"@type":"Answer","text":"Yes — live flight monitoring is included as standard on all inbound transfers. We track your flight in real time and adjust your pickup time if your flight is delayed or arrives early."}},
+    {"@type":"Question","name":"Which areas do you cover for pickup?","acceptedAnswer":{"@type":"Answer","text":"We cover the full Blackpool, Fylde and Wyre area, including Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham, Freckleton, Warton and Preston."}},
+    {"@type":"Question","name":"What vehicle do you use?","acceptedAnswer":{"@type":"Answer","text":"EV Exec operates a fully electric Tesla Model Y — a premium vehicle seating up to 4 passengers with generous luggage space, heated seats, wireless charging and complimentary refreshments."}},
+    {"@type":"Question","name":"Is the price per person or per vehicle?","acceptedAnswer":{"@type":"Answer","text":"The fixed price is per vehicle, not per person. Up to 4 passengers travel for the same price."}},
+    {"@type":"Question","name":"Is EV Exec licensed and insured?","acceptedAnswer":{"@type":"Answer","text":"Yes. EV Exec holds a valid private hire vehicle licence, full hire and reward insurance and a clean enhanced DBS certificate."}}
+  ]
+}
+</script>
 </head>
 
 <body>
+<a href="#main-content" style="position:absolute;left:-9999px;top:4px;z-index:9999;padding:8px 16px;background:#d5a538;color:#020813;font-weight:700;font-size:14px;text-decoration:none;border-radius:4px" onfocus="this.style.left='8px'" onblur="this.style.left='-9999px'">Skip to main content</a>
 <div aria-hidden="true" class="cursor-glow"></div>
 
 <svg height="0" style="position:absolute" width="0">
@@ -541,6 +602,7 @@ main,header,footer{position:relative;z-index:1}
 <a class="navlink" href="#areas">Coverage</a>
 <a class="navlink" href="#about">Story</a>
 <a class="navlink" href="#reviews">Reviews</a>
+<a class="navlink" href="#faq">FAQ</a>
 <a class="navlink" href="#contact">Contact</a>
 </div>
 
@@ -560,7 +622,7 @@ main,header,footer{position:relative;z-index:1}
 </nav>
 </header>
 
-<main>
+<main id="main-content">
 <section class="hero px-6 pt-32 pb-12">
 <div class="max-w-7xl mx-auto">
 <div class="max-w-[560px] pt-8">
@@ -884,6 +946,47 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </div>
 </section>
 
+<!-- Route Guides -->
+<section class="px-6 py-12 reveal" id="routes" style="border-top:1px solid rgba(255,255,255,.07)">
+<div class="max-w-7xl mx-auto">
+  <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:700;margin-bottom:8px">Route Guides</p>
+  <h2 class="serif font-bold mb-3" style="font-size:clamp(1.8rem,4vw,2.4rem);margin:0 0 8px">Airport Transfer Guides from Blackpool</h2>
+  <p style="color:rgba(255,255,255,.60);font-size:15px;margin:0 0 28px">Detailed route information, journey times, fixed prices and FAQs for every airport we serve.</p>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <a href="./manchester-airport-transfer-blackpool.html" style="display:block;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:22px 24px;text-decoration:none;transition:border-color .25s ease,transform .25s ease" onmouseover="this.style.borderColor='rgba(213,165,56,.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,.10)';this.style.transform='translateY(0)'">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin:0 0 8px">60–90 min</p>
+      <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px">Manchester Airport</h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13.5px;margin:0 0 14px">Blackpool & Fylde Coast · M55 & M56</p>
+      <p style="font-size:1.5rem;font-weight:900;color:var(--gold);font-family:'Cormorant Garamond',serif;margin:0">£90 <span style="font-size:0.85rem;color:rgba(255,255,255,.45);font-family:Inter,sans-serif;font-weight:400">one way</span></p>
+    </a>
+    <a href="./liverpool-airport-transfer-blackpool.html" style="display:block;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:22px 24px;text-decoration:none;transition:border-color .25s ease,transform .25s ease" onmouseover="this.style.borderColor='rgba(213,165,56,.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,.10)';this.style.transform='translateY(0)'">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin:0 0 8px">55–75 min</p>
+      <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px">Liverpool Airport</h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13.5px;margin:0 0 14px">Blackpool & Fylde Coast · M55 & M6</p>
+      <p style="font-size:1.5rem;font-weight:900;color:var(--gold);font-family:'Cormorant Garamond',serif;margin:0">£95 <span style="font-size:0.85rem;color:rgba(255,255,255,.45);font-family:Inter,sans-serif;font-weight:400">one way</span></p>
+    </a>
+    <a href="./leeds-bradford-airport-transfer-blackpool.html" style="display:block;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:22px 24px;text-decoration:none;transition:border-color .25s ease,transform .25s ease" onmouseover="this.style.borderColor='rgba(213,165,56,.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,.10)';this.style.transform='translateY(0)'">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin:0 0 8px">80–100 min</p>
+      <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px">Leeds Bradford Airport</h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13.5px;margin:0 0 14px">Blackpool & Fylde Coast · M6 & M62</p>
+      <p style="font-size:1.5rem;font-weight:900;color:var(--gold);font-family:'Cormorant Garamond',serif;margin:0">£135 <span style="font-size:0.85rem;color:rgba(255,255,255,.45);font-family:Inter,sans-serif;font-weight:400">one way</span></p>
+    </a>
+    <a href="./birmingham-airport-transfer-blackpool.html" style="display:block;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:22px 24px;text-decoration:none;transition:border-color .25s ease,transform .25s ease" onmouseover="this.style.borderColor='rgba(213,165,56,.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,.10)';this.style.transform='translateY(0)'">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin:0 0 8px">~2.5 hrs</p>
+      <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px">Birmingham Airport</h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13.5px;margin:0 0 14px">Blackpool & Fylde Coast · M6 South</p>
+      <p style="font-size:1.5rem;font-weight:900;color:var(--gold);font-family:'Cormorant Garamond',serif;margin:0">£215 <span style="font-size:0.85rem;color:rgba(255,255,255,.45);font-family:Inter,sans-serif;font-weight:400">one way</span></p>
+    </a>
+    <a href="./newcastle-airport-transfer-blackpool.html" style="display:block;background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:14px;padding:22px 24px;text-decoration:none;transition:border-color .25s ease,transform .25s ease" onmouseover="this.style.borderColor='rgba(213,165,56,.35)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='rgba(255,255,255,.10)';this.style.transform='translateY(0)'">
+      <p style="font-size:10px;text-transform:uppercase;letter-spacing:.15em;color:var(--gold);font-weight:700;margin:0 0 8px">~2.5 hrs</p>
+      <h3 style="font-size:1.05rem;font-weight:800;color:#fff;margin:0 0 6px">Newcastle Airport</h3>
+      <p style="color:rgba(255,255,255,.55);font-size:13.5px;margin:0 0 14px">Blackpool & Fylde Coast · M6 & A1(M)</p>
+      <p style="font-size:1.5rem;font-weight:900;color:var(--gold);font-family:'Cormorant Garamond',serif;margin:0">£250 <span style="font-size:0.85rem;color:rgba(255,255,255,.45);font-family:Inter,sans-serif;font-weight:400">one way</span></p>
+    </a>
+  </div>
+</div>
+</section>
+
 <!-- CO₂ Calculator -->
 <section class="px-6 py-10 reveal" id="eco">
 <div class="max-w-7xl mx-auto">
@@ -1068,8 +1171,9 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
 </div>
 
-<div class="mt-7 text-center">
-<a class="btn-dark glass rounded-md px-7 py-4 inline-block font-bold" href="https://g.page/r/CVPMqDntIQ3xEAE/review" rel="noopener" target="_blank">View more on Google</a>
+<div class="mt-7 text-center flex flex-col sm:flex-row gap-3 justify-center">
+<a class="btn-dark glass rounded-md px-7 py-4 inline-block font-bold" href="https://maps.app.goo.gl/fh43R1T6Z6fyWPCUA" rel="noopener" target="_blank">View us on Google Maps</a>
+<a class="btn-gold rounded-md px-7 py-4 inline-block font-bold" href="https://g.page/r/CVPMqDntIQ3xEAE/review" rel="noopener" target="_blank">Leave us a Review ★</a>
 </div>
 </div>
 </div>
@@ -1120,6 +1224,61 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </div>
 </div>
 </section>
+
+<!-- FAQ -->
+<section class="px-6 py-16 reveal" id="faq" style="border-top:1px solid rgba(255,255,255,.07)">
+<div class="max-w-7xl mx-auto">
+  <div class="max-w-2xl mb-10">
+    <p style="font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--gold);font-weight:700;margin-bottom:8px">FAQ</p>
+    <h2 class="serif font-bold" style="font-size:clamp(2rem,4.5vw,2.8rem);margin:0 0 10px">Frequently Asked Questions</h2>
+    <p style="color:rgba(255,255,255,.60);font-size:15px">Everything you need to know about booking a premium airport transfer with EV Exec.</p>
+  </div>
+
+  <div style="background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:8px 32px;max-w-3xl">
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">How much does an airport transfer cost?</button>
+      <p class="faq-a">EV Exec offers fixed prices for all routes — no surge pricing, no hidden fees. One-way fares start at <strong style="color:rgba(255,255,255,.88)">£90 to Manchester Airport</strong>, £95 to Liverpool, £135 to Leeds Bradford, £215 to Birmingham, and £250 to Newcastle. Return fares are double the one-way price. Your price is confirmed before you travel.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">Do you monitor flights for delays?</button>
+      <p class="faq-a">Yes — live flight monitoring is included as standard on all inbound transfers. We track your flight in real time and adjust your pickup time if your flight is delayed or arrives early. You will never be left waiting at the airport.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">Which areas do you cover for pickup?</button>
+      <p class="faq-a">We cover the full Blackpool, Fylde and Wyre area, including Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Bispham, Kirkham, Freckleton, Warton and Preston. If your area isn't listed, <a class="gold" href="tel:07721070370">contact us</a> — we can often accommodate nearby pickups for an agreed price.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">What vehicle do you use?</button>
+      <p class="faq-a">EV Exec operates a <strong style="color:rgba(255,255,255,.88)">Tesla Model Y</strong> — a fully electric, immaculately presented premium vehicle. It seats up to 4 passengers with generous luggage space, heated seats, wireless charging and complimentary refreshments on every journey.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">Is the price per person or per vehicle?</button>
+      <p class="faq-a">The fixed price is <strong style="color:rgba(255,255,255,.88)">per vehicle</strong>, not per person. Up to 4 passengers travel for the same price — making EV Exec excellent value for families and groups compared to per-person taxi or train fares.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">How do I confirm my booking?</button>
+      <p class="faq-a">Once you request a booking via our form, WhatsApp or phone, we confirm your fixed price, pickup time and journey details in writing. You will receive a written confirmation before your travel date — no ambiguity, no last-minute surprises.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">Is EV Exec licensed and insured?</button>
+      <p class="faq-a">Yes. EV Exec holds a valid private hire vehicle licence, full hire and reward insurance and a clean enhanced DBS certificate. You can travel with complete peace of mind.</p>
+    </div>
+
+    <div class="faq-item">
+      <button class="faq-q" type="button" aria-expanded="false">Can I pay by card or cash?</button>
+      <p class="faq-a">Both are accepted. You can pay by cash on the day or by card — the payment method is confirmed at the time of booking. No payment is taken upfront before your journey is confirmed.</p>
+    </div>
+
+  </div>
+</div>
+</section>
 </main>
 
 <footer class="px-6 py-10" id="contact">
@@ -1137,7 +1296,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div class="flex gap-3 mt-5">
 <a aria-label="Call EV Exec" class="icon" href="tel:07721070370"><svg class="clean-icon"><use href="#i-phone"></use></svg></a>
 <a aria-label="WhatsApp EV Exec" class="icon" href="https://wa.me/447721070370"><svg class="clean-icon"><use href="#i-user"></use></svg></a>
-<a aria-label="Reviews" class="icon" href="#reviews"><svg class="clean-icon"><use href="#i-star"></use></svg></a>
+<a aria-label="Leave a Google review" class="icon" href="https://g.page/r/CVPMqDntIQ3xEAE/review" rel="noopener" target="_blank"><svg class="clean-icon"><use href="#i-star"></use></svg></a>
 </div>
 </div>
 
@@ -1156,12 +1315,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div>
 <h3 class="font-bold mb-4">Popular Routes</h3>
 <ul class="space-y-2 text-white/58">
-<li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester Airport</a></li>
-<li><a href="#prices">Blackpool to Liverpool Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Lytham to Manchester Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Poulton to Manchester Airport</a></li>
-<li><a href="#prices">Fleetwood to Liverpool Airport</a></li>
-<li><a href="#prices">View All Prices</a></li>
+<li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester — £90</a></li>
+<li><a href="./liverpool-airport-transfer-blackpool.html">Blackpool to Liverpool — £95</a></li>
+<li><a href="./leeds-bradford-airport-transfer-blackpool.html">Blackpool to Leeds Bradford — £135</a></li>
+<li><a href="./birmingham-airport-transfer-blackpool.html">Blackpool to Birmingham — £215</a></li>
+<li><a href="./newcastle-airport-transfer-blackpool.html">Blackpool to Newcastle — £250</a></li>
 </ul>
 </div>
 
@@ -1171,7 +1329,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><a href="tel:07721070370">07721 070370</a></li>
 <li class="flex gap-3"><svg class="clean-icon"><use href="#i-phone"></use></svg><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp Us</a></li>
 <li class="flex gap-3"><svg class="clean-icon"><use href="#i-mail"></use></svg><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a></li>
-<li class="flex gap-3"><svg class="clean-icon"><use href="#i-map"></use></svg><span>Blackpool, Fylde & Wyre</span></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-map"></use></svg><a href="https://maps.app.goo.gl/fh43R1T6Z6fyWPCUA" rel="noopener" target="_blank">Find us on Google Maps</a></li>
+<li class="flex gap-3"><svg class="clean-icon"><use href="#i-star"></use></svg><a href="https://g.page/r/CVPMqDntIQ3xEAE/review" rel="noopener" target="_blank">Leave a Google Review</a></li>
 </ul>
 </div>
 </div>
@@ -1451,5 +1610,19 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   if(co2Route) co2Route.addEventListener('change', updateCO2);
 })();
 </script>
+<script>
+document.querySelectorAll('.faq-q').forEach(function(q){
+  q.addEventListener('click',function(){
+    var item=this.closest('.faq-item');
+    var wasOpen=item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el){
+      el.classList.remove('open');
+      el.querySelector('.faq-q').setAttribute('aria-expanded','false');
+    });
+    if(!wasOpen){item.classList.add('open');this.setAttribute('aria-expanded','true');}
+  });
+});
+</script>
+<script src="/public/js/cookie-notice.js"></script>
 </body>
 </html>

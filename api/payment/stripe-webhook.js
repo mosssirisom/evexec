@@ -1,9 +1,5 @@
 'use strict';
 
-// Tell @vercel/node not to pre-parse the body — Stripe signature verification
-// requires the raw bytes exactly as received.
-module.exports.config = { api: { bodyParser: false } };
-
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
@@ -36,7 +32,7 @@ function verifyStripeSignature(rawBody, sigHeader, secret) {
   return JSON.parse(rawBody.toString('utf8'));
 }
 
-module.exports = async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== 'POST') {
     res.statusCode = 405;
     return res.end('Method not allowed');
@@ -90,4 +86,7 @@ module.exports = async function handler(req, res) {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify({ received: true }));
-};
+}
+
+module.exports = handler;
+module.exports.config = { api: { bodyParser: false } };
