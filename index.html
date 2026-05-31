@@ -17,6 +17,16 @@
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre" name="twitter:title"/>
 <meta content="Fixed prices, live flight monitoring, luxury Tesla Model Y. Premium airport transfers from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" property="og:image"/>
+<meta content="1200" property="og:image:width"/>
+<meta content="630" property="og:image:height"/>
+<meta content="EV Exec" property="og:site_name"/>
+<meta content="en_GB" property="og:locale"/>
+<meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" name="twitter:image"/>
+<!-- Google Analytics 4 — replace G-XXXXXXXXXX with your Measurement ID from analytics.google.com -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script> -->
+<link rel="preload" as="image" href="./public/images/ev-exec-image-1.jpg"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -25,45 +35,77 @@
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "TaxiService",
-  "@id": "https://evexec.co.uk/#taxiservice",
-  "name": "EV Exec",
-  "url": "https://evexec.co.uk/",
-  "description": "Premium all-electric Tesla airport transfers across Blackpool, Fylde and Wyre.",
-  "telephone": "+447721070370",
-  "email": "book@evexec.co.uk",
-  "priceRange": "££",
-  "image": "https://evexec.co.uk/public/images/ev-exec-image-1.jpg",
-  "areaServed": [
-    {"@type": "AdministrativeArea","name": "Blackpool"},
-    {"@type": "AdministrativeArea","name": "Fylde"},
-    {"@type": "AdministrativeArea","name": "Wyre"},
-    {"@type": "Place","name": "Lytham St Annes"},
-    {"@type": "Place","name": "Poulton-le-Fylde"},
-    {"@type": "Place","name": "Fleetwood"},
-    {"@type": "Place","name": "Thornton-Cleveleys"},
-    {"@type": "Place","name": "Preston"}
-  ],
-  "serviceType": [
-    "Airport Transfer",
-    "Executive Transfer",
-    "Private Hire",
-    "Corporate Travel",
-    "Electric Chauffeur Service"
-  ],
-  "provider": {
-    "@type": "LocalBusiness",
-    "name": "EV Exec",
-    "url": "https://evexec.co.uk/",
-    "telephone": "+447721070370",
-    "email": "book@evexec.co.uk",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Blackpool",
-      "addressRegion": "Lancashire",
-      "addressCountry": "GB"
+  "@graph": [
+    {
+      "@type": ["TaxiService", "LocalBusiness"],
+      "@id": "https://evexec.co.uk/#business",
+      "name": "EV Exec",
+      "url": "https://evexec.co.uk/",
+      "description": "Premium all-electric Tesla airport transfers from Blackpool and the Fylde Coast to all major UK airports. Fixed prices, live flight monitoring, luxury Tesla Model Y.",
+      "telephone": "+447721070370",
+      "email": "book@evexec.co.uk",
+      "priceRange": "££",
+      "image": "https://evexec.co.uk/public/images/ev-exec-image-1.jpg",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Blackpool",
+        "addressRegion": "Lancashire",
+        "addressCountry": "GB"
+      },
+      "areaServed": [
+        {"@type": "AdministrativeArea", "name": "Blackpool"},
+        {"@type": "AdministrativeArea", "name": "Fylde"},
+        {"@type": "AdministrativeArea", "name": "Wyre"},
+        {"@type": "Place", "name": "Lytham St Annes"},
+        {"@type": "Place", "name": "Poulton-le-Fylde"},
+        {"@type": "Place", "name": "Fleetwood"},
+        {"@type": "Place", "name": "Thornton-Cleveleys"},
+        {"@type": "Place", "name": "Preston"}
+      ],
+      "serviceType": ["Airport Transfer", "Executive Transfer", "Private Hire", "Corporate Travel", "Electric Chauffeur Service"],
+      "openingHours": "Mo-Su 00:00-24:00",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "reviewCount": "3"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": {"@type": "Person", "name": "David S."},
+          "datePublished": "2025-03",
+          "reviewBody": "Used Moss last week on a trip to Liverpool. Clean car, on time, everything went smoothly. Would recommend.",
+          "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        },
+        {
+          "@type": "Review",
+          "author": {"@type": "Person", "name": "Matthew J."},
+          "datePublished": "2025-02",
+          "reviewBody": "From booking to drop off — first class. Great price for the quality you get. Highly recommended.",
+          "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        },
+        {
+          "@type": "Review",
+          "author": {"@type": "Person", "name": "Lynn V."},
+          "datePublished": "2025-01",
+          "reviewBody": "Excellent service. On time, friendly and professional. Smooth journey, clean vehicle, great communication.",
+          "reviewRating": {"@type": "Rating", "ratingValue": "5", "bestRating": "5"}
+        }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Airport Transfer Services",
+        "itemListElement": [
+          {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Manchester Airport Transfer"},"price":"90","priceCurrency":"GBP"},
+          {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Liverpool Airport Transfer"},"price":"95","priceCurrency":"GBP"},
+          {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Leeds Bradford Airport Transfer"},"price":"135","priceCurrency":"GBP"},
+          {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Birmingham Airport Transfer"},"price":"215","priceCurrency":"GBP"},
+          {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Newcastle Airport Transfer"},"price":"250","priceCurrency":"GBP"}
+        ]
+      }
     }
-  }
+  ]
 }
 </script>
 
@@ -457,6 +499,13 @@ main,header,footer{position:relative;z-index:1}
 .metric-card:hover{background:rgba(213,165,56,.055)}
 .metric-label{font-weight:700;font-size:15px;margin-top:10px}
 .metric-sub{color:rgba(255,255,255,.50);font-size:12px;margin-top:5px;line-height:1.45}
+/* Map embed */
+.map-frame{
+  border-radius:16px;overflow:hidden;
+  border:1px solid rgba(213,165,56,.15);
+  aspect-ratio:16/9;min-height:260px;
+}
+.map-frame iframe{width:100%;height:100%;border:0;display:block}
 /* CO2 calculator */
 .calculator-card{
   max-width:620px;margin:0 auto;
@@ -473,32 +522,6 @@ main,header,footer{position:relative;z-index:1}
 }
 .calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
 </style>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": ["TaxiService", "LocalBusiness"],
-  "name": "EV Exec",
-  "description": "Premium airport transfers from Blackpool and the Fylde Coast to all major UK airports. Fixed prices, live flight monitoring, luxury Tesla Model Y.",
-  "url": "https://evexec.co.uk",
-  "telephone": "+447721070370",
-  "email": "book@evexec.co.uk",
-  "priceRange": "££",
-  "areaServed": {"@type": "Place", "name": "Blackpool, Fylde & Wyre, Lancashire, UK"},
-  "address": {"@type": "PostalAddress", "addressLocality": "Blackpool", "addressRegion": "Lancashire", "addressCountry": "GB"},
-  "openingHours": "Mo-Su 00:00-24:00",
-  "hasOfferCatalog": {
-    "@type": "OfferCatalog",
-    "name": "Airport Transfer Services",
-    "itemListElement": [
-      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Manchester Airport Transfer"},"price":"90","priceCurrency":"GBP"},
-      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Liverpool Airport Transfer"},"price":"95","priceCurrency":"GBP"},
-      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Leeds Bradford Airport Transfer"},"price":"135","priceCurrency":"GBP"},
-      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Birmingham Airport Transfer"},"price":"215","priceCurrency":"GBP"},
-      {"@type":"Offer","itemOffered":{"@type":"TaxiService","name":"Blackpool to Newcastle Airport Transfer"},"price":"250","priceCurrency":"GBP"}
-    ]
-  }
-}
-</script>
 </head>
 
 <body>
@@ -862,8 +885,8 @@ Send Booking Request
 </thead>
 <tbody>
 <tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./manchester-airport-transfer-blackpool.html">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£180</td></tr>
-<tr><td data-label="Airport">Liverpool Airport</td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£190</td></tr>
-<tr><td data-label="Airport">Leeds Bradford Airport</td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£270</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./liverpool-airport-transfer-blackpool.html">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£190</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./leeds-bradford-airport-transfer-blackpool.html">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£270</td></tr>
 <tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£430</td></tr>
 <tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£500</td></tr>
 </tbody>
@@ -1157,10 +1180,10 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <h3 class="font-bold mb-4">Popular Routes</h3>
 <ul class="space-y-2 text-white/58">
 <li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester Airport</a></li>
-<li><a href="#prices">Blackpool to Liverpool Airport</a></li>
+<li><a href="./liverpool-airport-transfer-blackpool.html">Blackpool to Liverpool Airport</a></li>
+<li><a href="./leeds-bradford-airport-transfer-blackpool.html">Blackpool to Leeds Bradford Airport</a></li>
 <li><a href="./manchester-airport-transfer-blackpool.html">Lytham to Manchester Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Poulton to Manchester Airport</a></li>
-<li><a href="#prices">Fleetwood to Liverpool Airport</a></li>
+<li><a href="./liverpool-airport-transfer-blackpool.html">Fleetwood to Liverpool Airport</a></li>
 <li><a href="#prices">View All Prices</a></li>
 </ul>
 </div>
