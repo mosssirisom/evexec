@@ -1365,9 +1365,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   // Helpers
   function buildDate(dayId, monthId, yearId) {
-    var d = document.getElementById(dayId).value;
-    var m = document.getElementById(monthId).value;
-    var y = document.getElementById(yearId).value;
+    var de = document.getElementById(dayId);
+    var me = document.getElementById(monthId);
+    var ye = document.getElementById(yearId);
+    if (!de || !me || !ye) return null;
+    var d = de.value, m = me.value, y = ye.value;
     if (!d || !m || !y) return null;
     return y + '-' + m + '-' + d;
   }
@@ -1454,6 +1456,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
           bookingForm.reset();
           updateMainFields();
+          updateReturnFields();
           sessionStorage.setItem('evexec_submitted', Date.now().toString());
         } else {
           throw new Error(data.error || 'Something went wrong. Please try again.');

@@ -6,6 +6,15 @@ const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
 
+function escapeHtml(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -28,6 +37,11 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    // Fail fast before writing to DB — token generation requires this secret
+    if (!process.env.OPERATOR_ACTION_SECRET) {
+      throw new Error('OPERATOR_ACTION_SECRET not configured');
+    }
+
     const airport = body.airport || null;
 
     const booking = await dbInsert('bookings', {
@@ -60,9 +74,19 @@ module.exports = async function handler(req, res) {
     const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
     const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
 
-    const route = journeyLine(booking);
-    const date  = fmtDate(booking.travel_date);
+    const route = escapeHtml(journeyLine(booking));
+    const date  = escapeHtml(fmtDate(booking.travel_date));
     const price = getPrice(booking);
+    const safeName    = escapeHtml(name);
+    const safePhone   = escapeHtml(phone);
+    const safeEmail   = escapeHtml(booking.customer_email);
+    const safeAirport = escapeHtml(booking.airport);
+    const safeDropoff = escapeHtml(booking.dropoff_address);
+    const safeFlight  = escapeHtml(booking.flight_number);
+    const safeMethod  = escapeHtml(booking.contact_method);
+    const safeReturnAirport = escapeHtml(booking.return_airport);
+    const safeReturnFlight  = escapeHtml(booking.return_flight);
+    const safeReturnDest    = escapeHtml(booking.return_destination);
 
     const returnLine = booking.return_journey
       ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
@@ -98,10 +122,10 @@ module.exports = async function handler(req, res) {
     <div style="background:rgba(213,165,56,.07);border:1px solid rgba(213,165,56,.18);border-radius:12px;padding:18px 20px;margin-bottom:22px">
       <p style="margin:0 0 8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700">Journey</p>
       <h2 style="margin:0 0 7px;color:#fff;font-size:1.2rem;font-weight:800;line-height:1.35">${route}</h2>
-      <p style="margin:0 0 6px;color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
-      ${booking.airport ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Airport:</span> &nbsp;${booking.airport}</p>` : ''}
-      ${booking.dropoff_address ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Drop-off:</span> &nbsp;${booking.dropoff_address}</p>` : ''}
-      ${booking.flight_number ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Flight:</span> &nbsp;${booking.flight_number}</p>` : ''}
+      <p style="margin:0 0 6px;color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${escapeHtml(booking.travel_time || 'TBC')} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${escapeHtml(booking.luggage)}` : ''}</p>
+      ${safeAirport ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Airport:</span> &nbsp;${safeAirport}</p>` : ''}
+      ${safeDropoff ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Drop-off:</span> &nbsp;${safeDropoff}</p>` : ''}
+      ${safeFlight ? `<p style="margin:0 0 4px;font-size:13px;color:rgba(255,255,255,.7)"><span style="color:rgba(255,255,255,.35)">Flight:</span> &nbsp;${safeFlight}</p>` : ''}
       ${price ? `<p style="margin:8px 0 0;font-size:1.75rem;font-weight:900;color:#d5a538;letter-spacing:-1px">£${price}</p>` : ''}
     </div>
 
@@ -110,18 +134,18 @@ module.exports = async function handler(req, res) {
     <table style="border-collapse:collapse;width:100%;margin-bottom:24px">
       <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
         <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px;width:100px;vertical-align:top">Name</td>
-        <td style="padding:9px 0;color:#fff;font-size:14px;font-weight:600">${name}</td>
+        <td style="padding:9px 0;color:#fff;font-size:14px;font-weight:600">${safeName}</td>
       </tr>
       <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
         <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Phone</td>
-        <td style="padding:9px 0"><a href="tel:${phone}" style="color:#d5a538;font-size:14px;font-weight:600;text-decoration:none">${phone}</a></td>
+        <td style="padding:9px 0"><a href="tel:${safePhone}" style="color:#d5a538;font-size:14px;font-weight:600;text-decoration:none">${safePhone}</a></td>
       </tr>
-      ${booking.customer_email ? `<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Email</td><td style="padding:9px 0"><a href="mailto:${booking.customer_email}" style="color:#d5a538;font-size:14px;text-decoration:none">${booking.customer_email}</a></td></tr>` : ''}
+      ${safeEmail ? `<tr style="border-bottom:1px solid rgba(255,255,255,.06)"><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Email</td><td style="padding:9px 0"><a href="mailto:${safeEmail}" style="color:#d5a538;font-size:14px;text-decoration:none">${safeEmail}</a></td></tr>` : ''}
       <tr style="border-bottom:1px solid rgba(255,255,255,.06)">
         <td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px">Contact via</td>
-        <td style="padding:9px 0;color:#fff;font-size:14px">${booking.contact_method}</td>
+        <td style="padding:9px 0;color:#fff;font-size:14px">${safeMethod}</td>
       </tr>
-      ${booking.return_journey ? `<tr><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px;vertical-align:top">Return</td><td style="padding:9px 0;color:#fff;font-size:14px">${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}${booking.return_airport ? ` &nbsp;·&nbsp; ${booking.return_airport}` : ''}${booking.return_flight ? ` &nbsp;·&nbsp; flight ${booking.return_flight}` : ''}${booking.return_destination ? `<br><span style="color:rgba(255,255,255,.4);font-size:12px">Drop-off: ${booking.return_destination}</span>` : ''}</td></tr>` : ''}
+      ${booking.return_journey ? `<tr><td style="padding:9px 0;color:rgba(255,255,255,.4);font-size:12.5px;vertical-align:top">Return</td><td style="padding:9px 0;color:#fff;font-size:14px">${escapeHtml(fmtDate(booking.return_date))} at ${escapeHtml(booking.return_time || 'TBC')}${safeReturnAirport ? ` &nbsp;·&nbsp; ${safeReturnAirport}` : ''}${safeReturnFlight ? ` &nbsp;·&nbsp; flight ${safeReturnFlight}` : ''}${safeReturnDest ? `<br><span style="color:rgba(255,255,255,.4);font-size:12px">Drop-off: ${safeReturnDest}</span>` : ''}</td></tr>` : ''}
     </table>
 
     <!-- Action buttons -->
