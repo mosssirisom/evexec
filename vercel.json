@@ -18,6 +18,8 @@
     { "src": "/manchester-airport-transfer-blackpool", "dest": "/manchester-airport-transfer-blackpool.html" },
     { "src": "/liverpool-airport-transfer-blackpool", "dest": "/liverpool-airport-transfer-blackpool.html" },
     { "src": "/leeds-bradford-airport-transfer-blackpool", "dest": "/leeds-bradford-airport-transfer-blackpool.html" },
+    { "src": "/birmingham-airport-transfer-blackpool", "dest": "/birmingham-airport-transfer-blackpool.html" },
+    { "src": "/newcastle-airport-transfer-blackpool", "dest": "/newcastle-airport-transfer-blackpool.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
     { "src": "/", "dest": "/index.html" }
   ]
