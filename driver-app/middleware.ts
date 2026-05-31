@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Redirect logged-in users away from login, but NOT from forgot/reset-password
+  // Redirect logged-in users away from login only, not forgot/reset-password
   if (user && isAuthRoute) {
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

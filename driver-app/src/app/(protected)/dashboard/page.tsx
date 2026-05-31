@@ -17,7 +17,8 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single();
 
-  const today = new Date().toISOString().split('T')[0];
+  // Use UK timezone so 'today' is correct during BST (UTC+1)
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date());
 
   const [{ data: todayJobs }, { count: availableCount }, { data: completedJobs }] =
     await Promise.all([
@@ -95,7 +96,7 @@ export default async function DashboardPage() {
         {!todayJobs?.length ? (
           <div className="bg-[#0B1525] border border-white/8 rounded-2xl p-10 text-center">
             <CalendarClock size={32} className="text-white/10 mx-auto mb-3" />
-            <p className="text-white/35 text-sm">No trips scheduled for today</p>
+            <p className="text-white/35 text-sm">No jobs scheduled for today</p>
             <Link
               href="/jobs"
               className="inline-block mt-4 text-[#d5a538] text-sm font-medium underline underline-offset-4"

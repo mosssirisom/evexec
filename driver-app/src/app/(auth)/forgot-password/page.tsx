@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
             </div>
 
             <p className="text-sm text-white/40 mb-6 leading-relaxed">
-              Enter your registered email address and we'll send you a secure reset link.
+              Enter your registered email address and we&apos;ll send you a secure reset link.
             </p>
 
             {error && (

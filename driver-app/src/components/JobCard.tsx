@@ -22,7 +22,6 @@ function fmtDate(d: string) {
 
 function fmtTime(t: string | null) {
   if (!t) return null;
-  // Already HH:mm — return as-is (24h clock)
   return t.slice(0, 5);
 }
 
@@ -48,7 +47,7 @@ export default function JobCard({ booking, showStatus = true }: JobCardProps) {
       href={`/jobs/${booking.id}`}
       className="block bg-[#0B1525] border border-white/8 rounded-2xl overflow-hidden hover:border-[#d5a538]/30 transition-all active:scale-[0.99]"
     >
-      {/* ── Date / Time header — primary scan target ── */}
+      {/* Date / Time header */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3.5 border-b border-white/6">
         <span className="text-[13px] font-semibold text-white/80 tracking-wide">
           {fmtDate(booking.travel_date)}
@@ -66,7 +65,7 @@ export default function JobCard({ booking, showStatus = true }: JobCardProps) {
         )}
       </div>
 
-      {/* ── Body ── */}
+      {/* Body */}
       <div className="px-4 py-3 space-y-3">
         {/* Status + price */}
         <div className="flex items-center justify-between">
