@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import JobCard from '@/components/JobCard';
+import SkeletonCard from '@/components/SkeletonCard';
 import type { Booking } from '@/lib/types';
-import { Car, Loader2 } from 'lucide-react';
+import { Car } from 'lucide-react';
 import Link from 'next/link';
 
 export default function MyJobsPage() {
@@ -59,8 +60,8 @@ export default function MyJobsPage() {
       <AppHeader title="My Jobs" subtitle="Active and upcoming trips" />
       <div className="px-5">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={26} className="text-white/20 animate-spin" />
+          <div className="space-y-3 mt-2">
+            {[1, 2].map((n) => <SkeletonCard key={n} />)}
           </div>
         ) : jobs.length === 0 ? (
           <div className="bg-[#0B1525] border border-white/8 rounded-2xl p-12 text-center mt-2">
@@ -73,7 +74,7 @@ export default function MyJobsPage() {
               href="/jobs"
               className="inline-block mt-4 text-[#d5a538] text-sm font-medium underline underline-offset-4"
             >
-              Browse available jobs →
+              Browse available jobs &#8594;
             </Link>
           </div>
         ) : (

@@ -37,14 +37,15 @@ export async function middleware(request: NextRequest) {
     url.pathname.startsWith('/dashboard') ||
     url.pathname.startsWith('/jobs') ||
     url.pathname.startsWith('/my-jobs') ||
-    url.pathname.startsWith('/profile');
+    url.pathname.startsWith('/profile') ||
+    url.pathname.startsWith('/earnings');
 
   if (!user && isProtectedRoute) {
     url.pathname = '/login';
     return NextResponse.redirect(url);
   }
 
-  // Redirect logged-in users away from login only, not forgot/reset-password
+  // Redirect logged-in users away from login, but NOT from forgot/reset-password
   if (user && isAuthRoute) {
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);

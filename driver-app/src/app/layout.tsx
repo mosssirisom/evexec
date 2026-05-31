@@ -4,6 +4,12 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'EV Exec Driver',
   description: 'Driver portal for EV Exec airport transfers',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'EV Exec Driver',
+  },
 };
 
 export const viewport: Viewport = {

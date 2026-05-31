@@ -1,0 +1,22 @@
+{
+  "name": "EV Exec Driver",
+  "short_name": "EV Exec",
+  "description": "Driver portal for EV Exec airport transfers",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#020813",
+  "theme_color": "#020813",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/logo.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "/logo.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

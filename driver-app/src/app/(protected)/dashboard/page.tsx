@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
 import AppHeader from '@/components/AppHeader';
 import JobCard from '@/components/JobCard';
+import OnlineToggle from '@/components/OnlineToggle';
 import type { Booking, Driver } from '@/lib/types';
 import { CalendarClock, Briefcase, TrendingUp } from 'lucide-react';
 
@@ -17,7 +18,6 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single();
 
-  // Use UK timezone so 'today' is correct during BST (UTC+1)
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London' }).format(new Date());
 
   const [{ data: todayJobs }, { count: availableCount }, { data: completedJobs }] =
@@ -55,6 +55,7 @@ export default async function DashboardPage() {
       <AppHeader
         title={`${greeting}, ${firstName}`}
         subtitle={d?.vehicle_model ?? 'EV Exec Driver'}
+        right={<OnlineToggle driverId={user.id} initialOnline={d?.is_online ?? false} />}
       />
 
       {/* Stats */}
@@ -62,7 +63,7 @@ export default async function DashboardPage() {
         {[
           { icon: <CalendarClock size={17} />, value: todayJobs?.length ?? 0, label: 'Today', href: undefined },
           { icon: <Briefcase size={17} />, value: availableCount ?? 0, label: 'Available', href: '/jobs' },
-          { icon: <TrendingUp size={17} />, value: `£${weeklyEarnings}`, label: 'This week', href: undefined },
+          { icon: <TrendingUp size={17} />, value: `£${weeklyEarnings}`, label: 'This week', href: '/earnings' },
         ].map(({ icon, value, label, href }) => {
           const inner = (
             <>
@@ -90,18 +91,18 @@ export default async function DashboardPage() {
       {/* Today's jobs */}
       <div className="px-5">
         <h2 className="text-[10px] font-semibold text-white/35 uppercase tracking-widest mb-3">
-          Today's Schedule
+          Today&#39;s Schedule
         </h2>
 
         {!todayJobs?.length ? (
           <div className="bg-[#0B1525] border border-white/8 rounded-2xl p-10 text-center">
             <CalendarClock size={32} className="text-white/10 mx-auto mb-3" />
-            <p className="text-white/35 text-sm">No jobs scheduled for today</p>
+            <p className="text-white/35 text-sm">No trips scheduled for today</p>
             <Link
               href="/jobs"
               className="inline-block mt-4 text-[#d5a538] text-sm font-medium underline underline-offset-4"
             >
-              Browse available jobs →
+              Browse available jobs &#8594;
             </Link>
           </div>
         ) : (

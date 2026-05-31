@@ -4,8 +4,9 @@ import { useEffect, useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import JobCard from '@/components/JobCard';
+import SkeletonCard from '@/components/SkeletonCard';
 import type { Booking } from '@/lib/types';
-import { Loader2, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 export default function JobsPage() {
   const [jobs, setJobs] = useState<Booking[]>([]);
@@ -78,8 +79,8 @@ export default function JobsPage() {
 
       <div className="px-5">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={26} className="text-white/20 animate-spin" />
+          <div className="space-y-3 mt-2">
+            {[1, 2, 3].map((n) => <SkeletonCard key={n} />)}
           </div>
         ) : jobs.length === 0 ? (
           <div className="bg-[#0B1525] border border-white/8 rounded-2xl p-12 text-center mt-2">
