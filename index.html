@@ -517,6 +517,32 @@ main,footer{position:relative;z-index:1}
   aspect-ratio:16/9;min-height:260px;
 }
 .map-frame iframe{width:100%;height:100%;border:0;display:block}
+/* ── Booking Wizard ── */
+.bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;transition:border-color .2s}
+.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Inter,Arial,sans-serif;color:#fff}
+.bw-airport-card:hover{border-color:rgba(213,165,56,.45);background:rgba(213,165,56,.06)}
+.bw-airport-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
+.bw-dir-card{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Inter,Arial,sans-serif;color:#fff}
+.bw-dir-card:hover{border-color:rgba(213,165,56,.55);background:rgba(213,165,56,.06)}
+.bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
+.bw-dir-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:26px;transition:background .2s}
+.bw-dir-card.bw-selected .bw-dir-icon{background:rgba(213,165,56,.18)}
+.bw-radio{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.25);transition:all .2s;display:flex;align-items:center;justify-content:center}
+.bw-dir-card.bw-selected .bw-radio{border-color:var(--gold);background:var(--gold)}
+.bw-counter-btn{width:36px;height:36px;border-radius:50%;border:1.5px solid rgba(213,165,56,.65);background:transparent;color:var(--gold);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
+.bw-counter-btn:hover:not(:disabled){background:rgba(213,165,56,.12)}
+.bw-counter-btn:disabled{opacity:.3;cursor:not-allowed}
+.bw-seg{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:4px;gap:4px}
+.bw-seg-btn{flex:1;padding:11px 8px;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Inter,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
+.bw-seg-btn.bw-active{background:var(--gold);color:#06101c}
+.bw-back-btn{width:36px;height:36px;border-radius:12px;flex-shrink:0;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:18px;transition:background .15s;display:flex;align-items:center;justify-content:center;line-height:1}
+.bw-back-btn:hover{background:rgba(255,255,255,.12)}
+.bw-pill{display:inline-flex;align-items:center;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600}
+.bw-date-input,.bw-time-input{color-scheme:dark}
+.bw-date-input::-webkit-calendar-picker-indicator,.bw-time-input::-webkit-calendar-picker-indicator{opacity:.45;cursor:pointer;filter:invert(1)}
+@keyframes bwSlideIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.bw-slide{animation:bwSlideIn .3s cubic-bezier(.2,.8,.2,1) both}
+
 /* CO2 calculator */
 .calculator-card{
   max-width:620px;margin:0 auto;
@@ -634,156 +660,174 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </div>
 
 <section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote">
-<h2 class="serif text-3xl mb-5">Book Your <span class="gold font-bold">Airport Transfer</span></h2>
+<div style="max-width:560px;margin:0 auto">
 
-<form class="grid grid-cols-1 md:grid-cols-4 gap-5" id="bookingForm" novalidate>
+  <!-- Title + Step Progress -->
+  <div class="flex items-center justify-between mb-5">
+    <h2 class="serif text-3xl">Book Your <span class="gold font-bold">Transfer</span></h2>
+    <div id="bwProgress" class="flex items-center gap-2"></div>
+  </div>
 
-<!-- Row 1: Contact + Journey Type -->
-<label class="text-xs text-white/60">Your Name *
-<input class="input mt-2" id="customerName" placeholder="First &amp; last name" required/>
-</label>
+  <!-- ── STEP 1: Airport Selection ── -->
+  <div id="bwStep1" class="bw-slide">
+    <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-1">Step 1 of 3</p>
+    <h3 class="text-2xl font-bold mb-1">Which Airport?</h3>
+    <p class="text-sm text-white/45 mb-5">Select your departure or arrival airport</p>
+    <div id="bwAirports"></div>
+  </div>
 
-<label class="text-xs text-white/60">Phone Number *
-<input class="input mt-2" id="customerPhone" placeholder="+44 7700 000000" required/>
-</label>
+  <!-- ── STEP 2: Direction & Journey Type ── -->
+  <div id="bwStep2" class="hidden">
+    <div class="flex items-center gap-3 mb-5">
+      <button class="bw-back-btn" id="bwBack2" type="button">&#8592;</button>
+      <div>
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 2 of 3</p>
+        <p class="font-bold text-base" id="bwSelectedAirport"></p>
+      </div>
+    </div>
+    <h3 class="text-2xl font-bold mb-1">Which Direction?</h3>
+    <p class="text-sm text-white/45 mb-5">Are you going to or coming from the airport?</p>
 
-<label class="text-xs text-white/60">Email Address
-<input class="input mt-2" id="customerEmail" placeholder="your@email.com" type="text" inputmode="email" autocomplete="email"/>
-</label>
+    <div class="flex flex-col gap-3 mb-6">
+      <button class="bw-dir-card" id="bwDirTo" type="button">
+        <div class="bw-dir-icon">🛫</div>
+        <div style="flex:1">
+          <p class="font-bold text-base">To the Airport</p>
+          <p class="text-sm text-white/45 mt-1">I'm departing · drop-off</p>
+        </div>
+        <div class="bw-radio" id="bwDirToRadio"></div>
+      </button>
+      <button class="bw-dir-card" id="bwDirFrom" type="button">
+        <div class="bw-dir-icon">🛬</div>
+        <div style="flex:1">
+          <p class="font-bold text-base">From the Airport</p>
+          <p class="text-sm text-white/45 mt-1">I've landed · pick-up</p>
+        </div>
+        <div class="bw-radio" id="bwDirFromRadio"></div>
+      </button>
+    </div>
 
-<label class="text-xs text-white/60">Journey Type
-<select class="input mt-2" id="journeyType">
-<option>To Airport</option>
-<option>From Airport</option>
-</select>
-</label>
+    <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3">Journey Type</p>
+    <div class="bw-seg mb-6">
+      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button">One Way<br><span class="text-xs font-normal" id="bwOnewayPrice"></span></button>
+      <button class="bw-seg-btn" id="bwTypeReturn" type="button">Return<br><span class="text-xs font-normal" id="bwReturnPrice"></span></button>
+    </div>
 
-<!-- Row 2: Journey Fields (conditional) -->
-<label class="text-xs text-white/60" id="pickupWrap">Pickup Location
-<input class="input mt-2" id="pickup" placeholder="Your pickup address"/>
-</label>
+    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwContinue2" type="button" disabled style="opacity:.45;cursor:not-allowed;border:none">
+      Select a direction above
+    </button>
+  </div>
 
-<label class="text-xs text-white/60">Airport
-<select class="input mt-2" id="airport" required>
-<option value="">Select airport…</option>
-<option>Manchester Airport</option>
-<option>Liverpool Airport</option>
-<option>Leeds Bradford Airport</option>
-<option>Birmingham Airport</option>
-<option>Newcastle Airport</option>
-<option>Other UK Airport</option>
-</select>
-</label>
+  <!-- ── STEP 3: Details + Contact ── -->
+  <div id="bwStep3" class="hidden">
+    <div class="flex items-center gap-3 mb-4">
+      <button class="bw-back-btn" id="bwBack3" type="button">&#8592;</button>
+      <div>
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 3 of 3</p>
+        <p class="font-bold text-base">Trip Details</p>
+      </div>
+    </div>
 
-<label class="text-xs text-white/60 hidden" id="dropoffWrap">Drop-off Address
-<input class="input mt-2" id="dropoff" placeholder="Your destination address"/>
-</label>
+    <!-- Journey summary pills -->
+    <div class="flex flex-wrap gap-2 mb-5" id="bwSummaryPills"></div>
 
-<label class="text-xs text-white/60 hidden" id="flightWrap">Flight Number
-<input class="input mt-2" id="flightNumber" placeholder="e.g. EZY2145"/>
-</label>
+    <!-- Address -->
+    <div class="bw-card mb-4">
+      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel">📍 Pick Up Address</p>
+      <input class="input" id="bwAddress" placeholder="Enter your address…"/>
+    </div>
 
-<!-- Row 3: Travel Details -->
-<label class="text-xs text-white/60">Travel Date
-<div class="grid grid-cols-3 gap-2 mt-2">
-  <select class="input" id="travelDay"><option value="">Day</option></select>
-  <select class="input" id="travelMonth"><option value="">Month</option></select>
-  <select class="input" id="travelYear"><option value="">Year</option></select>
+    <!-- Date & Time -->
+    <div class="bw-card mb-4">
+      <p class="text-sm font-bold text-white/80 mb-3">📅 Date &amp; Time</p>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <p class="text-xs text-white/45 mb-2">Travel Date</p>
+          <input class="input bw-date-input" type="date" id="bwDate"/>
+        </div>
+        <div>
+          <p class="text-xs text-white/45 mb-2">Travel Time</p>
+          <input class="input bw-time-input" type="time" id="bwTime"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Passengers & Luggage -->
+    <div class="bw-card mb-4">
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm font-bold text-white/80 mb-3">🧑 Passengers</p>
+          <div class="flex items-center gap-3">
+            <button class="bw-counter-btn" id="bwPaxDec" type="button">−</button>
+            <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwPaxCount">1</span>
+            <button class="bw-counter-btn" id="bwPaxInc" type="button">+</button>
+          </div>
+          <p class="text-xs text-white/35 mt-2">max 4 passengers</p>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white/80 mb-3">🧳 Luggage</p>
+          <div class="flex items-center gap-3">
+            <button class="bw-counter-btn" id="bwBagsDec" type="button">−</button>
+            <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwBagsCount">0</span>
+            <button class="bw-counter-btn" id="bwBagsInc" type="button">+</button>
+          </div>
+          <p class="text-xs text-white/35 mt-2">pieces of luggage</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flight number — From Airport only -->
+    <div class="bw-card mb-4 hidden" id="bwFlightSection">
+      <p class="text-sm font-bold text-white/80 mb-3">✈️ Flight Number</p>
+      <input class="input" id="bwFlight" placeholder="e.g. EZY2145"/>
+      <p class="text-xs text-white/35 mt-2">Optional — helps us track your arrival</p>
+    </div>
+
+    <!-- Return details -->
+    <div id="bwReturnSection" class="hidden">
+      <div class="bw-card mb-4" style="border-color:rgba(213,165,56,.28)">
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-[#d5a538] mb-4">Return Journey</p>
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div>
+            <p class="text-xs text-white/45 mb-2">Return Date</p>
+            <input class="input bw-date-input" type="date" id="bwRetDate"/>
+          </div>
+          <div>
+            <p class="text-xs text-white/45 mb-2">Return Time</p>
+            <input class="input bw-time-input" type="time" id="bwRetTime"/>
+          </div>
+        </div>
+        <div id="bwRetFlightSection" class="hidden">
+          <p class="text-xs text-white/45 mb-2">Return Flight Number</p>
+          <input class="input" id="bwRetFlight" placeholder="e.g. EZY2145"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact info -->
+    <div class="bw-card mb-4">
+      <p class="text-sm font-bold text-white/80 mb-3">👤 Your Details</p>
+      <div class="flex flex-col gap-3">
+        <input class="input" id="bwName" placeholder="Full name *" required/>
+        <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required/>
+        <input class="input" id="bwEmail" placeholder="Email address (optional)" type="email"/>
+        <select class="input" id="bwContact">
+          <option>WhatsApp</option>
+          <option>Phone Call</option>
+          <option>Email</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwSubmit" type="button" style="border:none">
+      Request My Transfer
+    </button>
+  </div>
+
 </div>
-</label>
-
-<label class="text-xs text-white/60">Travel Time
-<select class="input mt-2" id="travelTime"><option value="">Select time…</option></select>
-</label>
-
-<label class="text-xs text-white/60">Passengers
-<select class="input mt-2" id="passengers">
-<option>1 Passenger</option>
-<option>2 Passengers</option>
-<option>3 Passengers</option>
-<option>4 Passengers</option>
-</select>
-</label>
-
-<label class="text-xs text-white/60">Luggage
-<input class="input mt-2" id="luggage" placeholder="e.g. 2 suitcases"/>
-</label>
-
-<!-- Return Journey Trigger — Full Width -->
-<div class="md:col-span-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-lg border border-white/10 bg-white/[.03] px-5 py-4">
-<div>
-<p class="text-sm font-semibold text-white/90">Need a return journey?</p>
-<p class="text-xs text-white/50 mt-0.5">Select Yes to add return details to your request.</p>
-</div>
-<div class="sm:w-44 flex-shrink-0">
-<select class="input" id="returnJourney">
-<option>No</option>
-<option>Yes</option>
-</select>
-</div>
-</div>
-
-<!-- Return Section — Hidden until Yes selected -->
-<div class="md:col-span-4 hidden return-section" id="returnSection">
-<p class="text-xs text-[#d5a538] uppercase tracking-[.18em] font-bold">Return Journey Details</p>
-<div class="return-grid">
-
-<label class="text-xs text-white/60 hidden" id="returnPickupWrap">Return Pickup Location
-<input class="input mt-2" id="returnPickup" placeholder="Return pickup address"/>
-</label>
-
-<label class="text-xs text-white/60" id="returnAirportWrap">Return Airport
-<select class="input mt-2" id="returnAirport">
-<option value="">Select return airport</option>
-<option>Manchester Airport</option>
-<option>Liverpool Airport</option>
-<option>Leeds Bradford Airport</option>
-<option>Birmingham Airport</option>
-<option>Newcastle Airport</option>
-<option>Other UK Airport</option>
-</select>
-</label>
-
-<label class="text-xs text-white/60" id="returnFlightWrap">Return Flight Number
-<input class="input mt-2" id="returnFlight" placeholder="e.g. EZY2145"/>
-</label>
-
-<label class="text-xs text-white/60" id="returnDateWrap">Return Date
-<div class="grid grid-cols-3 gap-2 mt-2">
-  <select class="input" id="returnDay"><option value="">Day</option></select>
-  <select class="input" id="returnMonth"><option value="">Month</option></select>
-  <select class="input" id="returnYear"><option value="">Year</option></select>
-</div>
-</label>
-
-<label class="text-xs text-white/60" id="returnTimeWrap">Return Time
-<select class="input mt-2" id="returnTime"><option value="">Select time…</option></select>
-</label>
-
-<label class="text-xs text-white/60 hidden md:col-span-4" id="returnDestinationWrap">Return Drop-off Address
-<input class="input mt-2" id="returnDestination" placeholder="Return drop-off address"/>
-</label>
-
-</div>
-</div>
-
-<!-- Row: Contact + Submit -->
-<label class="text-xs text-white/60">Preferred Contact
-<select class="input mt-2" id="contactMethod">
-<option>WhatsApp</option>
-<option>Phone Call</option>
-<option>Email</option>
-</select>
-</label>
-
-<button class="btn-gold md:col-span-3 rounded-md py-4 text-center font-bold" type="submit">
-Send Booking Request
-</button>
-
-</form>
 
 <p id="formMsg"></p>
-<p class="text-center text-white/50 mt-3 text-sm">No hidden fees · Fixed prices · Professional service</p>
+<p class="text-center text-white/50 mt-5 text-sm">No hidden fees · Fixed prices · Professional service</p>
 <p class="text-center mt-2 text-sm text-white/40">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
 </section>
 </div>
@@ -1273,200 +1317,273 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     }, {passive:true});
   }
 
-  // Booking form logic
-  var journeyType     = document.getElementById('journeyType');
-  var returnJourney   = document.getElementById('returnJourney');
-  var returnSection   = document.getElementById('returnSection');
+  // ── BOOKING WIZARD ──────────────────────────────────────────
+  var BW_AIRPORTS = [
+    { name:'Manchester Airport',     oneWay:90,  ret:180 },
+    { name:'Liverpool Airport',      oneWay:95,  ret:190 },
+    { name:'Leeds Bradford Airport', oneWay:135, ret:270 },
+    { name:'Birmingham Airport',     oneWay:215, ret:430 },
+    { name:'Newcastle Airport',      oneWay:250, ret:500 },
+    { name:'Other UK Airport',       oneWay:null, ret:null }
+  ];
 
-  var pickupWrap          = document.getElementById('pickupWrap');
-  var dropoffWrap         = document.getElementById('dropoffWrap');
-  var flightWrap          = document.getElementById('flightWrap');
-  var returnPickupWrap    = document.getElementById('returnPickupWrap');
-  var returnAirportWrap   = document.getElementById('returnAirportWrap');
-  var returnFlightWrap    = document.getElementById('returnFlightWrap');
-  var returnDateWrap      = document.getElementById('returnDateWrap');
-  var returnTimeWrap      = document.getElementById('returnTimeWrap');
-  var returnDestWrap      = document.getElementById('returnDestinationWrap');
+  var bw = { step:1, airport:null, direction:null, journeyType:'oneway', passengers:1, bags:0 };
 
-  function isToAirport(){
-    return !journeyType || journeyType.value === 'To Airport';
+  function bwShowMsg(text, cls) {
+    var el = document.getElementById('formMsg');
+    if (!el) return;
+    el.textContent = text;
+    el.className = cls;
   }
 
-  function updateMainFields(){
-    var toAirport = isToAirport();
-    if(pickupWrap)  pickupWrap.classList.toggle('hidden', !toAirport);
-    if(dropoffWrap) dropoffWrap.classList.toggle('hidden', toAirport);
-    if(flightWrap)  flightWrap.classList.toggle('hidden', toAirport);
-  }
-
-  function updateReturnFields(){
-    var isReturn = returnJourney && returnJourney.value === 'Yes';
-    // Return direction is the opposite of outbound
-    var returnIsFromAirport = isToAirport();
-
-    if(returnSection) returnSection.classList.toggle('hidden', !isReturn);
-
-    // Conditional return fields
-    if(returnFlightWrap)  returnFlightWrap.classList.toggle('hidden', !returnIsFromAirport);
-    if(returnDestWrap)    returnDestWrap.classList.toggle('hidden', !returnIsFromAirport);
-    if(returnPickupWrap)  returnPickupWrap.classList.toggle('hidden', returnIsFromAirport);
-  }
-
-  if(journeyType){
-    journeyType.addEventListener('change', function(){
-      updateMainFields();
-      updateReturnFields();
-    });
-    updateMainFields();
-    updateReturnFields();
-  }
-  if(returnJourney){
-    returnJourney.addEventListener('change', updateReturnFields);
-    updateReturnFields();
-  }
-
-  // Populate date dropdowns (day 01-31, month Jan-Dec, year now+2) and time slots
-  (function() {
-    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    var now = new Date();
-    var curYear = now.getFullYear();
-
-    ['travelDay','returnDay'].forEach(function(id) {
-      var s = document.getElementById(id); if (!s) return;
-      for (var d = 1; d <= 31; d++) {
-        var o = document.createElement('option');
-        o.value = ('0' + d).slice(-2); o.textContent = ('0' + d).slice(-2); s.appendChild(o);
+  function bwRenderProgress() {
+    var el = document.getElementById('bwProgress');
+    if (!el) return;
+    el.innerHTML = '';
+    for (var i = 1; i <= 3; i++) {
+      var dot = document.createElement('div');
+      dot.style.cssText = 'width:26px;height:20px;border-radius:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;transition:all .25s;';
+      var done = i < bw.step, active = i === bw.step;
+      dot.style.background = (done || active) ? 'var(--gold)' : 'rgba(255,255,255,0.15)';
+      dot.style.color = (done || active) ? '#06101c' : 'rgba(255,255,255,0.4)';
+      dot.innerHTML = done ? '✓' : String(i);
+      el.appendChild(dot);
+      if (i < 3) {
+        var line = document.createElement('div');
+        line.style.cssText = 'height:2px;width:20px;border-radius:2px;transition:background .25s;';
+        line.style.background = i < bw.step ? 'var(--gold)' : 'rgba(255,255,255,0.12)';
+        el.appendChild(line);
       }
-    });
-    ['travelMonth','returnMonth'].forEach(function(id) {
-      var s = document.getElementById(id); if (!s) return;
-      months.forEach(function(name, i) {
-        var o = document.createElement('option');
-        o.value = ('0' + (i + 1)).slice(-2); o.textContent = name; s.appendChild(o);
+    }
+  }
+
+  function bwRenderAirports() {
+    var cont = document.getElementById('bwAirports');
+    if (!cont) return;
+    cont.innerHTML = '';
+    BW_AIRPORTS.forEach(function(ap) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'bw-airport-card' + (bw.airport === ap.name ? ' bw-selected' : '');
+      var priceHTML = ap.oneWay
+        ? '<span style="font-size:15px;font-weight:800;color:var(--gold)">£' + ap.oneWay + '</span><span style="font-size:9px;color:rgba(255,255,255,.3);display:block;margin-top:1px">one way</span>'
+        : '<span style="font-size:11px;color:rgba(255,255,255,.4)">On request</span>';
+      btn.innerHTML =
+        '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
+        '<div style="flex:1;min-width:0">' +
+          '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + ap.name + '</div>' +
+          '<div style="font-size:11px;color:rgba(255,255,255,.35)">Tesla Model Y</div>' +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0">' + priceHTML + '</div>' +
+        '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
+      btn.addEventListener('click', function() {
+        bw.airport = ap.name;
+        bwGoToStep(2);
       });
+      cont.appendChild(btn);
     });
-    ['travelYear','returnYear'].forEach(function(id) {
-      var s = document.getElementById(id); if (!s) return;
-      for (var y = curYear; y <= curYear + 2; y++) {
-        var o = document.createElement('option');
-        o.value = String(y); o.textContent = String(y); s.appendChild(o);
-      }
-    });
-    ['travelTime','returnTime'].forEach(function(id) {
-      var s = document.getElementById(id); if (!s) return;
-      for (var h = 0; h < 24; h++) {
-        for (var m = 0; m < 60; m += 15) {
-          var o = document.createElement('option');
-          var hh = ('0' + h).slice(-2), mm = ('0' + m).slice(-2);
-          o.value = hh + ':' + mm; o.textContent = hh + ':' + mm; s.appendChild(o);
-        }
-      }
-    });
-  })();
-
-  // Helpers
-  function buildDate(dayId, monthId, yearId) {
-    var d = document.getElementById(dayId).value;
-    var m = document.getElementById(monthId).value;
-    var y = document.getElementById(yearId).value;
-    if (!d || !m || !y) return null;
-    return y + '-' + m + '-' + d;
   }
 
-  function valueOf(id){
+  function bwGoToStep(n) {
+    bw.step = n;
+    ['bwStep1','bwStep2','bwStep3'].forEach(function(id, idx) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var show = idx + 1 === n;
+      el.classList.toggle('hidden', !show);
+      if (show) {
+        el.classList.remove('bw-slide');
+        void el.offsetWidth; // reflow to restart animation
+        el.classList.add('bw-slide');
+      }
+    });
+    bwRenderProgress();
+    if (n === 2) bwRenderStep2();
+    if (n === 3) bwRenderStep3();
+    var quoteEl = document.getElementById('quote');
+    if (quoteEl) quoteEl.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+
+  function bwRenderStep2() {
+    var airportEl = document.getElementById('bwSelectedAirport');
+    if (airportEl) airportEl.textContent = bw.airport || '';
+    var dirTo   = document.getElementById('bwDirTo');
+    var dirFrom = document.getElementById('bwDirFrom');
+    if (dirTo)   dirTo.classList.toggle('bw-selected', bw.direction === 'to');
+    if (dirFrom) dirFrom.classList.toggle('bw-selected', bw.direction === 'from');
+    var ap = BW_AIRPORTS.find(function(a) { return a.name === bw.airport; }) || {};
+    var owEl = document.getElementById('bwOnewayPrice');
+    var retEl = document.getElementById('bwReturnPrice');
+    if (owEl)  owEl.textContent  = ap.oneWay ? '£' + ap.oneWay  : 'On request';
+    if (retEl) retEl.textContent = ap.ret    ? '£' + ap.ret     : 'On request';
+    var onewayBtn = document.getElementById('bwTypeOneway');
+    var returnBtn = document.getElementById('bwTypeReturn');
+    if (onewayBtn) onewayBtn.classList.toggle('bw-active', bw.journeyType === 'oneway');
+    if (returnBtn) returnBtn.classList.toggle('bw-active', bw.journeyType === 'return');
+    bwUpdateContinue2();
+  }
+
+  function bwUpdateContinue2() {
+    var btn = document.getElementById('bwContinue2');
+    if (!btn) return;
+    if (bw.direction) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.textContent = 'Continue →';
+    } else {
+      btn.disabled = true;
+      btn.style.opacity = '0.45';
+      btn.style.cursor = 'not-allowed';
+      btn.textContent = 'Select a direction above';
+    }
+  }
+
+  function bwRenderStep3() {
+    var pills = document.getElementById('bwSummaryPills');
+    if (pills) {
+      var dirColor  = bw.direction === 'to' ? '#60a5fa' : '#4ade80';
+      var dirBg     = bw.direction === 'to' ? 'rgba(59,130,246,.12)' : 'rgba(34,197,94,.10)';
+      var dirBorder = bw.direction === 'to' ? 'rgba(59,130,246,.3)' : 'rgba(34,197,94,.25)';
+      var dirLabel  = bw.direction === 'to' ? '🛫 To Airport' : '🛬 From Airport';
+      pills.innerHTML =
+        '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
+        '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
+        '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>';
+    }
+    var addrLabel = document.getElementById('bwAddressLabel');
+    if (addrLabel) addrLabel.textContent = bw.direction === 'to' ? '📍 Pick Up Address' : '📍 Drop Off Address';
+    var flightSec = document.getElementById('bwFlightSection');
+    if (flightSec) flightSec.classList.toggle('hidden', bw.direction !== 'from');
+    var retSec = document.getElementById('bwReturnSection');
+    if (retSec) retSec.classList.toggle('hidden', bw.journeyType !== 'return');
+    var retFlightSec = document.getElementById('bwRetFlightSection');
+    if (retFlightSec) retFlightSec.classList.toggle('hidden', bw.direction !== 'to');
+    // Set min date to today
+    var today = new Date().toISOString().split('T')[0];
+    ['bwDate','bwRetDate'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.min = today;
+    });
+    bwUpdateCounters();
+  }
+
+  function bwUpdateCounters() {
+    var paxCount  = document.getElementById('bwPaxCount');
+    var bagsCount = document.getElementById('bwBagsCount');
+    var paxDec    = document.getElementById('bwPaxDec');
+    var paxInc    = document.getElementById('bwPaxInc');
+    var bagsDec   = document.getElementById('bwBagsDec');
+    var bagsInc   = document.getElementById('bwBagsInc');
+    if (paxCount)  paxCount.textContent  = String(bw.passengers);
+    if (bagsCount) bagsCount.textContent = String(bw.bags);
+    if (paxDec)  paxDec.disabled  = bw.passengers <= 1;
+    if (paxInc)  paxInc.disabled  = bw.passengers >= 4;
+    if (bagsDec) bagsDec.disabled = bw.bags <= 0;
+    if (bagsInc) bagsInc.disabled = bw.bags >= 8;
+  }
+
+  function bwGetVal(id) {
     var el = document.getElementById(id);
     return el && el.value ? el.value.trim() : '';
   }
 
-
-  function showMsg(text, type){
-    var el = document.getElementById('formMsg');
-    if(!el) return;
-    el.textContent = text;
-    el.className = type;
+  async function bwSubmit() {
+    var name  = bwGetVal('bwName');
+    var phone = bwGetVal('bwPhone');
+    bwShowMsg('', '');
+    if (!name || !phone) {
+      bwShowMsg('Please enter your name and phone number to continue.', 'error');
+      var focus = !name ? 'bwName' : 'bwPhone';
+      var el = document.getElementById(focus);
+      if (el) el.focus();
+      return;
+    }
+    var btn = document.getElementById('bwSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    var isFrom  = bw.direction === 'from';
+    var isRet   = bw.journeyType === 'return';
+    var address = bwGetVal('bwAddress');
+    var payload = {
+      journey_type:       isFrom ? 'From Airport' : 'To Airport',
+      pickup_location:    isFrom ? null : address,
+      airport:            bw.airport || null,
+      flight_number:      isFrom ? (bwGetVal('bwFlight') || null) : null,
+      dropoff_address:    isFrom ? address : null,
+      travel_date:        bwGetVal('bwDate') || null,
+      travel_time:        bwGetVal('bwTime') || null,
+      passengers:         bw.passengers,
+      luggage:            bw.bags > 0 ? String(bw.bags) + ' piece' + (bw.bags !== 1 ? 's' : '') : null,
+      return_journey:     isRet,
+      return_pickup:      isRet && isFrom ? address : null,
+      return_airport:     isRet ? (bw.airport || null) : null,
+      return_flight:      isRet && !isFrom ? (bwGetVal('bwRetFlight') || null) : null,
+      return_date:        isRet ? (bwGetVal('bwRetDate') || null) : null,
+      return_time:        isRet ? (bwGetVal('bwRetTime') || null) : null,
+      return_destination: isRet && !isFrom ? address : null,
+      contact_method:     bwGetVal('bwContact') || 'WhatsApp',
+      customer_name:      name,
+      customer_phone:     phone,
+      customer_email:     bwGetVal('bwEmail') || null
+    };
+    try {
+      var res = await fetch('/api/booking/create', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      var rawText = await res.text();
+      var data;
+      try { data = JSON.parse(rawText); } catch(e) {
+        throw new Error('Server error (' + res.status + '). Please contact us directly.');
+      }
+      if (res.ok && data.success) {
+        bwShowMsg('Booking request sent! EV Exec will confirm availability shortly.', 'success');
+        bw.airport = null; bw.direction = null; bw.journeyType = 'oneway';
+        bw.passengers = 1; bw.bags = 0;
+        bwGoToStep(1);
+        bwRenderAirports();
+        sessionStorage.setItem('evexec_submitted', Date.now().toString());
+      } else {
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch(err) {
+      bwShowMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Request My Transfer';
+    }
   }
 
-  // Form submit
-  var bookingForm = document.getElementById('bookingForm');
-  if(bookingForm){
-    bookingForm.addEventListener('submit', async function(e){
-      e.preventDefault();
+  // Wire up wizard events
+  (function bwInit() {
+    bwRenderAirports();
+    bwRenderProgress();
 
-      var name    = valueOf('customerName');
-      var phone   = valueOf('customerPhone');
-      var airport = valueOf('airport');
+    function on(id, evt, fn) {
+      var el = document.getElementById(id);
+      if (el) el.addEventListener(evt, fn);
+    }
 
-      if(!name || !phone){
-        showMsg('Please enter your name and phone number to continue.', 'error');
-        if(!name) document.getElementById('customerName').focus();
-        else document.getElementById('customerPhone').focus();
-        return;
-      }
+    on('bwBack2', 'click', function() { bwGoToStep(1); });
+    on('bwBack3', 'click', function() { bwGoToStep(2); });
 
-      if(!airport){
-        showMsg('Please select an airport.', 'error');
-        document.getElementById('airport').focus();
-        return;
-      }
+    on('bwDirTo', 'click', function() { bw.direction = 'to'; bwRenderStep2(); });
+    on('bwDirFrom', 'click', function() { bw.direction = 'from'; bwRenderStep2(); });
 
-      var btn = bookingForm.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      var origText = btn.textContent;
-      btn.textContent = 'Sending…';
+    on('bwTypeOneway', 'click', function() { bw.journeyType = 'oneway'; bwRenderStep2(); });
+    on('bwTypeReturn', 'click', function() { bw.journeyType = 'return'; bwRenderStep2(); });
 
-      var toAirport = isToAirport();
-      var isRet = valueOf('returnJourney') === 'Yes';
+    on('bwContinue2', 'click', function() { if (bw.direction) bwGoToStep(3); });
 
-      var payload = {
-        journey_type:      valueOf('journeyType') || 'To Airport',
-        pickup_location:   toAirport ? valueOf('pickup') : null,
-        airport:           valueOf('airport') || null,
-        flight_number:     !toAirport ? valueOf('flightNumber') : null,
-        dropoff_address:   !toAirport ? valueOf('dropoff') : null,
-        travel_date:       buildDate('travelDay', 'travelMonth', 'travelYear'),
-        travel_time:       valueOf('travelTime') || null,
-        passengers:        parseInt(valueOf('passengers')) || 1,
-        luggage:           valueOf('luggage') || null,
-        return_journey:    isRet,
-        return_pickup:     isRet ? valueOf('returnPickup') : null,
-        return_airport:    isRet ? valueOf('returnAirport') : null,
-        return_flight:     isRet ? valueOf('returnFlight') : null,
-        return_date:       isRet ? buildDate('returnDay', 'returnMonth', 'returnYear') : null,
-        return_time:       isRet ? valueOf('returnTime') : null,
-        return_destination: isRet ? valueOf('returnDestination') : null,
-        contact_method:    valueOf('contactMethod') || 'WhatsApp',
-        customer_name:     name,
-        customer_phone:    phone,
-        customer_email:    valueOf('customerEmail') || null
-      };
+    on('bwPaxDec', 'click', function() { if (bw.passengers > 1) { bw.passengers--; bwUpdateCounters(); } });
+    on('bwPaxInc', 'click', function() { if (bw.passengers < 4) { bw.passengers++; bwUpdateCounters(); } });
+    on('bwBagsDec', 'click', function() { if (bw.bags > 0)   { bw.bags--;       bwUpdateCounters(); } });
+    on('bwBagsInc', 'click', function() { if (bw.bags < 8)   { bw.bags++;       bwUpdateCounters(); } });
 
-      try {
-        var res = await fetch('/api/booking/create', {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-        var rawText = await res.text();
-        var data;
-        try { data = JSON.parse(rawText); } catch(e) {
-          throw new Error('Server error (' + res.status + '). Please contact us directly.');
-        }
-        if(res.ok && data.success){
-          showMsg('Booking request sent. EV Exec will confirm availability shortly.', 'success');
-          bookingForm.reset();
-          updateMainFields();
-          sessionStorage.setItem('evexec_submitted', Date.now().toString());
-        } else {
-          throw new Error(data.error || 'Something went wrong. Please try again.');
-        }
-      } catch(err){
-        showMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = origText;
-      }
-    });
-  }
+    on('bwSubmit', 'click', bwSubmit);
+  })();
   // CO2 calculator
   var co2Savings = {
     'Manchester Airport': 12,
