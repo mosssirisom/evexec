@@ -1498,14 +1498,14 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var dirColor  = bw.direction === 'to' ? '#60a5fa' : '#4ade80';
       var dirBg     = bw.direction === 'to' ? 'rgba(59,130,246,.12)' : 'rgba(34,197,94,.10)';
       var dirBorder = bw.direction === 'to' ? 'rgba(59,130,246,.3)' : 'rgba(34,197,94,.25)';
-      var dirLabel  = bw.direction === 'to' ? '🛫 To Airport' : '🛬 From Airport';
+      var dirLabel  = bw.direction === 'to' ? 'To Airport' : 'From Airport';
       pills.innerHTML =
         '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
         '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>';
     }
     var addrLabel = document.getElementById('bwAddressLabel');
-    if (addrLabel) addrLabel.textContent = bw.direction === 'to' ? '📍 Pick Up Address' : '📍 Drop Off Address';
+    if (addrLabel) addrLabel.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"></use></svg>' + (bw.direction === 'to' ? 'Pick Up Address' : 'Drop Off Address');
     var flightSec = document.getElementById('bwFlightSection');
     if (flightSec) flightSec.classList.toggle('hidden', bw.direction !== 'from');
     var retSec = document.getElementById('bwReturnSection');
