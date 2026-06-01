@@ -5,6 +5,22 @@ const { sendSMS, sendEmail } = require('../../lib/notify');
 const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
+const { verifyAuth } = require('../../lib/auth');
+
+async function awardPrivilegePoint(userId) {
+  const base = process.env.SUPABASE_URL;
+  const sk   = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const h = { 'Content-Type':'application/json', 'apikey': sk, 'Authorization': `Bearer ${sk}` };
+  const cur = await fetch(`${base}/rest/v1/profiles?id=eq.${userId}&select=privilege_points&limit=1`, { headers: h });
+  if (!cur.ok) return;
+  const rows = await cur.json();
+  const pts = rows[0] ? (rows[0].privilege_points || 0) + 1 : 1;
+  await fetch(`${base}/rest/v1/profiles?id=eq.${userId}`, {
+    method: 'PATCH',
+    headers: { ...h, Prefer: 'return=minimal' },
+    body: JSON.stringify({ privilege_points: pts, updated_at: new Date().toISOString() })
+  });
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
@@ -28,6 +44,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const authUser = await verifyAuth(req).catch(() => null);
     const airport = body.airport || null;
 
     const booking = await dbInsert('bookings', {
@@ -52,7 +69,8 @@ module.exports = async function handler(req, res) {
       customer_phone:    phone,
       customer_email:    body.customer_email ? body.customer_email.trim() : null,
       status:            'pending',
-      quoted_price:      lookupPrice(airport, Boolean(body.return_journey))
+      quoted_price:      lookupPrice(airport, Boolean(body.return_journey)),
+      user_id:           authUser ? authUser.id : null
     });
 
     const id        = booking.id;
@@ -145,6 +163,10 @@ module.exports = async function handler(req, res) {
         ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
         : null
     ].filter(Boolean));
+
+    if (authUser) {
+      awardPrivilegePoint(authUser.id).catch(() => {});
+    }
 
     res.statusCode = 200;
     res.end(JSON.stringify({ success: true, bookingId: id }));

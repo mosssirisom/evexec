@@ -13,6 +13,7 @@
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/booking", "dest": "/booking.html" },
+    { "src": "/account", "dest": "/account.html" },
     { "src": "/terms", "dest": "/terms.html" },
     { "src": "/privacy", "dest": "/privacy.html" },
     { "src": "/manchester-airport-transfer-blackpool", "dest": "/manchester-airport-transfer-blackpool.html" },
