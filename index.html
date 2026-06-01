@@ -604,7 +604,11 @@ main,footer{position:relative;z-index:1}
 <a class="navlink" href="#contact">Contact</a>
 </div>
 
-<a class="btn-gold hidden md:inline-block rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
+<div class="hidden md:flex items-center gap-2">
+<a class="btn-gold rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
+<a href="/account" id="navAccountBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all" style="display:none">My Account</a>
+<button id="navSignInBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all">Sign In</button>
+</div>
 <button class="menu-button lg:hidden" id="menuToggle" type="button" aria-label="Open menu">Menu</button>
 
 <div class="mobile-menu lg:hidden" id="mobileMenu">
@@ -615,10 +619,57 @@ main,footer{position:relative;z-index:1}
 <a href="#about">Story</a>
 <a href="#reviews">Reviews</a>
 <a href="#contact">Contact</a>
-<a href="tel:07721070370">Book Now</a>
+<a href="/account">My Account</a>
+<a href="#quote">Book Now</a>
 </div>
 </nav>
 </header>
+
+<!-- AUTH MODAL -->
+<div id="authModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(2,8,19,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px" aria-modal="true">
+<div style="background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;width:100%;max-width:400px;padding:32px;position:relative">
+  <button id="authModalClose" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.6);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">✕</button>
+  <div style="text-align:center;margin-bottom:20px">
+    <div style="font-size:22px;font-weight:900;margin-bottom:4px">EV EXEC</div>
+    <div style="font-size:12px;color:rgba(255,255,255,.4)">Sign in to your account</div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:20px" id="modalTabs">
+    <button class="tab-btn active" data-mtab="signin" style="flex:1">Sign In</button>
+    <button class="tab-btn" data-mtab="signup" style="flex:1">Create Account</button>
+  </div>
+
+  <div id="mTabSignin">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="input" id="mSiEmail" type="email" placeholder="Email address" autocomplete="email"/>
+      <input class="input" id="mSiPassword" type="password" placeholder="Password" autocomplete="current-password"/>
+      <button class="btn-gold" id="mSiBtn" style="width:100%;border-radius:10px;padding:13px;font-weight:700;font-size:14px;border:none;cursor:pointer">Sign In</button>
+      <p id="mSiMsg" style="font-size:12px;text-align:center;color:rgba(255,255,255,.5)"></p>
+      <button id="mForgotBtn" style="font-size:12px;color:rgba(255,255,255,.35);background:none;border:none;cursor:pointer">Forgot password?</button>
+    </div>
+  </div>
+
+  <div id="mTabSignup" style="display:none">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="input" id="mSuName" type="text" placeholder="Full name" autocomplete="name"/>
+      <input class="input" id="mSuPhone" type="tel" placeholder="Phone number" autocomplete="tel"/>
+      <input class="input" id="mSuEmail" type="email" placeholder="Email address" autocomplete="email"/>
+      <input class="input" id="mSuPassword" type="password" placeholder="Password (min 8 chars)" autocomplete="new-password"/>
+      <button class="btn-gold" id="mSuBtn" style="width:100%;border-radius:10px;padding:13px;font-weight:700;font-size:14px;border:none;cursor:pointer">Create Account</button>
+      <p id="mSuMsg" style="font-size:12px;text-align:center;color:rgba(255,255,255,.5)"></p>
+    </div>
+  </div>
+
+  <div id="mTabReset" style="display:none">
+    <p style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:14px">Enter your email and we'll send a reset link.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="input" id="mRpEmail" type="email" placeholder="Email address"/>
+      <button class="btn-gold" id="mRpBtn" style="width:100%;border-radius:10px;padding:13px;font-weight:700;font-size:14px;border:none;cursor:pointer">Send Reset Link</button>
+      <p id="mRpMsg" style="font-size:12px;text-align:center;color:rgba(255,255,255,.5)"></p>
+      <button id="mBackBtn" style="font-size:12px;color:rgba(255,255,255,.35);background:none;border:none;cursor:pointer">← Back to Sign In</button>
+    </div>
+  </div>
+</div>
+</div>
 
 <main>
 <section class="hero px-6 pt-32 pb-12">
@@ -690,7 +741,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <div class="flex flex-col gap-3 mb-6">
       <button class="bw-dir-card" id="bwDirTo" type="button">
-        <div class="bw-dir-icon">🛫</div>
+        <div class="bw-dir-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-45deg)"><use href="#i-plane"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">To the Airport</p>
           <p class="text-sm text-white/45 mt-1">I'm departing · drop-off</p>
@@ -698,7 +749,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
         <div class="bw-radio" id="bwDirToRadio"></div>
       </button>
       <button class="bw-dir-card" id="bwDirFrom" type="button">
-        <div class="bw-dir-icon">🛬</div>
+        <div class="bw-dir-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(135deg)"><use href="#i-plane"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">From the Airport</p>
           <p class="text-sm text-white/45 mt-1">I've landed · pick-up</p>
@@ -733,13 +784,13 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Address -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel">📍 Pick Up Address</p>
+      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
       <input class="input" id="bwAddress" placeholder="Enter your address…"/>
     </div>
 
     <!-- Date & Time -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3">📅 Date &amp; Time</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-clock"/></svg>Date &amp; Time</p>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <p class="text-xs text-white/45 mb-2">Travel Date</p>
@@ -756,7 +807,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <div class="bw-card mb-4">
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <p class="text-sm font-bold text-white/80 mb-3">🧑 Passengers</p>
+          <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Passengers</p>
           <div class="flex items-center gap-3">
             <button class="bw-counter-btn" id="bwPaxDec" type="button">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwPaxCount">1</span>
@@ -765,7 +816,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
           <p class="text-xs text-white/35 mt-2">max 4 passengers</p>
         </div>
         <div>
-          <p class="text-sm font-bold text-white/80 mb-3">🧳 Luggage</p>
+          <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-briefcase"/></svg>Luggage</p>
           <div class="flex items-center gap-3">
             <button class="bw-counter-btn" id="bwBagsDec" type="button">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwBagsCount">0</span>
@@ -778,7 +829,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Flight number — From Airport only -->
     <div class="bw-card mb-4 hidden" id="bwFlightSection">
-      <p class="text-sm font-bold text-white/80 mb-3">✈️ Flight Number</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-plane"/></svg>Flight Number</p>
       <input class="input" id="bwFlight" placeholder="e.g. EZY2145"/>
       <p class="text-xs text-white/35 mt-2">Optional — helps us track your arrival</p>
     </div>
@@ -806,7 +857,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Contact info -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3">👤 Your Details</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Your Details</p>
       <div class="flex flex-col gap-3">
         <input class="input" id="bwName" placeholder="Full name *" required/>
         <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required/>
@@ -939,11 +990,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </tr>
 </thead>
 <tbody>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./manchester-airport-transfer-blackpool.html">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£180</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./liverpool-airport-transfer-blackpool.html">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£190</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./leeds-bradford-airport-transfer-blackpool.html">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£270</td></tr>
-<tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£430</td></tr>
-<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£500</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./manchester-airport-transfer-blackpool.html">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£160</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./liverpool-airport-transfer-blackpool.html">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£170</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./leeds-bradford-airport-transfer-blackpool.html">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£250</td></tr>
+<tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£410</td></tr>
+<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£480</td></tr>
 </tbody>
 </table>
 </div>
@@ -1237,8 +1288,14 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <li><a href="./manchester-airport-transfer-blackpool.html">Blackpool to Manchester Airport</a></li>
 <li><a href="./liverpool-airport-transfer-blackpool.html">Blackpool to Liverpool Airport</a></li>
 <li><a href="./leeds-bradford-airport-transfer-blackpool.html">Blackpool to Leeds Bradford Airport</a></li>
-<li><a href="./manchester-airport-transfer-blackpool.html">Lytham to Manchester Airport</a></li>
-<li><a href="./liverpool-airport-transfer-blackpool.html">Fleetwood to Liverpool Airport</a></li>
+<li><a href="./airport-transfer-lytham-st-annes.html">Lytham St Annes Airport Transfer</a></li>
+<li><a href="./airport-transfer-poulton-le-fylde.html">Poulton-le-Fylde Airport Transfer</a></li>
+<li><a href="./airport-transfer-kirkham.html">Kirkham Airport Transfer</a></li>
+<li><a href="./airport-transfer-fleetwood.html">Fleetwood Airport Transfer</a></li>
+<li><a href="./airport-transfer-thornton-cleveleys.html">Thornton-Cleveleys Airport Transfer</a></li>
+<li><a href="./airport-transfer-freckleton.html">Freckleton Airport Transfer</a></li>
+<li><a href="./airport-transfer-warton.html">Warton Airport Transfer</a></li>
+<li><a href="./airport-transfer-preston.html">Preston Airport Transfer</a></li>
 <li><a href="#prices">View All Prices</a></li>
 </ul>
 </div>
@@ -1319,11 +1376,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   // ── BOOKING WIZARD ──────────────────────────────────────────
   var BW_AIRPORTS = [
-    { name:'Manchester Airport',     oneWay:90,  ret:180 },
-    { name:'Liverpool Airport',      oneWay:95,  ret:190 },
-    { name:'Leeds Bradford Airport', oneWay:135, ret:270 },
-    { name:'Birmingham Airport',     oneWay:215, ret:430 },
-    { name:'Newcastle Airport',      oneWay:250, ret:500 },
+    { name:'Manchester Airport',     oneWay:90,  ret:160 },
+    { name:'Liverpool Airport',      oneWay:95,  ret:170 },
+    { name:'Leeds Bradford Airport', oneWay:135, ret:250 },
+    { name:'Birmingham Airport',     oneWay:215, ret:410 },
+    { name:'Newcastle Airport',      oneWay:250, ret:480 },
     { name:'Other UK Airport',       oneWay:null, ret:null }
   ];
 
@@ -1365,16 +1422,12 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'bw-airport-card' + (bw.airport === ap.name ? ' bw-selected' : '');
-      var priceHTML = ap.oneWay
-        ? '<span style="font-size:15px;font-weight:800;color:var(--gold)">£' + ap.oneWay + '</span><span style="font-size:9px;color:rgba(255,255,255,.3);display:block;margin-top:1px">one way</span>'
-        : '<span style="font-size:11px;color:rgba(255,255,255,.4)">On request</span>';
       btn.innerHTML =
         '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
         '<div style="flex:1;min-width:0">' +
           '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + ap.name + '</div>' +
           '<div style="font-size:11px;color:rgba(255,255,255,.35)">Tesla Model Y</div>' +
         '</div>' +
-        '<div style="text-align:right;flex-shrink:0">' + priceHTML + '</div>' +
         '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
       btn.addEventListener('click', function() {
         bw.airport = ap.name;
@@ -1445,14 +1498,14 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var dirColor  = bw.direction === 'to' ? '#60a5fa' : '#4ade80';
       var dirBg     = bw.direction === 'to' ? 'rgba(59,130,246,.12)' : 'rgba(34,197,94,.10)';
       var dirBorder = bw.direction === 'to' ? 'rgba(59,130,246,.3)' : 'rgba(34,197,94,.25)';
-      var dirLabel  = bw.direction === 'to' ? '🛫 To Airport' : '🛬 From Airport';
+      var dirLabel  = bw.direction === 'to' ? 'To Airport' : 'From Airport';
       pills.innerHTML =
         '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
         '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>';
     }
     var addrLabel = document.getElementById('bwAddressLabel');
-    if (addrLabel) addrLabel.textContent = bw.direction === 'to' ? '📍 Pick Up Address' : '📍 Drop Off Address';
+    if (addrLabel) addrLabel.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"></use></svg>' + (bw.direction === 'to' ? 'Pick Up Address' : 'Drop Off Address');
     var flightSec = document.getElementById('bwFlightSection');
     if (flightSec) flightSec.classList.toggle('hidden', bw.direction !== 'from');
     var retSec = document.getElementById('bwReturnSection');
@@ -1528,9 +1581,14 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       customer_email:     bwGetVal('bwEmail') || null
     };
     try {
+      var bwHeaders = {'Content-Type':'application/json'};
+      if(window._evexecSb) {
+        var bwSess = (await window._evexecSb.auth.getSession()).data.session;
+        if(bwSess) bwHeaders['Authorization'] = 'Bearer ' + bwSess.access_token;
+      }
       var res = await fetch('/api/booking/create', {
         method: 'POST',
-        headers: {'Content-Type':'application/json'},
+        headers: bwHeaders,
         body: JSON.stringify(payload)
       });
       var rawText = await res.text();
@@ -1600,6 +1658,293 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if(val !== undefined) co2Number.textContent = val;
   }
   if(co2Route) co2Route.addEventListener('change', updateCO2);
+})();
+</script>
+
+<!-- ── TAB STYLES (shared with auth modal) ── -->
+<style>
+.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;font-family:Inter,sans-serif}
+.tab-btn.active{background:rgba(213,165,56,.12);border-color:rgba(213,165,56,.3);color:#d5a538}
+.tab-btn:hover:not(.active){color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
+/* Chat widget */
+.chat-fab{position:fixed;bottom:24px;right:24px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#d5a538,#f2c66d);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(213,165,56,.35);transition:transform .2s,box-shadow .2s}
+.chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 48px rgba(213,165,56,.45)}
+.chat-panel{position:fixed;bottom:92px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+.chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+.chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:160px;max-height:300px}
+.chat-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.5}
+.chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
+.chat-msg.user{background:linear-gradient(135deg,#d5a538,#b8891f);color:#06101c;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
+.chat-quick{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 8px}
+.chat-quick-btn{padding:5px 10px;border-radius:99px;font-size:11.5px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538;cursor:pointer;transition:background .2s;font-family:Inter,sans-serif}
+.chat-quick-btn:hover{background:rgba(213,165,56,.2)}
+.chat-input-row{display:flex;gap:7px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)}
+.chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;font-family:Inter,sans-serif}
+.chat-input:focus{border-color:rgba(213,165,56,.4)}
+.chat-send{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#d5a538,#b8891f);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Push prompt banner */
+#pushPrompt{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);z-index:100;background:#07111f;border:1px solid rgba(213,165,56,.3);border-radius:14px;padding:14px 18px;max-width:340px;width:calc(100% - 32px);box-shadow:0 8px 32px rgba(0,0,0,.4);display:none}
+</style>
+
+<!-- Push notification prompt -->
+<div id="pushPrompt">
+  <p style="font-size:13px;color:rgba(255,255,255,.75);margin:0 0 10px">
+    <strong style="color:#d5a538">Stay updated</strong> — get notified when your driver is on the way.
+  </p>
+  <div style="display:flex;gap:8px">
+    <button id="pushPromptAccept" style="flex:1;background:linear-gradient(135deg,#d5a538,#b8891f);color:#06101c;border:none;border-radius:8px;padding:9px;font-weight:700;font-size:12px;cursor:pointer">Enable Notifications</button>
+    <button id="pushPromptDismiss" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;font-size:12px;cursor:pointer">Not now</button>
+  </div>
+</div>
+
+<!-- Chat FAB -->
+<button class="chat-fab" id="chatFab" aria-label="Open support chat">
+  <svg style="width:22px;height:22px;fill:none;stroke:#06101c;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+<!-- Chat panel -->
+<div class="chat-panel" id="chatPanel">
+  <div style="padding:14px 14px 10px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div style="font-weight:700;font-size:14px">EV Exec Support</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.4)">24/7 · Typically instant</div>
+    </div>
+    <button id="chatClose" style="background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.6);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:16px">✕</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-quick" id="chatQuick"></div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" placeholder="Ask us anything…" type="text"/>
+    <button class="chat-send" id="chatSendBtn">
+      <svg style="width:15px;height:15px;fill:none;stroke:#06101c;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><polyline points="22 2 11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(async function() {
+  // ── CONFIG ────────────────────────────────────────────────────
+  var cfg = {};
+  try { cfg = await fetch('/api/config').then(function(r){ return r.json(); }); } catch(e) {}
+  var SB_URL  = cfg.supabaseUrl  || '';
+  var SB_ANON = cfg.supabaseAnon || '';
+  var VAPID   = cfg.vapidPublic  || '';
+  var sb = (SB_URL && SB_ANON && window.supabase) ? window.supabase.createClient(SB_URL, SB_ANON) : null;
+  window._evexecSb = sb;
+
+  // ── AUTH MODAL ───────────────────────────────────────────────
+  var authModal   = document.getElementById('authModal');
+  var authClose   = document.getElementById('authModalClose');
+  var signInBtn   = document.getElementById('navSignInBtn');
+  var navAccount  = document.getElementById('navAccountBtn');
+
+  function openModal() { if(authModal) authModal.style.display='flex'; }
+  function closeModal(){ if(authModal) authModal.style.display='none'; }
+
+  if(signInBtn) signInBtn.addEventListener('click', openModal);
+  if(authClose) authClose.addEventListener('click', closeModal);
+  if(authModal) authModal.addEventListener('click', function(e){ if(e.target===authModal) closeModal(); });
+
+  // Modal tabs
+  document.querySelectorAll('#modalTabs .tab-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('#modalTabs .tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var t = btn.dataset.mtab;
+      document.getElementById('mTabSignin').style.display = t==='signin' ? '' : 'none';
+      document.getElementById('mTabSignup').style.display = t==='signup' ? '' : 'none';
+      document.getElementById('mTabReset').style.display  = 'none';
+    });
+  });
+
+  var mForgot = document.getElementById('mForgotBtn');
+  var mBack   = document.getElementById('mBackBtn');
+  if(mForgot) mForgot.addEventListener('click', function(){
+    document.getElementById('mTabSignin').style.display='none';
+    document.getElementById('mTabSignup').style.display='none';
+    document.getElementById('mTabReset').style.display='';
+    document.querySelectorAll('#modalTabs .tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  });
+  if(mBack) mBack.addEventListener('click', function(){
+    document.getElementById('mTabReset').style.display='none';
+    document.getElementById('mTabSignin').style.display='';
+    document.querySelector('[data-mtab="signin"]').classList.add('active');
+  });
+
+  // Sign in
+  if(sb) {
+    var mSiBtn = document.getElementById('mSiBtn');
+    if(mSiBtn) mSiBtn.addEventListener('click', async function(){
+      var email = document.getElementById('mSiEmail').value.trim();
+      var pwd   = document.getElementById('mSiPassword').value;
+      var msg   = document.getElementById('mSiMsg');
+      if(!email||!pwd){ msg.style.color='#f87171'; msg.textContent='Please fill in all fields.'; return; }
+      msg.style.color='rgba(255,255,255,.5)'; msg.textContent='Signing in…';
+      var r = await sb.auth.signInWithPassword({ email, password: pwd });
+      if(r.error){ msg.style.color='#f87171'; msg.textContent=r.error.message; }
+      else { closeModal(); }
+    });
+
+    // Sign up
+    var mSuBtn = document.getElementById('mSuBtn');
+    if(mSuBtn) mSuBtn.addEventListener('click', async function(){
+      var name  = document.getElementById('mSuName').value.trim();
+      var phone = document.getElementById('mSuPhone').value.trim();
+      var email = document.getElementById('mSuEmail').value.trim();
+      var pwd   = document.getElementById('mSuPassword').value;
+      var msg   = document.getElementById('mSuMsg');
+      if(!name||!email||!pwd){ msg.style.color='#f87171'; msg.textContent='Name, email and password required.'; return; }
+      if(pwd.length<8){ msg.style.color='#f87171'; msg.textContent='Password must be at least 8 characters.'; return; }
+      msg.style.color='rgba(255,255,255,.5)'; msg.textContent='Creating account…';
+      var r = await sb.auth.signUp({ email, password: pwd, options:{ data:{ full_name: name, phone } } });
+      if(r.error){ msg.style.color='#f87171'; msg.textContent=r.error.message; }
+      else { msg.style.color='#4ade80'; msg.textContent='Account created! Check your email to confirm, then sign in.'; }
+    });
+
+    // Reset
+    var mRpBtn = document.getElementById('mRpBtn');
+    if(mRpBtn) mRpBtn.addEventListener('click', async function(){
+      var email = document.getElementById('mRpEmail').value.trim();
+      var msg   = document.getElementById('mRpMsg');
+      if(!email){ msg.style.color='#f87171'; msg.textContent='Enter your email.'; return; }
+      msg.style.color='rgba(255,255,255,.5)'; msg.textContent='Sending…';
+      var r = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/account' });
+      if(r.error){ msg.style.color='#f87171'; msg.textContent=r.error.message; }
+      else { msg.style.color='#4ade80'; msg.textContent='Reset link sent!'; }
+    });
+
+    // Auth state
+    sb.auth.onAuthStateChange(function(event, session){
+      if(session){
+        if(signInBtn)  signInBtn.style.display='none';
+        if(navAccount) navAccount.style.display='';
+        // Pre-fill wizard if profile loaded
+        if(session.user) {
+          var meta = session.user.user_metadata || {};
+          var nameEl  = document.getElementById('bwName');
+          var phoneEl = document.getElementById('bwPhone');
+          var emailEl = document.getElementById('bwEmail');
+          if(nameEl  && !nameEl.value  && meta.full_name) nameEl.value  = meta.full_name;
+          if(phoneEl && !phoneEl.value && meta.phone)     phoneEl.value = meta.phone;
+          if(emailEl && !emailEl.value && session.user.email) emailEl.value = session.user.email;
+        }
+        // Show push prompt if not dismissed
+        var dismissed = sessionStorage.getItem('pushDismissed');
+        if(!dismissed && 'serviceWorker' in navigator && 'PushManager' in window && VAPID) {
+          setTimeout(function(){ var pp = document.getElementById('pushPrompt'); if(pp) pp.style.display=''; }, 3000);
+        }
+      } else {
+        if(signInBtn)  signInBtn.style.display='';
+        if(navAccount) navAccount.style.display='none';
+      }
+    });
+  }
+
+  // ── PUSH PROMPT ──────────────────────────────────────────────
+  var pushPrompt = document.getElementById('pushPrompt');
+  var ppAccept   = document.getElementById('pushPromptAccept');
+  var ppDismiss  = document.getElementById('pushPromptDismiss');
+
+  function urlB64ToUint8Array(b64){
+    var pad = '='.repeat((4 - b64.length%4)%4);
+    var raw = atob(b64.replace(/-/g,'+').replace(/_/g,'/')+pad);
+    return Uint8Array.from(Array.from(raw).map(function(c){ return c.charCodeAt(0); }));
+  }
+
+  if(ppDismiss) ppDismiss.addEventListener('click', function(){
+    if(pushPrompt) pushPrompt.style.display='none';
+    sessionStorage.setItem('pushDismissed','1');
+  });
+
+  if(ppAccept) ppAccept.addEventListener('click', async function(){
+    if(pushPrompt) pushPrompt.style.display='none';
+    sessionStorage.setItem('pushDismissed','1');
+    try {
+      var reg = await navigator.serviceWorker.register('/public/sw.js');
+      await navigator.serviceWorker.ready;
+      var sub = await reg.pushManager.subscribe({ userVisibleOnly:true, applicationServerKey: urlB64ToUint8Array(VAPID) });
+      var subJson = sub.toJSON();
+      var session = sb ? (await sb.auth.getSession()).data.session : null;
+      await fetch('/api/notifications/subscribe', {
+        method:'POST',
+        headers: Object.assign({'Content-Type':'application/json'}, session ? { Authorization: 'Bearer '+session.access_token } : {}),
+        body: JSON.stringify({ endpoint: subJson.endpoint, keys: subJson.keys, customer_email: session ? session.user.email : '' })
+      });
+    } catch(e) { console.warn('Push subscription failed', e); }
+  });
+
+  // ── CHAT BOT ─────────────────────────────────────────────────
+  var chatFab   = document.getElementById('chatFab');
+  var chatPanel = document.getElementById('chatPanel');
+  var chatClose = document.getElementById('chatClose');
+  var chatMsgs  = document.getElementById('chatMessages');
+  var chatQuick = document.getElementById('chatQuick');
+  var chatInput = document.getElementById('chatInput');
+
+  var FAQ = [
+    { q:'Prices', a:'One-way prices: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215, Newcastle £250. Return prices: Manchester £160, Liverpool £170, Leeds Bradford £250, Birmingham £410, Newcastle £480. No surge pricing, ever.' },
+    { q:'Book a transfer', a:'<a href="#quote" style="color:#d5a538">Book online</a> in under 2 minutes, or WhatsApp us on <a href="https://wa.me/447721070370" style="color:#d5a538">07721 070370</a>.' },
+    { q:'Flight monitoring', a:'Yes — we track your flight in real time. If your flight is delayed, we adjust automatically at no extra charge.' },
+    { q:'Coverage area', a:'We cover Blackpool and the full Fylde Coast: Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham and Preston (FY postcodes).' },
+    { q:'Our vehicle', a:'We operate a premium Tesla Model Y — fully electric, climate controlled, ultra-quiet. Child seats available on request.' },
+    { q:'Privilege points', a:'Create an account to earn 1 privilege point per journey. Reach 10 for Preferred, 20 for Executive, and Private is invite-only.' },
+    { q:'Contact us', a:'Phone: <a href="tel:07721070370" style="color:#d5a538">07721 070370</a> | Email: <a href="mailto:book@evexec.co.uk" style="color:#d5a538">book@evexec.co.uk</a>' }
+  ];
+
+  function chatAddMsg(text, role){
+    var el = document.createElement('div');
+    el.className='chat-msg '+role;
+    el.innerHTML=text;
+    chatMsgs.appendChild(el);
+    chatMsgs.scrollTop=chatMsgs.scrollHeight;
+  }
+  function chatSetQuick(items){
+    chatQuick.innerHTML='';
+    items.forEach(function(item){
+      var btn=document.createElement('button');
+      btn.className='chat-quick-btn';
+      btn.textContent=item.q;
+      btn.addEventListener('click',function(){ chatAddMsg(item.q,'user'); chatAnswer(item); });
+      chatQuick.appendChild(btn);
+    });
+  }
+  function chatAnswer(item){
+    chatQuick.innerHTML='';
+    setTimeout(function(){ chatAddMsg(item.a,'bot'); chatSetQuick(FAQ.filter(function(f){ return f!==item; }).slice(0,3)); },250);
+  }
+  function chatHandleInput(text){
+    if(!text.trim()) return;
+    chatAddMsg(text,'user');
+    chatInput.value='';
+    var t=text.toLowerCase();
+    var match=FAQ.find(function(f){ return t.includes(f.q.toLowerCase()) || f.q.toLowerCase().split(' ').some(function(w){ return w.length>3&&t.includes(w); }); });
+    if(match){ chatAnswer(match); return; }
+    if(t.includes('price')||t.includes('cost')||t.includes('how much')){ chatAnswer(FAQ[0]); return; }
+    if(t.includes('book')||t.includes('reserv')){ chatAnswer(FAQ[1]); return; }
+    if(t.includes('flight')||t.includes('delay')||t.includes('monitor')){ chatAnswer(FAQ[2]); return; }
+    if(t.includes('area')||t.includes('cover')||t.includes('location')){ chatAnswer(FAQ[3]); return; }
+    if(t.includes('car')||t.includes('tesla')||t.includes('vehicle')){ chatAnswer(FAQ[4]); return; }
+    if(t.includes('point')||t.includes('tier')||t.includes('privilege')){ chatAnswer(FAQ[5]); return; }
+    if(t.includes('contact')||t.includes('phone')||t.includes('email')){ chatAnswer(FAQ[6]); return; }
+    setTimeout(function(){
+      chatAddMsg("I'm not sure — for anything specific, please <a href='https://wa.me/447721070370' style='color:#d5a538'>WhatsApp us</a> and Moss will get back to you right away.",'bot');
+      chatSetQuick(FAQ.slice(0,3));
+    },300);
+  }
+
+  if(chatFab) chatFab.addEventListener('click', function(){
+    chatPanel.classList.toggle('open');
+    if(chatPanel.classList.contains('open') && !chatMsgs.children.length){
+      chatAddMsg("Hi! I'm the EV Exec assistant. How can I help?",'bot');
+      chatSetQuick(FAQ.slice(0,4));
+    }
+  });
+  if(chatClose) chatClose.addEventListener('click', function(){ chatPanel.classList.remove('open'); });
+  var chatSendBtn = document.getElementById('chatSendBtn');
+  if(chatSendBtn) chatSendBtn.addEventListener('click', function(){ chatHandleInput(chatInput.value); });
+  if(chatInput) chatInput.addEventListener('keydown', function(e){ if(e.key==='Enter') chatHandleInput(chatInput.value); });
+
 })();
 </script>
 </body>
