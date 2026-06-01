@@ -741,7 +741,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <div class="flex flex-col gap-3 mb-6">
       <button class="bw-dir-card" id="bwDirTo" type="button">
-        <div class="bw-dir-icon">🛫</div>
+        <div class="bw-dir-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(-45deg)"><use href="#i-plane"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">To the Airport</p>
           <p class="text-sm text-white/45 mt-1">I'm departing · drop-off</p>
@@ -749,7 +749,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
         <div class="bw-radio" id="bwDirToRadio"></div>
       </button>
       <button class="bw-dir-card" id="bwDirFrom" type="button">
-        <div class="bw-dir-icon">🛬</div>
+        <div class="bw-dir-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(135deg)"><use href="#i-plane"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">From the Airport</p>
           <p class="text-sm text-white/45 mt-1">I've landed · pick-up</p>
@@ -784,13 +784,13 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Address -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel">📍 Pick Up Address</p>
+      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
       <input class="input" id="bwAddress" placeholder="Enter your address…"/>
     </div>
 
     <!-- Date & Time -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3">📅 Date &amp; Time</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-clock"/></svg>Date &amp; Time</p>
       <div class="grid grid-cols-2 gap-3">
         <div>
           <p class="text-xs text-white/45 mb-2">Travel Date</p>
@@ -807,7 +807,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <div class="bw-card mb-4">
       <div class="grid grid-cols-2 gap-6">
         <div>
-          <p class="text-sm font-bold text-white/80 mb-3">🧑 Passengers</p>
+          <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Passengers</p>
           <div class="flex items-center gap-3">
             <button class="bw-counter-btn" id="bwPaxDec" type="button">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwPaxCount">1</span>
@@ -816,7 +816,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
           <p class="text-xs text-white/35 mt-2">max 4 passengers</p>
         </div>
         <div>
-          <p class="text-sm font-bold text-white/80 mb-3">🧳 Luggage</p>
+          <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-briefcase"/></svg>Luggage</p>
           <div class="flex items-center gap-3">
             <button class="bw-counter-btn" id="bwBagsDec" type="button">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwBagsCount">0</span>
@@ -829,7 +829,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Flight number — From Airport only -->
     <div class="bw-card mb-4 hidden" id="bwFlightSection">
-      <p class="text-sm font-bold text-white/80 mb-3">✈️ Flight Number</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-plane"/></svg>Flight Number</p>
       <input class="input" id="bwFlight" placeholder="e.g. EZY2145"/>
       <p class="text-xs text-white/35 mt-2">Optional — helps us track your arrival</p>
     </div>
@@ -857,7 +857,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Contact info -->
     <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3">👤 Your Details</p>
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Your Details</p>
       <div class="flex flex-col gap-3">
         <input class="input" id="bwName" placeholder="Full name *" required/>
         <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required/>
@@ -990,11 +990,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </tr>
 </thead>
 <tbody>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./manchester-airport-transfer-blackpool.html">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£180</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./liverpool-airport-transfer-blackpool.html">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£190</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./leeds-bradford-airport-transfer-blackpool.html">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£270</td></tr>
-<tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£430</td></tr>
-<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£500</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./manchester-airport-transfer-blackpool.html">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£160</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./liverpool-airport-transfer-blackpool.html">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£170</td></tr>
+<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="./leeds-bradford-airport-transfer-blackpool.html">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£250</td></tr>
+<tr><td data-label="Airport">Birmingham Airport</td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£410</td></tr>
+<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£480</td></tr>
 </tbody>
 </table>
 </div>
@@ -1376,11 +1376,11 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   // ── BOOKING WIZARD ──────────────────────────────────────────
   var BW_AIRPORTS = [
-    { name:'Manchester Airport',     oneWay:90,  ret:180 },
-    { name:'Liverpool Airport',      oneWay:95,  ret:190 },
-    { name:'Leeds Bradford Airport', oneWay:135, ret:270 },
-    { name:'Birmingham Airport',     oneWay:215, ret:430 },
-    { name:'Newcastle Airport',      oneWay:250, ret:500 },
+    { name:'Manchester Airport',     oneWay:90,  ret:160 },
+    { name:'Liverpool Airport',      oneWay:95,  ret:170 },
+    { name:'Leeds Bradford Airport', oneWay:135, ret:250 },
+    { name:'Birmingham Airport',     oneWay:215, ret:410 },
+    { name:'Newcastle Airport',      oneWay:250, ret:480 },
     { name:'Other UK Airport',       oneWay:null, ret:null }
   ];
 
@@ -1422,16 +1422,12 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'bw-airport-card' + (bw.airport === ap.name ? ' bw-selected' : '');
-      var priceHTML = ap.oneWay
-        ? '<span style="font-size:15px;font-weight:800;color:var(--gold)">£' + ap.oneWay + '</span><span style="font-size:9px;color:rgba(255,255,255,.3);display:block;margin-top:1px">one way</span>'
-        : '<span style="font-size:11px;color:rgba(255,255,255,.4)">On request</span>';
       btn.innerHTML =
         '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
         '<div style="flex:1;min-width:0">' +
           '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + ap.name + '</div>' +
           '<div style="font-size:11px;color:rgba(255,255,255,.35)">Tesla Model Y</div>' +
         '</div>' +
-        '<div style="text-align:right;flex-shrink:0">' + priceHTML + '</div>' +
         '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
       btn.addEventListener('click', function() {
         bw.airport = ap.name;
@@ -1887,7 +1883,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   var chatInput = document.getElementById('chatInput');
 
   var FAQ = [
-    { q:'Prices', a:'Our fixed prices: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215, Newcastle £250. Returns are double. No surge pricing, ever.' },
+    { q:'Prices', a:'One-way prices: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215, Newcastle £250. Return prices: Manchester £160, Liverpool £170, Leeds Bradford £250, Birmingham £410, Newcastle £480. No surge pricing, ever.' },
     { q:'Book a transfer', a:'<a href="#quote" style="color:#d5a538">Book online</a> in under 2 minutes, or WhatsApp us on <a href="https://wa.me/447721070370" style="color:#d5a538">07721 070370</a>.' },
     { q:'Flight monitoring', a:'Yes — we track your flight in real time. If your flight is delayed, we adjust automatically at no extra charge.' },
     { q:'Coverage area', a:'We cover Blackpool and the full Fylde Coast: Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham and Preston (FY postcodes).' },
