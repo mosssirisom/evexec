@@ -3,6 +3,7 @@
   "public": true,
   "builds": [
     { "src": "api/config.js", "use": "@vercel/node" },
+    { "src": "api/home.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.xml", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" },
@@ -17,6 +18,6 @@
     { "src": "/terms", "dest": "/terms.html" },
     { "src": "/privacy", "dest": "/privacy.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/", "dest": "/api/home.js" }
   ]
 }
