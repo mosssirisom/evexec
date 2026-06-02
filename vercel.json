@@ -2,32 +2,21 @@
   "version": 2,
   "public": true,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
+    { "src": "api/config.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.xml", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api/config", "dest": "/api/config.js" },
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/booking", "dest": "/booking.html" },
     { "src": "/account", "dest": "/account.html" },
     { "src": "/terms", "dest": "/terms.html" },
     { "src": "/privacy", "dest": "/privacy.html" },
-    { "src": "/manchester-airport-transfer-blackpool", "dest": "/manchester-airport-transfer-blackpool.html" },
-    { "src": "/liverpool-airport-transfer-blackpool", "dest": "/liverpool-airport-transfer-blackpool.html" },
-    { "src": "/leeds-bradford-airport-transfer-blackpool", "dest": "/leeds-bradford-airport-transfer-blackpool.html" },
-    { "src": "/airport-transfer-lytham-st-annes", "dest": "/airport-transfer-lytham-st-annes.html" },
-    { "src": "/airport-transfer-poulton-le-fylde", "dest": "/airport-transfer-poulton-le-fylde.html" },
-    { "src": "/airport-transfer-thornton-cleveleys", "dest": "/airport-transfer-thornton-cleveleys.html" },
-    { "src": "/airport-transfer-fleetwood", "dest": "/airport-transfer-fleetwood.html" },
-    { "src": "/airport-transfer-kirkham", "dest": "/airport-transfer-kirkham.html" },
-    { "src": "/airport-transfer-freckleton", "dest": "/airport-transfer-freckleton.html" },
-    { "src": "/airport-transfer-warton", "dest": "/airport-transfer-warton.html" },
-    { "src": "/airport-transfer-preston", "dest": "/airport-transfer-preston.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/", "dest": "/api/home.js" }
+    { "src": "/", "dest": "/index.html" }
   ]
 }
