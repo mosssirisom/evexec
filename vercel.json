@@ -3,6 +3,7 @@
   "public": true,
   "builds": [
     { "src": "api/config.js", "use": "@vercel/node" },
+    { "src": "api/home.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.xml", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" },
@@ -28,6 +29,6 @@
     { "src": "/airport-transfer-warton", "dest": "/airport-transfer-warton.html" },
     { "src": "/airport-transfer-preston", "dest": "/airport-transfer-preston.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/", "dest": "/api/home.js" }
   ]
 }
