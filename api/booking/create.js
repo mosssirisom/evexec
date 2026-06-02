@@ -73,18 +73,27 @@ module.exports = async function handler(req, res) {
       user_id:           authUser ? authUser.id : null
     });
 
-    const id        = booking.id;
-    const siteUrl   = process.env.SITE_URL || 'https://evexec.co.uk';
-    const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
-    const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
+    const id      = booking.id;
+    const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
 
-    const route = journeyLine(booking);
-    const date  = fmtDate(booking.travel_date);
-    const price = getPrice(booking);
+    // Booking saved — respond immediately; notifications are best-effort
+    res.statusCode = 200;
+    res.end(JSON.stringify({ success: true, bookingId: id }));
 
-    const returnLine = booking.return_journey
-      ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
-      : null;
+    if (authUser) awardPrivilegePoint(authUser.id).catch(() => {});
+
+    // Best-effort operator notifications (never throws back to the user)
+    try {
+      const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
+      const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
+
+      const route = journeyLine(booking);
+      const date  = fmtDate(booking.travel_date);
+      const price = getPrice(booking);
+
+      const returnLine = booking.return_journey
+        ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
+        : null;
 
     const smsTxt = [
       'New EV Exec booking:',
@@ -155,21 +164,17 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
-    await Promise.allSettled([
-      process.env.OPERATOR_PHONE
-        ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
-        : null,
-      process.env.OPERATOR_EMAIL
-        ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
-        : null
-    ].filter(Boolean));
-
-    if (authUser) {
-      awardPrivilegePoint(authUser.id).catch(() => {});
+      await Promise.allSettled([
+        process.env.OPERATOR_PHONE
+          ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
+          : null,
+        process.env.OPERATOR_EMAIL
+          ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
+          : null
+      ].filter(Boolean));
+    } catch (notifyErr) {
+      console.error('Booking notification error:', notifyErr);
     }
-
-    res.statusCode = 200;
-    res.end(JSON.stringify({ success: true, bookingId: id }));
   } catch (err) {
     console.error('Booking create error:', err);
     res.statusCode = 500;
