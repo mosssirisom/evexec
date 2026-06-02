@@ -10,6 +10,7 @@ module.exports = function handler(req, res) {
   res.end(JSON.stringify({
     supabaseUrl: EV_EXEC_SUPABASE_URL,
     supabaseAnon: EV_EXEC_SUPABASE_ANON_KEY,
-    vapidPublic: process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || ''
+    vapidPublic: process.env.VAPID_PUBLIC_KEY || process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
   }));
 };
