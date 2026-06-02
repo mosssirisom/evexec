@@ -2,15 +2,14 @@
   "version": 2,
   "public": true,
   "builds": [
-    { "src": "api/config.js", "use": "@vercel/node" },
-    { "src": "api/home.js", "use": "@vercel/node" },
+    { "src": "api/**/*.js", "use": "@vercel/node" },
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.xml", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/config", "dest": "/api/config.js" },
+    { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/booking", "dest": "/booking.html" },
