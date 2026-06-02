@@ -11,6 +11,7 @@
   ],
   "routes": [
     { "src": "/api/config", "dest": "/api/config.js" },
+    { "src": "/api/booking/create", "dest": "/api/config.js" },
     { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
     { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/booking", "dest": "/booking.html" },
