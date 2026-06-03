@@ -67,30 +67,37 @@ async function bookingSubmit(req, res) {
     });
 
     const id = booking.id;
-    const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
-    const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
-    const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
-    const route = journeyLine(booking);
-    const date = fmtDate(booking.travel_date);
-    const price = getPrice(booking);
-    const returnLine = booking.return_journey ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '') : null;
 
-    const smsTxt = [
-      'New EV Exec booking:', route, `${date} at ${booking.travel_time || 'TBC'}`,
-      `${booking.passengers} passenger(s)${booking.luggage ? `, ${booking.luggage}` : ''}`,
-      returnLine, '', `Customer: ${name}`, `Phone: ${phone}`,
-      booking.customer_email ? `Email: ${booking.customer_email}` : '', '',
-      `Accept: ${acceptUrl}`, '', `Reject: ${rejectUrl}`
-    ].filter(l => l !== null).join('\n');
+    // Respond immediately — notifications are best-effort and must never
+    // cause a 500 when the booking has already been saved successfully.
+    json(res, 200, { success: true, bookingId: id });
 
-    const emailHtml = `<div style="font-family:Arial,sans-serif;background:#07111f;color:#fff;padding:24px;border-radius:16px"><h1 style="color:#d5a538">New EV Exec Booking Request</h1><p><strong>Journey:</strong> ${route}</p><p><strong>Date:</strong> ${date} at ${booking.travel_time || 'TBC'}</p><p><strong>Customer:</strong> ${name}</p><p><strong>Phone:</strong> ${phone}</p>${booking.customer_email ? `<p><strong>Email:</strong> ${booking.customer_email}</p>` : ''}${price ? `<p><strong>Price:</strong> £${price}</p>` : ''}<p><a href="${acceptUrl}">Accept Booking</a> · <a href="${rejectUrl}">Reject Booking</a></p></div>`;
+    try {
+      const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
+      const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
+      const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
+      const route = journeyLine(booking);
+      const date = fmtDate(booking.travel_date);
+      const price = getPrice(booking);
+      const returnLine = booking.return_journey ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '') : null;
 
-    await Promise.allSettled([
-      process.env.OPERATOR_PHONE ? sendSMS(process.env.OPERATOR_PHONE, smsTxt) : null,
-      process.env.OPERATOR_EMAIL ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml }) : null
-    ].filter(Boolean));
+      const smsTxt = [
+        'New EV Exec booking:', route, `${date} at ${booking.travel_time || 'TBC'}`,
+        `${booking.passengers} passenger(s)${booking.luggage ? `, ${booking.luggage}` : ''}`,
+        returnLine, '', `Customer: ${name}`, `Phone: ${phone}`,
+        booking.customer_email ? `Email: ${booking.customer_email}` : '', '',
+        `Accept: ${acceptUrl}`, '', `Reject: ${rejectUrl}`
+      ].filter(l => l !== null).join('\n');
 
-    return json(res, 200, { success: true, bookingId: id });
+      const emailHtml = `<div style="font-family:Arial,sans-serif;background:#07111f;color:#fff;padding:24px;border-radius:16px"><h1 style="color:#d5a538">New EV Exec Booking Request</h1><p><strong>Journey:</strong> ${route}</p><p><strong>Date:</strong> ${date} at ${booking.travel_time || 'TBC'}</p><p><strong>Customer:</strong> ${name}</p><p><strong>Phone:</strong> ${phone}</p>${booking.customer_email ? `<p><strong>Email:</strong> ${booking.customer_email}</p>` : ''}${price ? `<p><strong>Price:</strong> £${price}</p>` : ''}<p><a href="${acceptUrl}">Accept Booking</a> · <a href="${rejectUrl}">Reject Booking</a></p></div>`;
+
+      await Promise.allSettled([
+        process.env.OPERATOR_PHONE ? sendSMS(process.env.OPERATOR_PHONE, smsTxt) : null,
+        process.env.OPERATOR_EMAIL ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml }) : null
+      ].filter(Boolean));
+    } catch (notifyErr) {
+      console.error('Booking notification error:', notifyErr);
+    }
   } catch (err) {
     console.error('Booking submit error:', err);
     return json(res, 500, { error: 'Failed to save booking. Please contact us directly.' });
