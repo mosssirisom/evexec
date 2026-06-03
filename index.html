@@ -444,6 +444,37 @@ main,footer{position:relative;z-index:1}
 #formMsg{font-size:13px;text-align:center;margin-top:10px;min-height:20px}
 #formMsg.error{color:#f97066}
 #formMsg.success{color:#4ade80}
+/* Booking confirmed panel */
+#bwConfirm{animation:bwSlideIn .38s cubic-bezier(.2,.8,.2,1) both}
+.confirm-ring{
+  width:60px;height:60px;border-radius:50%;
+  background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.28);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
+}
+.payment-opt{
+  display:flex;flex-direction:column;gap:11px;
+  padding:18px 16px;border-radius:14px;cursor:pointer;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04);
+  transition:border-color .22s,background .22s,box-shadow .22s;
+  text-align:left;width:100%;
+}
+.payment-opt:hover{
+  border-color:rgba(213,165,56,.45);
+  background:rgba(213,165,56,.06);
+}
+.payment-opt.selected{
+  border-color:var(--gold);
+  background:rgba(213,165,56,.1);
+  box-shadow:0 0 0 1px rgba(213,165,56,.25);
+}
+.payment-opt-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(213,165,56,.12);flex-shrink:0;
+  transition:background .22s;
+}
+.payment-opt.selected .payment-opt-icon{background:rgba(213,165,56,.22)}
 @media(max-width:900px){.hero{min-height:auto;background-position:60% center}}
 @media(max-width:768px){
   body{
@@ -714,7 +745,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 <div style="max-width:560px;margin:0 auto">
 
   <!-- Title + Step Progress -->
-  <div class="flex items-center justify-between mb-5">
+  <div class="flex items-center justify-between mb-5" id="bwWizardHeader">
     <h2 class="serif text-3xl">Book Your <span class="gold font-bold">Transfer</span></h2>
     <div id="bwProgress" class="flex items-center gap-2"></div>
   </div>
@@ -873,13 +904,94 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwSubmit" type="button" style="border:none">
       Request My Transfer
     </button>
+    <p id="formMsg" class="text-xs text-center mt-3 min-h-[18px]"></p>
   </div>
+
+  <!-- ── CONFIRMATION PANEL (shown after successful submission) ── -->
+  <div id="bwConfirm" class="hidden">
+
+    <!-- Success ring -->
+    <div class="confirm-ring">
+      <svg width="26" height="26" fill="none" stroke="#d5a538" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="5 13.5 10.5 19 21 8"/>
+      </svg>
+    </div>
+
+    <!-- Heading -->
+    <h3 class="serif text-2xl font-bold text-center leading-snug mb-3">Booking Request<br>Received</h3>
+    <p class="text-white/58 text-sm leading-relaxed text-center mb-7 max-w-[420px] mx-auto">
+      Thank you for choosing EV Exec. Your request has been logged. A member of our team will review availability shortly. You will receive an automated SMS and email confirmation as soon as your journey is officially secured.
+    </p>
+
+    <!-- Divider -->
+    <div style="border-top:1px solid rgba(255,255,255,.09);margin-bottom:24px"></div>
+
+    <!-- Payment preference -->
+    <p class="text-[10px] uppercase tracking-[.2em] font-bold text-white/38 mb-2">Payment Preference</p>
+    <p class="text-sm text-white/60 mb-4 leading-relaxed">Please select your preferred payment method for this journey:</p>
+
+    <div class="grid grid-cols-2 gap-3 mb-7">
+
+      <!-- Card option -->
+      <button class="payment-opt" id="bwPayCard" type="button" aria-pressed="false">
+        <div class="payment-opt-icon">
+          <svg width="22" height="22" fill="none" stroke="#d5a538" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="5.5" width="20" height="13" rx="2"/>
+            <line x1="2" y1="10" x2="22" y2="10"/>
+            <line x1="6" y1="14.5" x2="9.5" y2="14.5"/>
+            <line x1="6" y1="14.5" x2="6" y2="14.51"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold text-sm leading-tight">Pay via Card</p>
+          <p class="text-white/45 text-xs mt-1 leading-snug">Secure online payment.<br>Visa &amp; Mastercard accepted.</p>
+        </div>
+      </button>
+
+      <!-- Cash option -->
+      <button class="payment-opt" id="bwPayCash" type="button" aria-pressed="false">
+        <div class="payment-opt-icon">
+          <svg width="22" height="22" fill="none" stroke="#d5a538" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="7" width="20" height="10" rx="1.5"/>
+            <circle cx="12" cy="12" r="2.5"/>
+            <line x1="6" y1="9.5" x2="6" y2="9.51"/>
+            <line x1="18" y1="14.5" x2="18" y2="14.51"/>
+            <line x1="5" y1="7" x2="5" y2="5.5"/>
+            <line x1="19" y1="7" x2="19" y2="5.5"/>
+            <line x1="3.5" y1="5.5" x2="20.5" y2="5.5"/>
+          </svg>
+        </div>
+        <div>
+          <p class="font-bold text-sm leading-tight">Pay via Cash</p>
+          <p class="text-white/45 text-xs mt-1 leading-snug">Pay your driver<br>on the day of travel.</p>
+        </div>
+      </button>
+
+    </div>
+
+    <!-- CTA -->
+    <a id="bwViewBookingBtn" href="/booking"
+       class="btn-gold w-full rounded-xl py-4 font-bold text-base text-center block"
+       style="text-decoration:none">
+      View My Booking Status
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-left:6px;margin-top:-2px" aria-hidden="true">
+        <polyline points="5 3 11 8 5 13"/>
+      </svg>
+    </a>
+
+    <p class="text-center text-white/30 text-xs mt-5 leading-relaxed">
+      Questions? &nbsp;
+      <a href="https://wa.me/447721070370" target="_blank" rel="noopener" class="text-[#d5a538] underline underline-offset-2">WhatsApp</a>
+      &nbsp;·&nbsp;
+      <a href="tel:07721070370" class="text-[#d5a538] underline underline-offset-2">07721 070370</a>
+    </p>
+
+  </div><!-- /#bwConfirm -->
 
 </div>
 
-<p id="formMsg"></p>
-<p class="text-center text-white/50 mt-5 text-sm">No hidden fees · Fixed prices · Professional service</p>
-<p class="text-center mt-2 text-sm text-white/40">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
+<p class="text-center text-white/50 mt-5 text-sm" id="bwFooterNote">No hidden fees · Fixed prices · Professional service</p>
+<p class="text-center mt-2 text-sm text-white/40" id="bwFooterWhatsapp">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
 </section>
 </div>
 </section>
@@ -1439,6 +1551,15 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   function bwGoToStep(n) {
     bw.step = n;
+    // Hide confirm panel, restore wizard chrome
+    var confEl = document.getElementById('bwConfirm');
+    if (confEl) confEl.classList.add('hidden');
+    var wizHeader = document.getElementById('bwWizardHeader');
+    if (wizHeader) wizHeader.classList.remove('hidden');
+    var footerNote = document.getElementById('bwFooterNote');
+    if (footerNote) footerNote.classList.remove('hidden');
+    var footerWa = document.getElementById('bwFooterWhatsapp');
+    if (footerWa) footerWa.classList.remove('hidden');
     ['bwStep1','bwStep2','bwStep3'].forEach(function(id, idx) {
       var el = document.getElementById(id);
       if (!el) return;
@@ -1597,11 +1718,28 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         throw new Error('Server error (' + res.status + '). Please contact us directly.');
       }
       if (res.ok && data.success) {
-        bwShowMsg('Booking request sent! EV Exec will confirm availability shortly.', 'success');
-        bw.airport = null; bw.direction = null; bw.journeyType = 'oneway';
-        bw.passengers = 1; bw.bags = 0;
-        bwGoToStep(1);
-        bwRenderAirports();
+        var bookingId = data.bookingId;
+        var viewBtn = document.getElementById('bwViewBookingBtn');
+        if (viewBtn && bookingId) viewBtn.href = '/booking?id=' + bookingId;
+        ['bwStep1','bwStep2','bwStep3'].forEach(function(id) {
+          var el = document.getElementById(id); if (el) el.classList.add('hidden');
+        });
+        var wizHeader2 = document.getElementById('bwWizardHeader');
+        if (wizHeader2) wizHeader2.classList.add('hidden');
+        var footerNote2 = document.getElementById('bwFooterNote');
+        if (footerNote2) footerNote2.classList.add('hidden');
+        var footerWa2 = document.getElementById('bwFooterWhatsapp');
+        if (footerWa2) footerWa2.classList.add('hidden');
+        bwShowMsg('', '');
+        var conf = document.getElementById('bwConfirm');
+        if (conf) {
+          conf.classList.remove('hidden');
+          conf.classList.remove('bw-slide');
+          void conf.offsetWidth;
+          conf.classList.add('bw-slide');
+        }
+        var quoteEl2 = document.getElementById('quote');
+        if (quoteEl2) quoteEl2.scrollIntoView({ behavior:'smooth', block:'start' });
         sessionStorage.setItem('evexec_submitted', Date.now().toString());
       } else {
         throw new Error(data.error || 'Something went wrong. Please try again.');
@@ -1641,6 +1779,19 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     on('bwBagsInc', 'click', function() { if (bw.bags < 8)   { bw.bags++;       bwUpdateCounters(); } });
 
     on('bwSubmit', 'click', bwSubmit);
+
+    on('bwPayCard', 'click', function() {
+      document.getElementById('bwPayCard').classList.add('selected');
+      document.getElementById('bwPayCard').setAttribute('aria-pressed', 'true');
+      document.getElementById('bwPayCash').classList.remove('selected');
+      document.getElementById('bwPayCash').setAttribute('aria-pressed', 'false');
+    });
+    on('bwPayCash', 'click', function() {
+      document.getElementById('bwPayCash').classList.add('selected');
+      document.getElementById('bwPayCash').setAttribute('aria-pressed', 'true');
+      document.getElementById('bwPayCard').classList.remove('selected');
+      document.getElementById('bwPayCard').setAttribute('aria-pressed', 'false');
+    });
   })();
   // CO2 calculator
   var co2Savings = {
