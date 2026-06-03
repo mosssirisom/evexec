@@ -130,6 +130,7 @@ body{
     </div>
     <h1 class="serif text-4xl md:text-5xl font-bold leading-tight" id="bookingHeadline">Your Transfer</h1>
     <p class="text-white/55 mt-2 text-sm" id="bookingSubline"></p>
+    <p class="text-white/30 mt-1 text-xs font-mono hidden" id="bookingRef"></p>
   </div>
 
   <!-- Journey summary -->
@@ -310,6 +311,11 @@ body{
 
     document.getElementById('bookingHeadline').textContent = from + ' → ' + to;
     document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : '');
+    if (b.ref) {
+      var refEl = document.getElementById('bookingRef');
+      refEl.textContent = 'Ref: ' + b.ref;
+      refEl.classList.remove('hidden');
+    }
 
     addDetailRow('Journey', from + ' → ' + to);
     addDetailRow('Date',    fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : ''));
