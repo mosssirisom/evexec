@@ -61,9 +61,9 @@ async function bookingSubmit(req, res) {
       customer_name: name,
       customer_phone: phone,
       customer_email: body.customer_email ? body.customer_email.trim() : null,
-      status: 'pending',
+      status: 'Unassigned',
       quoted_price: lookupPrice(airport, Boolean(body.return_journey)),
-      user_id: authUser ? authUser.id : null
+      ref: 'EVX-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase()
     });
 
     const id = booking.id;
