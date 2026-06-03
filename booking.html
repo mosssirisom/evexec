@@ -253,17 +253,26 @@ body{
     } catch { return d; }
   }
 
-  function setStatusPill(status) {
+  function setStatusPill(status, paymentStatus) {
     var pill = document.getElementById('statusPill');
-    var map = {
-      pending:   ['Awaiting Confirmation', 'status-pending'],
-      accepted:  ['Accepted', 'status-accepted'],
-      confirmed: ['Confirmed', 'status-confirmed'],
-      rejected:  ['Unavailable', 'status-rejected']
-    };
-    var info = map[status] || ['Unknown', 'status-pending'];
-    pill.textContent = info[0];
-    pill.className = 'status-pill ' + info[1];
+    // Map DB status values to display labels + CSS class
+    if (status === 'Cancelled') {
+      pill.textContent = 'Unavailable'; pill.className = 'status-pill status-rejected'; return;
+    }
+    if (status === 'Completed') {
+      pill.textContent = 'Completed'; pill.className = 'status-pill status-confirmed'; return;
+    }
+    if (['En Route', 'Passenger On Board'].includes(status)) {
+      pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
+    }
+    if (status === 'Dispatched') {
+      if (paymentStatus === 'paid' || paymentStatus === 'cash_on_day') {
+        pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
+      }
+      pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
+    }
+    // Unassigned / Unassigned / Missed Call Recovery
+    pill.textContent = 'Awaiting Confirmation'; pill.className = 'status-pill status-pending';
   }
 
   function addDetailRow(label, value) {
@@ -288,7 +297,7 @@ body{
     hide('stateLoading');
     show('stateContent');
 
-    setStatusPill(b.status);
+    setStatusPill(b.status, b.payment_status);
 
     var from, to;
     if (b.journey_type === 'From Airport') {
@@ -314,15 +323,26 @@ body{
       document.getElementById('priceAmount').textContent = '£' + Number(b.quoted_price).toFixed(0);
     }
 
-    // Status-specific panels
-    if (b.status === 'pending') {
+    // Status-specific panels — mapped to actual DB status values
+    if (b.status === 'Unassigned' || b.status === 'Unassigned / Missed Call Recovery') {
       show('panelPending');
       return;
     }
 
-    if (b.status === 'accepted') {
+    if (b.status === 'Dispatched') {
+      var paid = b.payment_status === 'paid' || b.payment_status === 'cash_on_day';
+      if (paid) {
+        show('panelConfirmed');
+        var method = b.payment_method === 'cash'
+          ? 'Payment: Cash on the day of travel.'
+          : 'Payment: Paid by card online.';
+        if (b.payment_method) {
+          document.getElementById('confirmedMsg').textContent =
+            'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
+        }
+        return;
+      }
       if (payment === 'success') {
-        // Stripe redirected back but webhook may not have fired yet
         show('panelPaymentPending');
       } else {
         show('panelPayment');
@@ -331,19 +351,14 @@ body{
       return;
     }
 
-    if (b.status === 'confirmed') {
+    if (['En Route', 'Passenger On Board', 'Completed'].includes(b.status)) {
       show('panelConfirmed');
-      var method = b.payment_method === 'cash'
-        ? 'Payment: Cash on the day of travel.'
-        : 'Payment: Paid by card online.';
-      if (b.payment_method) {
-        document.getElementById('confirmedMsg').textContent =
-          'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
-      }
+      document.getElementById('confirmedMsg').textContent =
+        'Your transfer is confirmed. Your driver is on the way. See you soon!';
       return;
     }
 
-    if (b.status === 'rejected') {
+    if (b.status === 'Cancelled') {
       show('panelRejected');
       return;
     }
