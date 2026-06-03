@@ -31,15 +31,15 @@ module.exports = async function handler(req, res) {
       res.statusCode = 404;
       return res.end(operatorPage('Not Found', '<p>No booking found with this ID.</p>', false));
     }
-    if (booking.status !== 'pending') {
+    if (booking.status !== 'Unassigned') {
       return res.end(operatorPage(
         'Already Actioned',
         `<p>This booking has already been <strong>${booking.status}</strong>.</p>`,
-        ['accepted', 'confirmed'].includes(booking.status)
+        ['Dispatched', 'En Route', 'Passenger On Board'].includes(booking.status)
       ));
     }
 
-    await dbUpdate('bookings', id, { status: 'accepted' });
+    await dbUpdate('bookings', id, { status: 'Dispatched' });
 
     const siteUrl    = process.env.SITE_URL || 'https://evexec.co.uk';
     const paymentUrl = `${siteUrl}/booking?id=${id}`;
