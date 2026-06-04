@@ -35,6 +35,7 @@
     { "src": "/api/notifications/send",              "dest": "/api/notifications/send.js" },
     { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",   "dest": "/robots.txt" },
+    { "src": "/blog",         "dest": "/blog.html" },
     { "src": "/booking",      "dest": "/booking.html" },
     { "src": "/account",      "dest": "/account.html" },
     { "src": "/terms",        "dest": "/terms.html" },
