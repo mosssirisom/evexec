@@ -928,9 +928,9 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <!-- Payment preference -->
     <p class="text-[10px] uppercase tracking-[.2em] font-bold text-white/38 mb-2">Payment Preference</p>
-    <p class="text-sm text-white/60 mb-4 leading-relaxed">Please select your preferred payment method for this journey:</p>
+    <p class="text-sm text-white/60 mb-4 leading-relaxed">Choose how you'd like to pay — tap to continue to your booking status page:</p>
 
-    <div class="grid grid-cols-2 gap-3 mb-7">
+    <div class="grid grid-cols-2 gap-3 mb-7" id="bwPayGrid">
 
       <!-- Card option -->
       <button class="payment-opt" id="bwPayCard" type="button" aria-pressed="false">
@@ -973,7 +973,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <a id="bwViewBookingBtn" href="/booking"
        class="btn-gold w-full rounded-xl py-4 font-bold text-base text-center block"
        style="text-decoration:none">
-      View My Booking Status
+      View My Booking &amp; Pay
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-left:6px;margin-top:-2px" aria-hidden="true">
         <polyline points="5 3 11 8 5 13"/>
       </svg>
@@ -1780,18 +1780,20 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
     on('bwSubmit', 'click', bwSubmit);
 
-    on('bwPayCard', 'click', function() {
-      document.getElementById('bwPayCard').classList.add('selected');
-      document.getElementById('bwPayCard').setAttribute('aria-pressed', 'true');
-      document.getElementById('bwPayCash').classList.remove('selected');
-      document.getElementById('bwPayCash').setAttribute('aria-pressed', 'false');
-    });
-    on('bwPayCash', 'click', function() {
-      document.getElementById('bwPayCash').classList.add('selected');
-      document.getElementById('bwPayCash').setAttribute('aria-pressed', 'true');
-      document.getElementById('bwPayCard').classList.remove('selected');
-      document.getElementById('bwPayCard').setAttribute('aria-pressed', 'false');
-    });
+    function bwSelectPayment(method) {
+      var isCard = method === 'card';
+      var cardBtn = document.getElementById('bwPayCard');
+      var cashBtn = document.getElementById('bwPayCash');
+      if (cardBtn) { cardBtn.classList.toggle('selected', isCard);  cardBtn.setAttribute('aria-pressed', String(isCard)); }
+      if (cashBtn) { cashBtn.classList.toggle('selected', !isCard); cashBtn.setAttribute('aria-pressed', String(!isCard)); }
+      // Navigate to booking status page after brief visual feedback
+      var viewBtn = document.getElementById('bwViewBookingBtn');
+      var dest = (viewBtn && viewBtn.href && viewBtn.href !== window.location.href) ? viewBtn.href : '/booking';
+      setTimeout(function() { window.location.href = dest; }, 550);
+    }
+
+    on('bwPayCard', 'click', function() { bwSelectPayment('card'); });
+    on('bwPayCash', 'click', function() { bwSelectPayment('cash'); });
   })();
   // CO2 calculator
   var co2Savings = {
