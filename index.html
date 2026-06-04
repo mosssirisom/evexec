@@ -488,8 +488,6 @@ main,footer{position:relative;z-index:1}
     text-align:center;border-radius:12px;padding:14px 12px;
     font-weight:900;box-shadow:0 14px 35px rgba(0,0,0,.35);
   }
-  .chat-fab{bottom:84px}
-  .chat-panel{bottom:152px}
   footer{padding-bottom:90px!important}
 }
 @media(min-width:768px){.return-grid{grid-template-columns:repeat(4,1fr)}}
@@ -1673,6 +1671,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 .chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 48px rgba(213,165,56,.45)}
 .chat-panel{position:fixed;bottom:92px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
 .chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
+@media(max-width:767px){.chat-fab{bottom:84px}.chat-panel{bottom:152px}}
 .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:160px;max-height:300px}
 .chat-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.5}
 .chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
