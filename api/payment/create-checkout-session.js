@@ -56,7 +56,11 @@ module.exports = async function handler(req, res) {
       res.statusCode = 404;
       return res.end(JSON.stringify({ error: 'Booking not found' }));
     }
-    if (booking.status !== 'accepted') {
+    // Status is 'Dispatched' after operator accepts; payment must not yet be taken
+    const readyForPayment =
+      booking.status === 'Dispatched' &&
+      (booking.payment_status === null || booking.payment_status === 'pending');
+    if (!readyForPayment) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Booking is not ready for payment' }));
     }

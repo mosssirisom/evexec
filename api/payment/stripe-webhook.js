@@ -65,16 +65,17 @@ module.exports = async function handler(req, res) {
     if (bookingId && isValidUUID(bookingId)) {
       try {
         const booking = await dbGet('bookings', bookingId);
-        if (booking && booking.status === 'accepted') {
+        const readyForPayment =
+          booking && booking.status === 'Dispatched' &&
+          (booking.payment_status === null || booking.payment_status === 'pending');
+        if (readyForPayment) {
           await dbUpdate('bookings', bookingId, {
-            status:           'confirmed',
             payment_status:   'paid',
             payment_method:   'card',
             stripe_session_id: session.id
           });
           const confirmed = {
             ...booking,
-            status: 'confirmed',
             payment_method: 'card',
             payment_status: 'paid'
           };

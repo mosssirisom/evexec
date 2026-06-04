@@ -26,18 +26,20 @@ module.exports = async function handler(req, res) {
       res.statusCode = 404;
       return res.end(JSON.stringify({ error: 'Booking not found' }));
     }
-    if (booking.status !== 'accepted') {
+    const readyForPayment =
+      booking.status === 'Dispatched' &&
+      (booking.payment_status === null || booking.payment_status === 'pending');
+    if (!readyForPayment) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Booking cannot be confirmed in its current state' }));
     }
 
     await dbUpdate('bookings', bookingId, {
-      status:         'confirmed',
       payment_method: 'cash',
       payment_status: 'cash_on_day'
     });
 
-    const confirmed = { ...booking, status: 'confirmed', payment_method: 'cash', payment_status: 'cash_on_day' };
+    const confirmed = { ...booking, payment_method: 'cash', payment_status: 'cash_on_day' };
     await sendConfirmations(confirmed);
 
     res.statusCode = 200;

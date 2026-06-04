@@ -27,11 +27,11 @@ async function getProfile(userId) {
 
 async function upsertProfile(userId, data) {
   const res = await fetch(
-    `${SUPABASE_URL()}/rest/v1/profiles?id=eq.${userId}`,
+    `${SUPABASE_URL()}/rest/v1/profiles`,
     {
-      method: 'PATCH',
-      headers: headers({ Prefer: 'return=representation' }),
-      body: JSON.stringify({ ...data, updated_at: new Date().toISOString() })
+      method: 'POST',
+      headers: headers({ Prefer: 'resolution=merge-duplicates,return=representation' }),
+      body: JSON.stringify({ ...data, id: userId, updated_at: new Date().toISOString() })
     }
   );
   if (!res.ok) throw new Error(await res.text());
