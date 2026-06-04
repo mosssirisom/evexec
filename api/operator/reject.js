@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
       res.statusCode = 404;
       return res.end(operatorPage('Not Found', '<p>No booking found with this ID.</p>', false));
     }
-    if (booking.status !== 'pending') {
+    if (booking.status !== 'Unassigned') {
       return res.end(operatorPage(
         'Already Actioned',
         `<p>This booking has already been <strong>${booking.status}</strong>.</p>`,
@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
       ));
     }
 
-    await dbUpdate('bookings', id, { status: 'rejected' });
+    await dbUpdate('bookings', id, { status: 'Cancelled' });
 
     const route = journeyLine(booking);
     const date  = fmtDate(booking.travel_date);

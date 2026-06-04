@@ -3,7 +3,7 @@
 const { dbGet, isValidUUID } = require('../../lib/supabase');
 
 const SAFE_FIELDS = new Set([
-  'id', 'status', 'journey_type', 'pickup_location', 'airport', 'flight_number',
+  'id', 'ref', 'status', 'journey_type', 'pickup_location', 'airport', 'flight_number',
   'dropoff_address', 'travel_date', 'travel_time', 'passengers', 'luggage',
   'return_journey', 'return_airport', 'return_date', 'return_time',
   'quoted_price', 'payment_method', 'payment_status', 'customer_name'

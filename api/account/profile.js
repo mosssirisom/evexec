@@ -3,7 +3,7 @@
 const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
 
-const SUPABASE_URL = () => process.env.SUPABASE_URL;
+const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function headers(extra = {}) {

@@ -3,7 +3,7 @@
 const crypto = require('crypto');
 const { parseBody } = require('../../lib/parse');
 
-const SUPABASE_URL = () => process.env.SUPABASE_URL;
+const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function dbHeaders() {
@@ -151,7 +151,12 @@ module.exports = async function handler(req, res) {
   }
 
   const secret = req.headers['x-operator-secret'];
-  if (!process.env.OPERATOR_ACTION_SECRET || secret !== process.env.OPERATOR_ACTION_SECRET) {
+  const expected = process.env.OPERATOR_ACTION_SECRET;
+  const secretValid = expected &&
+    secret &&
+    secret.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(secret), Buffer.from(expected));
+  if (!secretValid) {
     res.statusCode = 401;
     return res.end(JSON.stringify({ error: 'Unauthorised' }));
   }

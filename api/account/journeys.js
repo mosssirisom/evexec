@@ -2,7 +2,7 @@
 
 const { verifyAuth } = require('../../lib/auth');
 
-const SUPABASE_URL = () => process.env.SUPABASE_URL;
+const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function headers() {
@@ -29,7 +29,7 @@ module.exports = async function handler(req, res) {
 
   try {
     const email = user.email || '';
-    const fields = 'id,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,created_at,flight_number';
+    const fields = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number';
 
     const byUser = await fetch(
       `${SUPABASE_URL()}/rest/v1/bookings?user_id=eq.${user.id}&select=${fields}&order=created_at.desc&limit=50`,
