@@ -1,6 +1,64 @@
 'use strict';
 
 const crypto = require('crypto');
+
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
+
+function dbHeaders() {
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  return { 'Content-Type': 'application/json', 'apikey': key, 'Authorization': `Bearer ${key}` };
+}
+
+function authOk(req) {
+  const secret   = req.headers['x-operator-secret'];
+  const expected = process.env.OPERATOR_ACTION_SECRET;
+  return expected && secret && secret.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(secret), Buffer.from(expected));
+}
+
+// ── GET /api/operator/bookings ─────────────────────────────────────────────
+
+async function listBookings(req, res) {
+  try {
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 30);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+    const [bookingsRes, logsRes] = await Promise.all([
+      fetch(
+        `${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${cutoffStr}&select=id,ref,customer_name,customer_phone,customer_email,travel_date,travel_time,status,payment_method,payment_status,journey_type,pickup_location,airport,dropoff_address&order=travel_date.asc&limit=200`,
+        { headers: dbHeaders() }
+      ),
+      fetch(
+        `${SUPABASE_URL}/rest/v1/notification_log?select=booking_id,type,channel,recipient,sent_at&order=sent_at.desc&limit=2000`,
+        { headers: dbHeaders() }
+      )
+    ]);
+
+    if (!bookingsRes.ok) throw new Error('Failed to load bookings');
+
+    const bookings = await bookingsRes.json();
+    let logs = [];
+    if (logsRes.ok) logs = await logsRes.json();
+
+    const logsByBooking = {};
+    for (const log of logs) {
+      if (!logsByBooking[log.booking_id]) logsByBooking[log.booking_id] = [];
+      logsByBooking[log.booking_id].push(log);
+    }
+
+    const result = bookings.map(b => ({ ...b, notifications: logsByBooking[b.id] || [] }));
+    res.statusCode = 200;
+    res.end(JSON.stringify(result));
+  } catch (err) {
+    console.error('Operator bookings error:', err);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: 'Failed to load bookings' }));
+  }
+}
+
+// ── POST /api/operator/notify ──────────────────────────────────────────────
+
 const { dbGet } = require('../../lib/supabase');
 const { sendSMS, sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
@@ -8,23 +66,7 @@ const { logMany } = require('../../lib/notifyLog');
 const { journeyLine, fmtDate } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-
-  if (req.method !== 'POST') {
-    res.statusCode = 405;
-    return res.end(JSON.stringify({ error: 'Method not allowed' }));
-  }
-
-  const secret = req.headers['x-operator-secret'];
-  const expected = process.env.OPERATOR_ACTION_SECRET;
-  const valid = expected && secret && secret.length === expected.length &&
-    crypto.timingSafeEqual(Buffer.from(secret), Buffer.from(expected));
-  if (!valid) {
-    res.statusCode = 401;
-    return res.end(JSON.stringify({ error: 'Unauthorised' }));
-  }
-
+async function sendNotification(req, res) {
   let body;
   try { body = await parseBody(req); }
   catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
@@ -46,7 +88,6 @@ module.exports = async function handler(req, res) {
   const firstName  = (booking.customer_name || 'there').split(' ')[0];
   const method     = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
   const type       = message_type || 'manual';
-
   const isReminder = type === 'manual_reminder';
 
   const smsText = isReminder
@@ -64,7 +105,7 @@ module.exports = async function handler(req, res) {
   </div>
   <div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px">
     <p style="margin:0 0 6px">Hi ${firstName},</p>
-    <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">${isReminder ? "This is a reminder about your upcoming airport transfer." : "Your airport transfer is confirmed. We look forward to seeing you."}</p>
+    <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">${isReminder ? 'This is a reminder about your upcoming airport transfer.' : 'Your airport transfer is confirmed. We look forward to seeing you.'}</p>
     <h2 style="margin:0 0 4px;color:#fff">${route}</h2>
     <p style="margin:0 0 16px;color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers || 1} passenger(s)</p>
     <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p>
@@ -97,9 +138,25 @@ module.exports = async function handler(req, res) {
   }
 
   tasks.push(logMany(booking_id, type, logEntries));
-
   await Promise.allSettled(tasks);
 
   res.statusCode = 200;
   res.end(JSON.stringify({ ok: true, sent: logEntries.map(([ch]) => ch) }));
+}
+
+// ── Router ─────────────────────────────────────────────────────────────────
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+
+  if (!authOk(req)) {
+    res.statusCode = 401;
+    return res.end(JSON.stringify({ error: 'Unauthorised' }));
+  }
+
+  if (req.method === 'GET') return listBookings(req, res);
+  if (req.method === 'POST') return sendNotification(req, res);
+
+  res.statusCode = 405;
+  res.end(JSON.stringify({ error: 'Method not allowed' }));
 };

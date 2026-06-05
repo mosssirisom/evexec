@@ -1,7 +1,7 @@
 'use strict';
 
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail } = require('../../lib/notify');
+const { sendSMS, sendEmail, sendRejectionNotice } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, getPrice } = require('../../lib/format');
 const { operatorPage } = require('../../lib/pages');
@@ -9,17 +9,20 @@ const { operatorPage } = require('../../lib/pages');
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
+  const isReject = (req.url || '').split('?')[0].endsWith('/reject');
+  const action   = isReject ? 'reject' : 'accept';
+
   const { id, token } = req.query || {};
 
   if (!id || !token) {
     res.statusCode = 400;
-    return res.end(operatorPage('Invalid Link', '<p>This accept link is missing required parameters.</p>', false));
+    return res.end(operatorPage('Invalid Link', `<p>This ${action} link is missing required parameters.</p>`, false));
   }
   if (!isValidUUID(id)) {
     res.statusCode = 400;
     return res.end(operatorPage('Invalid Link', '<p>This link contains an invalid booking ID.</p>', false));
   }
-  if (!verifyToken(id, 'accept', token)) {
+  if (!verifyToken(id, action, token)) {
     res.statusCode = 403;
     return res.end(operatorPage('Invalid Token', '<p>This link is invalid or has expired.</p>', false));
   }
@@ -35,33 +38,44 @@ module.exports = async function handler(req, res) {
       return res.end(operatorPage(
         'Already Actioned',
         `<p>This booking has already been <strong>${booking.status}</strong>.</p>`,
-        ['Dispatched', 'En Route', 'Passenger On Board'].includes(booking.status)
+        !isReject && ['Dispatched', 'En Route', 'Passenger On Board'].includes(booking.status)
       ));
     }
 
-    await dbUpdate('bookings', id, { status: 'Dispatched' });
+    if (isReject) {
+      await dbUpdate('bookings', id, { status: 'Cancelled' });
+      await sendRejectionNotice(booking);
+      const route = journeyLine(booking);
+      const date  = fmtDate(booking.travel_date);
+      res.end(operatorPage('Booking Rejected', `
+        <p>Booking for <strong>${booking.customer_name}</strong> has been rejected.</p>
+        <p>${route}<br>${date}</p>
+        <p>The customer has been notified. No payment has been taken.</p>
+      `, false));
+    } else {
+      await dbUpdate('bookings', id, { status: 'Dispatched' });
 
-    const siteUrl    = process.env.SITE_URL || 'https://evexec.co.uk';
-    const paymentUrl = `${siteUrl}/booking?id=${id}`;
-    const route      = journeyLine(booking);
-    const date       = fmtDate(booking.travel_date);
-    const price      = getPrice(booking);
-    const firstName  = (booking.customer_name || 'there').split(' ')[0];
+      const siteUrl    = process.env.SITE_URL || 'https://evexec.co.uk';
+      const paymentUrl = `${siteUrl}/booking?id=${id}`;
+      const route      = journeyLine(booking);
+      const date       = fmtDate(booking.travel_date);
+      const price      = getPrice(booking);
+      const firstName  = (booking.customer_name || 'there').split(' ')[0];
 
-    const smsTxt = [
-      `Hi ${firstName}, great news — EV Exec can take your transfer!`,
-      '',
-      route,
-      `${date} at ${booking.travel_time || 'TBC'}`,
-      price ? `Price: £${price}` : '',
-      '',
-      'Please choose your payment method to confirm:',
-      paymentUrl,
-      '',
-      'Questions? 07721 070370'
-    ].filter(l => l !== null).join('\n');
+      const smsTxt = [
+        `Hi ${firstName}, great news — EV Exec can take your transfer!`,
+        '',
+        route,
+        `${date} at ${booking.travel_time || 'TBC'}`,
+        price ? `Price: £${price}` : '',
+        '',
+        'Please choose your payment method to confirm:',
+        paymentUrl,
+        '',
+        'Questions? 07721 070370'
+      ].filter(l => l !== null).join('\n');
 
-    const emailHtml = `
+      const emailHtml = `
 <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto">
   <div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0">
     <h1 style="margin:0;color:#06101c;font-size:1.2rem">Your EV Exec Transfer is Accepted</h1>
@@ -77,23 +91,24 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
-    await Promise.allSettled([
-      booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null,
-      booking.customer_email ? sendEmail({
-        to: booking.customer_email,
-        subject: `EV Exec Transfer Accepted — ${route}`,
-        html: emailHtml
-      }) : null
-    ].filter(Boolean));
+      await Promise.allSettled([
+        booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null,
+        booking.customer_email ? sendEmail({
+          to: booking.customer_email,
+          subject: `EV Exec Transfer Accepted — ${route}`,
+          html: emailHtml
+        }) : null
+      ].filter(Boolean));
 
-    res.end(operatorPage('Booking Accepted ✓', `
-      <p>Booking for <strong>${booking.customer_name}</strong> accepted.</p>
-      <p>${route}<br>${date} at ${booking.travel_time || 'TBC'}</p>
-      ${price ? `<p class="price">£${price}</p>` : ''}
-      <p>The customer has been notified and sent a payment link.</p>
-    `));
+      res.end(operatorPage('Booking Accepted ✓', `
+        <p>Booking for <strong>${booking.customer_name}</strong> accepted.</p>
+        <p>${route}<br>${date} at ${booking.travel_time || 'TBC'}</p>
+        ${price ? `<p class="price">£${price}</p>` : ''}
+        <p>The customer has been notified and sent a payment link.</p>
+      `));
+    }
   } catch (err) {
-    console.error('Accept error:', err);
+    console.error('Action error:', err);
     res.statusCode = 500;
     res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false));
   }
