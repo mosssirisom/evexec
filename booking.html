@@ -383,7 +383,10 @@ body{
     }
     try {
       var res  = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
-      var data = await res.json();
+      var data;
+      try { data = await res.json(); } catch (_) {
+        throw new Error(res.ok ? 'Unexpected response from server. Please try again.' : 'Service unavailable. Please try again in a moment.');
+      }
       if (!res.ok) throw new Error(data.error || 'Booking not found.');
       renderBooking(data);
     } catch (e) {
@@ -403,7 +406,7 @@ body{
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bookingId: bookingId })
       });
-      var data = await res.json();
+      var data; try { data = await res.json(); } catch (_) { throw new Error('Payment service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
       window.location.href = data.url;
     } catch (e) {
@@ -427,7 +430,7 @@ body{
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bookingId: bookingId })
       });
-      var data = await res.json();
+      var data; try { data = await res.json(); } catch (_) { throw new Error('Service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Failed to confirm. Please try again.');
       // Reload to show confirmed state
       window.location.href = '/booking?id=' + bookingId;

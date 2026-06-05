@@ -2,6 +2,7 @@
 
 const { dbInsert, isValidUUID } = require('../../lib/supabase');
 const { sendSMS, sendEmail } = require('../../lib/notify');
+const { logMany } = require('../../lib/notifyLog');
 const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
@@ -188,6 +189,12 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
+      const customerSmsReceived = `Hi ${firstName}, your EV Exec booking request has been received!\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\n\nWe'll confirm availability shortly. Questions: 07721 070370`;
+
+      const receivedLogEntries = [];
+      if (booking.customer_email) receivedLogEntries.push(['email', booking.customer_email]);
+      if (booking.customer_phone) receivedLogEntries.push(['sms', booking.customer_phone]);
+
       await Promise.allSettled([
         process.env.OPERATOR_PHONE
           ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
@@ -197,7 +204,11 @@ module.exports = async function handler(req, res) {
           : null,
         booking.customer_email
           ? sendEmail({ to: booking.customer_email, subject: `Booking Request Received — EV Exec`, html: customerEmailHtml })
-          : null
+          : null,
+        booking.customer_phone
+          ? sendSMS(booking.customer_phone, customerSmsReceived)
+          : null,
+        logMany(id, 'received', receivedLogEntries)
       ].filter(Boolean));
     } catch (notifyErr) {
       console.error('Booking notification error:', notifyErr);

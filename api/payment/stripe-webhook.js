@@ -66,7 +66,8 @@ module.exports = async function handler(req, res) {
       try {
         const booking = await dbGet('bookings', bookingId);
         const readyForPayment =
-          booking && booking.status === 'Dispatched' && !booking.payment_status;
+          booking && booking.status === 'Dispatched' &&
+          (booking.payment_status === null || booking.payment_status === 'pending');
         if (readyForPayment) {
           await dbUpdate('bookings', bookingId, {
             payment_status:   'paid',

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EV Exec — Notifications</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#020813;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh}
+.page{max-width:960px;margin:0 auto;padding:24px 16px}
+.gold{color:#d5a538}
+h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
+.sub{color:rgba(255,255,255,.45);font-size:13px;margin-top:4px}
+
+/* Auth */
+.auth-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px;margin-top:24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.auth-box input{flex:1;min-width:200px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;padding:10px 14px;font-size:14px;outline:none}
+.auth-box input:focus{border-color:#d5a538}
+.btn{background:#d5a538;color:#06101c;border:none;border-radius:8px;padding:10px 20px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-ghost{background:rgba(255,255,255,.07);color:rgba(255,255,255,.7);font-weight:600}
+.btn-ghost:hover{background:rgba(255,255,255,.12)}
+.btn-sm{padding:6px 12px;font-size:12px;border-radius:6px}
+.btn-sms{background:#3b82f6;color:#fff}
+.btn-email{background:#8b5cf6;color:#fff}
+.btn-push{background:#10b981;color:#fff}
+.btn-all{background:#d5a538;color:#06101c}
+
+/* Filters */
+.filters{display:flex;gap:8px;margin:20px 0;flex-wrap:wrap;align-items:center}
+.filter-btn{background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;transition:all .15s;font-weight:500}
+.filter-btn.active{background:rgba(213,165,56,.15);color:#d5a538;border-color:rgba(213,165,56,.4)}
+.search-box{flex:1;min-width:160px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;padding:7px 12px;font-size:13px;outline:none}
+.search-box:focus{border-color:#d5a538}
+.search-box::placeholder{color:rgba(255,255,255,.3)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:20px 0}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px 16px}
+.stat-num{font-size:1.6rem;font-weight:800;color:#d5a538}
+.stat-label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+/* Table */
+#results{margin-top:4px}
+.card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;margin-bottom:10px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start}
+.card-left{}
+.card-name{font-weight:700;font-size:15px}
+.card-route{color:rgba(255,255,255,.7);font-size:13px;margin-top:3px}
+.card-date{color:rgba(255,255,255,.45);font-size:12px;margin-top:2px}
+.card-status{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;margin-top:5px}
+.status-Unassigned{background:rgba(239,68,68,.15);color:#ef4444}
+.status-Dispatched{background:rgba(34,197,94,.15);color:#22c55e}
+.status-Completed{background:rgba(100,116,139,.15);color:#94a3b8}
+.notif-row{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px}
+.notif-pill{display:flex;align-items:center;gap:4px;font-size:11px;padding:3px 8px;border-radius:10px;font-weight:600}
+.pill-received{background:rgba(59,130,246,.15);color:#93c5fd}
+.pill-confirmation{background:rgba(34,197,94,.15);color:#86efac}
+.pill-rejection{background:rgba(239,68,68,.15);color:#fca5a5}
+.pill-reminder_7d{background:rgba(245,158,11,.15);color:#fcd34d}
+.pill-reminder_24h{background:rgba(251,146,60,.15);color:#fdba74}
+.pill-manual,.pill-manual_reminder{background:rgba(139,92,246,.15);color:#c4b5fd}
+.notif-none{font-size:12px;color:rgba(255,255,255,.25);margin-top:6px}
+.card-actions{display:flex;flex-direction:column;gap:6px;min-width:90px}
+.action-btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.sending{opacity:.5;pointer-events:none}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 20px;font-size:14px;z-index:100;pointer-events:none;transition:opacity .3s;white-space:nowrap}
+.toast.hide{opacity:0}
+.notice{font-size:13px;color:rgba(255,255,255,.4);margin-top:12px}
+.empty{text-align:center;color:rgba(255,255,255,.25);padding:40px 0;font-size:14px}
+@media(max-width:480px){.card{grid-template-columns:1fr}.card-actions{flex-direction:row;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="page">
+  <p class="gold" style="font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-bottom:8px">EV Exec &nbsp;·&nbsp; Operator</p>
+  <h1>Notifications</h1>
+  <p class="sub">Track and send SMS, email, and push notifications per booking.</p>
+
+  <div class="auth-box">
+    <input id="secret" type="password" placeholder="Operator secret" autocomplete="off">
+    <button class="btn" onclick="loadData()">Load Bookings</button>
+  </div>
+  <p class="notice" id="notice"></p>
+
+  <div id="dashboard" style="display:none">
+    <div class="stats" id="stats"></div>
+
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">All</button>
+      <button class="filter-btn" data-filter="upcoming" onclick="setFilter('upcoming',this)">Upcoming</button>
+      <button class="filter-btn" data-filter="unconfirmed" onclick="setFilter('unconfirmed',this)">No Confirmation</button>
+      <button class="filter-btn" data-filter="noreminder" onclick="setFilter('noreminder',this)">No 7-Day Reminder</button>
+      <input class="search-box" id="search" placeholder="Search name or phone…" oninput="renderList()">
+    </div>
+
+    <div id="results"></div>
+  </div>
+</div>
+
+<div class="toast hide" id="toast"></div>
+
+<script>
+var allBookings = [];
+var currentFilter = 'all';
+var secret = '';
+
+function getSecret() { return document.getElementById('secret').value.trim(); }
+
+async function loadData() {
+  secret = getSecret();
+  if (!secret) { setNotice('Enter your operator secret first.'); return; }
+  setNotice('Loading…');
+  try {
+    var res = await fetch('/api/operator/bookings', { headers: { 'x-operator-secret': secret } });
+    var data;
+    try { data = await res.json(); } catch (_) { setNotice('Server error — try again.'); return; }
+    if (!res.ok) { setNotice(data.error || 'Failed to load.'); return; }
+    allBookings = data;
+    document.getElementById('dashboard').style.display = '';
+    setNotice('');
+    renderStats();
+    renderList();
+  } catch (e) {
+    setNotice('Network error — ' + e.message);
+  }
+}
+
+function setNotice(msg) { document.getElementById('notice').textContent = msg; }
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderList();
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+function inDays(d, n) { var dt = new Date(d+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+n); return dt.toISOString().slice(0,10); }
+function hasNotifType(b, type) { return b.notifications.some(function(n){ return n.type === type; }); }
+
+function filteredBookings() {
+  var td = today();
+  var q = document.getElementById('search').value.toLowerCase();
+  return allBookings.filter(function(b) {
+    if (q) {
+      var match = (b.customer_name||'').toLowerCase().includes(q) ||
+                  (b.customer_phone||'').includes(q) ||
+                  (b.customer_email||'').toLowerCase().includes(q) ||
+                  (b.ref||'').toLowerCase().includes(q);
+      if (!match) return false;
+    }
+    if (currentFilter === 'upcoming') return b.travel_date >= td;
+    if (currentFilter === 'unconfirmed') return b.status === 'Dispatched' && !hasNotifType(b,'confirmation');
+    if (currentFilter === 'noreminder') return b.travel_date >= inDays(td,7) && b.status === 'Dispatched' && !hasNotifType(b,'reminder_7d');
+    return true;
+  });
+}
+
+function renderStats() {
+  var td = today();
+  var upcoming = allBookings.filter(function(b){ return b.travel_date >= td; });
+  var needConfirm = allBookings.filter(function(b){ return b.status==='Dispatched' && !hasNotifType(b,'confirmation'); });
+  var needReminder = upcoming.filter(function(b){
+    return b.status==='Dispatched' && b.travel_date >= inDays(td,7) && !hasNotifType(b,'reminder_7d');
+  });
+  document.getElementById('stats').innerHTML =
+    stat(allBookings.length,'Total (30 days)') +
+    stat(upcoming.length,'Upcoming') +
+    stat(needConfirm.length,'Awaiting Confirm') +
+    stat(needReminder.length,'No 7-Day Reminder');
+}
+
+function stat(n, label) {
+  return '<div class="stat"><div class="stat-num">'+n+'</div><div class="stat-label">'+label+'</div></div>';
+}
+
+function formatDate(d,t) {
+  if (!d) return '—';
+  var dt = new Date(d+'T00:00:00');
+  var s = dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  return t ? s+' at '+t : s;
+}
+
+function esc(v){ return String(v||'').replace(/[&<>'"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]);}); }
+
+function notifPills(notifications) {
+  if (!notifications.length) return '<p class="notif-none">No notifications sent yet</p>';
+  var types = {};
+  notifications.forEach(function(n){
+    if (!types[n.type]) types[n.type] = [];
+    types[n.type].push(n);
+  });
+  return '<div class="notif-row">' +
+    Object.keys(types).map(function(type) {
+      var items = types[type];
+      var channels = items.map(function(i){ return i.channel; }).join('+');
+      var latest = items.reduce(function(a,b){ return a.sent_at > b.sent_at ? a : b; });
+      var d = new Date(latest.sent_at);
+      var when = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      var label = {received:'Received',confirmation:'Confirmed',rejection:'Rejected',reminder_7d:'7-Day',reminder_24h:'24-Hour',manual:'Manual',manual_reminder:'Manual Reminder'}[type]||type;
+      return '<span class="notif-pill pill-'+esc(type)+'">'+esc(label)+' ('+esc(channels)+') · '+esc(when)+'</span>';
+    }).join('') +
+    '</div>';
+}
+
+function routeLine(b) {
+  if (b.journey_type === 'To Airport') return esc(b.pickup_location||'—')+' → '+esc(b.airport||'—');
+  if (b.journey_type === 'From Airport') return esc(b.airport||'—')+' → '+esc(b.dropoff_address||'—');
+  return esc(b.pickup_location||b.airport||'—')+' → '+esc(b.dropoff_address||b.airport||'—');
+}
+
+function renderList() {
+  var list = filteredBookings();
+  var el = document.getElementById('results');
+  if (!list.length) { el.innerHTML = '<p class="empty">No bookings match this filter.</p>'; return; }
+  el.innerHTML = list.map(function(b) {
+    var hasSms   = !!b.customer_phone;
+    var hasEmail = !!b.customer_email;
+    var statusCls = 'status-'+(b.status||'Unassigned').replace(/[^a-zA-Z]/g,'');
+    return '<div class="card" id="card-'+b.id+'">'+
+      '<div class="card-left">'+
+        '<div class="card-name">'+esc(b.customer_name)+'</div>'+
+        '<div class="card-route">'+routeLine(b)+'</div>'+
+        '<div class="card-date">'+esc(formatDate(b.travel_date,b.travel_time))+'</div>'+
+        '<span class="card-status '+statusCls+'">'+esc(b.status||'Unassigned')+'</span>'+
+        (b.customer_phone ? ' <span style="font-size:11px;color:rgba(255,255,255,.35)">'+esc(b.customer_phone)+'</span>' : '')+
+        notifPills(b.notifications)+
+      '</div>'+
+      '<div class="card-actions">'+
+        '<div class="action-btns">'+
+          (hasSms    ? '<button class="btn btn-sm btn-sms" onclick="send(\''+b.id+'\',\'sms\')">SMS</button>' : '')+
+          (hasEmail  ? '<button class="btn btn-sm btn-email" onclick="send(\''+b.id+'\',\'email\')">Email</button>' : '')+
+          '<button class="btn btn-sm btn-push" onclick="send(\''+b.id+'\',\'push\')">Push</button>'+
+          ((hasSms||hasEmail) ? '<button class="btn btn-sm btn-all" onclick="send(\''+b.id+'\',\'all\')">All</button>' : '')+
+        '</div>'+
+        '<select id="type-'+b.id+'" style="background:#0d1929;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);border-radius:6px;padding:4px 6px;font-size:11px;width:100%">'+
+          '<option value="manual">Confirmation</option>'+
+          '<option value="manual_reminder">Reminder</option>'+
+        '</select>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+async function send(bookingId, channelArg) {
+  var card = document.getElementById('card-'+bookingId);
+  var typeEl = document.getElementById('type-'+bookingId);
+  var msgType = typeEl ? typeEl.value : 'manual';
+  var channels = channelArg === 'all' ? ['sms','email','push'] : [channelArg];
+  card.classList.add('sending');
+  try {
+    var res = await fetch('/api/operator/notify', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-operator-secret': secret },
+      body: JSON.stringify({ booking_id: bookingId, channels: channels, message_type: msgType })
+    });
+    var data;
+    try { data = await res.json(); } catch (_) { data = {}; }
+    if (res.ok) {
+      showToast('Sent via '+data.sent.join('+'));
+      // Refresh just this booking's notification list
+      var i = allBookings.findIndex(function(b){ return b.id===bookingId; });
+      if (i>=0) {
+        data.sent.forEach(function(ch){
+          allBookings[i].notifications.push({ type: msgType, channel: ch, sent_at: new Date().toISOString() });
+        });
+      }
+      renderList();
+      renderStats();
+    } else {
+      showToast((data.error||'Send failed'), true);
+    }
+  } catch(e) {
+    showToast('Network error', true);
+  } finally {
+    if (card) card.classList.remove('sending');
+  }
+}
+
+function showToast(msg, isErr) {
+  var t = document.getElementById('toast');
+  t.textContent = (isErr ? '✗ ' : '✓ ') + msg;
+  t.style.borderColor = isErr ? 'rgba(239,68,68,.5)' : 'rgba(34,197,94,.4)';
+  t.classList.remove('hide');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.classList.add('hide'); }, 2800);
+}
+
+document.getElementById('secret').addEventListener('keydown', function(e){ if(e.key==='Enter') loadData(); });
+</script>
+</body>
+</html>

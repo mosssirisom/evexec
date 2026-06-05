@@ -27,7 +27,8 @@ module.exports = async function handler(req, res) {
       return res.end(JSON.stringify({ error: 'Booking not found' }));
     }
     const readyForPayment =
-      booking.status === 'Dispatched' && !booking.payment_status;
+      booking.status === 'Dispatched' &&
+      (booking.payment_status === null || booking.payment_status === 'pending');
     if (!readyForPayment) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Booking cannot be confirmed in its current state' }));

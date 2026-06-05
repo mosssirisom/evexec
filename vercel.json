@@ -2,238 +2,80 @@
   "version": 2,
   "public": true,
   "builds": [
-    {
-      "src": "api/config.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/home.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/booking/create.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/booking/get.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/operator/accept.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/operator/reject.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/account/profile.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/account/journeys.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/payment/confirm-cash.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/payment/create-checkout-session.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/payment/stripe-webhook.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/notifications/subscribe.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/notifications/send.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "*.html",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.xml",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "*.txt",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
+    { "src": "api/config.js",                          "use": "@vercel/node" },
+    { "src": "api/home.js",                            "use": "@vercel/node" },
+    { "src": "api/booking/create.js",                  "use": "@vercel/node" },
+    { "src": "api/booking/get.js",                     "use": "@vercel/node" },
+    { "src": "api/operator/accept.js",                 "use": "@vercel/node" },
+    { "src": "api/operator/reject.js",                 "use": "@vercel/node" },
+    { "src": "api/operator/bookings.js",               "use": "@vercel/node" },
+    { "src": "api/operator/notify.js",                 "use": "@vercel/node" },
+    { "src": "api/account/profile.js",                 "use": "@vercel/node" },
+    { "src": "api/account/journeys.js",                "use": "@vercel/node" },
+    { "src": "api/payment/confirm-cash.js",            "use": "@vercel/node" },
+    { "src": "api/payment/create-checkout-session.js", "use": "@vercel/node" },
+    { "src": "api/payment/stripe-webhook.js",          "use": "@vercel/node" },
+    { "src": "api/notifications/subscribe.js",         "use": "@vercel/node" },
+    { "src": "api/notifications/send.js",              "use": "@vercel/node" },
+    { "src": "api/reminders/trigger.js",               "use": "@vercel/node" },
+    { "src": "*.html",    "use": "@vercel/static" },
+    { "src": "*.xml",     "use": "@vercel/static" },
+    { "src": "*.txt",     "use": "@vercel/static" },
+    { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    {
-      "src": "/api/config",
-      "dest": "/api/config.js"
-    },
-    {
-      "src": "/api/booking/create",
-      "dest": "/api/booking/create.js"
-    },
-    {
-      "src": "/api/booking/get",
-      "dest": "/api/booking/get.js"
-    },
-    {
-      "src": "/api/operator/accept",
-      "dest": "/api/operator/accept.js"
-    },
-    {
-      "src": "/api/operator/reject",
-      "dest": "/api/operator/reject.js"
-    },
-    {
-      "src": "/api/account/profile",
-      "dest": "/api/account/profile.js"
-    },
-    {
-      "src": "/api/account/journeys",
-      "dest": "/api/account/journeys.js"
-    },
-    {
-      "src": "/api/payment/confirm-cash",
-      "dest": "/api/payment/confirm-cash.js"
-    },
-    {
-      "src": "/api/payment/create-checkout-session",
-      "dest": "/api/payment/create-checkout-session.js"
-    },
-    {
-      "src": "/api/payment/stripe-webhook",
-      "dest": "/api/payment/stripe-webhook.js"
-    },
-    {
-      "src": "/api/notifications/subscribe",
-      "dest": "/api/notifications/subscribe.js"
-    },
-    {
-      "src": "/api/notifications/send",
-      "dest": "/api/notifications/send.js"
-    },
-    {
-      "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
-    },
-    {
-      "src": "/robots.txt",
-      "dest": "/robots.txt"
-    },
-    {
-      "src": "/blog",
-      "dest": "/blog.html"
-    },
-    {
-      "src": "/manchester-airport-transfers-from-blackpool",
-      "dest": "/manchester-airport-transfers-from-blackpool.html"
-    },
-    {
-      "src": "/booking",
-      "dest": "/booking.html"
-    },
-    {
-      "src": "/account",
-      "dest": "/account.html"
-    },
-    {
-      "src": "/terms",
-      "dest": "/terms.html"
-    },
-    {
-      "src": "/privacy",
-      "dest": "/privacy.html"
-    },
-    {
-      "src": "/manchester-airport-transfer-blackpool",
-      "dest": "/manchester-airport-transfer-blackpool.html"
-    },
-    {
-      "src": "/liverpool-airport-transfer-blackpool",
-      "dest": "/liverpool-airport-transfer-blackpool.html"
-    },
-    {
-      "src": "/leeds-bradford-airport-transfer-blackpool",
-      "dest": "/leeds-bradford-airport-transfer-blackpool.html"
-    },
-    {
-      "src": "/airport-transfer-lytham-st-annes",
-      "dest": "/airport-transfer-lytham-st-annes.html"
-    },
-    {
-      "src": "/airport-transfer-poulton-le-fylde",
-      "dest": "/airport-transfer-poulton-le-fylde.html"
-    },
-    {
-      "src": "/airport-transfer-thornton-cleveleys",
-      "dest": "/airport-transfer-thornton-cleveleys.html"
-    },
-    {
-      "src": "/airport-transfer-fleetwood",
-      "dest": "/airport-transfer-fleetwood.html"
-    },
-    {
-      "src": "/airport-transfer-kirkham",
-      "dest": "/airport-transfer-kirkham.html"
-    },
-    {
-      "src": "/airport-transfer-freckleton",
-      "dest": "/airport-transfer-freckleton.html"
-    },
-    {
-      "src": "/airport-transfer-warton",
-      "dest": "/airport-transfer-warton.html"
-    },
-    {
-      "src": "/airport-transfer-preston",
-      "dest": "/airport-transfer-preston.html"
-    },
-    {
-      "src": "/public/(.*)",
-      "dest": "/public/$1"
-    },
-    {
-      "src": "/",
-      "dest": "/api/home.js"
-    }
+    { "src": "/api/config",                          "dest": "/api/config.js" },
+    { "src": "/api/booking/create",                  "dest": "/api/booking/create.js" },
+    { "src": "/api/booking/get",                     "dest": "/api/booking/get.js" },
+    { "src": "/api/operator/accept",                 "dest": "/api/operator/accept.js" },
+    { "src": "/api/operator/reject",                 "dest": "/api/operator/reject.js" },
+    { "src": "/api/operator/bookings",               "dest": "/api/operator/bookings.js" },
+    { "src": "/api/operator/notify",                 "dest": "/api/operator/notify.js" },
+    { "src": "/api/account/profile",                 "dest": "/api/account/profile.js" },
+    { "src": "/api/account/journeys",                "dest": "/api/account/journeys.js" },
+    { "src": "/api/payment/confirm-cash",            "dest": "/api/payment/confirm-cash.js" },
+    { "src": "/api/payment/create-checkout-session", "dest": "/api/payment/create-checkout-session.js" },
+    { "src": "/api/payment/stripe-webhook",          "dest": "/api/payment/stripe-webhook.js" },
+    { "src": "/api/notifications/subscribe",         "dest": "/api/notifications/subscribe.js" },
+    { "src": "/api/notifications/send",              "dest": "/api/notifications/send.js" },
+    { "src": "/api/reminders/trigger",               "dest": "/api/reminders/trigger.js" },
+    { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
+    { "src": "/robots.txt",   "dest": "/robots.txt" },
+    { "src": "/blog",         "dest": "/blog.html" },
+    { "src": "/manchester-airport-transfers-from-blackpool", "dest": "/manchester-airport-transfers-from-blackpool.html" },
+    { "src": "/operator",     "dest": "/operator.html" },
+    { "src": "/booking",      "dest": "/booking.html" },
+    { "src": "/account",      "dest": "/account.html" },
+    { "src": "/terms",        "dest": "/terms.html" },
+    { "src": "/privacy",      "dest": "/privacy.html" },
+    { "src": "/manchester-airport-transfer-blackpool",     "dest": "/manchester-airport-transfer-blackpool.html" },
+    { "src": "/liverpool-airport-transfer-blackpool",      "dest": "/liverpool-airport-transfer-blackpool.html" },
+    { "src": "/leeds-bradford-airport-transfer-blackpool", "dest": "/leeds-bradford-airport-transfer-blackpool.html" },
+    { "src": "/airport-transfer-lytham-st-annes",         "dest": "/airport-transfer-lytham-st-annes.html" },
+    { "src": "/airport-transfer-poulton-le-fylde",        "dest": "/airport-transfer-poulton-le-fylde.html" },
+    { "src": "/airport-transfer-thornton-cleveleys",      "dest": "/airport-transfer-thornton-cleveleys.html" },
+    { "src": "/airport-transfer-fleetwood",               "dest": "/airport-transfer-fleetwood.html" },
+    { "src": "/airport-transfer-kirkham",                 "dest": "/airport-transfer-kirkham.html" },
+    { "src": "/airport-transfer-freckleton",              "dest": "/airport-transfer-freckleton.html" },
+    { "src": "/airport-transfer-warton",                  "dest": "/airport-transfer-warton.html" },
+    { "src": "/airport-transfer-preston",                 "dest": "/airport-transfer-preston.html" },
+    { "src": "/public/(.*)", "dest": "/public/$1" },
+    { "src": "/",            "dest": "/api/home.js" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=(self), payment=(self)"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=63072000; includeSubDomains; preload"
-        }
+        { "key": "X-Content-Type-Options",  "value": "nosniff" },
+        { "key": "X-Frame-Options",         "value": "SAMEORIGIN" },
+        { "key": "X-XSS-Protection",        "value": "1; mode=block" },
+        { "key": "Referrer-Policy",         "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy",      "value": "camera=(), microphone=(), geolocation=(self), payment=(self)" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     }
+  ],
+  "crons": [
+    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" }
   ]
 }
