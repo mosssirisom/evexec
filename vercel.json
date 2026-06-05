@@ -51,6 +51,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/notifications/send.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "*.html",
       "use": "@vercel/static"
     },
@@ -111,6 +115,10 @@
     {
       "src": "/api/notifications/subscribe",
       "dest": "/api/notifications/subscribe.js"
+    },
+    {
+      "src": "/api/notifications/send",
+      "dest": "/api/notifications/send.js"
     },
     {
       "src": "/sitemap.xml",
