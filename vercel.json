@@ -15,6 +15,7 @@
     { "src": "api/payment/stripe-webhook.js",          "use": "@vercel/node" },
     { "src": "api/notifications/subscribe.js",         "use": "@vercel/node" },
     { "src": "api/notifications/send.js",              "use": "@vercel/node" },
+    { "src": "api/reminders/trigger.js",               "use": "@vercel/node" },
     { "src": "*.html",    "use": "@vercel/static" },
     { "src": "*.xml",     "use": "@vercel/static" },
     { "src": "*.txt",     "use": "@vercel/static" },
@@ -33,6 +34,7 @@
     { "src": "/api/payment/stripe-webhook",          "dest": "/api/payment/stripe-webhook.js" },
     { "src": "/api/notifications/subscribe",         "dest": "/api/notifications/subscribe.js" },
     { "src": "/api/notifications/send",              "dest": "/api/notifications/send.js" },
+    { "src": "/api/reminders/trigger",               "dest": "/api/reminders/trigger.js" },
     { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",   "dest": "/robots.txt" },
     { "src": "/booking",      "dest": "/booking.html" },
@@ -52,5 +54,8 @@
     { "src": "/airport-transfer-preston",                 "dest": "/airport-transfer-preston.html" },
     { "src": "/public/(.*)", "dest": "/public/$1" },
     { "src": "/",            "dest": "/api/home.js" }
+  ],
+  "crons": [
+    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" }
   ]
 }

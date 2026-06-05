@@ -188,6 +188,8 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
+      const customerSmsReceived = `Hi ${firstName}, your EV Exec booking request has been received!\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\n\nWe'll confirm availability shortly. Questions: 07721 070370`;
+
       await Promise.allSettled([
         process.env.OPERATOR_PHONE
           ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
@@ -197,6 +199,9 @@ module.exports = async function handler(req, res) {
           : null,
         booking.customer_email
           ? sendEmail({ to: booking.customer_email, subject: `Booking Request Received — EV Exec`, html: customerEmailHtml })
+          : null,
+        booking.customer_phone
+          ? sendSMS(booking.customer_phone, customerSmsReceived)
           : null
       ].filter(Boolean));
     } catch (notifyErr) {
