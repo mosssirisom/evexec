@@ -71,6 +71,7 @@ module.exports = async function handler(req, res) {
       customer_email:    body.customer_email ? body.customer_email.trim() : null,
       user_id:           authUser ? authUser.id : null,
       status:            'Unassigned',
+      payment_status:    'Unpaid',
       quoted_price:      lookupPrice(airport, Boolean(body.return_journey)),
       ref:               'EVX-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase()
     });

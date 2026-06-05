@@ -61,8 +61,9 @@ async function bookingSubmit(req, res) {
       customer_name: name,
       customer_phone: phone,
       customer_email: body.customer_email ? body.customer_email.trim() : null,
-      status: 'Unassigned',
-      quoted_price: lookupPrice(airport, Boolean(body.return_journey)),
+      status:         'Unassigned',
+      payment_status: 'Unpaid',
+      quoted_price:   lookupPrice(airport, Boolean(body.return_journey)),
       ref: 'EVX-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase()
     });
 
