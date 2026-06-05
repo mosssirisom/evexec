@@ -4,6 +4,10 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
 const { parseBody } = require('../../lib/parse');
 
+function isUnpaid(status) {
+  return status === null || status === undefined || status === 'pending' || status === 'Unpaid';
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
 
@@ -28,7 +32,7 @@ module.exports = async function handler(req, res) {
     }
     const readyForPayment =
       booking.status === 'Dispatched' &&
-      (booking.payment_status === null || booking.payment_status === 'pending');
+      isUnpaid(booking.payment_status);
     if (!readyForPayment) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Booking cannot be confirmed in its current state' }));
@@ -36,10 +40,10 @@ module.exports = async function handler(req, res) {
 
     await dbUpdate('bookings', bookingId, {
       payment_method: 'cash',
-      payment_status: 'cash_on_day'
+      payment_status: 'Invoiced'
     });
 
-    const confirmed = { ...booking, payment_method: 'cash', payment_status: 'cash_on_day' };
+    const confirmed = { ...booking, payment_method: 'cash', payment_status: 'Invoiced' };
     await sendConfirmations(confirmed);
 
     res.statusCode = 200;
