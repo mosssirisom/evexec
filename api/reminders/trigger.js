@@ -3,6 +3,7 @@
 const { sendSMS, sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const { journeyLine, fmtDate } = require('../../lib/format');
+const { logMany } = require('../../lib/notifyLog');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
@@ -65,10 +66,17 @@ async function sendReminders(bookings, type) {
   </div>
 </div>`;
 
+    const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
+    const logEntries = [];
+    if (booking.customer_phone) logEntries.push(['sms', booking.customer_phone]);
+    if (booking.customer_email) logEntries.push(['email', booking.customer_email]);
+    logEntries.push(['push', booking.customer_email || booking.customer_phone]);
+
     await Promise.allSettled([
       booking.customer_phone ? sendSMS(booking.customer_phone, smsBody) : null,
       booking.customer_email ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }) : null,
-      sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id)
+      sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
+      logMany(booking.id, logType, logEntries)
     ].filter(Boolean));
     sent++;
   }
