@@ -5,6 +5,22 @@ const { sendSMS, sendEmail } = require('../../lib/notify');
 const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
+const { verifyAuth } = require('../../lib/auth');
+
+async function awardPrivilegePoint(userId) {
+  const base = process.env.SUPABASE_URL;
+  const sk   = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const h = { 'Content-Type':'application/json', 'apikey': sk, 'Authorization': `Bearer ${sk}` };
+  const cur = await fetch(`${base}/rest/v1/profiles?id=eq.${userId}&select=privilege_points&limit=1`, { headers: h });
+  if (!cur.ok) return;
+  const rows = await cur.json();
+  const pts = rows[0] ? (rows[0].privilege_points || 0) + 1 : 1;
+  await fetch(`${base}/rest/v1/profiles?id=eq.${userId}`, {
+    method: 'PATCH',
+    headers: { ...h, Prefer: 'return=minimal' },
+    body: JSON.stringify({ privilege_points: pts, updated_at: new Date().toISOString() })
+  });
+}
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
@@ -28,6 +44,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const authUser = await verifyAuth(req).catch(() => null);
     const airport = body.airport || null;
 
     const booking = await dbInsert('bookings', {
@@ -51,22 +68,33 @@ module.exports = async function handler(req, res) {
       customer_name:     name,
       customer_phone:    phone,
       customer_email:    body.customer_email ? body.customer_email.trim() : null,
-      status:            'pending',
-      quoted_price:      lookupPrice(airport, Boolean(body.return_journey))
+      user_id:           authUser ? authUser.id : null,
+      status:            'Unassigned',
+      quoted_price:      lookupPrice(airport, Boolean(body.return_journey)),
+      ref:               'EVX-' + (Date.now().toString(36) + Math.random().toString(36).slice(2, 6)).toUpperCase()
     });
 
-    const id        = booking.id;
-    const siteUrl   = process.env.SITE_URL || 'https://evexec.co.uk';
-    const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
-    const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
+    const id      = booking.id;
+    const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
 
-    const route = journeyLine(booking);
-    const date  = fmtDate(booking.travel_date);
-    const price = getPrice(booking);
+    // Booking saved — respond immediately; notifications are best-effort
+    res.statusCode = 200;
+    res.end(JSON.stringify({ success: true, bookingId: id }));
 
-    const returnLine = booking.return_journey
-      ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
-      : null;
+    if (authUser) awardPrivilegePoint(authUser.id).catch(() => {});
+
+    // Best-effort operator notifications (never throws back to the user)
+    try {
+      const acceptUrl = `${siteUrl}/api/operator/accept?id=${id}&token=${generateToken(id, 'accept')}`;
+      const rejectUrl = `${siteUrl}/api/operator/reject?id=${id}&token=${generateToken(id, 'reject')}`;
+
+      const route = journeyLine(booking);
+      const date  = fmtDate(booking.travel_date);
+      const price = getPrice(booking);
+
+      const returnLine = booking.return_journey
+        ? `Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}` + (booking.return_flight ? ` (flight ${booking.return_flight})` : '')
+        : null;
 
     const smsTxt = [
       'New EV Exec booking:',
@@ -137,17 +165,43 @@ module.exports = async function handler(req, res) {
   </div>
 </div>`;
 
-    await Promise.allSettled([
-      process.env.OPERATOR_PHONE
-        ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
-        : null,
-      process.env.OPERATOR_EMAIL
-        ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
-        : null
-    ].filter(Boolean));
+      const firstName = name.split(' ')[0];
+      const customerEmailHtml = `
+<div style="font-family:'Helvetica Neue',Arial,sans-serif;max-width:560px;margin:0 auto;background:#07111f;border-radius:16px;overflow:hidden;border:1px solid rgba(213,165,56,.25)">
+  <div style="background:linear-gradient(135deg,#b8891f 0%,#e8b84b 45%,#c49328 100%);padding:22px 30px">
+    <p style="margin:0 0 3px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(6,16,28,.55);font-weight:700">EV Exec &nbsp;·&nbsp; Booking Received</p>
+    <h1 style="margin:0;color:#06101c;font-size:1.25rem;font-weight:800;letter-spacing:-.2px">We've Got Your Request</h1>
+  </div>
+  <div style="padding:24px 30px">
+    <p style="margin:0 0 6px;color:#fff;font-size:15px">Hi ${firstName},</p>
+    <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Thank you for choosing EV Exec. Your booking request has been received and a member of our team will review availability shortly. You'll receive confirmation via SMS or email once your journey is secured.</p>
+    <div style="background:rgba(213,165,56,.07);border:1px solid rgba(213,165,56,.18);border-radius:12px;padding:18px 20px;margin-bottom:22px">
+      <p style="margin:0 0 8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);font-weight:700">Your Journey</p>
+      <h2 style="margin:0 0 7px;color:#fff;font-size:1.1rem;font-weight:800;line-height:1.35">${route}</h2>
+      <p style="margin:0 0 4px;color:rgba(255,255,255,.55);font-size:13.5px">${date} &nbsp;·&nbsp; ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} pax${booking.luggage ? ` &nbsp;·&nbsp; ${booking.luggage}` : ''}</p>
+      ${booking.flight_number ? `<p style="margin:4px 0 0;font-size:13px;color:rgba(255,255,255,.55)">Flight: ${booking.flight_number}</p>` : ''}
+      ${booking.return_journey ? `<p style="margin:4px 0 0;font-size:13px;color:rgba(255,255,255,.55)">Return: ${fmtDate(booking.return_date)} at ${booking.return_time || 'TBC'}</p>` : ''}
+      ${price ? `<p style="margin:8px 0 0;font-size:1.5rem;font-weight:900;color:#d5a538;letter-spacing:-0.5px">£${price}</p>` : ''}
+    </div>
+    <p style="margin:0 0 6px;font-size:13px;color:rgba(255,255,255,.4)">Reference: <strong style="color:rgba(255,255,255,.7);font-family:monospace">${booking.ref}</strong></p>
+    <p style="margin:16px 0 0;font-size:13px;color:rgba(255,255,255,.45)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>
+  </div>
+</div>`;
 
-    res.statusCode = 200;
-    res.end(JSON.stringify({ success: true, bookingId: id }));
+      await Promise.allSettled([
+        process.env.OPERATOR_PHONE
+          ? sendSMS(process.env.OPERATOR_PHONE, smsTxt)
+          : null,
+        process.env.OPERATOR_EMAIL
+          ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: emailHtml })
+          : null,
+        booking.customer_email
+          ? sendEmail({ to: booking.customer_email, subject: `Booking Request Received — EV Exec`, html: customerEmailHtml })
+          : null
+      ].filter(Boolean));
+    } catch (notifyErr) {
+      console.error('Booking notification error:', notifyErr);
+    }
   } catch (err) {
     console.error('Booking create error:', err);
     res.statusCode = 500;

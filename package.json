@@ -6,10 +6,18 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build:css": "tailwindcss -i src/input.css -o public/css/tw.min.css --minify"
+    "build:css": "tailwindcss -i src/input.css -o public/css/tw.min.css --minify",
+    "test": "playwright test --config=tests/playwright.config.ts",
+    "test:api": "playwright test --config=tests/playwright.config.ts tests/e2e/01-booking-api.spec.ts tests/e2e/03-payment-flow.spec.ts tests/e2e/04-operator-flow.spec.ts tests/e2e/05-account-api.spec.ts tests/e2e/06-price-and-format.spec.ts tests/e2e/07-edge-cases.spec.ts --project='Desktop Chrome'",
+    "test:ui": "playwright test --config=tests/playwright.config.ts tests/e2e/02-booking-wizard-ui.spec.ts",
+    "test:report": "playwright show-report tests/playwright-report"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
     "@tailwindcss/cli": "^4.3.0",
-    "tailwindcss": "^4.3.0"
-  }
+    "@types/node": "^20.0.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {}
 }
