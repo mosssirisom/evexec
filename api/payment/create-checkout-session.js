@@ -4,6 +4,10 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { getPrice, journeyLine } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
 
+function isUnpaid(status) {
+  return status === null || status === undefined || status === 'pending' || status === 'Unpaid';
+}
+
 async function createStripeSession({ price, description, bookingId, customerEmail, successUrl, cancelUrl }) {
   const params = new URLSearchParams();
   params.set('payment_method_types[]', 'card');
@@ -56,10 +60,11 @@ module.exports = async function handler(req, res) {
       res.statusCode = 404;
       return res.end(JSON.stringify({ error: 'Booking not found' }));
     }
-    // Status is 'Dispatched' after operator accepts; payment must not yet be taken
+    // Status is 'Dispatched' after operator accepts; payment must not yet be taken.
+    // Database check constraint uses 'Unpaid', 'Paid', and 'Invoiced'.
     const readyForPayment =
       booking.status === 'Dispatched' &&
-      (booking.payment_status === null || booking.payment_status === 'pending');
+      isUnpaid(booking.payment_status);
     if (!readyForPayment) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Booking is not ready for payment' }));
