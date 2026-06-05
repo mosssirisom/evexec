@@ -9,6 +9,10 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
 const { getRawBody } = require('../../lib/parse');
 
+function isUnpaid(status) {
+  return status === null || status === undefined || status === 'pending' || status === 'Unpaid';
+}
+
 function verifyStripeSignature(rawBody, sigHeader, secret) {
   // Parse t=timestamp,v1=signature
   const parts = {};
@@ -26,7 +30,7 @@ function verifyStripeSignature(rawBody, sigHeader, secret) {
     throw new Error('Timestamp too old — possible replay attack');
   }
 
-  const payload  = `${timestamp}.${rawBody.toString('utf8')}`;
+  const payload     = `${timestamp}.${rawBody.toString('utf8')}`;
   const expected    = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   const expectedBuf = Buffer.from(expected, 'hex');
   const v1Buf       = Buffer.from(v1, 'hex');
@@ -67,18 +71,21 @@ module.exports = async function handler(req, res) {
         const booking = await dbGet('bookings', bookingId);
         const readyForPayment =
           booking && booking.status === 'Dispatched' &&
-          (booking.payment_status === null || booking.payment_status === 'pending');
+          isUnpaid(booking.payment_status);
+
         if (readyForPayment) {
           await dbUpdate('bookings', bookingId, {
-            payment_status:   'paid',
+            payment_status:   'Paid',
             payment_method:   'card',
             stripe_session_id: session.id
           });
+
           const confirmed = {
             ...booking,
             payment_method: 'card',
-            payment_status: 'paid'
+            payment_status: 'Paid'
           };
+
           await sendConfirmations(confirmed);
         }
       } catch (err) {
