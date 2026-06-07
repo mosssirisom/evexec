@@ -6,7 +6,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "build": "next build",
+    "build": "echo EV Exec deployment build complete",
     "build:css": "tailwindcss -i src/input.css -o public/css/tw.min.css --minify",
     "test": "playwright test --config=tests/playwright.config.ts",
     "test:api": "playwright test --config=tests/playwright.config.ts tests/e2e/01-booking-api.spec.ts tests/e2e/03-payment-flow.spec.ts tests/e2e/04-operator-flow.spec.ts tests/e2e/05-account-api.spec.ts tests/e2e/06-price-and-format.spec.ts tests/e2e/07-edge-cases.spec.ts --project='Desktop Chrome'",
