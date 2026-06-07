@@ -44,6 +44,7 @@
     { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",   "dest": "/robots.txt" },
     { "src": "/blog",         "dest": "/blog.html" },
+    { "src": "/notification-control", "dest": "/notification-control.html" },
     { "src": "/manchester-airport-transfers-from-blackpool", "dest": "/manchester-airport-transfers-from-blackpool.html" },
     { "src": "/operator",     "dest": "/operator.html" },
     { "src": "/booking",      "dest": "/booking.html" },
