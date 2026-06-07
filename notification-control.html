@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>EV Exec — Notification Control</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#020813;color:#fff;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+.page{max-width:1080px;margin:0 auto;padding:24px 16px 60px}.gold{color:#d5a538}.top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px}.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-weight:800;color:#d5a538;margin-bottom:8px}h1{font-size:1.85rem;letter-spacing:-.04em}.sub{color:rgba(255,255,255,.48);font-size:13px;margin-top:5px}.nav{display:flex;gap:8px;flex-wrap:wrap}.nav a{color:rgba(255,255,255,.7);text-decoration:none;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);padding:9px 13px;border-radius:9px;font-size:13px;font-weight:700}.panel{background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px;margin-bottom:14px}.auth{display:flex;gap:10px;flex-wrap:wrap}.auth input{flex:1;min-width:220px;background:rgba(0,0,0,.38);border:1px solid rgba(255,255,255,.12);border-radius:10px;color:#fff;padding:11px 13px;outline:none}.auth input:focus{border-color:#d5a538}.btn{border:0;border-radius:10px;background:#d5a538;color:#06101c;font-weight:800;padding:11px 15px;cursor:pointer}.btn:hover{opacity:.88}.btn.ghost{background:rgba(255,255,255,.07);color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.1)}.btn.danger{background:#dc2626;color:#fff}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:14px}.stat strong{font-size:1.7rem;color:#d5a538;display:block}.stat span{font-size:11px;color:rgba(255,255,255,.42);text-transform:uppercase;letter-spacing:.09em;font-weight:700}.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.select,.input{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.11);color:#fff;border-radius:10px;padding:10px 12px;outline:none}.input{min-width:220px}.table{display:grid;gap:8px}.item{display:grid;grid-template-columns:130px 1fr 120px 130px auto;gap:12px;align-items:center;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:13px}.pill{display:inline-flex;align-items:center;justify-content:center;width:max-content;border-radius:999px;padding:4px 9px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.pending{background:rgba(245,158,11,.13);color:#fcd34d}.sent{background:rgba(34,197,94,.13);color:#86efac}.failed{background:rgba(239,68,68,.13);color:#fca5a5}.muted{color:rgba(255,255,255,.42);font-size:12px}.main{min-width:0}.title{font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.meta{font-size:12px;color:rgba(255,255,255,.45);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.err{font-size:12px;color:#fca5a5;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.empty{text-align:center;color:rgba(255,255,255,.3);padding:36px 0}.notice{font-size:13px;color:rgba(255,255,255,.45);margin-top:10px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111827;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 18px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}@media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}.item{grid-template-columns:1fr}.top{display:block}.nav{margin-top:14px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top">
+    <div>
+      <div class="eyebrow">EV Exec · Operator</div>
+      <h1>Notification Control</h1>
+      <p class="sub">Monitor failed, pending and sent SMS/email notifications. Retry failed sends manually when needed.</p>
+    </div>
+    <div class="nav">
+      <a href="/operator">Bookings</a>
+      <a href="/notification-control">Notification Control</a>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="auth">
+      <input id="secret" type="password" placeholder="Operator secret" autocomplete="off">
+      <button class="btn" onclick="loadQueue()">Load Queue</button>
+      <button class="btn ghost" onclick="runRetry()">Run Retry Now</button>
+    </div>
+    <p class="notice" id="notice"></p>
+  </div>
+
+  <div id="dashboard" style="display:none">
+    <div class="stats" id="stats"></div>
+    <div class="panel">
+      <div class="controls">
+        <select class="select" id="status" onchange="loadQueue()">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="sent">Sent</option>
+          <option value="failed">Failed</option>
+        </select>
+        <input class="input" id="bookingId" placeholder="Filter by booking ID" onkeydown="if(event.key==='Enter')loadQueue()">
+        <button class="btn ghost" onclick="loadQueue()">Refresh</button>
+      </div>
+      <div class="table" id="items"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+var secret='';
+function esc(v){return String(v||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);});}
+function setNotice(v){document.getElementById('notice').textContent=v||'';}
+function toast(v){var t=document.getElementById('toast');t.textContent=v;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2600);}
+function fmt(v){if(!v)return '—';try{return new Date(v).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch(e){return v;}}
+function getSecret(){return document.getElementById('secret').value.trim();}
+function stat(n,label){return '<div class="stat"><strong>'+esc(n)+'</strong><span>'+esc(label)+'</span></div>';}
+function render(data){
+  document.getElementById('dashboard').style.display='';
+  var s=data.summary||{};
+  document.getElementById('stats').innerHTML=stat(s.total||0,'Total')+stat(s.pending||0,'Pending')+stat(s.sent||0,'Sent')+stat(s.failed||0,'Failed');
+  var items=data.items||[];
+  if(!items.length){document.getElementById('items').innerHTML='<div class="empty">No queue items found.</div>';return;}
+  document.getElementById('items').innerHTML=items.map(function(i){
+    var status=esc(i.status||'pending');
+    var when=i.status==='sent'?fmt(i.sent_at):fmt(i.next_attempt_at);
+    return '<div class="item">'+
+      '<div><span class="pill '+status+'">'+status+'</span><div class="muted" style="margin-top:6px">'+esc(i.channel)+' · '+esc(i.type||'')+'</div></div>'+
+      '<div class="main"><div class="title">'+esc(i.subject||i.meta&&i.meta.label||'Notification')+'</div><div class="meta">To: '+esc(i.recipient_masked||'—')+' · Booking: '+esc(i.booking_id||'—')+'</div>'+(i.last_error?'<div class="err">'+esc(i.last_error)+'</div>':'')+'</div>'+
+      '<div><div class="muted">Attempts</div><strong>'+esc(i.attempts||0)+'</strong></div>'+
+      '<div><div class="muted">'+(i.status==='sent'?'Sent':'Next try')+'</div><div style="font-size:12px">'+esc(when)+'</div></div>'+
+      '<div>'+(i.status==='failed'?'<button class="btn danger" onclick="requeue(\''+esc(i.id)+'\')">Requeue</button>':(i.status==='pending'?'<button class="btn ghost" onclick="requeue(\''+esc(i.id)+'\')">Retry now</button>':''))+'</div>'+
+    '</div>';
+  }).join('');
+}
+async function loadQueue(){
+  secret=getSecret();
+  if(!secret){setNotice('Enter your operator secret first.');return;}
+  setNotice('Loading notification queue…');
+  var status=document.getElementById('status').value;
+  var booking=document.getElementById('bookingId').value.trim();
+  var qs=[]; if(status)qs.push('status='+encodeURIComponent(status)); if(booking)qs.push('booking_id='+encodeURIComponent(booking)); qs.push('limit=150');
+  try{
+    var res=await fetch('/api/notifications/queue?'+qs.join('&'),{headers:{'x-operator-secret':secret}});
+    var data=await res.json();
+    if(!res.ok){setNotice(data.error||'Failed to load queue.');return;}
+    setNotice(''); render(data);
+  }catch(e){setNotice('Network error: '+e.message);}
+}
+async function requeue(id){
+  try{
+    var res=await fetch('/api/notifications/queue',{method:'POST',headers:{'Content-Type':'application/json','x-operator-secret':secret},body:JSON.stringify({action:'requeue',id:id})});
+    var data=await res.json();
+    if(!res.ok){toast(data.error||'Requeue failed');return;}
+    toast('Notification queued for retry'); loadQueue();
+  }catch(e){toast('Network error');}
+}
+async function runRetry(){
+  secret=getSecret(); if(!secret){setNotice('Enter your operator secret first.');return;}
+  setNotice('Running retry processor…');
+  try{
+    var res=await fetch('/api/notifications/retry',{method:'POST',headers:{'x-operator-secret':secret}});
+    var data=await res.json();
+    if(!res.ok){setNotice(data.error||'Retry failed');return;}
+    toast('Processed '+(data.processed||0)+' queued notifications'); setNotice(''); loadQueue();
+  }catch(e){setNotice('Network error: '+e.message);}
+}
+document.getElementById('secret').addEventListener('keydown',function(e){if(e.key==='Enter')loadQueue();});
+</script>
+</body>
+</html>
