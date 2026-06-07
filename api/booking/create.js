@@ -3,6 +3,7 @@
 const { dbInsert } = require('../../lib/supabase');
 const { sendSMS, sendEmail, normaliseUkPhone } = require('../../lib/notify');
 const { logMany } = require('../../lib/notifyLog');
+const { enqueueNotification } = require('../../lib/notificationQueue');
 const { generateToken } = require('../../lib/token');
 const { journeyLine, fmtDate, lookupPrice, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
@@ -27,6 +28,17 @@ async function awardPrivilegePoint(userId) {
 function compactResult(label, result) {
   if (result.status === 'fulfilled') return { label, ok: true };
   return { label, ok: false, error: result.reason && result.reason.message ? result.reason.message : String(result.reason || 'Unknown error') };
+}
+
+async function queueIfFailed(status, payload) {
+  if (!status || status.ok) return null;
+  try {
+    await enqueueNotification(payload);
+    return { ...status, queued: true };
+  } catch (err) {
+    console.error('Failed to queue notification retry:', status.label, err);
+    return { ...status, queued: false, queueError: err.message || String(err) };
+  }
 }
 
 async function sendReceivedNotifications(booking) {
@@ -55,20 +67,35 @@ async function sendReceivedNotifications(booking) {
   const operatorHtml = `<div><h1>New EV Exec Booking</h1><p>${route}</p><p>${date} at ${booking.travel_time || 'TBC'}</p><p>${booking.customer_name} - ${booking.customer_phone}</p><p><a href="${acceptUrl}">Accept</a> | <a href="${rejectUrl}">Reject</a></p></div>`;
   const customerHtml = `<div><h1>EV Exec Booking Received</h1><p>Hi ${firstName}, your request has been received.</p><p>${route}</p><p>${date} at ${booking.travel_time || 'TBC'}</p><p>Reference: ${booking.ref}</p></div>`;
 
-  const tasks = [
-    process.env.OPERATOR_PHONE ? sendSMS(process.env.OPERATOR_PHONE, operatorText) : Promise.resolve('operator sms not configured'),
-    process.env.OPERATOR_EMAIL ? sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: operatorHtml }) : Promise.resolve('operator email not configured'),
-    booking.customer_phone ? sendSMS(booking.customer_phone, customerText) : Promise.resolve('customer sms missing'),
-    booking.customer_email ? sendEmail({ to: booking.customer_email, subject: 'Booking Request Received — EV Exec', html: customerHtml }) : Promise.resolve('customer email missing')
+  const payloads = [
+    {
+      label: 'operator_sms',
+      canSend: Boolean(process.env.OPERATOR_PHONE),
+      task: () => sendSMS(process.env.OPERATOR_PHONE, operatorText),
+      queue: { booking_id: booking.id, type: 'received', channel: 'sms', recipient: process.env.OPERATOR_PHONE, body: operatorText, meta: { label: 'operator_sms' } }
+    },
+    {
+      label: 'operator_email',
+      canSend: Boolean(process.env.OPERATOR_EMAIL),
+      task: () => sendEmail({ to: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: operatorHtml }),
+      queue: { booking_id: booking.id, type: 'received', channel: 'email', recipient: process.env.OPERATOR_EMAIL, subject: `New Booking: ${route} — ${date}`, html: operatorHtml, meta: { label: 'operator_email' } }
+    },
+    {
+      label: 'customer_sms',
+      canSend: Boolean(booking.customer_phone),
+      task: () => sendSMS(booking.customer_phone, customerText),
+      queue: { booking_id: booking.id, type: 'received', channel: 'sms', recipient: booking.customer_phone, body: customerText, meta: { label: 'customer_sms' } }
+    },
+    {
+      label: 'customer_email',
+      canSend: Boolean(booking.customer_email),
+      task: () => sendEmail({ to: booking.customer_email, subject: 'Booking Request Received — EV Exec', html: customerHtml }),
+      queue: { booking_id: booking.id, type: 'received', channel: 'email', recipient: booking.customer_email, subject: 'Booking Request Received — EV Exec', html: customerHtml, meta: { label: 'customer_email' } }
+    }
   ];
 
-  const settled = await Promise.allSettled(tasks);
-  const statuses = [
-    compactResult('operator_sms', settled[0]),
-    compactResult('operator_email', settled[1]),
-    compactResult('customer_sms', settled[2]),
-    compactResult('customer_email', settled[3])
-  ];
+  const settled = await Promise.allSettled(payloads.map(p => p.canSend ? p.task() : Promise.resolve('not configured or missing')));
+  const statuses = settled.map((result, index) => compactResult(payloads[index].label, result));
 
   const sent = [];
   if (statuses[0].ok && process.env.OPERATOR_PHONE) sent.push(['sms', normaliseUkPhone(process.env.OPERATOR_PHONE)]);
@@ -77,8 +104,17 @@ async function sendReceivedNotifications(booking) {
   if (statuses[3].ok && booking.customer_email) sent.push(['email', booking.customer_email]);
   if (sent.length) await logMany(booking.id, 'received', sent);
 
-  statuses.filter(s => !s.ok).forEach(s => console.error('Booking notification failed:', s.label, s.error));
-  return statuses;
+  const finalStatuses = [];
+  for (let i = 0; i < statuses.length; i++) {
+    if (!payloads[i].canSend) {
+      finalStatuses.push({ ...statuses[i], skipped: true });
+      continue;
+    }
+    finalStatuses.push(await queueIfFailed(statuses[i], payloads[i].queue));
+  }
+
+  finalStatuses.filter(s => !s.ok && !s.skipped).forEach(s => console.error('Booking notification failed:', s.label, s.error));
+  return finalStatuses;
 }
 
 module.exports = async function handler(req, res) {
@@ -136,7 +172,7 @@ module.exports = async function handler(req, res) {
 
     const notifications = await sendReceivedNotifications(booking).catch(err => {
       console.error('Booking notification batch error:', err);
-      return [{ label: 'notification_batch', ok: false, error: err.message || String(err) }];
+      return [{ label: 'notification_batch', ok: false, queued: false, error: err.message || String(err) }];
     });
 
     if (authUser) awardPrivilegePoint(authUser.id).catch(err => console.error('Privilege point error:', err));
