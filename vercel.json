@@ -14,6 +14,7 @@
     { "src": "api/payment/stripe-webhook.js",          "use": "@vercel/node" },
     { "src": "api/notifications/index.js",             "use": "@vercel/node" },
     { "src": "api/notifications/health.js",            "use": "@vercel/node" },
+    { "src": "api/notifications/retry.js",             "use": "@vercel/node" },
     { "src": "api/reminders/trigger.js",               "use": "@vercel/node" },
     { "src": "*.html",    "use": "@vercel/static" },
     { "src": "*.xml",     "use": "@vercel/static" },
@@ -36,6 +37,7 @@
     { "src": "/api/notifications/subscribe",         "dest": "/api/notifications/index.js" },
     { "src": "/api/notifications/send",              "dest": "/api/notifications/index.js" },
     { "src": "/api/notifications/health",            "dest": "/api/notifications/health.js" },
+    { "src": "/api/notifications/retry",             "dest": "/api/notifications/retry.js" },
     { "src": "/api/reminders/trigger",               "dest": "/api/reminders/trigger.js" },
     { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",   "dest": "/robots.txt" },
@@ -74,6 +76,7 @@
     }
   ],
   "crons": [
-    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" }
+    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" },
+    { "path": "/api/notifications/retry", "schedule": "*/10 * * * *" }
   ]
 }
