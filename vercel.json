@@ -16,6 +16,8 @@
     { "src": "api/notifications/health.js",            "use": "@vercel/node" },
     { "src": "api/notifications/retry.js",             "use": "@vercel/node" },
     { "src": "api/notifications/queue.js",             "use": "@vercel/node" },
+    { "src": "api/notifications/resend-webhook.js",    "use": "@vercel/node" },
+    { "src": "api/notifications/sms-status.js",        "use": "@vercel/node" },
     { "src": "api/reminders/trigger.js",               "use": "@vercel/node" },
     { "src": "*.html",    "use": "@vercel/static" },
     { "src": "*.xml",     "use": "@vercel/static" },
@@ -40,6 +42,8 @@
     { "src": "/api/notifications/health",            "dest": "/api/notifications/health.js" },
     { "src": "/api/notifications/retry",             "dest": "/api/notifications/retry.js" },
     { "src": "/api/notifications/queue",             "dest": "/api/notifications/queue.js" },
+    { "src": "/api/notifications/resend-webhook",    "dest": "/api/notifications/resend-webhook.js" },
+    { "src": "/api/notifications/sms-status",        "dest": "/api/notifications/sms-status.js" },
     { "src": "/api/reminders/trigger",               "dest": "/api/reminders/trigger.js" },
     { "src": "/sitemap.xml",  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",   "dest": "/robots.txt" },
@@ -73,13 +77,4 @@
         { "key": "X-Frame-Options",         "value": "SAMEORIGIN" },
         { "key": "X-XSS-Protection",        "value": "1; mode=block" },
         { "key": "Referrer-Policy",         "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy",      "value": "camera=(), microphone=(), geolocation=(self), payment=(self)" },
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
-      ]
-    }
-  ],
-  "crons": [
-    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" },
-    { "path": "/api/notifications/retry", "schedule": "*/10 * * * *" }
-  ]
-}
+        { "key": "Permissions-Policy",      "value": "camera=(), microphone=(), geolocation=(self), payment=(self)
