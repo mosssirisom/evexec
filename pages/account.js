@@ -1,3 +1,153 @@
-import {useEffect,useState}from'react';
-function tok(){try{for(let i=0;i<localStorage.length;i++){let k=localStorage.key(i),v=localStorage.getItem(k)||'';if(k&&k.includes('auth-token')){let j=JSON.parse(v);return j.access_token||j.currentSession?.access_token||j.session?.access_token||''}}}catch{}return''}
-export default function Account(){const[tab,setTab]=useState('dash'),[p,setP]=useState({}),[j,setJ]=useState([]),[err,setErr]=useState(''),[load,setLoad]=useState(1);useEffect(()=>{(async()=>{let t=tok();if(!t){setErr('Please sign in again');setLoad(0);return}try{let h={Authorization:'Bearer '+t},a=await fetch('/api/account/profile',{headers:h}),b=await fetch('/api/account/journeys',{headers:h});if(!a.ok)throw Error('Please sign in again');setP((await a.json()).profile||{});setJ(b.ok?(await b.json()).journeys||[]:[])}catch(e){setErr(e.message)}setLoad(0)})()},[]);let pts=p.privilege_points||0,name=p.full_name||p.name||p.email||'EV Exec Customer',email=p.email||'',done=j.filter(x=>x.status==='Completed').length,tier=pts>=20?'Executive':pts>=10?'Preferred':'Client';let nav=[['dash','Dashboard','⌂'],['trips','Journey History','↺'],['rew','Rewards','☆'],['acct','Account','♙']];return <main><style>{`html,body,#__next{min-height:100%;background:#020813}main{min-height:100vh;background:radial-gradient(circle at 70% 3%,rgba(48,99,160,.2),transparent 30%),radial-gradient(circle at 18% 18%,rgba(213,165,56,.08),transparent 30%),#020813;color:#fff;font-family:Inter,Arial,sans-serif;padding-bottom:105px}.head{position:sticky;top:0;background:rgba(2,8,19,.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,.08);padding:18px 22px;display:flex;justify-content:space-between;align-items:center}.brand{display:flex;gap:14px;align-items:center}.e{width:46px;height:46px;border-radius:12px;background:#050b15;color:#d5a538;display:grid;place-items:center;font:800 28px Georgia}.bt{font-weight:900;letter-spacing:.26em}.bs{font-size:10px;letter-spacing:.34em;text-transform:uppercase;color:rgba(255,255,255,.45)}.out{border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.04);color:#bbb;padding:10px 18px;font-weight:900}.wrap{max-width:980px;margin:0 auto;padding:22px 16px}.card,.reward{background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:24px;box-shadow:0 22px 70px rgba(0,0,0,.35)}.mini{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.42);font-weight:900}.muted{color:rgba(255,255,255,.56)}.gold{color:#d5a538}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px}.stat{text-align:center;border-radius:20px;padding:18px 8px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1)}.stat b{font-size:32px;display:block}.tile{display:flex;gap:16px;align-items:center;padding:19px;border-bottom:1px solid rgba(255,255,255,.07)}.tile:last-child{border:0}.ico{width:54px;height:54px;border-radius:18px;background:rgba(213,165,56,.11);color:#d5a538;display:grid;place-items:center;font-size:28px}.reward{position:relative;border-color:rgba(213,165,56,.38)}.orb{position:absolute;right:22px;top:34px;width:104px;height:104px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(213,165,56,.42)}.orb b{font-size:44px}.bar{height:11px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#f2c66d,#d5a538,#a97918)}.bottom{position:fixed;left:0;right:0;bottom:0;background:rgba(2,8,19,.94);display:grid;grid-template-columns:repeat(4,1fr);padding:9px 8px calc(9px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.1)}.bottom button{background:0;border:0;color:#888;font-weight:900}.bottom .on{color:#d5a538}.fab{position:fixed;right:22px;bottom:108px;width:68px;height:68px;border:0;border-radius:50%;background:linear-gradient(135deg,#f2c66d,#d5a538);font-size:30px}.input{width:100%;min-height:52px;border-radius:14px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.065);color:white;padding:0 16px}.btn{border:0;border-radius:18px;padding:15px 22px;background:linear-gradient(135deg,#f2c66d,#d5a538);font-weight:900}`}</style><div className="head"><div className="brand"><div className="e">E</div><div><div className="bt">EV EXEC</div><div className="bs">My Account</div></div></div>{!err&&<button className="out">Sign Out</button>}</div><div className="wrap">{load&&<div className="card">Loading…</div>}{!load&&err&&<div className="card" style={{textAlign:'center',marginTop:80}}><h1>My Account</h1><p className="muted">{err}</p><a className="btn" href="/#account">Sign In</a></div>}{!load&&!err&&<>{tab==='dash'&&<><div className="card"><div className="mini">Welcome back</div><h1 style={{fontSize:40}}>{name}</h1><p className="muted">{email}</p><div className="stats"><div className="stat"><b className="gold">{done*12}kg</b><span className="muted">CO₂ Saved</span></div><div className="stat"><b>{j.length}</b><span className="muted">Trips</span></div><div className="stat"><b>–</b><span className="muted">Rating</span></div></div></div><br/><div className="card" style={{padding:0}}><div className="tile" onClick={()=>setTab('trips')}><div className="ico">▣</div><div><h2>Upcoming Rides</h2><p className="muted">No Upcoming Rides</p></div></div><div className="tile" onClick={()=>setTab('rew')}><div className="ico">☆</div><div><h2 className="gold">Privilege Points</h2><p className="muted">{pts} pts · {tier} Tier</p></div></div></div></>}{tab==='trips'&&<div className="card"><div className="mini">Journey History</div><h1>Your Trips</h1><div className="card" style={{textAlign:'center'}}><div className="ico" style={{margin:'0 auto 20px'}}>⌁</div><h2>{j.length?'Your journeys':'No journeys yet'}</h2><p className="muted">Your completed transfers and invoices will appear here automatically.</p></div></div>}{tab==='rew'&&<><div className="reward"><div className="orb"><div><b>{pts}</b><br/><span className="gold">PTS</span></div></div><div className="mini gold">Current Status</div><h1 style={{fontSize:56}}>{tier}</h1><p><span className="gold">EV EXEC</span> Privilege Member</p><p className="muted">{pts>=10?20-pts:10-pts} more points to reach {pts>=10?'Executive':'Preferred'}</p><div className="bar"><span style={{width:Math.min(100,pts*10)+'%'}}/></div></div><br/><div className="card"><div className="mini">Client Benefits</div><p className="muted">Premium EV experience on every journey</p><p className="muted">Fixed-price fares — no surge pricing</p><p className="muted">100% zero-emission Tesla Model Y</p></div></>}{tab==='acct'&&<div className="card"><h1>Account</h1><div className="card"><b>Email</b><p className="muted">{email}</p></div><br/><div className="card"><b>Change Password</b><br/><br/><input className="input" placeholder="New password"/><br/><br/><input className="input" placeholder="Confirm password"/><br/><br/><button className="btn">Update Password</button></div></div>}</>}</div><button className="fab">□</button>{!err&&<nav className="bottom">{nav.map(n=><button key={n[0]} className={tab===n[0]?'on':''} onClick={()=>setTab(n[0])}><div>{n[2]}</div>{n[1]}</button>)}</nav>}</main>}
+import { useEffect, useState } from 'react';
+
+function getToken() {
+  if (typeof window === 'undefined') return '';
+
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key) continue;
+
+      const raw = localStorage.getItem(key);
+      if (!raw) continue;
+
+      if (
+        key.includes('supabase') ||
+        key.includes('auth-token') ||
+        key.includes('sb-')
+      ) {
+        try {
+          const parsed = JSON.parse(raw);
+
+          const token =
+            parsed?.access_token ||
+            parsed?.currentSession?.access_token ||
+            parsed?.session?.access_token ||
+            parsed?.currentSession?.session?.access_token ||
+            parsed?.data?.session?.access_token ||
+            parsed?.user?.aud;
+
+          if (token && token.length > 20) return token;
+        } catch {}
+      }
+    }
+  } catch {}
+
+  return '';
+}
+
+export default function Account() {
+  const [tab, setTab] = useState('dash');
+  const [profile, setProfile] = useState({});
+  const [journeys, setJourneys] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  async function loadAccount() {
+    try {
+      setLoading(true);
+      setError('');
+
+      const token = getToken();
+
+      if (!token) {
+        setError('Please sign in again');
+        setLoading(false);
+        return;
+      }
+
+      const headers = {
+        Authorization: `Bearer ${token}`
+      };
+
+      const profileReq = await fetch('/api/account/profile', { headers });
+      const journeysReq = await fetch('/api/account/journeys', { headers });
+
+      if (!profileReq.ok) {
+        throw new Error('Please sign in again');
+      }
+
+      const profileData = await profileReq.json();
+      const journeysData = journeysReq.ok ? await journeysReq.json() : { journeys: [] };
+
+      setProfile(profileData.profile || {});
+      setJourneys(journeysData.journeys || []);
+    } catch (e) {
+      setError(e.message || 'Account unavailable');
+    }
+
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    loadAccount();
+  }, []);
+
+  const pts = profile.privilege_points || 0;
+  const email = profile.email || '';
+  const name = profile.full_name || profile.name || email || 'EV Exec Customer';
+  const completed = journeys.filter(j => j.status === 'Completed').length;
+  const tier = pts >= 20 ? 'Executive' : pts >= 10 ? 'Preferred' : 'Client';
+
+  return (
+    <main style={{ minHeight: '100vh', background: '#020813', color: 'white', padding: 24, fontFamily: 'Inter, sans-serif' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
+        <div>
+          <div style={{ color: '#d5a538', fontWeight: 900, letterSpacing: '.25em' }}>EV EXEC</div>
+          <div style={{ opacity: .5, letterSpacing: '.3em', fontSize: 12 }}>MY ACCOUNT</div>
+        </div>
+
+        {!error && (
+          <button
+            onClick={() => {
+              localStorage.clear();
+              location.href = '/';
+            }}
+            style={{ borderRadius: 999, padding: '12px 18px', background: 'transparent', border: '1px solid rgba(255,255,255,.2)', color: 'white' }}
+          >
+            Sign Out
+          </button>
+        )}
+      </div>
+
+      {loading && <div>Loading...</div>}
+
+      {!loading && error && (
+        <div style={{ border: '1px solid rgba(255,255,255,.12)', borderRadius: 28, padding: 40, textAlign: 'center', background: 'rgba(255,255,255,.05)' }}>
+          <h1>My Account</h1>
+          <p style={{ opacity: .7 }}>{error}</p>
+          <a href="/#account" style={{ display: 'inline-block', marginTop: 12, background: '#d5a538', color: '#000', padding: '14px 24px', borderRadius: 20, fontWeight: 800 }}>
+            Sign In
+          </a>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          <div style={{ border: '1px solid rgba(255,255,255,.1)', borderRadius: 28, padding: 24, background: 'rgba(255,255,255,.05)' }}>
+            <div style={{ opacity: .5, textTransform: 'uppercase', letterSpacing: '.2em', fontSize: 12 }}>Welcome back</div>
+            <h1 style={{ fontSize: 52, marginBottom: 10 }}>{name}</h1>
+            <p style={{ opacity: .6 }}>{email}</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginTop: 20 }}>
+              <div style={{ padding: 20, borderRadius: 20, background: 'rgba(255,255,255,.05)' }}>
+                <div style={{ color: '#d5a538', fontSize: 34, fontWeight: 800 }}>{completed * 12}kg</div>
+                <div style={{ opacity: .6 }}>CO₂ Saved</div>
+              </div>
+
+              <div style={{ padding: 20, borderRadius: 20, background: 'rgba(255,255,255,.05)' }}>
+                <div style={{ fontSize: 34, fontWeight: 800 }}>{journeys.length}</div>
+                <div style={{ opacity: .6 }}>Trips</div>
+              </div>
+
+              <div style={{ padding: 20, borderRadius: 20, background: 'rgba(255,255,255,.05)' }}>
+                <div style={{ fontSize: 34, fontWeight: 800 }}>{pts}</div>
+                <div style={{ opacity: .6 }}>{tier}</div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </main>
+  );
+}
