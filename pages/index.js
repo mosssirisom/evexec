@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Head from 'next/head';
+import Script from 'next/script';
 
 export async function getStaticProps() {
   const htmlPath = path.join(process.cwd(), 'index.html');
@@ -30,6 +31,7 @@ export default function Home({ headHtml, bodyHtml }) {
         <meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." />
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
+      <Script src="/public/js/google-places-autocomplete.js" strategy="afterInteractive" />
     </>
   );
 }
