@@ -28,9 +28,8 @@ export default function Home({ headHtml, bodyHtml }) {
       <Head>
         <title>EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre</title>
         <meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." />
-        <div dangerouslySetInnerHTML={{ __html: headHtml }} />
       </Head>
-      <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+      <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
     </>
   );
 }
