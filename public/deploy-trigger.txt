@@ -1,0 +1,5 @@
+Redeploy trigger for EV Exec Google Places autocomplete fix.
+Timestamp: 2026-06-08T21:30:00Z
+Latest fixes included:
+- homepage loads /js/google-places-autocomplete.js
+- config uses GOOGLE_MAPS_API_KEY
