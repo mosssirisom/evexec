@@ -7,7 +7,15 @@ const nextConfig = {
     ignoreBuildErrors: true
   },
   reactStrictMode: false,
-  trailingSlash: false
+  trailingSlash: false,
+  async rewrites() {
+    return [
+      {
+        source: '/public/:path*',
+        destination: '/:path*'
+      }
+    ];
+  }
 };
 
 module.exports = nextConfig;
