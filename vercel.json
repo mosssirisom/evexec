@@ -1,5 +1,11 @@
 {
   "version": 2,
   "installCommand": "npm install",
-  "buildCommand": "npx next build"
+  "buildCommand": "npx next build",
+  "rewrites": [
+    { "source": "/api/admin-leads",   "destination": "/api/leads" },
+    { "source": "/api/contact",       "destination": "/api/leads" },
+    { "source": "/api/quote-request", "destination": "/api/leads" },
+    { "source": "/api/update-status", "destination": "/api/leads" }
+  ]
 }
