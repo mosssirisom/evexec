@@ -1699,14 +1699,15 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       contact_method:     bwGetVal('bwContact') || 'WhatsApp',
       customer_name:      name,
       customer_phone:     phone,
-      customer_email:     bwGetVal('bwEmail') || null
+      customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null
     };
     try {
       var bwHeaders = {'Content-Type':'application/json'};
-      if(window._evexecSb) {
-        var bwSess = (await window._evexecSb.auth.getSession()).data.session;
-        if(bwSess) bwHeaders['Authorization'] = 'Bearer ' + bwSess.access_token;
+      var bwSess = window._evexecSession;
+      if(!bwSess && window._evexecSb) {
+        bwSess = (await window._evexecSb.auth.getSession()).data.session;
       }
+      if(bwSess) bwHeaders['Authorization'] = 'Bearer ' + bwSess.access_token;
       var res = await fetch('/api/booking/create', {
         method: 'POST',
         headers: bwHeaders,
@@ -1886,6 +1887,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   var VAPID   = cfg.vapidPublic  || '';
   var sb = (SB_URL && SB_ANON && window.supabase) ? window.supabase.createClient(SB_URL, SB_ANON) : null;
   window._evexecSb = sb;
+  window._evexecSession = null;
 
   // ── AUTH MODAL ───────────────────────────────────────────────
   var authModal   = document.getElementById('authModal');
@@ -1970,6 +1972,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
     // Auth state
     sb.auth.onAuthStateChange(function(event, session){
+      window._evexecSession = session || null;
       if(session){
         if(signInBtn)  signInBtn.style.display='none';
         if(navAccount) navAccount.style.display='';
