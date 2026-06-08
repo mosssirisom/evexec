@@ -1,16 +1,35 @@
-import { useEffect } from 'react';
+import fs from 'fs';
+import path from 'path';
+import Head from 'next/head';
 
-export default function Home() {
-  useEffect(() => {
-    window.location.replace('/index.html');
-  }, []);
+export async function getStaticProps() {
+  const htmlPath = path.join(process.cwd(), 'index.html');
+  let html = fs.readFileSync(htmlPath, 'utf8');
 
+  html = html
+    .replace(/<!DOCTYPE html>/i, '')
+    .replace(/<html[^>]*>/i, '')
+    .replace(/<\/html>\s*$/i, '');
+
+  const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+
+  return {
+    props: {
+      headHtml: headMatch ? headMatch[1] : '',
+      bodyHtml: bodyMatch ? bodyMatch[1] : html
+    }
+  };
+}
+
+export default function Home({ headHtml, bodyHtml }) {
   return (
-    <main style={{ minHeight: '100vh', background: '#020813', color: '#ffffff', display: 'grid', placeItems: 'center', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <div style={{ textAlign: 'center', padding: 24 }}>
-        <h1>EV Exec</h1>
-        <p>Loading premium airport transfers...</p>
-      </div>
-    </main>
+    <>
+      <Head>
+        <title>EV Exec | Premium Airport Transfers — Blackpool, Fylde & Wyre</title>
+        <meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." />
+      </Head>
+      <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
+    </>
   );
 }
