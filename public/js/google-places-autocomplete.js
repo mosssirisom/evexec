@@ -1,10 +1,19 @@
 (function(){
   async function loadGooglePlaces() {
     try {
-      const cfgRes = await fetch('/api/config');
-      const cfg = await cfgRes.json();
+      let googleMapsApiKey = window.EVEXEC_GOOGLE_MAPS_API_KEY || '';
 
-      if (!cfg.googleMapsApiKey) {
+      if (!googleMapsApiKey) {
+        try {
+          const cfgRes = await fetch('/api/config');
+          if (cfgRes.ok) {
+            const cfg = await cfgRes.json();
+            googleMapsApiKey = cfg.googleMapsApiKey || cfg.googleMapsKey || '';
+          }
+        } catch (_) {}
+      }
+
+      if (!googleMapsApiKey) {
         console.warn('Google Maps API key missing');
         return;
       }
@@ -25,7 +34,7 @@
         window.__evExecMapsReady = resolve;
 
         const script = document.createElement('script');
-        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(cfg.googleMapsApiKey) + '&loading=async&libraries=places&callback=__evExecMapsReady';
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(googleMapsApiKey) + '&loading=async&libraries=places&callback=__evExecMapsReady';
         script.async = true;
         script.defer = true;
         script.dataset.googlePlaces = 'true';
