@@ -92,7 +92,7 @@ async function handleCreate(req, res) {
     res.statusCode = 200;
     return res.end(JSON.stringify({ success: true, bookingId: booking.id, booking }));
   } catch (err) {
-    res.statusCode = 500;
+    res.statusCode = err.statusCode || 500;
     return res.end(JSON.stringify({ error: err.message || 'Failed to create booking.' }));
   }
 }
@@ -108,16 +108,18 @@ async function handleGet(req, res) {
     res.statusCode = 200;
     return res.end(JSON.stringify(rows[0]));
   } catch (err) {
-    res.statusCode = 500;
+    res.statusCode = err.statusCode || 500;
     return res.end(JSON.stringify({ error: err.message || 'Failed to load booking.' }));
   }
 }
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
-  const path = (req.url || '').split('?')[0];
-  if (path.endsWith('/create')) return handleCreate(req, res);
-  if (path.endsWith('/get')) return handleGet(req, res);
+  const url = new URL(req.url || '/', 'https://evexec.co.uk');
+  const action = url.searchParams.get('action');
+  const path = url.pathname;
+  if (action === 'create' || path.endsWith('/create')) return handleCreate(req, res);
+  if (action === 'get' || path.endsWith('/get')) return handleGet(req, res);
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));
 };
