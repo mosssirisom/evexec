@@ -2,6 +2,7 @@
 
 const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
+const { getLoyaltyStatus } = require('../../lib/loyalty');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -148,6 +149,24 @@ async function handleJourneys(req, res, user) {
   }
 }
 
+// ── GET /api/account/loyalty ────────────────────────────────────────────────
+
+async function handleLoyalty(req, res, user) {
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+
+  try {
+    const status = await getLoyaltyStatus(user.id);
+    res.statusCode = 200;
+    res.end(JSON.stringify(status));
+  } catch (err) {
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 // ── Router ─────────────────────────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
@@ -162,6 +181,7 @@ module.exports = async function handler(req, res) {
   const path = (req.url || '').split('?')[0];
   if (path.endsWith('/profile'))  return handleProfile(req, res, user);
   if (path.endsWith('/journeys')) return handleJourneys(req, res, user);
+  if (path.endsWith('/loyalty'))  return handleLoyalty(req, res, user);
 
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));
