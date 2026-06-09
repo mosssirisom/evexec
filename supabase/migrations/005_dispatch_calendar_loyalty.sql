@@ -24,7 +24,8 @@ ALTER TABLE public.drivers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.bookings
   ADD COLUMN IF NOT EXISTS assigned_driver_id UUID REFERENCES public.drivers(id) ON DELETE SET NULL,
   ADD COLUMN IF NOT EXISTS driver_notes TEXT,
-  ADD COLUMN IF NOT EXISTS duration_mins INT;
+  ADD COLUMN IF NOT EXISTS duration_mins INT,
+  ADD COLUMN IF NOT EXISTS loyalty_awarded BOOLEAN NOT NULL DEFAULT FALSE;
 
 -- Indexes used by the calendar audit and auto-dispatch algorithm
 CREATE INDEX IF NOT EXISTS bookings_travel_date_idx          ON public.bookings (travel_date);

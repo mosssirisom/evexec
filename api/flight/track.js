@@ -56,7 +56,7 @@ module.exports = async function handler(req, res) {
     const today = new Date().toISOString().slice(0, 10);
 
     const bookingsRes = await fetch(
-      `${SUPABASE_URL}/rest/v1/bookings?travel_date=eq.${today}&flight_number=not.is.null&status=not.in.(Cancelled,Completed,No Show,cancelled,rejected)&select=id,flight_number,travel_time`,
+      `${SUPABASE_URL}/rest/v1/bookings?travel_date=eq.${today}&journey_type=eq.From Airport&flight_number=not.is.null&status=not.in.(Cancelled,Completed,No Show,cancelled,rejected)&select=id,flight_number,travel_time`,
       { headers: dbHeaders() }
     );
     if (!bookingsRes.ok) throw new Error('Failed to load bookings');
