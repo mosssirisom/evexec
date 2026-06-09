@@ -31,7 +31,7 @@ export default function Booking({ headHtml, bodyHtml }) {
         <meta name="robots" content="noindex" />
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
-      <Script src="/js/booking-payment-hardening.js" strategy="afterInteractive" />
+      <Script src="/js/booking-payment-hardening.js?v=20260609a" strategy="afterInteractive" />
     </>
   );
 }
