@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import Head from 'next/head';
+import Script from 'next/script';
 
 export async function getStaticProps() {
   const htmlPath = path.join(process.cwd(), 'booking.html');
@@ -30,6 +31,7 @@ export default function Booking({ headHtml, bodyHtml }) {
         <meta name="robots" content="noindex" />
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
+      <Script src="/js/booking-payment-hardening.js" strategy="afterInteractive" />
     </>
   );
 }
