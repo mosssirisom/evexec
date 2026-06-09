@@ -137,15 +137,17 @@ async function handleWebhook(req, res) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Content-Type', 'application/json');
-  const path = (req.url || '').split('?')[0];
+  const url = new URL(req.url || '/', 'https://evexec.co.uk');
+  const action = url.searchParams.get('action');
+  const path = url.pathname;
   try {
-    if (path.endsWith('/create-checkout-session')) return handleCreateCheckout(req, res);
-    if (path.endsWith('/confirm-cash')) return handleConfirmCash(req, res);
-    if (path.endsWith('/stripe-webhook')) return handleWebhook(req, res);
+    if (action === 'checkout' || action === 'create-checkout-session' || path.endsWith('/create-checkout-session')) return handleCreateCheckout(req, res);
+    if (action === 'cash' || action === 'confirm-cash' || path.endsWith('/confirm-cash')) return handleConfirmCash(req, res);
+    if (action === 'webhook' || action === 'stripe-webhook' || path.endsWith('/stripe-webhook')) return handleWebhook(req, res);
     if (path.endsWith('/payment')) return json(res, 400, { error: 'Missing payment action.' });
     return json(res, 404, { error: 'Not found' });
   } catch (err) {
-    return json(res, 500, { error: err.message || 'Server error' });
+    return json(res, err.statusCode || 500, { error: err.message || 'Server error' });
   }
 };
 
