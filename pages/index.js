@@ -32,6 +32,7 @@ export default function Home({ headHtml, bodyHtml }) {
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
       <Script src="/js/google-places-autocomplete.js" strategy="afterInteractive" />
+      <Script src="/js/booking-hardening.js" strategy="afterInteractive" />
     </>
   );
 }
