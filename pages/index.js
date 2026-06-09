@@ -31,8 +31,8 @@ export default function Home({ headHtml, bodyHtml }) {
         <meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." />
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
-      <Script src="/js/google-places-autocomplete.js" strategy="afterInteractive" />
-      <Script src="/js/booking-hardening.js" strategy="afterInteractive" />
+      <Script src="/js/google-places-autocomplete.js?v=evexec-20260609" strategy="afterInteractive" />
+      <Script src="/js/booking-hardening.js?v=evexec-20260609" strategy="afterInteractive" />
     </>
   );
 }
