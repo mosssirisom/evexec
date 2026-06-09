@@ -18,12 +18,13 @@ export async function getStaticProps() {
   return {
     props: {
       headHtml: headMatch ? headMatch[1] : '',
-      bodyHtml: bodyMatch ? bodyMatch[1] : html
+      bodyHtml: bodyMatch ? bodyMatch[1] : html,
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ''
     }
   };
 }
 
-export default function Home({ headHtml, bodyHtml }) {
+export default function Home({ headHtml, bodyHtml, googleMapsApiKey }) {
   return (
     <>
       <Head>
@@ -31,7 +32,10 @@ export default function Home({ headHtml, bodyHtml }) {
         <meta name="description" content="Premium airport transfers from Blackpool and the Fylde Coast. Fixed prices, flight monitoring, Tesla Model Y comfort and reliable local professional service." />
       </Head>
       <div dangerouslySetInnerHTML={{ __html: `${headHtml}${bodyHtml}` }} />
-      <Script src="/js/google-places-autocomplete.js?v=evexec-20260609" strategy="afterInteractive" />
+      <Script id="evexec-google-key" strategy="beforeInteractive">
+        {`window.EVEXEC_GOOGLE_MAPS_API_KEY=${JSON.stringify(googleMapsApiKey || '')};`}
+      </Script>
+      <Script src="/js/google-places-autocomplete.js?v=evexec-20260609b" strategy="afterInteractive" />
       <Script src="/js/booking-hardening.js?v=evexec-20260609" strategy="afterInteractive" />
     </>
   );
