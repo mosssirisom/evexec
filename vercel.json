@@ -8,6 +8,9 @@
     { "source": "/api/quote-request", "destination": "/api/leads" },
     { "source": "/api/update-status", "destination": "/api/leads" },
 
+    { "source": "/api/account/profile", "destination": "/api/account" },
+    { "source": "/api/account/journeys", "destination": "/api/account" },
+
     { "source": "/api/booking/create", "destination": "/api/booking" },
     { "source": "/api/booking/get", "destination": "/api/booking" },
 
