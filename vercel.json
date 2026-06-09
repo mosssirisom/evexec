@@ -1,21 +1,56 @@
 {
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npx next build",
-  "rewrites": [
-    { "source": "/api/admin-leads",   "destination": "/api/leads" },
-    { "source": "/api/contact",       "destination": "/api/leads" },
-    { "source": "/api/quote-request", "destination": "/api/leads" },
-    { "source": "/api/update-status", "destination": "/api/leads" },
-
-    { "source": "/api/account/profile",  "destination": "/api/account" },
-    { "source": "/api/account/journeys", "destination": "/api/account" },
-
-    { "source": "/api/booking/create", "destination": "/api/booking" },
-    { "source": "/api/booking/get",    "destination": "/api/booking" },
-
-    { "source": "/api/payment/create-checkout-session", "destination": "/api/payment/[[...path]]" },
-    { "source": "/api/payment/confirm-cash",            "destination": "/api/payment/[[...path]]" },
-    { "source": "/api/payment/stripe-webhook",          "destination": "/api/payment/[[...path]]" }
+  "framework": null,
+  "builds": [
+    { "src": "api/booking/index.js",     "use": "@vercel/node" },
+    { "src": "api/operator/index.js",    "use": "@vercel/node" },
+    { "src": "api/payment/index.js",     "use": "@vercel/node" },
+    { "src": "api/account/index.js",     "use": "@vercel/node" },
+    { "src": "api/notifications/index.js", "use": "@vercel/node" },
+    { "src": "api/leads.js",             "use": "@vercel/node" },
+    { "src": "api/reminders/trigger.js", "use": "@vercel/node" },
+    { "src": "*.html",    "use": "@vercel/static" },
+    { "src": "*.xml",     "use": "@vercel/static" },
+    { "src": "*.txt",     "use": "@vercel/static" },
+    { "src": "public/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/api/booking/(.*)",             "dest": "/api/booking/index.js" },
+    { "src": "/api/operator/(.*)",            "dest": "/api/operator/index.js" },
+    { "src": "/api/payment/(.*)",             "dest": "/api/payment/index.js" },
+    { "src": "/api/account/(.*)",             "dest": "/api/account/index.js" },
+    { "src": "/api/notifications/(.*)",       "dest": "/api/notifications/index.js" },
+    { "src": "/api/(leads|admin-leads|contact|quote-request|update-status)", "dest": "/api/leads.js" },
+    { "src": "/api/reminders/trigger",        "dest": "/api/reminders/trigger.js" },
+    { "src": "/api/config",                   "dest": "/api/booking/index.js" },
+    { "src": "/sitemap.xml",                  "dest": "/sitemap.xml" },
+    { "src": "/robots.txt",                   "dest": "/robots.txt" },
+    { "src": "/operator",                     "dest": "/operator.html" },
+    { "src": "/booking",                      "dest": "/booking.html" },
+    { "src": "/account",                      "dest": "/account.html" },
+    { "src": "/terms",                        "dest": "/terms.html" },
+    { "src": "/privacy",                      "dest": "/privacy.html" },
+    { "src": "/manchester-airport-transfer-blackpool",     "dest": "/manchester-airport-transfer-blackpool.html" },
+    { "src": "/liverpool-airport-transfer-blackpool",      "dest": "/liverpool-airport-transfer-blackpool.html" },
+    { "src": "/leeds-bradford-airport-transfer-blackpool", "dest": "/leeds-bradford-airport-transfer-blackpool.html" },
+    { "src": "/airport-transfer-lytham-st-annes",         "dest": "/airport-transfer-lytham-st-annes.html" },
+    { "src": "/airport-transfer-poulton-le-fylde",        "dest": "/airport-transfer-poulton-le-fylde.html" },
+    { "src": "/airport-transfer-thornton-cleveleys",      "dest": "/airport-transfer-thornton-cleveleys.html" },
+    { "src": "/airport-transfer-fleetwood",               "dest": "/airport-transfer-fleetwood.html" },
+    { "src": "/airport-transfer-kirkham",                 "dest": "/airport-transfer-kirkham.html" },
+    { "src": "/airport-transfer-freckleton",              "dest": "/airport-transfer-freckleton.html" },
+    { "src": "/airport-transfer-warton",                  "dest": "/airport-transfer-warton.html" },
+    { "src": "/airport-transfer-preston",                 "dest": "/airport-transfer-preston.html" },
+    { "src": "/manchester-airport-transfers-from-blackpool", "dest": "/manchester-airport-transfers-from-blackpool.html" },
+    { "src": "/blog",                                    "dest": "/blog.html" },
+    { "src": "/account-premium",                         "dest": "/account-premium.html" },
+    { "src": "/notification-control",                    "dest": "/notification-control.html" },
+    { "src": "/airport-transfer-birmingham-blackpool",   "dest": "/airport-transfer-birmingham-blackpool.html" },
+    { "src": "/executive-airport-transfers-blackpool",   "dest": "/executive-airport-transfers-blackpool.html" },
+    { "src": "/public/(.*)", "dest": "/public/$1" },
+    { "src": "/",            "dest": "/index.html" }
+  ],
+  "crons": [
+    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" }
   ]
 }
