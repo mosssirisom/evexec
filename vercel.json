@@ -3,9 +3,16 @@
   "installCommand": "npm install",
   "buildCommand": "npx next build",
   "rewrites": [
-    { "source": "/api/admin-leads",   "destination": "/api/leads" },
-    { "source": "/api/contact",       "destination": "/api/leads" },
+    { "source": "/api/admin-leads", "destination": "/api/leads" },
+    { "source": "/api/contact", "destination": "/api/leads" },
     { "source": "/api/quote-request", "destination": "/api/leads" },
-    { "source": "/api/update-status", "destination": "/api/leads" }
+    { "source": "/api/update-status", "destination": "/api/leads" },
+
+    { "source": "/api/booking/create", "destination": "/api/booking" },
+    { "source": "/api/booking/get", "destination": "/api/booking" },
+
+    { "source": "/api/payment/create-checkout-session", "destination": "/api/payment" },
+    { "source": "/api/payment/confirm-cash", "destination": "/api/payment" },
+    { "source": "/api/payment/stripe-webhook", "destination": "/api/payment" }
   ]
 }
