@@ -62,7 +62,7 @@ async function handleCreateCheckout(req, res) {
   params.set('mode', 'payment');
   params.set('success_url', `${SITE_URL()}/booking?id=${encodeURIComponent(bookingId)}&payment=success`);
   params.set('cancel_url', `${SITE_URL()}/booking?id=${encodeURIComponent(bookingId)}&payment=cancelled`);
-  params.set('customer_email', booking.customer_email || '');
+  if (booking.customer_email) params.set('customer_email', booking.customer_email);
   params.set('metadata[booking_id]', bookingId);
   params.set('metadata[ref]', booking.ref || '');
   params.set('line_items[0][quantity]', '1');
@@ -77,7 +77,7 @@ async function handleCreateCheckout(req, res) {
     body: params.toString()
   });
   const data = await stripeRes.json().catch(() => ({}));
-  if (!stripeRes.ok) return json(res, 500, { error: data.error?.message || 'Payment setup failed.' });
+  if (!stripeRes.ok) return json(res, 500, { error: (data.error && data.error.message) || 'Payment setup failed.' });
 
   await patchBooking(bookingId, { payment_status: 'payment_link_created', stripe_checkout_session_id: data.id || null }).catch(() => null);
   return json(res, 200, { url: data.url, sessionId: data.id });
@@ -91,9 +91,7 @@ async function handleConfirmCash(req, res) {
 
   const booking = await getBooking(bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found.' });
-  if (!readyForPayment(booking) && String(booking.payment_status || '').toLowerCase() !== 'payment_link_created') {
-    return json(res, 400, { error: 'Booking is not ready for payment' });
-  }
+  if (!readyForPayment(booking)) return json(res, 400, { error: 'Booking is not ready for payment' });
 
   const updated = await patchBooking(bookingId, { payment_status: 'cash_on_day', payment_method: 'cash', status: booking.status || 'Dispatched' });
   return json(res, 200, { success: true, booking: updated });
@@ -107,6 +105,7 @@ function verifyStripeSignature(raw, sigHeader, secret) {
   if (!timestamp || !signature) return false;
   if (Math.abs(Math.floor(Date.now() / 1000) - Number(timestamp)) > 300) return false;
   const expected = crypto.createHmac('sha256', secret).update(`${timestamp}.${raw}`).digest('hex');
+  if (expected.length !== signature.length) return false;
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 
@@ -143,8 +142,13 @@ module.exports = async function handler(req, res) {
     if (path.endsWith('/create-checkout-session')) return handleCreateCheckout(req, res);
     if (path.endsWith('/confirm-cash')) return handleConfirmCash(req, res);
     if (path.endsWith('/stripe-webhook')) return handleWebhook(req, res);
+    if (path.endsWith('/payment')) return json(res, 400, { error: 'Missing payment action.' });
     return json(res, 404, { error: 'Not found' });
   } catch (err) {
     return json(res, 500, { error: err.message || 'Server error' });
   }
 };
+
+module.exports.handleCreateCheckout = handleCreateCheckout;
+module.exports.handleConfirmCash = handleConfirmCash;
+module.exports.handleWebhook = handleWebhook;
