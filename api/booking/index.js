@@ -81,7 +81,7 @@ async function handleCreate(req, res) {
     customer_email: clean(body.customer_email) || (user ? user.email : null) || null,
     quoted_price: quotedPrice(airport, isReturn),
     status: 'Unassigned',
-    payment_status: 'pending',
+    payment_status: 'Unpaid',
     payment_method: null,
     created_at: new Date().toISOString()
   };
