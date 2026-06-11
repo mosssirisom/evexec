@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EV Exec">
+  <circle cx="32" cy="32" r="32" fill="#020813"/>
+  <circle cx="32" cy="32" r="29.5" fill="none" stroke="#d5a538" stroke-width="1" opacity=".55"/>
+  <text x="32" y="44" font-family="'Cormorant Garamond',Georgia,serif" font-size="34" font-weight="700" fill="#d5a538" text-anchor="middle">E</text>
+</svg>

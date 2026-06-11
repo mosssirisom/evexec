@@ -618,7 +618,7 @@ main,footer{position:relative;z-index:1}
 <header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4" id="siteHeader">
 <nav class="max-w-7xl mx-auto flex items-center justify-between">
 <a class="flex items-center gap-3" href="#">
-<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg" width="64" height="64" decoding="async"/>
+<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="./public/logo.svg" width="64" height="64" decoding="async"/>
 <div>
 <div class="text-2xl font-black tracking-wide">EV EXEC</div>
 <div class="text-[10px] uppercase tracking-[.22em] text-white/60">Premium Airport Transfers</div>
@@ -1059,7 +1059,10 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </div>
 
 <div class="copy-image image-reveal">
+<picture>
+<source srcset="./public/images/ev-exec-image-4.webp" type="image/webp"/>
 <img alt="EV Exec Tesla interior" loading="lazy" src="./public/images/ev-exec-image-4.jpg"/>
+</picture>
 </div>
 </div>
 </section>
@@ -1211,7 +1214,10 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 grid md:grid-cols-[190px_1fr_380px] gap-8 items-center">
 <div class="subtle-profile-wrap mx-auto">
 <div class="about-profile-shell mx-auto">
+<picture>
+<source srcset="./public/images/ev-exec-image-5.webp" type="image/webp"/>
 <img alt="EV Exec owner" loading="lazy" src="./public/images/ev-exec-image-5.jpg"/>
+</picture>
 </div>
 </div>
 
@@ -1241,7 +1247,10 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <section class="copy-section reveal">
 <div class="copy-grid">
 <div class="copy-image image-reveal">
+<picture>
+<source srcset="./public/images/ev-exec-image-2.webp" type="image/webp"/>
 <img alt="EV Exec Tesla Model Y" loading="lazy" src="./public/images/ev-exec-image-2.jpg"/>
+</picture>
 </div>
 
 <div class="copy-card">
@@ -1320,7 +1329,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <section class="px-6 py-8 reveal">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('./public/images/ev-exec-image-6.jpg');background-size:cover;background-position:center;">
 <div class="flex items-center gap-6">
-<img alt="EV Exec logo" class="w-20 h-20 rounded-full object-cover" loading="lazy" src="./public/images/ev-exec-image-3.jpg"/>
+<img alt="EV Exec logo" class="w-20 h-20 rounded-full object-cover" loading="lazy" src="./public/logo.svg"/>
 <div>
 <h2 class="serif text-4xl">Book Your Transfer</h2>
 <p class="text-white/75 mt-1">Limited daily availability — book early to secure your time.</p>
@@ -1367,7 +1376,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 <div class="max-w-7xl mx-auto grid md:grid-cols-[1.2fr_.7fr_1fr_1fr] gap-10">
 <div>
 <div class="flex items-center gap-3">
-<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" loading="lazy" src="./public/images/ev-exec-image-3.jpg"/>
+<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" loading="lazy" src="./public/logo.svg"/>
 <div>
 <div class="text-3xl font-black gold">EV EXEC</div>
 <div class="text-xs uppercase tracking-[.2em] text-white/55">Premium Airport Transfers</div>
@@ -1742,6 +1751,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         var quoteEl2 = document.getElementById('quote');
         if (quoteEl2) quoteEl2.scrollIntoView({ behavior:'smooth', block:'start' });
         sessionStorage.setItem('evexec_submitted', Date.now().toString());
+        // Offer live driver-status notifications now that there's a booking to track
+        if (window.evexecMaybeShowPushPrompt) window.evexecMaybeShowPushPrompt();
       } else {
         throw new Error(data.error || 'Something went wrong. Please try again.');
       }
@@ -1986,11 +1997,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
           if(phoneEl && !phoneEl.value && meta.phone)     phoneEl.value = meta.phone;
           if(emailEl && !emailEl.value && session.user.email) emailEl.value = session.user.email;
         }
-        // Show push prompt if not dismissed
-        var dismissed = sessionStorage.getItem('pushDismissed');
-        if(!dismissed && 'serviceWorker' in navigator && 'PushManager' in window && VAPID) {
-          setTimeout(function(){ var pp = document.getElementById('pushPrompt'); if(pp) pp.style.display=''; }, 3000);
-        }
       } else {
         if(signInBtn)  signInBtn.style.display='';
         if(navAccount) navAccount.style.display='none';
@@ -1999,9 +2005,18 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
 
   // ── PUSH PROMPT ──────────────────────────────────────────────
+  // Deferred until after a booking is placed (see bwSubmit), not shown on
+  // first visit/sign-in.
   var pushPrompt = document.getElementById('pushPrompt');
   var ppAccept   = document.getElementById('pushPromptAccept');
   var ppDismiss  = document.getElementById('pushPromptDismiss');
+
+  window.evexecMaybeShowPushPrompt = function(){
+    var dismissed = sessionStorage.getItem('pushDismissed');
+    if(!dismissed && 'serviceWorker' in navigator && 'PushManager' in window && VAPID) {
+      setTimeout(function(){ if(pushPrompt) pushPrompt.style.display=''; }, 2500);
+    }
+  };
 
   function urlB64ToUint8Array(b64){
     var pad = '='.repeat((4 - b64.length%4)%4);
