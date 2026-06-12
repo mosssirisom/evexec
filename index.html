@@ -451,30 +451,6 @@ main,footer{position:relative;z-index:1}
   background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.28);
   display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
 }
-.payment-opt{
-  display:flex;flex-direction:column;gap:11px;
-  padding:18px 16px;border-radius:14px;cursor:pointer;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);
-  transition:border-color .22s,background .22s,box-shadow .22s;
-  text-align:left;width:100%;
-}
-.payment-opt:hover{
-  border-color:rgba(213,165,56,.45);
-  background:rgba(213,165,56,.06);
-}
-.payment-opt.selected{
-  border-color:var(--gold);
-  background:rgba(213,165,56,.1);
-  box-shadow:0 0 0 1px rgba(213,165,56,.25);
-}
-.payment-opt-icon{
-  width:40px;height:40px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(213,165,56,.12);flex-shrink:0;
-  transition:background .22s;
-}
-.payment-opt.selected .payment-opt-icon{background:rgba(213,165,56,.22)}
 @media(max-width:900px){.hero{min-height:auto;background-position:60% center}}
 @media(max-width:768px){
   body{
@@ -926,54 +902,13 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <!-- Divider -->
     <div style="border-top:1px solid rgba(255,255,255,.09);margin-bottom:24px"></div>
 
-    <!-- Payment preference -->
-    <p class="text-[10px] uppercase tracking-[.2em] font-bold text-white/38 mb-2">Payment Preference</p>
-    <p class="text-sm text-white/60 mb-4 leading-relaxed">Choose how you'd like to pay — tap to continue to your booking status page:</p>
-
-    <div class="grid grid-cols-2 gap-3 mb-7" id="bwPayGrid">
-
-      <!-- Card option -->
-      <button class="payment-opt" id="bwPayCard" type="button" aria-pressed="false">
-        <div class="payment-opt-icon">
-          <svg width="22" height="22" fill="none" stroke="#d5a538" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="5.5" width="20" height="13" rx="2"/>
-            <line x1="2" y1="10" x2="22" y2="10"/>
-            <line x1="6" y1="14.5" x2="9.5" y2="14.5"/>
-            <line x1="6" y1="14.5" x2="6" y2="14.51"/>
-          </svg>
-        </div>
-        <div>
-          <p class="font-bold text-sm leading-tight">Pay via Card</p>
-          <p class="text-white/45 text-xs mt-1 leading-snug">Secure online payment.<br>Visa &amp; Mastercard accepted.</p>
-        </div>
-      </button>
-
-      <!-- Cash option -->
-      <button class="payment-opt" id="bwPayCash" type="button" aria-pressed="false">
-        <div class="payment-opt-icon">
-          <svg width="22" height="22" fill="none" stroke="#d5a538" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="7" width="20" height="10" rx="1.5"/>
-            <circle cx="12" cy="12" r="2.5"/>
-            <line x1="6" y1="9.5" x2="6" y2="9.51"/>
-            <line x1="18" y1="14.5" x2="18" y2="14.51"/>
-            <line x1="5" y1="7" x2="5" y2="5.5"/>
-            <line x1="19" y1="7" x2="19" y2="5.5"/>
-            <line x1="3.5" y1="5.5" x2="20.5" y2="5.5"/>
-          </svg>
-        </div>
-        <div>
-          <p class="font-bold text-sm leading-tight">Pay via Cash</p>
-          <p class="text-white/45 text-xs mt-1 leading-snug">Pay your driver<br>on the day of travel.</p>
-        </div>
-      </button>
-
-    </div>
+    <p class="text-sm text-white/60 mb-7 leading-relaxed">Once your booking is confirmed, you'll be able to choose how to pay — by card online or cash on the day — from your booking status page.</p>
 
     <!-- CTA -->
     <a id="bwViewBookingBtn" href="/booking"
        class="btn-gold w-full rounded-xl py-4 font-bold text-base text-center block"
        style="text-decoration:none">
-      View My Booking &amp; Pay
+      View My Booking Status
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-left:6px;margin-top:-2px" aria-hidden="true">
         <polyline points="5 3 11 8 5 13"/>
       </svg>
@@ -1780,21 +1715,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     on('bwBagsInc', 'click', function() { if (bw.bags < 8)   { bw.bags++;       bwUpdateCounters(); } });
 
     on('bwSubmit', 'click', bwSubmit);
-
-    function bwSelectPayment(method) {
-      var isCard = method === 'card';
-      var cardBtn = document.getElementById('bwPayCard');
-      var cashBtn = document.getElementById('bwPayCash');
-      if (cardBtn) { cardBtn.classList.toggle('selected', isCard);  cardBtn.setAttribute('aria-pressed', String(isCard)); }
-      if (cashBtn) { cashBtn.classList.toggle('selected', !isCard); cashBtn.setAttribute('aria-pressed', String(!isCard)); }
-      // Navigate to booking status page after brief visual feedback
-      var viewBtn = document.getElementById('bwViewBookingBtn');
-      var dest = (viewBtn && viewBtn.href && viewBtn.href !== window.location.href) ? viewBtn.href : '/booking';
-      setTimeout(function() { window.location.href = dest; }, 550);
-    }
-
-    on('bwPayCard', 'click', function() { bwSelectPayment('card'); });
-    on('bwPayCash', 'click', function() { bwSelectPayment('cash'); });
   })();
   // CO2 calculator
   var co2Savings = {
