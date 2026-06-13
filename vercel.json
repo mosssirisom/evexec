@@ -9,6 +9,8 @@
     { "src": "api/notifications/index.js", "use": "@vercel/node" },
     { "src": "api/leads.js",             "use": "@vercel/node" },
     { "src": "api/reminders/trigger.js", "use": "@vercel/node" },
+    { "src": "api/calendar/index.js",    "use": "@vercel/node" },
+    { "src": "api/flight/track.js",      "use": "@vercel/node" },
     { "src": "*.html",    "use": "@vercel/static" },
     { "src": "*.xml",     "use": "@vercel/static" },
     { "src": "*.txt",     "use": "@vercel/static" },
@@ -22,6 +24,8 @@
     { "src": "/api/notifications/(.*)",       "dest": "/api/notifications/index.js" },
     { "src": "/api/(leads|admin-leads|contact|quote-request|update-status)", "dest": "/api/leads.js" },
     { "src": "/api/reminders/trigger",        "dest": "/api/reminders/trigger.js" },
+    { "src": "/api/calendar/(.*)",            "dest": "/api/calendar/index.js" },
+    { "src": "/api/flight/track",             "dest": "/api/flight/track.js" },
     { "src": "/api/config",                   "dest": "/api/booking/index.js" },
     { "src": "/sitemap.xml",                  "dest": "/sitemap.xml" },
     { "src": "/robots.txt",                   "dest": "/robots.txt" },
@@ -51,6 +55,7 @@
     { "src": "/",            "dest": "/index.html" }
   ],
   "crons": [
-    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" }
+    { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" },
+    { "path": "/api/flight/track",      "schedule": "0 5 * * *" }
   ]
 }
