@@ -75,7 +75,7 @@ async function listBookings(req, res) {
     const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
     const cutoffStr = cutoff.toISOString().slice(0, 10);
     const [bookingsRes, logsRes] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${cutoffStr}&select=id,ref,customer_name,customer_phone,customer_email,travel_date,travel_time,status,payment_method,payment_status,journey_type,pickup_location,airport,dropoff_address&order=travel_date.asc&limit=200`, { headers: dbHeaders() }),
+      fetch(`${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${cutoffStr}&select=id,ref,customer_name,customer_phone,customer_email,travel_date,travel_time,status,payment_method,payment_status,journey_type,pickup_location,airport,dropoff_address,assigned_driver_id&order=travel_date.asc&limit=200`, { headers: dbHeaders() }),
       fetch(`${SUPABASE_URL}/rest/v1/notification_log?select=booking_id,type,channel,recipient,sent_at&order=sent_at.desc&limit=2000`, { headers: dbHeaders() })
     ]);
     if (!bookingsRes.ok) throw new Error('Failed to load bookings');
@@ -85,6 +85,35 @@ async function listBookings(req, res) {
     for (const log of logs) { if (!logsByBooking[log.booking_id]) logsByBooking[log.booking_id] = []; logsByBooking[log.booking_id].push(log); }
     res.end(JSON.stringify(bookings.map(b => ({ ...b, notifications: logsByBooking[b.id] || [] }))));
   } catch (err) { console.error('Operator bookings error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to load bookings' })); }
+}
+
+// ── Drivers list ───────────────────────────────────────────────────────────
+
+async function listDrivers(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  try {
+    const driversRes = await fetch(`${SUPABASE_URL}/rest/v1/drivers?select=id,name,vehicle,plate,is_online,status&order=name.asc`, { headers: dbHeaders() });
+    if (!driversRes.ok) throw new Error('Failed to load drivers');
+    const drivers = await driversRes.json();
+    res.end(JSON.stringify(drivers));
+  } catch (err) { console.error('Operator drivers error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to load drivers' })); }
+}
+
+// ── Assign driver to booking ──────────────────────────────────────────────
+
+async function assignDriver(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  let body; try { body = await parseBody(req); } catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
+  const { booking_id, driver_id } = body;
+  if (!booking_id || !isValidUUID(booking_id)) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Valid booking_id required' })); }
+  if (driver_id && !isValidUUID(driver_id)) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid driver_id' })); }
+  try {
+    const booking = await dbGet('bookings', booking_id);
+    if (!booking) { res.statusCode = 404; return res.end(JSON.stringify({ error: 'Booking not found' })); }
+    const driverIdValue = driver_id || null;
+    await dbUpdate('bookings', booking_id, { assigned_driver_id: driverIdValue, driver_id: driverIdValue });
+    res.end(JSON.stringify({ ok: true, booking_id, driver_id: driverIdValue }));
+  } catch (err) { console.error('Operator assign error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to assign driver' })); }
 }
 
 // ── Send notification ──────────────────────────────────────────────────────
@@ -124,6 +153,8 @@ module.exports = async function handler(req, res) {
   if (!authOk(req)) { res.statusCode = 401; return res.end(JSON.stringify({ error: 'Unauthorised' })); }
 
   if ((path.endsWith('/bookings') || path.endsWith('/manage')) && req.method === 'GET') return listBookings(req, res);
+  if (path.endsWith('/drivers') && req.method === 'GET') return listDrivers(req, res);
+  if (path.endsWith('/assign') && req.method === 'POST') return assignDriver(req, res);
   if ((path.endsWith('/notify') || path.endsWith('/manage')) && req.method === 'POST') return sendNotification(req, res);
 
   res.statusCode = 404; res.end(JSON.stringify({ error: 'Not found' }));

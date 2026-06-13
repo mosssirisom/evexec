@@ -63,6 +63,11 @@ h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
 .notif-none{font-size:12px;color:rgba(255,255,255,.25);margin-top:6px}
 .card-actions{display:flex;flex-direction:column;gap:6px;min-width:90px}
 .action-btns{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end}
+.driver-row{margin-top:8px;display:flex;align-items:center;gap:8px}
+.driver-label{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.driver-select{background:#0d1929;border:1px solid rgba(255,255,255,.12);color:#fff;border-radius:6px;padding:4px 8px;font-size:12px;flex:1;max-width:240px}
+.driver-select:focus{border-color:#d5a538;outline:none}
+.driver-select.unassigned{border-color:rgba(239,68,68,.4);color:#fca5a5}
 .sending{opacity:.5;pointer-events:none}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px 20px;font-size:14px;z-index:100;pointer-events:none;transition:opacity .3s;white-space:nowrap}
 .toast.hide{opacity:0}
@@ -91,6 +96,7 @@ h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
       <button class="filter-btn" data-filter="upcoming" onclick="setFilter('upcoming',this)">Upcoming</button>
       <button class="filter-btn" data-filter="unconfirmed" onclick="setFilter('unconfirmed',this)">No Confirmation</button>
       <button class="filter-btn" data-filter="noreminder" onclick="setFilter('noreminder',this)">No 7-Day Reminder</button>
+      <button class="filter-btn" data-filter="needsdriver" onclick="setFilter('needsdriver',this)">Needs Driver</button>
       <input class="search-box" id="search" placeholder="Search name or phone…" oninput="renderList()">
     </div>
 
@@ -102,6 +108,7 @@ h1{font-size:1.6rem;font-weight:800;letter-spacing:-.5px}
 
 <script>
 var allBookings = [];
+var allDrivers = [];
 var currentFilter = 'all';
 var secret = '';
 
@@ -112,11 +119,16 @@ async function loadData() {
   if (!secret) { setNotice('Enter your operator secret first.'); return; }
   setNotice('Loading…');
   try {
-    var res = await fetch('/api/operator/bookings', { headers: { 'x-operator-secret': secret } });
+    var results = await Promise.all([
+      fetch('/api/operator/bookings', { headers: { 'x-operator-secret': secret } }),
+      fetch('/api/operator/drivers', { headers: { 'x-operator-secret': secret } })
+    ]);
+    var bookingsRes = results[0], driversRes = results[1];
     var data;
-    try { data = await res.json(); } catch (_) { setNotice('Server error — try again.'); return; }
-    if (!res.ok) { setNotice(data.error || 'Failed to load.'); return; }
+    try { data = await bookingsRes.json(); } catch (_) { setNotice('Server error — try again.'); return; }
+    if (!bookingsRes.ok) { setNotice(data.error || 'Failed to load.'); return; }
     allBookings = data;
+    if (driversRes.ok) { try { allDrivers = await driversRes.json(); } catch (_) { allDrivers = []; } }
     document.getElementById('dashboard').style.display = '';
     setNotice('');
     renderStats();
@@ -134,6 +146,8 @@ function setFilter(f, btn) {
   btn.classList.add('active');
   renderList();
 }
+
+var NEEDS_DRIVER_STATUSES = ['Dispatched','En Route','Passenger On Board','Arrived','Active'];
 
 function today() { return new Date().toISOString().slice(0,10); }
 function inDays(d, n) { var dt = new Date(d+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+n); return dt.toISOString().slice(0,10); }
@@ -153,6 +167,7 @@ function filteredBookings() {
     if (currentFilter === 'upcoming') return b.travel_date >= td;
     if (currentFilter === 'unconfirmed') return b.status === 'Dispatched' && !hasNotifType(b,'confirmation');
     if (currentFilter === 'noreminder') return b.travel_date >= inDays(td,7) && b.status === 'Dispatched' && !hasNotifType(b,'reminder_7d');
+    if (currentFilter === 'needsdriver') return NEEDS_DRIVER_STATUSES.includes(b.status) && !b.assigned_driver_id;
     return true;
   });
 }
@@ -164,11 +179,15 @@ function renderStats() {
   var needReminder = upcoming.filter(function(b){
     return b.status==='Dispatched' && b.travel_date >= inDays(td,7) && !hasNotifType(b,'reminder_7d');
   });
+  var needDriver = allBookings.filter(function(b){
+    return NEEDS_DRIVER_STATUSES.includes(b.status) && !b.assigned_driver_id;
+  });
   document.getElementById('stats').innerHTML =
     stat(allBookings.length,'Total (30 days)') +
     stat(upcoming.length,'Upcoming') +
     stat(needConfirm.length,'Awaiting Confirm') +
-    stat(needReminder.length,'No 7-Day Reminder');
+    stat(needReminder.length,'No 7-Day Reminder') +
+    stat(needDriver.length,'Needs Driver');
 }
 
 function stat(n, label) {
@@ -204,6 +223,18 @@ function notifPills(notifications) {
     '</div>';
 }
 
+function driverOptions(selectedId) {
+  var opts = '<option value=""'+(!selectedId ? ' selected' : '')+'>— Unassigned —</option>';
+  opts += allDrivers.map(function(d) {
+    var label = d.name || 'Driver';
+    if (d.vehicle) label += ' · ' + d.vehicle;
+    if (d.plate) label += ' (' + d.plate + ')';
+    if (!d.is_online) label += ' [offline]';
+    return '<option value="'+esc(d.id)+'"'+(d.id===selectedId ? ' selected' : '')+'>'+esc(label)+'</option>';
+  }).join('');
+  return opts;
+}
+
 function routeLine(b) {
   if (b.journey_type === 'To Airport') return esc(b.pickup_location||'—')+' → '+esc(b.airport||'—');
   if (b.journey_type === 'From Airport') return esc(b.airport||'—')+' → '+esc(b.dropoff_address||'—');
@@ -225,6 +256,12 @@ function renderList() {
         '<div class="card-date">'+esc(formatDate(b.travel_date,b.travel_time))+'</div>'+
         '<span class="card-status '+statusCls+'">'+esc(b.status||'Unassigned')+'</span>'+
         (b.customer_phone ? ' <span style="font-size:11px;color:rgba(255,255,255,.35)">'+esc(b.customer_phone)+'</span>' : '')+
+        '<div class="driver-row">'+
+          '<span class="driver-label">Driver</span>'+
+          '<select class="driver-select'+(b.assigned_driver_id ? '' : ' unassigned')+'" id="driver-'+b.id+'" onchange="assignDriver(\''+b.id+'\')">'+
+            driverOptions(b.assigned_driver_id)+
+          '</select>'+
+        '</div>'+
         notifPills(b.notifications)+
       '</div>'+
       '<div class="card-actions">'+
@@ -273,6 +310,37 @@ async function send(bookingId, channelArg) {
     }
   } catch(e) {
     showToast('Network error', true);
+  } finally {
+    if (card) card.classList.remove('sending');
+  }
+}
+
+async function assignDriver(bookingId) {
+  var sel = document.getElementById('driver-'+bookingId);
+  var driverId = sel.value;
+  var card = document.getElementById('card-'+bookingId);
+  card.classList.add('sending');
+  try {
+    var res = await fetch('/api/operator/assign', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'x-operator-secret': secret },
+      body: JSON.stringify({ booking_id: bookingId, driver_id: driverId || null })
+    });
+    var data;
+    try { data = await res.json(); } catch (_) { data = {}; }
+    if (res.ok) {
+      var i = allBookings.findIndex(function(b){ return b.id===bookingId; });
+      if (i>=0) allBookings[i].assigned_driver_id = driverId || null;
+      sel.classList.toggle('unassigned', !driverId);
+      showToast(driverId ? 'Driver assigned' : 'Driver unassigned');
+      renderStats();
+    } else {
+      showToast((data.error||'Assign failed'), true);
+      renderList();
+    }
+  } catch(e) {
+    showToast('Network error', true);
+    renderList();
   } finally {
     if (card) card.classList.remove('sending');
   }
