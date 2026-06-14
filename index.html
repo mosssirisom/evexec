@@ -1716,6 +1716,27 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
     on('bwSubmit', 'click', bwSubmit);
   })();
+
+  // Prefill wizard from a completed trip ("Book This Trip Again" in My Account)
+  (async function bwInitRebook() {
+    var rebookId = new URLSearchParams(location.search).get('rebook');
+    if (!rebookId) return;
+    try {
+      var res = await fetch('/api/booking/get?id=' + encodeURIComponent(rebookId));
+      if (!res.ok) return;
+      var data = await res.json();
+      bw.airport = BW_AIRPORTS.some(function(a) { return a.name === data.airport; }) ? data.airport : 'Other UK Airport';
+      bw.direction = data.journey_type === 'From Airport' ? 'from' : 'to';
+      bw.journeyType = data.return_journey ? 'return' : 'oneway';
+      bw.passengers = (data.passengers >= 1 && data.passengers <= 4) ? data.passengers : 1;
+      var bagsMatch = data.luggage && String(data.luggage).match(/\d+/);
+      bw.bags = bagsMatch ? Math.min(8, parseInt(bagsMatch[0], 10)) : 0;
+      var addressEl = document.getElementById('bwAddress');
+      if (addressEl) addressEl.value = (data.journey_type === 'From Airport' ? data.dropoff_address : data.pickup_location) || '';
+      history.replaceState(null, '', location.pathname + location.hash);
+      bwGoToStep(3);
+    } catch (e) {}
+  })();
   // CO2 calculator
   var co2Savings = {
     'Manchester Airport': 12,
