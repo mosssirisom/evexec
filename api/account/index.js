@@ -2,6 +2,7 @@
 
 const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
+const { isValidUUID } = require('../../lib/supabase');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -148,6 +149,78 @@ async function handleJourneys(req, res, user) {
   }
 }
 
+// ── GET|POST|DELETE /api/account/addresses ─────────────────────────────────
+
+async function handleAddresses(req, res, user) {
+  if (req.method === 'GET') {
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL()}/rest/v1/saved_addresses?user_id=eq.${user.id}&select=id,label,address&order=created_at.asc`,
+        { headers: headers() }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      const addresses = await r.json();
+      return res.end(JSON.stringify({ addresses }));
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  if (req.method === 'POST') {
+    let body;
+    try { body = await parseBody(req); }
+    catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
+
+    const label = String(body.label || '').trim();
+    const address = String(body.address || '').trim();
+    if (!label || !address) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: 'Label and address are required' }));
+    }
+
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL()}/rest/v1/saved_addresses`,
+        {
+          method: 'POST',
+          headers: headers({ Prefer: 'return=representation' }),
+          body: JSON.stringify({ user_id: user.id, label, address })
+        }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      const rows = await r.json();
+      return res.end(JSON.stringify({ address: rows[0] || null }));
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    const id = (req.query && req.query.id) || '';
+    if (!isValidUUID(id)) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: 'Valid id required' }));
+    }
+
+    try {
+      const r = await fetch(
+        `${SUPABASE_URL()}/rest/v1/saved_addresses?id=eq.${id}&user_id=eq.${user.id}`,
+        { method: 'DELETE', headers: headers() }
+      );
+      if (!r.ok) throw new Error(await r.text());
+      return res.end(JSON.stringify({ ok: true }));
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  res.statusCode = 405;
+  res.end(JSON.stringify({ error: 'Method not allowed' }));
+}
+
 // ── Router ─────────────────────────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
@@ -160,8 +233,9 @@ module.exports = async function handler(req, res) {
   }
 
   const path = (req.url || '').split('?')[0];
-  if (path.endsWith('/profile'))  return handleProfile(req, res, user);
-  if (path.endsWith('/journeys')) return handleJourneys(req, res, user);
+  if (path.endsWith('/profile'))   return handleProfile(req, res, user);
+  if (path.endsWith('/journeys'))  return handleJourneys(req, res, user);
+  if (path.endsWith('/addresses')) return handleAddresses(req, res, user);
 
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));
