@@ -793,6 +793,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <div class="bw-card mb-4">
       <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
       <input class="input" id="bwAddress" placeholder="Enter your address…"/>
+      <div id="bwSavedAddresses" class="hidden" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
     </div>
 
     <!-- Date & Time -->
@@ -1575,6 +1576,35 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       if (el) el.min = today;
     });
     bwUpdateCounters();
+    bwLoadSavedAddresses();
+  }
+
+  async function bwLoadSavedAddresses() {
+    var container = document.getElementById('bwSavedAddresses');
+    if (!container) return;
+    var session = window._evexecSession;
+    if (!session && window._evexecSb) {
+      session = (await window._evexecSb.auth.getSession()).data.session;
+    }
+    if (!session) { container.innerHTML = ''; container.classList.add('hidden'); return; }
+    try {
+      var res = await fetch('/api/account/addresses', { headers: { Authorization: 'Bearer ' + session.access_token } });
+      if (!res.ok) return;
+      var data = await res.json();
+      var saved = data.addresses || [];
+      if (!saved.length) { container.innerHTML = ''; container.classList.add('hidden'); return; }
+      container.innerHTML = saved.map(function(a) {
+        return '<button type="button" class="bw-pill bw-saved-addr" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.8);cursor:pointer">' + a.label + '</button>';
+      }).join('');
+      container.classList.remove('hidden');
+      var buttons = container.querySelectorAll('.bw-saved-addr');
+      buttons.forEach(function(btn, i) {
+        btn.addEventListener('click', function() {
+          var input = document.getElementById('bwAddress');
+          if (input) input.value = saved[i].address;
+        });
+      });
+    } catch (e) {}
   }
 
   function bwUpdateCounters() {
