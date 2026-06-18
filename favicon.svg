@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="EV Exec">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="25%" r="75%">
+      <stop offset="0" stop-color="#12345c"/>
+      <stop offset="0.55" stop-color="#061426"/>
+      <stop offset="1" stop-color="#020813"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="9" y1="7" x2="39" y2="41" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f2c66d"/>
+      <stop offset="0.52" stop-color="#d5a538"/>
+      <stop offset="1" stop-color="#9d6f16"/>
+    </linearGradient>
+  </defs>
+  <circle cx="24" cy="24" r="23" fill="url(#bg)"/>
+  <circle cx="24" cy="24" r="21.5" fill="none" stroke="url(#gold)" stroke-width="2"/>
+  <path d="M11 15h18v5H17v4h10v5H17v4h12v5H11V15Z" fill="url(#gold)"/>
+  <path d="M29 15h8l-9 23h-6l-9-23h8l4 13 4-13Z" fill="#ffffff" opacity="0.92"/>
+  <path d="M11 39h26" stroke="url(#gold)" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+</svg>
