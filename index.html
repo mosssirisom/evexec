@@ -726,25 +726,11 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <div id="bwProgress" class="flex items-center gap-2"></div>
   </div>
 
-  <!-- ── STEP 1: Airport Selection ── -->
+  <!-- ── STEP 1: Journey Intent ── -->
   <div id="bwStep1" class="bw-slide">
     <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-1">Step 1 of 3</p>
-    <h3 class="text-2xl font-bold mb-1">Which Airport?</h3>
-    <p class="text-sm text-white/45 mb-5">Select your departure or arrival airport</p>
-    <div id="bwAirports"></div>
-  </div>
-
-  <!-- ── STEP 2: Direction & Journey Type ── -->
-  <div id="bwStep2" class="hidden">
-    <div class="flex items-center gap-3 mb-5">
-      <button class="bw-back-btn" id="bwBack2" type="button">&#8592;</button>
-      <div>
-        <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 2 of 3</p>
-        <p class="font-bold text-base" id="bwSelectedAirport"></p>
-      </div>
-    </div>
-    <h3 class="text-2xl font-bold mb-1">Which Direction?</h3>
-    <p class="text-sm text-white/45 mb-5">Are you going to or coming from the airport?</p>
+    <h3 class="text-2xl font-bold mb-1">Your Journey</h3>
+    <p class="text-sm text-white/45 mb-5">Tell us the direction and type of your trip</p>
 
     <div class="flex flex-col gap-3 mb-6">
       <button class="bw-dir-card" id="bwDirTo" type="button">
@@ -767,13 +753,38 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
     <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3">Journey Type</p>
     <div class="bw-seg mb-6">
-      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button">One Way<br><span class="text-xs font-normal" id="bwOnewayPrice"></span></button>
-      <button class="bw-seg-btn" id="bwTypeReturn" type="button">Return<br><span class="text-xs font-normal" id="bwReturnPrice"></span></button>
+      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button">One Way</button>
+      <button class="bw-seg-btn" id="bwTypeReturn" type="button">Return</button>
     </div>
 
-    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwContinue2" type="button" disabled style="opacity:.45;cursor:not-allowed;border:none">
+    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwContinue1" type="button" disabled style="opacity:.45;cursor:not-allowed;border:none">
       Select a direction above
     </button>
+  </div>
+
+  <!-- ── STEP 2: Locations & Airport ── -->
+  <div id="bwStep2" class="hidden">
+    <div class="flex items-center gap-3 mb-5">
+      <button class="bw-back-btn" id="bwBack2" type="button">&#8592;</button>
+      <div>
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 2 of 3</p>
+        <p class="font-bold text-base" id="bwStep2Heading">Where are you going?</p>
+      </div>
+    </div>
+    <div id="bwStep2Content">
+      <div id="bwStep2AddrSection">
+        <div class="bw-card mb-4">
+          <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
+          <input class="input" id="bwAddress" placeholder="Enter your address…"/>
+          <div id="bwSavedAddresses" class="hidden" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
+          <p class="text-xs mt-2 hidden" id="bwAddressError" style="color:#f87171">Please enter your address to continue.</p>
+        </div>
+      </div>
+      <div id="bwStep2AirportSection">
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3" id="bwAirportSectionLabel">Select Your Airport</p>
+        <div id="bwAirports"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ── STEP 3: Details + Contact ── -->
@@ -789,13 +800,6 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
     <!-- Journey summary pills -->
     <div class="flex flex-wrap gap-2 mb-5" id="bwSummaryPills"></div>
 
-    <!-- Address -->
-    <div class="bw-card mb-4">
-      <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
-      <input class="input" id="bwAddress" placeholder="Enter your address…"/>
-      <div id="bwSavedAddresses" class="hidden" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
-    </div>
-
     <!-- Date & Time -->
     <div class="bw-card mb-4">
       <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-clock"/></svg>Date &amp; Time</p>
@@ -807,6 +811,35 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
         <div>
           <p class="text-xs text-white/45 mb-2">Travel Time</p>
           <input class="input bw-time-input" type="time" id="bwTime"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flight number — From Airport only (mandatory) -->
+    <div class="bw-card mb-4 hidden" id="bwFlightSection">
+      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-plane"/></svg>Flight Number</p>
+      <input class="input" id="bwFlight" placeholder="e.g. EZY2145"/>
+      <p class="text-xs text-white/35 mt-2">Required — we monitor your flight for delays</p>
+    </div>
+
+    <!-- Return details -->
+    <div id="bwReturnSection" class="hidden">
+      <div class="bw-card mb-4" style="border-color:rgba(213,165,56,.28)">
+        <p class="text-xs uppercase tracking-[.18em] font-bold text-[#d5a538] mb-4">Return Journey</p>
+        <div class="grid grid-cols-2 gap-4 mb-3">
+          <div>
+            <p class="text-xs text-white/45 mb-2">Return Date</p>
+            <input class="input bw-date-input" type="date" id="bwRetDate"/>
+          </div>
+          <div>
+            <p class="text-xs text-white/45 mb-2">Return Time</p>
+            <input class="input bw-time-input" type="time" id="bwRetTime"/>
+          </div>
+        </div>
+        <div id="bwRetFlightSection" class="hidden">
+          <p class="text-xs text-white/45 mb-2">Return Flight Number</p>
+          <input class="input" id="bwRetFlight" placeholder="e.g. EZY2145"/>
+          <p class="text-xs text-white/35 mt-2">Required — we monitor your return flight</p>
         </div>
       </div>
     </div>
@@ -831,34 +864,6 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
             <button class="bw-counter-btn" id="bwBagsInc" type="button">+</button>
           </div>
           <p class="text-xs text-white/35 mt-2">pieces of luggage</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Flight number — From Airport only -->
-    <div class="bw-card mb-4 hidden" id="bwFlightSection">
-      <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-plane"/></svg>Flight Number</p>
-      <input class="input" id="bwFlight" placeholder="e.g. EZY2145"/>
-      <p class="text-xs text-white/35 mt-2">Optional — helps us track your arrival</p>
-    </div>
-
-    <!-- Return details -->
-    <div id="bwReturnSection" class="hidden">
-      <div class="bw-card mb-4" style="border-color:rgba(213,165,56,.28)">
-        <p class="text-xs uppercase tracking-[.18em] font-bold text-[#d5a538] mb-4">Return Journey</p>
-        <div class="grid grid-cols-2 gap-4 mb-3">
-          <div>
-            <p class="text-xs text-white/45 mb-2">Return Date</p>
-            <input class="input bw-date-input" type="date" id="bwRetDate"/>
-          </div>
-          <div>
-            <p class="text-xs text-white/45 mb-2">Return Time</p>
-            <input class="input bw-time-input" type="time" id="bwRetTime"/>
-          </div>
-        </div>
-        <div id="bwRetFlightSection" class="hidden">
-          <p class="text-xs text-white/45 mb-2">Return Flight Number</p>
-          <input class="input" id="bwRetFlight" placeholder="e.g. EZY2145"/>
         </div>
       </div>
     </div>
@@ -1478,8 +1483,15 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         '</div>' +
         '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
       btn.addEventListener('click', function() {
+        var addrInput = document.getElementById('bwAddress');
+        var addrErr   = document.getElementById('bwAddressError');
+        if (!addrInput || !addrInput.value.trim()) {
+          if (addrInput) addrInput.style.borderColor = '#f87171';
+          if (addrErr)   addrErr.classList.remove('hidden');
+          return;
+        }
         bw.airport = ap.name;
-        bwGoToStep(2);
+        bwGoToStep(3);
       });
       cont.appendChild(btn);
     });
@@ -1487,7 +1499,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   function bwGoToStep(n) {
     bw.step = n;
-    // Hide confirm panel, restore wizard chrome
     var confEl = document.getElementById('bwConfirm');
     if (confEl) confEl.classList.add('hidden');
     var wizHeader = document.getElementById('bwWizardHeader');
@@ -1503,38 +1514,36 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       el.classList.toggle('hidden', !show);
       if (show) {
         el.classList.remove('bw-slide');
-        void el.offsetWidth; // reflow to restart animation
+        void el.offsetWidth;
         el.classList.add('bw-slide');
       }
     });
     bwRenderProgress();
+    if (n === 1) bwRenderStep1();
     if (n === 2) bwRenderStep2();
     if (n === 3) bwRenderStep3();
     var quoteEl = document.getElementById('quote');
     if (quoteEl) quoteEl.scrollIntoView({ behavior:'smooth', block:'start' });
   }
 
-  function bwRenderStep2() {
-    var airportEl = document.getElementById('bwSelectedAirport');
-    if (airportEl) airportEl.textContent = bw.airport || '';
+  function bwRenderStep1() {
     var dirTo   = document.getElementById('bwDirTo');
     var dirFrom = document.getElementById('bwDirFrom');
-    if (dirTo)   dirTo.classList.toggle('bw-selected', bw.direction === 'to');
-    if (dirFrom) dirFrom.classList.toggle('bw-selected', bw.direction === 'from');
-    var ap = BW_AIRPORTS.find(function(a) { return a.name === bw.airport; }) || {};
-    var owEl = document.getElementById('bwOnewayPrice');
-    var retEl = document.getElementById('bwReturnPrice');
-    if (owEl)  owEl.textContent  = ap.oneWay ? '£' + ap.oneWay  : 'On request';
-    if (retEl) retEl.textContent = ap.ret    ? '£' + ap.ret     : 'On request';
+    var toRadio   = document.getElementById('bwDirToRadio');
+    var fromRadio = document.getElementById('bwDirFromRadio');
+    if (dirTo)     dirTo.classList.toggle('bw-selected', bw.direction === 'to');
+    if (dirFrom)   dirFrom.classList.toggle('bw-selected', bw.direction === 'from');
+    if (toRadio)   toRadio.classList.toggle('bw-active', bw.direction === 'to');
+    if (fromRadio) fromRadio.classList.toggle('bw-active', bw.direction === 'from');
     var onewayBtn = document.getElementById('bwTypeOneway');
     var returnBtn = document.getElementById('bwTypeReturn');
     if (onewayBtn) onewayBtn.classList.toggle('bw-active', bw.journeyType === 'oneway');
     if (returnBtn) returnBtn.classList.toggle('bw-active', bw.journeyType === 'return');
-    bwUpdateContinue2();
+    bwUpdateContinue1();
   }
 
-  function bwUpdateContinue2() {
-    var btn = document.getElementById('bwContinue2');
+  function bwUpdateContinue1() {
+    var btn = document.getElementById('bwContinue1');
     if (!btn) return;
     if (bw.direction) {
       btn.disabled = false;
@@ -1549,6 +1558,32 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     }
   }
 
+  function bwRenderStep2() {
+    var isFrom = bw.direction === 'from';
+    var heading = document.getElementById('bwStep2Heading');
+    if (heading) heading.textContent = isFrom ? 'Where are you going?' : 'Where are we picking you up?';
+    var addrLabel = document.getElementById('bwAddressLabel');
+    if (addrLabel) addrLabel.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"></use></svg>' + (isFrom ? 'Drop Off Address' : 'Pick Up Address');
+    var airportLabel = document.getElementById('bwAirportSectionLabel');
+    if (airportLabel) airportLabel.textContent = isFrom ? 'Flying from which airport?' : 'Select Your Airport';
+    var addrInput = document.getElementById('bwAddress');
+    var addrErr   = document.getElementById('bwAddressError');
+    if (addrInput) addrInput.style.borderColor = '';
+    if (addrErr)   addrErr.classList.add('hidden');
+    var content  = document.getElementById('bwStep2Content');
+    var addrSec  = document.getElementById('bwStep2AddrSection');
+    var airptSec = document.getElementById('bwStep2AirportSection');
+    if (content && addrSec && airptSec) {
+      if (isFrom) {
+        content.insertBefore(airptSec, addrSec);
+      } else {
+        content.insertBefore(addrSec, airptSec);
+      }
+    }
+    bwRenderAirports();
+    bwLoadSavedAddresses();
+  }
+
   function bwRenderStep3() {
     var pills = document.getElementById('bwSummaryPills');
     if (pills) {
@@ -1556,27 +1591,27 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var dirBg     = bw.direction === 'to' ? 'rgba(59,130,246,.12)' : 'rgba(34,197,94,.10)';
       var dirBorder = bw.direction === 'to' ? 'rgba(59,130,246,.3)' : 'rgba(34,197,94,.25)';
       var dirLabel  = bw.direction === 'to' ? 'To Airport' : 'From Airport';
+      var ap = BW_AIRPORTS.find(function(a) { return a.name === bw.airport; }) || {};
+      var priceVal   = bw.journeyType === 'return' ? ap.ret : ap.oneWay;
+      var priceLabel = priceVal ? '£' + priceVal : 'Price on request';
       pills.innerHTML =
         '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
-        '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>';
+        '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>' +
+        '<span class="bw-pill" style="background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538">' + priceLabel + '</span>';
     }
-    var addrLabel = document.getElementById('bwAddressLabel');
-    if (addrLabel) addrLabel.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"></use></svg>' + (bw.direction === 'to' ? 'Pick Up Address' : 'Drop Off Address');
     var flightSec = document.getElementById('bwFlightSection');
     if (flightSec) flightSec.classList.toggle('hidden', bw.direction !== 'from');
     var retSec = document.getElementById('bwReturnSection');
     if (retSec) retSec.classList.toggle('hidden', bw.journeyType !== 'return');
     var retFlightSec = document.getElementById('bwRetFlightSection');
     if (retFlightSec) retFlightSec.classList.toggle('hidden', bw.direction !== 'to');
-    // Set min date to today
     var today = new Date().toISOString().split('T')[0];
     ['bwDate','bwRetDate'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.min = today;
     });
     bwUpdateCounters();
-    bwLoadSavedAddresses();
   }
 
   async function bwLoadSavedAddresses() {
@@ -1631,6 +1666,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     var name  = bwGetVal('bwName');
     var phone = bwGetVal('bwPhone');
     bwShowMsg('', '');
+    var isFrom = bw.direction === 'from';
+    var isRet  = bw.journeyType === 'return';
     if (!name || !phone) {
       bwShowMsg('Please enter your name and phone number to continue.', 'error');
       var focus = !name ? 'bwName' : 'bwPhone';
@@ -1638,11 +1675,21 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       if (el) el.focus();
       return;
     }
+    if (isFrom && !bwGetVal('bwFlight')) {
+      bwShowMsg('Flight number is required for airport pick-ups.', 'error');
+      var flEl = document.getElementById('bwFlight');
+      if (flEl) flEl.focus();
+      return;
+    }
+    if (isRet && !isFrom && !bwGetVal('bwRetFlight')) {
+      bwShowMsg('Return flight number is required for your return airport pick-up.', 'error');
+      var rfEl = document.getElementById('bwRetFlight');
+      if (rfEl) rfEl.focus();
+      return;
+    }
     var btn = document.getElementById('bwSubmit');
     btn.disabled = true;
     btn.textContent = 'Sending…';
-    var isFrom  = bw.direction === 'from';
-    var isRet   = bw.journeyType === 'return';
     var address = bwGetVal('bwAddress');
     var payload = {
       journey_type:       isFrom ? 'From Airport' : 'To Airport',
@@ -1720,7 +1767,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 
   // Wire up wizard events
   (function bwInit() {
-    bwRenderAirports();
+    bwRenderStep1();
     bwRenderProgress();
 
     function on(id, evt, fn) {
@@ -1731,13 +1778,25 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     on('bwBack2', 'click', function() { bwGoToStep(1); });
     on('bwBack3', 'click', function() { bwGoToStep(2); });
 
-    on('bwDirTo', 'click', function() { bw.direction = 'to'; bwRenderStep2(); });
-    on('bwDirFrom', 'click', function() { bw.direction = 'from'; bwRenderStep2(); });
+    on('bwDirTo',   'click', function() { bw.direction = 'to';   bwRenderStep1(); });
+    on('bwDirFrom', 'click', function() { bw.direction = 'from'; bwRenderStep1(); });
 
-    on('bwTypeOneway', 'click', function() { bw.journeyType = 'oneway'; bwRenderStep2(); });
-    on('bwTypeReturn', 'click', function() { bw.journeyType = 'return'; bwRenderStep2(); });
+    on('bwTypeOneway', 'click', function() { bw.journeyType = 'oneway'; bwRenderStep1(); });
+    on('bwTypeReturn', 'click', function() { bw.journeyType = 'return'; bwRenderStep1(); });
 
-    on('bwContinue2', 'click', function() { if (bw.direction) bwGoToStep(3); });
+    on('bwContinue1', 'click', function() { if (bw.direction) bwGoToStep(2); });
+
+    on('bwAddress', 'input', function() {
+      var inp = document.getElementById('bwAddress');
+      var err = document.getElementById('bwAddressError');
+      if (inp && inp.value.trim()) {
+        inp.style.borderColor = '';
+        if (err) err.classList.add('hidden');
+      }
+    });
+
+    on('bwFlight',    'input', function() { bwShowMsg('', ''); });
+    on('bwRetFlight', 'input', function() { bwShowMsg('', ''); });
 
     on('bwPaxDec', 'click', function() { if (bw.passengers > 1) { bw.passengers--; bwUpdateCounters(); } });
     on('bwPaxInc', 'click', function() { if (bw.passengers < 4) { bw.passengers++; bwUpdateCounters(); } });
