@@ -418,7 +418,7 @@ main,footer{position:relative;z-index:1}
   flex-shrink:0;
 }
 .mobile-menu{
-  display:none;position:fixed;inset:0;z-index:150;
+  display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:9999;
   background:rgba(2,8,19,.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
   flex-direction:column;align-items:center;justify-content:space-between;
   padding:0;overflow:hidden;
@@ -642,8 +642,10 @@ main,footer{position:relative;z-index:1}
 <button class="menu-button lg:hidden" id="menuToggle" type="button" aria-label="Open menu">
   <span id="menuToggleLabel">Menu</span>
 </button>
+</nav>
+</header>
 
-<div class="mobile-menu lg:hidden" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
   <!-- Close button -->
   <div style="width:100%;display:flex;justify-content:flex-end;padding:20px 20px 0">
     <button id="menuClose" type="button" aria-label="Close menu"
@@ -671,8 +673,6 @@ main,footer{position:relative;z-index:1}
     <a href="#quote" class="btn-gold" style="display:block;width:100%;text-align:center;border-radius:14px;padding:18px;font-size:17px;font-weight:900;letter-spacing:.06em;">Book Now</a>
   </div>
 </div>
-</nav>
-</header>
 
 <!-- AUTH MODAL -->
 <div id="authModal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(2,8,19,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px" aria-modal="true">
