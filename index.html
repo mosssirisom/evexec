@@ -425,7 +425,7 @@ main,footer{position:relative;z-index:1}
   opacity:0;transform:translateY(-12px);
   transition:opacity .28s cubic-bezier(.2,.8,.2,1),transform .28s cubic-bezier(.2,.8,.2,1);
 }
-.mobile-menu.open{display:flex;opacity:1;transform:translateY(0)}
+.mobile-menu.open{opacity:1;transform:translateY(0)}
 .mobile-menu-links{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   flex:1;width:100%;gap:0;padding:0 32px;
@@ -1458,6 +1458,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   var mobileMenu = document.getElementById('mobileMenu');
 
   function openMobileMenu() {
+    mobileMenu.style.display = 'flex';
+    void mobileMenu.offsetWidth; // force reflow so CSS transition fires on iOS Safari
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
     _ctaMenuHidden = true;
@@ -1465,6 +1467,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
   function closeMobileMenu() {
     mobileMenu.classList.remove('open');
+    setTimeout(function() { mobileMenu.style.display = ''; }, 300);
     document.body.style.overflow = '';
     _ctaMenuHidden = false;
     syncCtaVisibility();
@@ -1978,7 +1981,10 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       window.visualViewport.addEventListener('resize', function () {
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(function () {
-          nudgeIntoView(document.activeElement);
+          var active = document.activeElement;
+          if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
+            nudgeIntoView(active);
+          }
         }, 120);
       });
     }
