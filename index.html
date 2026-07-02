@@ -1926,6 +1926,61 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if(val !== undefined) co2Number.textContent = val;
   }
   if(co2Route) co2Route.addEventListener('change', updateCO2);
+
+  // ── iOS KEYBOARD SCROLL FIX ─────────────────────────────────
+  // iOS Safari does not shrink the layout viewport when the keyboard opens.
+  // window.visualViewport DOES reflect the visible area, so we use it to
+  // detect how much of the screen the keyboard is consuming, then scroll
+  // the active input above the keyboard line.
+  (function iosKeyboardFix() {
+    if (!('ontouchstart' in window)) return; // desktop — no-op
+    var GAP = 24; // px clearance above the keyboard
+
+    function nudgeIntoView(el) {
+      if (!el) return;
+      var vv = window.visualViewport;
+      if (!vv) {
+        // Graceful fallback for older WebKit
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      var rect = el.getBoundingClientRect();
+      // vv.height = visible height (shrinks when keyboard is up)
+      // vv.offsetTop = amount the visual viewport has been scrolled upward
+      // rect.bottom is relative to the layout viewport, so add offsetTop
+      // to get the element's position within the visual viewport.
+      var elBottomInVisual = rect.bottom - vv.offsetTop;
+      var overflow = elBottomInVisual + GAP - vv.height;
+      if (overflow > 0) {
+        window.scrollBy({ top: overflow, behavior: 'smooth' });
+      }
+    }
+
+    // Re-nudge whenever the visual viewport resizes (keyboard slide-in).
+    // The resize fires repeatedly during the animation; the final fire is
+    // the settled position, so we debounce to catch only that one.
+    var resizeTimer;
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', function () {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+          nudgeIntoView(document.activeElement);
+        }, 120);
+      });
+    }
+
+    // On focusin, wait for the keyboard animation (~300 ms on iOS) then nudge.
+    var quoteEl = document.getElementById('quote');
+    if (quoteEl) {
+      quoteEl.addEventListener('focusin', function (e) {
+        var t = e.target;
+        if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT') {
+          setTimeout(function () { nudgeIntoView(t); }, 340);
+        }
+      });
+    }
+  }());
+  // ── END iOS KEYBOARD SCROLL FIX ─────────────────────────────
 })();
 </script>
 
