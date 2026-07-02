@@ -575,10 +575,16 @@ main,footer{position:relative;z-index:1}
 .calc-result{
   background:rgba(213,165,56,.06);border:1px solid rgba(213,165,56,.18);
   border-radius:12px;padding:28px;margin-top:20px;text-align:center;
+  /* Lock the container height so switching values never shifts layout */
+  min-height:148px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
 }
 .calc-number{
   font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:700;
   color:var(--gold);line-height:1;
+  /* Smooth opacity + subtle lift for value transitions */
+  transition:opacity .18s ease,transform .18s ease;
+  will-change:opacity,transform;
 }
 .calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
 </style>
@@ -1923,7 +1929,15 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   function updateCO2(){
     if(!co2Route || !co2Number) return;
     var val = co2Savings[co2Route.value];
-    if(val !== undefined) co2Number.textContent = val;
+    if(val === undefined) return;
+    // Fade out → swap text → fade in, so the number change feels premium
+    co2Number.style.opacity = '0';
+    co2Number.style.transform = 'translateY(6px)';
+    setTimeout(function(){
+      co2Number.textContent = val;
+      co2Number.style.opacity = '1';
+      co2Number.style.transform = 'translateY(0)';
+    }, 190); // matches the .18s CSS transition
   }
   if(co2Route) co2Route.addEventListener('change', updateCO2);
 
