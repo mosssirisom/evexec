@@ -124,6 +124,18 @@ function verifyStripeSignature(rawBody, sigHeader, secret) {
   return JSON.parse(rawBody.toString('utf8'));
 }
 
+async function getStripeReceiptUrl(paymentIntentId) {
+  try {
+    const res = await fetch(
+      `https://api.stripe.com/v1/payment_intents/${paymentIntentId}?expand[]=latest_charge`,
+      { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
+    );
+    if (!res.ok) return null;
+    const pi = await res.json();
+    return pi.latest_charge?.receipt_url || null;
+  } catch { return null; }
+}
+
 async function handleStripeWebhook(req, res) {
   if (req.method !== 'POST') {
     res.statusCode = 405;
@@ -156,12 +168,15 @@ async function handleStripeWebhook(req, res) {
         const readyForPayment = booking && booking.status === 'Dispatched' && isUnpaid(booking.payment_status);
 
         if (readyForPayment) {
+          const receiptUrl = session.payment_intent
+            ? await getStripeReceiptUrl(session.payment_intent)
+            : null;
           await dbUpdate('bookings', bookingId, {
             payment_status: 'Paid',
             payment_method: 'card',
             stripe_session_id: session.id
           });
-          await sendConfirmations({ ...booking, payment_method: 'card', payment_status: 'Paid' });
+          await sendConfirmations({ ...booking, payment_method: 'card', payment_status: 'Paid' }, '', receiptUrl);
         }
       } catch (err) {
         console.error('Webhook processing error:', err);

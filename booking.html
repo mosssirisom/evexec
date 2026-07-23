@@ -188,7 +188,7 @@ body{
       <div class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center flex-shrink-0 text-blue-400 font-bold text-lg">↻</div>
       <div>
         <h2 class="font-bold text-lg mb-1">Payment Received</h2>
-        <p class="text-white/65 leading-relaxed">Your payment has been received and your booking is being confirmed. You'll receive a confirmation via SMS or email shortly.</p>
+        <p class="text-white/65 leading-relaxed">Your payment has been received. This page will update automatically in a few seconds, and a confirmation will be sent to your phone or email.</p>
       </div>
     </div>
   </div>
@@ -200,6 +200,7 @@ body{
       <div>
         <h2 class="font-bold text-lg mb-1">Booking Confirmed</h2>
         <p class="text-white/65 leading-relaxed" id="confirmedMsg">Your transfer is confirmed. We'll see you on the day!</p>
+        <p class="text-white/45 text-sm mt-2 hidden" id="receiptNote">A payment confirmation has been sent to your phone and email. Need a receipt? <a class="gold" href="https://wa.me/447721070370">WhatsApp us</a> and we'll send one over.</p>
         <p class="text-white/45 text-sm mt-3">Any questions? <a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
       </div>
     </div>
@@ -267,7 +268,7 @@ body{
       pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
     }
     if (status === 'Dispatched') {
-      if (paymentStatus === 'paid' || paymentStatus === 'cash_on_day') {
+      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced') {
         pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
       }
       pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
@@ -336,7 +337,7 @@ body{
     }
 
     if (b.status === 'Dispatched') {
-      var paid = b.payment_status === 'paid' || b.payment_status === 'cash_on_day';
+      var paid = b.payment_status === 'Paid' || b.payment_status === 'Invoiced';
       if (paid) {
         show('panelConfirmed');
         var method = b.payment_method === 'cash'
@@ -346,10 +347,23 @@ body{
           document.getElementById('confirmedMsg').textContent =
             'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
         }
+        if (b.payment_method === 'card') {
+          document.getElementById('receiptNote').classList.remove('hidden');
+        }
         return;
       }
       if (payment === 'success') {
         show('panelPaymentPending');
+        var pollCount = 0;
+        var pollTimer = setInterval(async function () {
+          pollCount++;
+          if (pollCount > 10) { clearInterval(pollTimer); return; }
+          try {
+            var pr = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
+            var pd = await pr.json();
+            if (pd.payment_status === 'Paid') { clearInterval(pollTimer); window.location.reload(); }
+          } catch (_) {}
+        }, 3000);
       } else {
         show('panelPayment');
         if (payment === 'cancelled') show('panelCancelled');
