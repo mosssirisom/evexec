@@ -9,7 +9,7 @@ const { getPrice, journeyLine } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 
 function isUnpaid(status) {
-  return status === null || status === undefined || status === 'pending' || status === 'Unpaid';
+  return status !== 'Paid' && status !== 'Invoiced';
 }
 
 function json(res, statusCode, payload) {
@@ -148,6 +148,12 @@ async function handleStripeWebhook(req, res) {
     return res.end('Missing stripe-signature header');
   }
 
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    console.error('STRIPE_WEBHOOK_SECRET is not configured — webhook rejected');
+    res.statusCode = 400;
+    return res.end('Webhook Error: missing configuration');
+  }
+
   let event;
   try {
     const rawBody = await getRawBody(req);
@@ -163,6 +169,10 @@ async function handleStripeWebhook(req, res) {
     const bookingId = session.metadata?.bookingId;
 
     if (bookingId && isValidUUID(bookingId)) {
+      if (session.payment_status !== 'paid') {
+        console.log(`Webhook: session ${session.id} completed but payment_status is '${session.payment_status}' — skipping`);
+        return json(res, 200, { received: true });
+      }
       try {
         const booking = await dbGet('bookings', bookingId);
         const readyForPayment = booking && booking.status === 'Dispatched' && isUnpaid(booking.payment_status);
@@ -177,6 +187,8 @@ async function handleStripeWebhook(req, res) {
             stripe_session_id: session.id
           });
           await sendConfirmations({ ...booking, payment_method: 'card', payment_status: 'Paid' }, '', receiptUrl);
+        } else {
+          console.log(`Webhook: booking ${bookingId} not readyForPayment (status=${booking?.status}, payment_status=${booking?.payment_status}) — skipping`);
         }
       } catch (err) {
         console.error('Webhook processing error:', err);

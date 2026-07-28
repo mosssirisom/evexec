@@ -374,7 +374,17 @@ body{
         var pollCount = 0;
         var pollTimer = setInterval(async function () {
           pollCount++;
-          if (pollCount > 10) { clearInterval(pollTimer); return; }
+          if (pollCount > 10) {
+            clearInterval(pollTimer);
+            var pendingEl = document.getElementById('panelPaymentPending');
+            if (pendingEl) {
+              var h2 = pendingEl.querySelector('h2');
+              var p  = pendingEl.querySelector('p');
+              if (h2) h2.textContent = 'Payment is taking longer than expected';
+              if (p)  p.innerHTML = 'Your payment was received but confirmation is taking a moment. Please <a style="color:#d5a538" href="https://wa.me/447721070370">WhatsApp us</a> or call <a style="color:#d5a538" href="tel:07721070370">07721 070370</a> to confirm.';
+            }
+            return;
+          }
           try {
             var pr = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
             var pd = await pr.json();
@@ -489,6 +499,7 @@ body{
       });
       var data; try { data = await res.json(); } catch (_) { throw new Error('Payment service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
+      if (!data.url) throw new Error('Payment redirect unavailable. Please try again or contact us.');
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message;
