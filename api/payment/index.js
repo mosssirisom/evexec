@@ -9,7 +9,7 @@ const { getPrice, journeyLine } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 
 function isUnpaid(status) {
-  return status === null || status === undefined || status === 'pending' || status === 'Unpaid';
+  return status !== 'Paid' && status !== 'Invoiced';
 }
 
 function json(res, statusCode, payload) {

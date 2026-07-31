@@ -267,7 +267,7 @@ body{
       pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
     }
     if (status === 'Dispatched') {
-      if (paymentStatus === 'paid' || paymentStatus === 'cash_on_day') {
+      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced') {
         pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
       }
       pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
@@ -336,7 +336,7 @@ body{
     }
 
     if (b.status === 'Dispatched') {
-      var paid = b.payment_status === 'paid' || b.payment_status === 'cash_on_day';
+      var paid = b.payment_status === 'Paid' || b.payment_status === 'Invoiced';
       if (paid) {
         show('panelConfirmed');
         var method = b.payment_method === 'cash'
