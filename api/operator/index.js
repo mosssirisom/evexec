@@ -49,6 +49,17 @@ async function handleAction(req, res) {
 
     const route = journeyLine(booking); const date = fmtDate(booking.travel_date);
 
+    // GET: show confirmation page — prevents link scanners/previewers from auto-triggering
+    if (req.method !== 'POST') {
+      const btnColor = isReject ? '#ef4444' : '#d5a538';
+      const btnTextColor = isReject ? '#fff' : '#06101c';
+      const confirmUrl = `/api/operator/${action}?id=${id}&token=${encodeURIComponent(token)}`;
+      const confirmLabel = isReject ? 'Reject Booking' : 'Accept Booking';
+      const pageTitle = isReject ? 'Reject this booking?' : 'Accept this booking?';
+      return res.end(operatorPage(pageTitle, `<p><strong>${booking.customer_name}</strong> &nbsp;·&nbsp; ${booking.customer_phone}</p><p>${route}<br>${date} at ${booking.travel_time || 'TBC'}<br>${booking.passengers} passenger(s)${booking.luggage ? ', ' + booking.luggage : ''}</p><form method="POST" action="${confirmUrl}" style="margin-top:24px"><button type="submit" style="background:${btnColor};color:${btnTextColor};border:none;padding:16px 32px;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;min-width:180px">${confirmLabel}</button></form>`, !isReject));
+    }
+
+    // POST: perform the action
     if (isReject) {
       await dbUpdate('bookings', id, { status: 'Cancelled' });
       await sendRejectionNotice(booking);
