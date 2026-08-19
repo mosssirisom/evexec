@@ -15,6 +15,7 @@ function isUnpaid(status) {
 function json(res, statusCode, payload) {
   res.statusCode = statusCode;
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
   return res.end(JSON.stringify(payload));
 }
 
@@ -192,6 +193,8 @@ async function handleStripeWebhook(req, res) {
         }
       } catch (err) {
         console.error('Webhook processing error:', err);
+        res.statusCode = 500;
+        return res.end('Webhook processing error — Stripe should retry');
       }
     }
   }

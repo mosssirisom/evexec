@@ -388,7 +388,7 @@ body{
           try {
             var pr = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
             var pd = await pr.json();
-            if (pd.payment_status === 'Paid') { clearInterval(pollTimer); window.location.reload(); }
+            if (pd.payment_status === 'Paid' || pd.payment_status === 'Invoiced') { clearInterval(pollTimer); window.location.reload(); }
           } catch (_) {}
         }, 3000);
       } else {
