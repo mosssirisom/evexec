@@ -17,6 +17,15 @@ const { logMany } = require('../../lib/notifyLog');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
+function esc(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function dbHeaders() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   return { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` };
@@ -56,14 +65,14 @@ async function handleAction(req, res) {
       const confirmUrl = `/api/operator/${action}?id=${id}&token=${encodeURIComponent(token)}`;
       const confirmLabel = isReject ? 'Reject Booking' : 'Accept Booking';
       const pageTitle = isReject ? 'Reject this booking?' : 'Accept this booking?';
-      return res.end(operatorPage(pageTitle, `<p><strong>${booking.customer_name}</strong> &nbsp;·&nbsp; ${booking.customer_phone}</p><p>${route}<br>${date} at ${booking.travel_time || 'TBC'}<br>${booking.passengers} passenger(s)${booking.luggage ? ', ' + booking.luggage : ''}</p><form method="POST" action="${confirmUrl}" style="margin-top:24px"><button type="submit" style="background:${btnColor};color:${btnTextColor};border:none;padding:16px 32px;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;min-width:180px">${confirmLabel}</button></form>`, !isReject));
+      return res.end(operatorPage(pageTitle, `<p><strong>${esc(booking.customer_name)}</strong> &nbsp;·&nbsp; ${esc(booking.customer_phone)}</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}<br>${esc(booking.passengers)} passenger(s)${booking.luggage ? ', ' + esc(booking.luggage) : ''}</p><form method="POST" action="${confirmUrl}" style="margin-top:24px"><button type="submit" style="background:${btnColor};color:${btnTextColor};border:none;padding:16px 32px;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;min-width:180px">${confirmLabel}</button></form>`, !isReject));
     }
 
     // POST: perform the action
     if (isReject) {
       await dbUpdate('bookings', id, { status: 'Cancelled' });
       await sendRejectionNotice(booking);
-      return res.end(operatorPage('Booking Rejected', `<p>Booking for <strong>${booking.customer_name}</strong> has been rejected.</p><p>${route}<br>${date}</p><p>The customer has been notified. No payment has been taken.</p>`, false));
+      return res.end(operatorPage('Booking Rejected', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> has been rejected.</p><p>${esc(route)}<br>${esc(date)}</p><p>The customer has been notified. No payment has been taken.</p>`, false));
     }
 
     await dbUpdate('bookings', id, { status: 'Dispatched' });
@@ -74,7 +83,7 @@ async function handleAction(req, res) {
     const smsTxt = [`Hi ${firstName}, great news — EV Exec can take your transfer!`, '', route, `${date} at ${booking.travel_time || 'TBC'}`, price ? `Price: £${price}` : '', '', 'Please choose your payment method to confirm:', paymentUrl, '', 'Questions? 07721 070370'].filter(l => l !== null).join('\n');
     const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">Your EV Exec Transfer is Accepted</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p style="margin:0 0 6px">Hi ${firstName},</p><p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Your airport transfer has been accepted. Please choose your payment method.</p><h2 style="margin:0 0 4px;color:#fff">${route}</h2><p style="margin:0 0 ${price ? '8px' : '20px'};color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}<a href="${paymentUrl}" style="display:block;text-align:center;background:#d5a538;color:#06101c;padding:16px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem">Choose Payment Method</a><p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">Questions? <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p></div></div>`;
     await Promise.allSettled([booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null, booking.customer_email ? sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted — ${route}`, html: emailHtml }) : null].filter(Boolean));
-    return res.end(operatorPage('Booking Accepted ✓', `<p>Booking for <strong>${booking.customer_name}</strong> accepted.</p><p>${route}<br>${date} at ${booking.travel_time || 'TBC'}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been notified and sent a payment link.</p>`));
+    return res.end(operatorPage('Booking Accepted ✓', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been notified and sent a payment link.</p>`));
   } catch (err) { console.error('Operator action error:', err); res.statusCode = 500; return res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false)); }
 }
 
