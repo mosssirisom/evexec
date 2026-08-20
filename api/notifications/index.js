@@ -4,8 +4,9 @@ const crypto = require('crypto');
 const { parseBody } = require('../../lib/parse');
 const { verifyAuth } = require('../../lib/auth');
 const { sendWebPush, getSubscriptions, deleteExpiredSubscription } = require('../../lib/push');
-const { sendSMS, sendEmail, sendConfirmations, normaliseUkPhone } = require('../../lib/notify');
+const { sendSMS, sendEmail, sendConfirmations, normaliseUkPhone, paymentMethodLabel } = require('../../lib/notify');
 const { processDue } = require('../../lib/notificationQueue');
+const { logMany } = require('../../lib/notifyLog');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
@@ -21,6 +22,15 @@ function dbHeaders(extra = {}) {
     Authorization: `Bearer ${key}`,
     ...extra
   };
+}
+
+function esc(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function safeEqual(a, b) {
@@ -187,6 +197,58 @@ async function handleConfirm(req, res) {
     console.error('Confirm notification error:', err);
     return serverError(res, err.message || String(err));
   }
+}
+
+// ── Payment confirmed — called by evexecoperator's Stripe webhook after it
+// marks a booking Paid. That webhook only ever updated the database; it
+// never told anyone. This alerts the operator (SMS+email, whichever
+// OPERATOR_PHONE/OPERATOR_EMAIL are configured) that a payment link was
+// actually paid. Operator-secret protected, same pattern as /confirm. ─────
+async function handlePaymentConfirmed(req, res) {
+  if (req.method !== 'POST') return methodNotAllowed(res);
+  if (!operatorAuthOk(req)) return unauthorised(res);
+
+  let body;
+  try { body = await readJson(req); }
+  catch { return badRequest(res, 'Invalid JSON body'); }
+
+  const { booking_id } = body;
+  if (!booking_id) return badRequest(res, 'booking_id required');
+
+  const bookingRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/bookings?id=eq.${encodeURIComponent(booking_id)}&select=*&limit=1`,
+    { headers: dbHeaders() }
+  );
+  if (!bookingRes.ok) return serverError(res, await bookingRes.text());
+  const rows = await bookingRes.json();
+  const booking = rows[0];
+  if (!booking) return badRequest(res, 'Booking not found');
+
+  const opPhone = process.env.OPERATOR_PHONE;
+  const opEmail = process.env.OPERATOR_EMAIL;
+  if (!opPhone && !opEmail) {
+    // Nowhere configured to send this — don't fail the webhook over it.
+    return ok(res, { ok: true, skipped: 'OPERATOR_PHONE/OPERATOR_EMAIL not configured' });
+  }
+
+  const amount = booking.price ?? booking.quoted_price;
+  const amountTxt = amount != null ? `£${Number(amount).toFixed(2)}` : 'unknown amount';
+  const smsTxt = `EV Exec: PAID — ${booking.customer_name} (Ref ${booking.ref}), ${amountTxt} via Stripe payment link.`;
+  const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#10b981;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">Payment Received</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p style="margin:0 0 12px;color:rgba(255,255,255,.65)"><strong style="color:#fff">${esc(booking.customer_name)}</strong> (Ref ${esc(booking.ref)}) paid ${esc(amountTxt)} via Stripe payment link.</p><p style="margin:0;color:rgba(255,255,255,.5);font-size:13px">Payment method on record: ${esc(paymentMethodLabel(booking.payment_method))}</p></div></div>`;
+
+  const tasks = [];
+  const logEntries = [];
+  if (opPhone) { tasks.push(sendSMS(opPhone, smsTxt)); logEntries.push(['sms', opPhone]); }
+  if (opEmail) { tasks.push(sendEmail({ to: opEmail, subject: `Payment Received — Ref ${booking.ref}`, html: emailHtml })); logEntries.push(['email', opEmail]); }
+
+  const settled = await Promise.allSettled(tasks);
+  const anyOk = settled.some(r => r.status === 'fulfilled');
+  if (anyOk) await logMany(booking.id, 'payment_confirmed', logEntries).catch(() => {});
+
+  const failed = settled.filter(r => r.status === 'rejected');
+  if (failed.length) console.error('Payment-confirmed operator alert failed:', failed.map(f => f.reason && f.reason.message));
+
+  return ok(res, { ok: true, sent: settled.filter(r => r.status === 'fulfilled').length });
 }
 
 async function handleHealth(req, res) {
@@ -386,6 +448,7 @@ module.exports = async function handler(req, res) {
     if (path.endsWith('/subscribe')) return handleSubscribe(req, res);
     if (path.endsWith('/send')) return handleSend(req, res);
     if (path.endsWith('/confirm')) return handleConfirm(req, res);
+    if (path.endsWith('/payment-confirmed')) return handlePaymentConfirmed(req, res);
     if (path.endsWith('/health')) return handleHealth(req, res);
     if (path.endsWith('/queue')) return handleQueue(req, res);
     if (path.endsWith('/retry')) return handleRetry(req, res);
