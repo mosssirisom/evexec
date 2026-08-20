@@ -3,6 +3,7 @@
 const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
 const { isValidUUID } = require('../../lib/supabase');
+const { awardPoints } = require('../../lib/points');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -221,6 +222,74 @@ async function handleAddresses(req, res, user) {
   res.end(JSON.stringify({ error: 'Method not allowed' }));
 }
 
+// ── POST /api/account/claim-booking ───────────────────────────────────────
+
+async function handleClaimBooking(req, res, user) {
+  if (req.method !== 'POST') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+
+  let body;
+  try { body = await parseBody(req); }
+  catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
+
+  const ref = String(body.ref || '').trim().toUpperCase();
+  if (!ref.startsWith('EVX-') || ref.length < 7) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Invalid booking reference. Format: EVX-XXXXXX' }));
+  }
+
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL()}/rest/v1/bookings?ref=eq.${encodeURIComponent(ref)}&select=id,ref,user_id,return_journey,customer_email,status&limit=1`,
+      { headers: headers() }
+    );
+    if (!r.ok) throw new Error('Database error');
+    const rows = await r.json();
+    if (!rows.length) {
+      res.statusCode = 404;
+      return res.end(JSON.stringify({ error: 'Booking reference not found' }));
+    }
+
+    const booking = rows[0];
+
+    if (booking.user_id === user.id) {
+      return res.end(JSON.stringify({ ok: true, points_awarded: 0, already_claimed: true }));
+    }
+
+    if (booking.user_id && booking.user_id !== user.id) {
+      res.statusCode = 409;
+      return res.end(JSON.stringify({ error: 'This booking is already linked to another account' }));
+    }
+
+    const bookingEmail = normaliseEmail(booking.customer_email || '');
+    const userEmail    = normaliseEmail(user.email || '');
+    if (bookingEmail && userEmail && bookingEmail !== userEmail) {
+      res.statusCode = 403;
+      return res.end(JSON.stringify({ error: 'This booking reference does not match your account email' }));
+    }
+
+    const upd = await fetch(
+      `${SUPABASE_URL()}/rest/v1/bookings?id=eq.${booking.id}`,
+      {
+        method: 'PATCH',
+        headers: headers({ Prefer: 'return=minimal' }),
+        body: JSON.stringify({ user_id: user.id })
+      }
+    );
+    if (!upd.ok) throw new Error('Failed to link booking');
+
+    const delta = booking.return_journey ? 2 : 1;
+    await awardPoints(user.id, delta);
+
+    return res.end(JSON.stringify({ ok: true, points_awarded: delta }));
+  } catch (err) {
+    res.statusCode = 500;
+    return res.end(JSON.stringify({ error: err.message || 'Failed to claim booking' }));
+  }
+}
+
 // ── Router ─────────────────────────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
@@ -233,9 +302,10 @@ module.exports = async function handler(req, res) {
   }
 
   const path = (req.url || '').split('?')[0];
-  if (path.endsWith('/profile'))   return handleProfile(req, res, user);
-  if (path.endsWith('/journeys'))  return handleJourneys(req, res, user);
-  if (path.endsWith('/addresses')) return handleAddresses(req, res, user);
+  if (path.endsWith('/profile'))        return handleProfile(req, res, user);
+  if (path.endsWith('/journeys'))       return handleJourneys(req, res, user);
+  if (path.endsWith('/addresses'))      return handleAddresses(req, res, user);
+  if (path.endsWith('/claim-booking'))  return handleClaimBooking(req, res, user);
 
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));

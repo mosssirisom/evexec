@@ -130,7 +130,12 @@ body{
     </div>
     <h1 class="serif text-4xl md:text-5xl font-bold leading-tight" id="bookingHeadline">Your Transfer</h1>
     <p class="text-white/55 mt-2 text-sm" id="bookingSubline"></p>
-    <p class="text-white/30 mt-1 text-xs font-mono hidden" id="bookingRef"></p>
+    <div class="mt-3 hidden" id="refBadge">
+      <span style="display:inline-flex;align-items:center;gap:8px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.3);border-radius:999px;padding:5px 14px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#d5a538" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>
+        <span class="text-xs font-mono font-bold" style="color:#d5a538;letter-spacing:.08em" id="bookingRef"></span>
+      </span>
+    </div>
   </div>
 
   <!-- Journey summary -->
@@ -188,7 +193,7 @@ body{
       <div class="w-10 h-10 rounded-full bg-blue-500/15 border border-blue-500/30 flex items-center justify-center flex-shrink-0 text-blue-400 font-bold text-lg">↻</div>
       <div>
         <h2 class="font-bold text-lg mb-1">Payment Received</h2>
-        <p class="text-white/65 leading-relaxed">Your payment has been received and your booking is being confirmed. You'll receive a confirmation via SMS or email shortly.</p>
+        <p class="text-white/65 leading-relaxed">Your payment has been received. This page will update automatically in a few seconds, and a confirmation will be sent to your phone or email.</p>
       </div>
     </div>
   </div>
@@ -200,6 +205,7 @@ body{
       <div>
         <h2 class="font-bold text-lg mb-1">Booking Confirmed</h2>
         <p class="text-white/65 leading-relaxed" id="confirmedMsg">Your transfer is confirmed. We'll see you on the day!</p>
+        <p class="text-white/45 text-sm mt-2 hidden" id="receiptNote">A payment confirmation has been sent to your phone and email. Need a receipt? <a class="gold" href="https://wa.me/447721070370">WhatsApp us</a> and we'll send one over.</p>
         <p class="text-white/45 text-sm mt-3">Any questions? <a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
       </div>
     </div>
@@ -208,6 +214,19 @@ body{
   <!-- Payment cancelled banner -->
   <div id="panelCancelled" class="hidden glass rounded-xl p-5 mb-5" style="border-color:rgba(234,179,8,.22)">
     <p class="text-yellow-300/80 text-sm"><strong>Payment cancelled.</strong> Your booking is still accepted — you can choose a payment method above when you're ready.</p>
+  </div>
+
+  <!-- Claim-to-account panel (shown when user is signed into My Account) -->
+  <div id="panelClaim" class="hidden glass rounded-xl p-6 mb-5" style="border-color:rgba(213,165,56,.22)">
+    <div class="flex gap-4 items-start">
+      <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 text-xl" style="background:rgba(213,165,56,.12);border:1px solid rgba(213,165,56,.3);color:#d5a538">★</div>
+      <div style="flex:1">
+        <h2 class="font-bold text-lg mb-1">Earn Privilege Points</h2>
+        <p class="text-white/65 text-sm leading-relaxed mb-3">Link this booking to your EV Exec account to earn Privilege Points and track your journey history.</p>
+        <button class="btn-gold rounded-md px-5 py-3 font-bold text-sm" id="btnClaimBooking">Add to My Account</button>
+        <p id="claimMsg" class="text-sm mt-2 hidden"></p>
+      </div>
+    </div>
   </div>
 
   <!-- Rejected state -->
@@ -312,9 +331,8 @@ body{
     document.getElementById('bookingHeadline').textContent = from + ' → ' + to;
     document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : '');
     if (b.ref) {
-      var refEl = document.getElementById('bookingRef');
-      refEl.textContent = 'Ref: ' + b.ref;
-      refEl.classList.remove('hidden');
+      document.getElementById('bookingRef').textContent = b.ref;
+      document.getElementById('refBadge').classList.remove('hidden');
     }
 
     addDetailRow('Journey', from + ' → ' + to);
@@ -346,10 +364,33 @@ body{
           document.getElementById('confirmedMsg').textContent =
             'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
         }
+        if (b.payment_method === 'card') {
+          document.getElementById('receiptNote').classList.remove('hidden');
+        }
         return;
       }
       if (payment === 'success') {
         show('panelPaymentPending');
+        var pollCount = 0;
+        var pollTimer = setInterval(async function () {
+          pollCount++;
+          if (pollCount > 10) {
+            clearInterval(pollTimer);
+            var pendingEl = document.getElementById('panelPaymentPending');
+            if (pendingEl) {
+              var h2 = pendingEl.querySelector('h2');
+              var p  = pendingEl.querySelector('p');
+              if (h2) h2.textContent = 'Payment is taking longer than expected';
+              if (p)  p.innerHTML = 'Your payment was received but confirmation is taking a moment. Please <a style="color:#d5a538" href="https://wa.me/447721070370">WhatsApp us</a> or call <a style="color:#d5a538" href="tel:07721070370">07721 070370</a> to confirm.';
+            }
+            return;
+          }
+          try {
+            var pr = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
+            var pd = await pr.json();
+            if (pd.payment_status === 'Paid' || pd.payment_status === 'Invoiced') { clearInterval(pollTimer); window.location.reload(); }
+          } catch (_) {}
+        }, 3000);
       } else {
         show('panelPayment');
         if (payment === 'cancelled') show('panelCancelled');
@@ -368,6 +409,55 @@ body{
       show('panelRejected');
       return;
     }
+  }
+
+  async function tryClaimPanel(b) {
+    if (!b.ref) return;
+    try {
+      var cfg = await fetch('/api/booking/config').then(function(r) { return r.json(); });
+      var supabaseUrl = cfg.supabaseUrl || '';
+      var projectRef = supabaseUrl.replace('https://', '').split('.')[0];
+      if (!projectRef) return;
+      var sessionRaw = localStorage.getItem('sb-' + projectRef + '-auth-token');
+      if (!sessionRaw) return;
+      var session = JSON.parse(sessionRaw);
+      var token = session.access_token;
+      if (!token) return;
+
+      show('panelClaim');
+
+      document.getElementById('btnClaimBooking').onclick = async function() {
+        var btn = document.getElementById('btnClaimBooking');
+        var msgEl = document.getElementById('claimMsg');
+        btn.disabled = true;
+        btn.textContent = 'Claiming…';
+        msgEl.classList.remove('hidden');
+        msgEl.style.color = 'rgba(255,255,255,.65)';
+        msgEl.textContent = 'Linking to your account…';
+        try {
+          var r = await fetch('/api/account/claim-booking', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: JSON.stringify({ ref: b.ref })
+          });
+          var d = await r.json();
+          if (!r.ok) throw new Error(d.error || 'Failed to claim booking.');
+          if (d.already_claimed) {
+            msgEl.style.color = '#4ade80';
+            msgEl.textContent = '✓ This booking is already in your account.';
+          } else {
+            msgEl.style.color = '#4ade80';
+            msgEl.textContent = '✓ Booking linked! +' + d.points_awarded + ' Privilege Point' + (d.points_awarded === 1 ? '' : 's') + ' earned.';
+          }
+          btn.textContent = 'Added ✓';
+        } catch (e) {
+          msgEl.style.color = '#f87171';
+          msgEl.textContent = e.message;
+          btn.disabled = false;
+          btn.textContent = 'Add to My Account';
+        }
+      };
+    } catch (_) {}
   }
 
   function showError(msg) {
@@ -389,6 +479,7 @@ body{
       }
       if (!res.ok) throw new Error(data.error || 'Booking not found.');
       renderBooking(data);
+      tryClaimPanel(data);
     } catch (e) {
       showError(e.message);
     }
@@ -408,6 +499,7 @@ body{
       });
       var data; try { data = await res.json(); } catch (_) { throw new Error('Payment service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
+      if (!data.url) throw new Error('Payment redirect unavailable. Please try again or contact us.');
       window.location.href = data.url;
     } catch (e) {
       err.textContent = e.message;

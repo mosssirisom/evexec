@@ -1845,6 +1845,18 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       if (el) el.focus();
       return;
     }
+    if (!bwGetVal('bwDate')) {
+      bwShowMsg('Please select a travel date to continue.', 'error');
+      var dateEl = document.getElementById('bwDate');
+      if (dateEl) dateEl.focus();
+      return;
+    }
+    if (!bwGetVal('bwTime')) {
+      bwShowMsg('Please enter a travel time to continue.', 'error');
+      var timeEl = document.getElementById('bwTime');
+      if (timeEl) timeEl.focus();
+      return;
+    }
     if (isFrom && !bwGetVal('bwFlight')) {
       bwShowMsg('Flight number is required for airport pick-ups.', 'error');
       var flEl = document.getElementById('bwFlight');
