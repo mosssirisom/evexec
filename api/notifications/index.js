@@ -4,7 +4,7 @@ const crypto = require('crypto');
 const { parseBody } = require('../../lib/parse');
 const { verifyAuth } = require('../../lib/auth');
 const { sendWebPush, getSubscriptions, deleteExpiredSubscription } = require('../../lib/push');
-const { sendSMS, sendEmail, normaliseUkPhone } = require('../../lib/notify');
+const { sendSMS, sendEmail, sendConfirmations, normaliseUkPhone } = require('../../lib/notify');
 const { processDue } = require('../../lib/notificationQueue');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
@@ -154,6 +154,39 @@ async function handleSend(req, res) {
   );
 
   return ok(res, { sent: results.filter(r => r.status === 'fulfilled').length, total: subscriptions.length });
+}
+
+// ── Confirm a booking — used by evexecoperator to give operator-created
+// bookings the exact same SMS+email+push confirmation website bookings get
+// once payment is chosen (sendConfirmations), rather than a separate
+// SMS-only "is booked" text. Operator-secret protected, same as /send. ────
+async function handleConfirm(req, res) {
+  if (req.method !== 'POST') return methodNotAllowed(res);
+  if (!operatorAuthOk(req)) return unauthorised(res);
+
+  let body;
+  try { body = await readJson(req); }
+  catch { return badRequest(res, 'Invalid JSON body'); }
+
+  const { booking_id } = body;
+  if (!booking_id) return badRequest(res, 'booking_id required');
+
+  const bookingRes = await fetch(
+    `${SUPABASE_URL}/rest/v1/bookings?id=eq.${encodeURIComponent(booking_id)}&select=*&limit=1`,
+    { headers: dbHeaders() }
+  );
+  if (!bookingRes.ok) return serverError(res, await bookingRes.text());
+  const rows = await bookingRes.json();
+  const booking = rows[0];
+  if (!booking) return badRequest(res, 'Booking not found');
+
+  try {
+    await sendConfirmations(booking);
+    return ok(res, { ok: true });
+  } catch (err) {
+    console.error('Confirm notification error:', err);
+    return serverError(res, err.message || String(err));
+  }
 }
 
 async function handleHealth(req, res) {
@@ -352,6 +385,7 @@ module.exports = async function handler(req, res) {
   try {
     if (path.endsWith('/subscribe')) return handleSubscribe(req, res);
     if (path.endsWith('/send')) return handleSend(req, res);
+    if (path.endsWith('/confirm')) return handleConfirm(req, res);
     if (path.endsWith('/health')) return handleHealth(req, res);
     if (path.endsWith('/queue')) return handleQueue(req, res);
     if (path.endsWith('/retry')) return handleRetry(req, res);
