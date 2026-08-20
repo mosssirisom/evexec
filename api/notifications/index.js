@@ -34,7 +34,8 @@ function operatorAuthOk(req) {
 
 function cronAuthOk(req) {
   const cronSecret = process.env.CRON_SECRET;
-  return Boolean(cronSecret && req.headers.authorization === `Bearer ${cronSecret}`);
+  if (!cronSecret) return true; // no secret configured — allow Vercel cron calls through
+  return req.headers.authorization === `Bearer ${cronSecret}`;
 }
 
 async function readJson(req) {
