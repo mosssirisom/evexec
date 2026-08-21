@@ -52,6 +52,6 @@
   ],
   "crons": [
     { "path": "/api/reminders/trigger",   "schedule": "0 8 * * *" },
-    { "path": "/api/notifications/retry", "schedule": "*/15 * * * *" }
+    { "path": "/api/notifications/retry", "schedule": "0 8 * * *" }
   ]
 }
