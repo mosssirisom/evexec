@@ -68,14 +68,17 @@ async function sendReminders(bookings, type) {
 </div>`;
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
+    const hasEmail = Boolean(booking.customer_email);
+    const hasPhone = Boolean(booking.customer_phone);
     const logEntries = [];
-    if (booking.customer_phone) logEntries.push(['sms', booking.customer_phone]);
-    if (booking.customer_email) logEntries.push(['email', booking.customer_email]);
+    if (hasEmail) logEntries.push(['email', booking.customer_email]);
+    else if (hasPhone) logEntries.push(['sms', booking.customer_phone]);
     logEntries.push(['push', booking.customer_email || booking.customer_phone]);
 
     await Promise.allSettled([
-      booking.customer_phone ? sendSMS(booking.customer_phone, smsBody) : null,
-      booking.customer_email ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }) : null,
+      hasEmail
+        ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })
+        : (hasPhone ? sendSMS(booking.customer_phone, smsBody) : null),
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
       logMany(booking.id, logType, logEntries)
     ].filter(Boolean));

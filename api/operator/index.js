@@ -7,7 +7,7 @@
 
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail, sendRejectionNotice } = require('../../lib/notify');
+const { sendSMS, sendEmail, sendRejectionNotice, sendWhatsApp, whatsAppReady } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, fmtTime, getPrice } = require('../../lib/format');
@@ -83,7 +83,11 @@ async function handleAction(req, res) {
     const time = fmtTime(booking.travel_time, booking.travel_date);
     const smsTxt = [`Hi ${firstName}, great news — EV Exec can take your transfer!`, '', route, `${date} at ${time}`, price ? `Price: £${price}` : '', '', 'Please choose your payment method to confirm:', paymentUrl, '', 'Questions? 07721 070370'].filter(l => l !== null).join('\n');
     const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">Your EV Exec Transfer is Accepted</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p style="margin:0 0 6px">Hi ${firstName},</p><p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Your airport transfer has been accepted. Please choose your payment method.</p><h2 style="margin:0 0 4px;color:#fff">${route}</h2><p style="margin:0 0 ${price ? '8px' : '20px'};color:rgba(255,255,255,.65)">${date} at ${time} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}<a href="${paymentUrl}" style="display:block;text-align:center;background:#d5a538;color:#06101c;padding:16px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem">Choose Payment Method</a><p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">Questions? <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p></div></div>`;
-    await Promise.allSettled([booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null, booking.customer_email ? sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted — ${route}`, html: emailHtml }) : null].filter(Boolean));
+    const acceptTasks = [];
+    if (booking.customer_email) acceptTasks.push(sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted — ${route}`, html: emailHtml }));
+    if (whatsAppReady(booking)) acceptTasks.push(sendWhatsApp(booking.customer_phone, smsTxt));
+    else if (booking.customer_phone && !booking.customer_email) acceptTasks.push(sendSMS(booking.customer_phone, smsTxt));
+    await Promise.allSettled(acceptTasks);
     return res.end(operatorPage('Booking Accepted ✓', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been notified and sent a payment link.</p>`));
   } catch (err) { console.error('Operator action error:', err); res.statusCode = 500; return res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false)); }
 }
@@ -156,6 +160,7 @@ async function sendNotification(req, res) {
   const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">${isReminder ? 'Upcoming Transfer — EV Exec' : 'Transfer Confirmed — EV Exec'}</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p>Hi ${firstName},</p><h2>${route}</h2><p style="color:rgba(255,255,255,.65)">${date} at ${time} · ${booking.passengers || 1} passenger(s)</p><p style="color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p></div></div>`;
   const tasks = []; const logEntries = [];
   if (channels.includes('sms') && booking.customer_phone) { tasks.push(sendSMS(booking.customer_phone, smsText)); logEntries.push(['sms', booking.customer_phone]); }
+  if (channels.includes('whatsapp') && whatsAppReady(booking)) { tasks.push(sendWhatsApp(booking.customer_phone, smsText)); logEntries.push(['whatsapp', booking.customer_phone]); }
   if (channels.includes('email') && booking.customer_email) { tasks.push(sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })); logEntries.push(['email', booking.customer_email]); }
   if (channels.includes('push')) { tasks.push(sendPushToCustomer(booking, isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', `${route} on ${date}`, '/booking?id=' + booking.id)); logEntries.push(['push', booking.customer_email || booking.customer_phone]); }
   if (!tasks.length) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'No valid channels for this booking' })); }
