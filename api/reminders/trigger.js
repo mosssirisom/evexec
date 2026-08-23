@@ -2,7 +2,7 @@
 
 const { sendSMS, sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
-const { journeyLine, fmtDate } = require('../../lib/format');
+const { journeyLine, fmtDate, fmtTime } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
@@ -36,16 +36,17 @@ async function sendReminders(bookings, type) {
   for (const booking of bookings) {
     const route     = journeyLine(booking);
     const date      = fmtDate(booking.travel_date);
+    const time      = fmtTime(booking.travel_time, booking.travel_date);
     const firstName = (booking.customer_name || 'there').split(' ')[0];
     const method    = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
     const daysText  = type === '7day' ? 'in 7 days' : 'tomorrow';
 
     const smsBody = type === '7day'
-      ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\nPayment: ${method}\n\nQuestions: 07721 070370`
-      : `Hi ${firstName}, reminder: your EV Exec transfer is TOMORROW!\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\nPayment: ${method}\n\nQuestions: 07721 070370`;
+      ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`
+      : `Hi ${firstName}, reminder: your EV Exec transfer is TOMORROW!\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`;
 
     const pushTitle = type === '7day' ? 'Transfer in 7 Days — EV Exec' : 'Transfer Tomorrow — EV Exec';
-    const pushBody  = `${route} ${daysText} at ${booking.travel_time || 'TBC'}.`;
+    const pushBody  = `${route} ${daysText} at ${time}.`;
 
     const emailSubject = type === '7day'
       ? `Reminder: Your Transfer in 7 Days — EV Exec`
@@ -60,21 +61,24 @@ async function sendReminders(bookings, type) {
     <p style="margin:0 0 6px">Hi ${firstName},</p>
     <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p>
     <h2 style="margin:0 0 4px;color:#fff">${route}</h2>
-    <p style="margin:0 0 16px;color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>
+    <p style="margin:0 0 16px;color:rgba(255,255,255,.65)">${date} at ${time} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>
     <p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p>
     <p style="color:rgba(255,255,255,.5);font-size:13px">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p>
   </div>
 </div>`;
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
+    const hasEmail = Boolean(booking.customer_email);
+    const hasPhone = Boolean(booking.customer_phone);
     const logEntries = [];
-    if (booking.customer_phone) logEntries.push(['sms', booking.customer_phone]);
-    if (booking.customer_email) logEntries.push(['email', booking.customer_email]);
+    if (hasEmail) logEntries.push(['email', booking.customer_email]);
+    else if (hasPhone) logEntries.push(['sms', booking.customer_phone]);
     logEntries.push(['push', booking.customer_email || booking.customer_phone]);
 
     await Promise.allSettled([
-      booking.customer_phone ? sendSMS(booking.customer_phone, smsBody) : null,
-      booking.customer_email ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }) : null,
+      hasEmail
+        ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })
+        : (hasPhone ? sendSMS(booking.customer_phone, smsBody) : null),
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
       logMany(booking.id, logType, logEntries)
     ].filter(Boolean));

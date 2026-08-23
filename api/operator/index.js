@@ -7,10 +7,10 @@
 
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail, sendRejectionNotice } = require('../../lib/notify');
+const { sendSMS, sendEmail, sendRejectionNotice, sendWhatsApp, whatsAppReady } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const { verifyToken } = require('../../lib/token');
-const { journeyLine, fmtDate, getPrice } = require('../../lib/format');
+const { journeyLine, fmtDate, fmtTime, getPrice } = require('../../lib/format');
 const { parseBody } = require('../../lib/parse');
 const { operatorPage } = require('../../lib/pages');
 const { logMany } = require('../../lib/notifyLog');
@@ -80,9 +80,14 @@ async function handleAction(req, res) {
     const paymentUrl = `${siteUrl}/booking?id=${id}`;
     const price = getPrice(booking);
     const firstName = (booking.customer_name || 'there').split(' ')[0];
-    const smsTxt = [`Hi ${firstName}, great news — EV Exec can take your transfer!`, '', route, `${date} at ${booking.travel_time || 'TBC'}`, price ? `Price: £${price}` : '', '', 'Please choose your payment method to confirm:', paymentUrl, '', 'Questions? 07721 070370'].filter(l => l !== null).join('\n');
-    const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">Your EV Exec Transfer is Accepted</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p style="margin:0 0 6px">Hi ${firstName},</p><p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Your airport transfer has been accepted. Please choose your payment method.</p><h2 style="margin:0 0 4px;color:#fff">${route}</h2><p style="margin:0 0 ${price ? '8px' : '20px'};color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}<a href="${paymentUrl}" style="display:block;text-align:center;background:#d5a538;color:#06101c;padding:16px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem">Choose Payment Method</a><p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">Questions? <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p></div></div>`;
-    await Promise.allSettled([booking.customer_phone ? sendSMS(booking.customer_phone, smsTxt) : null, booking.customer_email ? sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted — ${route}`, html: emailHtml }) : null].filter(Boolean));
+    const time = fmtTime(booking.travel_time, booking.travel_date);
+    const smsTxt = [`Hi ${firstName}, great news — EV Exec can take your transfer!`, '', route, `${date} at ${time}`, price ? `Price: £${price}` : '', '', 'Please choose your payment method to confirm:', paymentUrl, '', 'Questions? 07721 070370'].filter(l => l !== null).join('\n');
+    const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">Your EV Exec Transfer is Accepted</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p style="margin:0 0 6px">Hi ${firstName},</p><p style="margin:0 0 20px;color:rgba(255,255,255,.65)">Your airport transfer has been accepted. Please choose your payment method.</p><h2 style="margin:0 0 4px;color:#fff">${route}</h2><p style="margin:0 0 ${price ? '8px' : '20px'};color:rgba(255,255,255,.65)">${date} at ${time} &nbsp;·&nbsp; ${booking.passengers} passenger(s)</p>${price ? `<p style="margin:0 0 20px;font-size:1.4rem;font-weight:900;color:#d5a538">£${price}</p>` : ''}<a href="${paymentUrl}" style="display:block;text-align:center;background:#d5a538;color:#06101c;padding:16px 28px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:1rem">Choose Payment Method</a><p style="margin-top:20px;color:rgba(255,255,255,.5);font-size:13px">Questions? <a href="tel:07721070370" style="color:#d5a538">07721 070370</a></p></div></div>`;
+    const acceptTasks = [];
+    if (booking.customer_email) acceptTasks.push(sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted — ${route}`, html: emailHtml }));
+    if (whatsAppReady(booking)) acceptTasks.push(sendWhatsApp(booking.customer_phone, smsTxt));
+    else if (booking.customer_phone && !booking.customer_email) acceptTasks.push(sendSMS(booking.customer_phone, smsTxt));
+    await Promise.allSettled(acceptTasks);
     return res.end(operatorPage('Booking Accepted ✓', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been notified and sent a payment link.</p>`));
   } catch (err) { console.error('Operator action error:', err); res.statusCode = 500; return res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false)); }
 }
@@ -146,14 +151,16 @@ async function sendNotification(req, res) {
   const booking = await dbGet('bookings', booking_id);
   if (!booking) { res.statusCode = 404; return res.end(JSON.stringify({ error: 'Booking not found' })); }
   const route = journeyLine(booking); const date = fmtDate(booking.travel_date);
+  const time = fmtTime(booking.travel_time, booking.travel_date);
   const firstName = (booking.customer_name || 'there').split(' ')[0];
   const method = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
   const isReminder = (message_type || 'manual') === 'manual_reminder';
-  const smsText = isReminder ? `Hi ${firstName}, a reminder from EV Exec about your upcoming transfer.\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\nPayment: ${method}\n\nQuestions: 07721 070370` : `Hi ${firstName}, your EV Exec transfer is confirmed!\n\n${route}\n${date} at ${booking.travel_time || 'TBC'}\nPayment: ${method}\n\nQuestions: 07721 070370`;
+  const smsText = isReminder ? `Hi ${firstName}, a reminder from EV Exec about your upcoming transfer.\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370` : `Hi ${firstName}, your EV Exec transfer is confirmed!\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`;
   const emailSubject = isReminder ? `Reminder: Your EV Exec Transfer — ${date}` : `Transfer Confirmed — EV Exec`;
-  const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">${isReminder ? 'Upcoming Transfer — EV Exec' : 'Transfer Confirmed — EV Exec'}</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p>Hi ${firstName},</p><h2>${route}</h2><p style="color:rgba(255,255,255,.65)">${date} at ${booking.travel_time || 'TBC'} · ${booking.passengers || 1} passenger(s)</p><p style="color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p></div></div>`;
+  const emailHtml = `<div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto"><div style="background:#d5a538;padding:20px 28px;border-radius:12px 12px 0 0"><h1 style="margin:0;color:#06101c;font-size:1.2rem">${isReminder ? 'Upcoming Transfer — EV Exec' : 'Transfer Confirmed — EV Exec'}</h1></div><div style="background:#020813;color:#fff;padding:28px;border-radius:0 0 12px 12px"><p>Hi ${firstName},</p><h2>${route}</h2><p style="color:rgba(255,255,255,.65)">${date} at ${time} · ${booking.passengers || 1} passenger(s)</p><p style="color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p></div></div>`;
   const tasks = []; const logEntries = [];
   if (channels.includes('sms') && booking.customer_phone) { tasks.push(sendSMS(booking.customer_phone, smsText)); logEntries.push(['sms', booking.customer_phone]); }
+  if (channels.includes('whatsapp') && whatsAppReady(booking)) { tasks.push(sendWhatsApp(booking.customer_phone, smsText)); logEntries.push(['whatsapp', booking.customer_phone]); }
   if (channels.includes('email') && booking.customer_email) { tasks.push(sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })); logEntries.push(['email', booking.customer_email]); }
   if (channels.includes('push')) { tasks.push(sendPushToCustomer(booking, isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', `${route} on ${date}`, '/booking?id=' + booking.id)); logEntries.push(['push', booking.customer_email || booking.customer_phone]); }
   if (!tasks.length) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'No valid channels for this booking' })); }
