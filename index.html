@@ -936,6 +936,19 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
       <p class="text-xs text-white/35 mt-2">Required — we monitor your flight for delays</p>
     </div>
 
+    <!-- Additional Stops -->
+    <div class="bw-card mb-4" id="bwStopsCard">
+      <div class="flex items-center justify-between mb-1">
+        <p class="text-sm font-bold text-white/80"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Additional Stops</p>
+      </div>
+      <p class="text-xs text-white/40 mb-3">Add any extra stops along the way. Each stop is <span class="text-[#d5a538] font-semibold">+£5</span>.</p>
+      <div id="bwStopsList" style="display:flex;flex-direction:column;gap:8px"></div>
+      <button class="text-xs font-semibold mt-3" id="bwAddStopBtn" type="button" style="color:#d5a538;background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:4px">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6.5" y1="1" x2="6.5" y2="12"/><line x1="1" y1="6.5" x2="12" y2="6.5"/></svg>
+        Add a stop
+      </button>
+    </div>
+
     <!-- Return details -->
     <div id="bwReturnSection" class="hidden">
       <div class="bw-card mb-4" style="border-color:rgba(213,165,56,.28)">
@@ -1599,7 +1612,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     { name:'Other UK Airport',       oneWay:null, ret:null }
   ];
 
-  var bw = { step:1, airport:null, direction:null, journeyType:'oneway', passengers:1, bags:0 };
+  var bw = { step:1, airport:null, direction:null, journeyType:'oneway', passengers:1, bags:0, stops:[] };
 
   function bwShowMsg(text, cls) {
     var el = document.getElementById('formMsg');
@@ -1759,8 +1772,10 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       var dirBorder = bw.direction === 'to' ? 'rgba(59,130,246,.3)' : 'rgba(34,197,94,.25)';
       var dirLabel  = bw.direction === 'to' ? 'To Airport' : 'From Airport';
       var ap = BW_AIRPORTS.find(function(a) { return a.name === bw.airport; }) || {};
-      var priceVal   = bw.journeyType === 'return' ? ap.ret : ap.oneWay;
-      var priceLabel = priceVal ? '£' + priceVal : 'Price on request';
+      var priceBase  = bw.journeyType === 'return' ? ap.ret : ap.oneWay;
+      var stopCount  = (bw.stops || []).filter(function(s){ return s.trim(); }).length;
+      var priceVal   = priceBase ? priceBase + stopCount * 5 : null;
+      var priceLabel = priceVal ? '£' + priceVal + (stopCount ? ' (inc. ' + stopCount + ' stop' + (stopCount > 1 ? 's' : '') + ')' : '') : 'Price on request';
       pills.innerHTML =
         '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
@@ -1826,6 +1841,54 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if (bagsDec) bagsDec.disabled = bw.bags <= 0;
     if (bagsInc) bagsInc.disabled = bw.bags >= 8;
   }
+
+  function bwRenderStops() {
+    var list = document.getElementById('bwStopsList');
+    if (!list) return;
+    list.innerHTML = '';
+    bw.stops.forEach(function(val, i) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px';
+      var inp = document.createElement('input');
+      inp.className = 'input';
+      inp.style.flex = '1';
+      inp.placeholder = 'Stop ' + (i + 1) + ' address…';
+      inp.value = val || '';
+      inp.setAttribute('autocomplete', 'street-address');
+      inp.addEventListener('input', function() {
+        bw.stops[i] = inp.value;
+        bwUpdateUI();
+      });
+      var rm = document.createElement('button');
+      rm.type = 'button';
+      rm.style.cssText = 'background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:rgba(255,255,255,.5);font-size:16px;line-height:1;padding:6px 10px;cursor:pointer;flex-shrink:0';
+      rm.textContent = '×';
+      rm.addEventListener('click', function() {
+        bw.stops.splice(i, 1);
+        bwRenderStops();
+        bwUpdateUI();
+      });
+      row.appendChild(inp);
+      row.appendChild(rm);
+      list.appendChild(row);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var addBtn = document.getElementById('bwAddStopBtn');
+    if (addBtn) {
+      addBtn.addEventListener('click', function() {
+        bw.stops.push('');
+        bwRenderStops();
+        bwUpdateUI();
+        var list = document.getElementById('bwStopsList');
+        if (list && list.lastChild) {
+          var inp = list.lastChild.querySelector('input');
+          if (inp) inp.focus();
+        }
+      });
+    }
+  });
 
   function bwGetVal(id) {
     var el = document.getElementById(id);
@@ -1893,7 +1956,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       contact_method:     bwGetVal('bwContact') || 'WhatsApp',
       customer_name:      name,
       customer_phone:     phone,
-      customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null
+      customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
+      additional_stops:   (bw.stops || []).filter(function(s){ return s.trim(); })
     };
     try {
       var bwHeaders = {'Content-Type':'application/json'};
