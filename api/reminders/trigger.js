@@ -3,7 +3,7 @@
 const { sendSMS, sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const { emailLayout } = require('../../lib/emailLayout');
-const { journeyLine, fmtDate, fmtTime } = require('../../lib/format');
+const { journeyLine, fmtDate, fmtTime, emailJourneyHtml } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
@@ -46,14 +46,14 @@ async function sendReminders(bookings, type) {
       ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`
       : `Hi ${firstName}, reminder: your EV Exec transfer is TOMORROW!\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`;
 
-    const pushTitle = type === '7day' ? 'Transfer in 7 Days — EV Exec' : 'Transfer Tomorrow — EV Exec';
+    const pushTitle = type === '7day' ? 'Transfer in 7 Days' : 'Transfer Tomorrow';
     const pushBody  = `${route} ${daysText} at ${time}.`;
 
     const emailSubject = type === '7day'
-      ? `Reminder: Your Transfer in 7 Days — EV Exec`
-      : `Reminder: Your Transfer is Tomorrow — EV Exec`;
+      ? `Reminder: Your Transfer in 7 Days`
+      : `Reminder: Your Transfer is Tomorrow`;
 
-    const emailHtml = emailLayout({ title: 'Upcoming Transfer — EV Exec', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p><h2 style="margin:0 0 4px;font-family:Inter,Arial,sans-serif;font-size:19px;font-weight:700;color:#fff;line-height:1.3">${route}</h2><p style="margin:0 0 16px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.6)">${date} at ${time} &nbsp;&middot;&nbsp; ${booking.passengers} passenger(s)</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
+    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p>${emailJourneyHtml(booking)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
     const hasEmail = Boolean(booking.customer_email);
