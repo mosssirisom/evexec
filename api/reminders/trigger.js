@@ -35,7 +35,9 @@ function addDays(dateStr, days) {
 async function sendReminders(bookings, type) {
   let sent = 0;
   for (const booking of bookings) {
-    const route     = journeyLine(booking);
+    // Strip return leg so reminders only show details for this specific journey
+    const leg       = { ...booking, return_journey: false };
+    const route     = journeyLine(leg);
     const date      = fmtDate(booking.travel_date);
     const time      = fmtTime(booking.travel_time, booking.travel_date);
     const firstName = (booking.customer_name || 'there').split(' ')[0];
@@ -53,7 +55,7 @@ async function sendReminders(bookings, type) {
       ? `Reminder: Your Transfer in 7 Days`
       : `Reminder: Your Transfer is Tomorrow`;
 
-    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p>${emailJourneyHtml(booking)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
+    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p>${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
     const hasEmail = Boolean(booking.customer_email);
