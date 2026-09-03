@@ -1005,12 +1005,6 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
         <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required type="tel" inputmode="tel" autocomplete="tel"/>
         <label for="bwEmail" class="sr-only">Email address</label>
         <input class="input" id="bwEmail" placeholder="Email address (optional)" type="email" autocomplete="email"/>
-        <label for="bwContact" class="sr-only">Preferred contact method</label>
-        <select class="input" id="bwContact" autocomplete="off">
-          <option>WhatsApp</option>
-          <option>Phone Call</option>
-          <option>Email</option>
-        </select>
       </div>
     </div>
 
@@ -1953,7 +1947,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
       return_date:        isRet ? (bwGetVal('bwRetDate') || null) : null,
       return_time:        isRet ? (bwGetVal('bwRetTime') || null) : null,
       return_destination: isRet && !isFrom ? address : null,
-      contact_method:     bwGetVal('bwContact') || 'WhatsApp',
       customer_name:      name,
       customer_phone:     phone,
       customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
