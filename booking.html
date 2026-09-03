@@ -120,6 +120,27 @@ body{
   <a class="btn-gold rounded-md px-7 py-3.5 font-bold inline-block" href="./index.html">← Back to Home</a>
 </div>
 
+<!-- Lookup state: no ?id in the link, let the customer find their booking themselves -->
+<div id="stateLookup" class="hidden">
+  <h1 class="serif text-4xl md:text-5xl font-bold leading-tight mb-2">Check Your <span class="gold">Booking</span></h1>
+  <p class="text-white/55 mb-7 text-sm">Enter your booking reference and the phone number you booked with to see its status and, if accepted, choose how to pay.</p>
+  <div class="glass rounded-xl p-6 md:p-7">
+    <div class="flex flex-col gap-4">
+      <div>
+        <label for="lkRef" class="block text-xs uppercase tracking-[.12em] text-white/45 font-bold mb-2">Booking Reference</label>
+        <input id="lkRef" placeholder="EVX-XXXXXXXX" autocomplete="off" style="letter-spacing:.06em;text-transform:uppercase" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
+      </div>
+      <div>
+        <label for="lkPhone" class="block text-xs uppercase tracking-[.12em] text-white/45 font-bold mb-2">Phone Number</label>
+        <input id="lkPhone" placeholder="07700 000000" type="tel" inputmode="tel" autocomplete="tel" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
+      </div>
+      <button class="btn-gold rounded-md py-4 font-bold text-sm w-full mt-1" id="btnLookup" onclick="lookupBooking()">Find My Booking</button>
+      <p id="lookupError" class="text-red-400 text-xs hidden"></p>
+    </div>
+  </div>
+  <p class="text-white/45 text-sm mt-5">Can't find your reference? <a class="gold" href="https://wa.me/447721070370">WhatsApp us</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
+</div>
+
 <!-- Booking content -->
 <div id="stateContent" class="hidden">
 
@@ -468,7 +489,8 @@ body{
 
   async function load() {
     if (!queryId) {
-      showError('No booking ID in this link. Please check your confirmation message.');
+      hide('stateLoading');
+      show('stateLookup');
       return;
     }
     try {
@@ -484,6 +506,36 @@ body{
       showError(e.message);
     }
   }
+
+  window.lookupBooking = async function () {
+    var btn = document.getElementById('btnLookup');
+    var err = document.getElementById('lookupError');
+    var ref = (document.getElementById('lkRef').value || '').trim();
+    var phone = (document.getElementById('lkPhone').value || '').trim();
+    err.classList.add('hidden');
+    if (!ref || !phone) {
+      err.textContent = 'Enter both your booking reference and phone number.';
+      err.classList.remove('hidden');
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Searching…';
+    try {
+      var res  = await fetch('/api/booking/lookup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ref: ref, phone: phone })
+      });
+      var data; try { data = await res.json(); } catch (_) { throw new Error('Service unavailable. Please try again.'); }
+      if (!res.ok || !data.id) throw new Error(data.error || 'No booking found.');
+      window.location.href = '/booking?id=' + data.id;
+    } catch (e) {
+      err.textContent = e.message;
+      err.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = 'Find My Booking';
+    }
+  };
 
   window.payByCard = async function () {
     var btn = document.getElementById('btnCard');
@@ -533,6 +585,11 @@ body{
       btn.textContent = 'Pay Cash on the Day';
     }
   };
+
+  ['lkRef', 'lkPhone'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('keydown', function (e) { if (e.key === 'Enter') window.lookupBooking(); });
+  });
 
   load();
 })();
