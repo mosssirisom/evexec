@@ -1,15 +1,13 @@
 User-agent: *
 Allow: /
 
-# Allow SEO pages that start with 'account' before the disallow rule
-Allow: /account-premium
-
 # Private / utility pages — do not index
 Disallow: /admin/
 Disallow: /api/
 Disallow: /operator
 Disallow: /account
 Disallow: /account.html
+Disallow: /account-premium
 Disallow: /notification-control
 
 Sitemap: https://evexec.co.uk/sitemap.xml

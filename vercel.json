@@ -43,6 +43,7 @@
     { "src": "/airport-transfer-preston",                 "dest": "/airport-transfer-preston.html" },
     { "src": "/manchester-airport-transfers-from-blackpool", "dest": "/manchester-airport-transfers-from-blackpool.html" },
     { "src": "/blog",                                    "dest": "/blog.html" },
+    { "src": "/manchester-airport-parking-vs-private-transfer", "dest": "/manchester-airport-parking-vs-private-transfer.html" },
     { "src": "/account-premium",                         "dest": "/account-premium.html" },
     { "src": "/notification-control",                    "dest": "/notification-control.html" },
     { "src": "/airport-transfer-birmingham-blackpool",   "dest": "/airport-transfer-birmingham-blackpool.html" },
