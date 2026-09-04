@@ -621,7 +621,12 @@ main,footer{position:relative;z-index:1}
   .reveal,.image-reveal{transition-duration:.55s}
   .copy-grid,.comfort-grid,.booking-steps,.metrics-grid{grid-template-columns:1fr}
   .copy-card{padding:24px}
-  .copy-section{padding:42px 18px}
+  .copy-section{padding:32px 18px}
+  .copy-image{min-height:230px}
+  .service-list{gap:10px;margin-top:18px}
+  .service-row{padding:14px;gap:12px}
+  .calc-number{font-size:3.4rem}
+  .calc-result{padding:20px}
   .price-table thead{display:none}
   .price-table,.price-table tbody,.price-table tr,.price-table td{display:block;width:100%}
   .price-table tr{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -856,7 +861,7 @@ main,footer{position:relative;z-index:1}
 </div>
 
 <main>
-<section class="hero px-6 pt-32 pb-12">
+<section class="hero px-6 pt-20 lg:pt-32 pb-8 lg:pb-12">
 <div class="max-w-7xl mx-auto">
 <div class="max-w-[560px] pt-8">
 <div class="inline-flex rounded-full bg-black/35 border border-white/10 px-4 py-1.5 text-xs uppercase tracking-[.18em] text-[#d5a538] font-bold mb-5">
@@ -1276,7 +1281,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </section>
 
 <!-- Services -->
-<section class="px-6 py-10 reveal" id="services">
+<section class="px-6 py-7 lg:py-10 reveal" id="services">
 <div class="max-w-7xl mx-auto text-center">
 <h2 class="serif text-4xl">Why Choose <span class="gold">EV Exec?</span></h2>
 <p class="text-white/60 mt-1">Airport transfer specialists you can trust.</p>
@@ -1362,7 +1367,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </section>
 
 <!-- Prices -->
-<section class="px-6 py-8 reveal" id="prices">
+<section class="px-6 py-6 lg:py-8 reveal" id="prices">
 <div class="max-w-7xl mx-auto">
 <div class="full-price-card">
 <div class="p-7 md:p-9">
@@ -1405,7 +1410,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </section>
 
 <!-- CO₂ Calculator -->
-<section class="px-6 py-10 reveal" id="eco">
+<section class="px-6 py-7 lg:py-10 reveal" id="eco">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-2xl mx-auto mb-9">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Zero Emissions Travel</p>
@@ -1433,7 +1438,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </section>
 
 <!-- Coverage -->
-<section class="px-6 py-10 reveal" id="areas">
+<section class="px-6 py-7 lg:py-10 reveal" id="areas">
 <div class="max-w-7xl mx-auto">
 <div class="glass rounded-lg p-7 md:p-9">
 <div class="text-center max-w-3xl mx-auto">
@@ -1448,7 +1453,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 <span class="icon"><svg class="clean-icon"><use href="#i-map"></use></svg></span>
 <h3 class="text-xl font-bold">Local Pickup Areas</h3>
 </div>
-<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
 <span>Blackpool</span><span>Lytham St Annes</span><span>Poulton-le-Fylde</span><span>Fleetwood</span><span>Thornton-Cleveleys</span><span>Bispham</span><span>Kirkham</span><span>Warton</span><span>Freckleton</span><span>Preston</span><span>South Shore</span><span>North Shore</span>
 </div>
 </article>
@@ -1458,7 +1463,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 <span class="icon"><svg class="clean-icon"><use href="#i-plane"></use></svg></span>
 <h3 class="text-xl font-bold">Airport Destinations</h3>
 </div>
-<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
 <span>Manchester Airport</span><span>Liverpool Airport</span><span>Leeds Bradford Airport</span><span>Birmingham Airport</span><span>Newcastle Airport</span><span>Heathrow Airport</span><span>Gatwick Airport</span><span>Stansted Airport</span><span>Luton Airport</span><span>Edinburgh Airport</span><span>All Major UK Airports</span><span>Long-Distance Transfers</span>
 </div>
 </article>
@@ -1486,7 +1491,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- About / Story -->
-<section class="px-6 py-8 reveal" id="about">
+<section class="px-6 py-6 lg:py-8 reveal" id="about">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 grid md:grid-cols-[190px_1fr_380px] gap-8 items-center">
 <div class="subtle-profile-wrap mx-auto">
 <div class="about-profile-shell mx-auto">
@@ -1537,7 +1542,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- Reviews -->
-<section class="px-6 py-12 reveal" id="reviews">
+<section class="px-6 py-8 lg:py-12 reveal" id="reviews">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
 <h2 class="serif text-4xl md:text-5xl">What Our Customers Say</h2>
@@ -1596,7 +1601,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- CTA Banner -->
-<section class="px-6 py-8 reveal">
+<section class="px-6 py-6 lg:py-8 reveal">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('./public/images/ev-exec-image-6.jpg');background-size:cover;background-position:center;">
 <div class="flex items-center gap-6">
 <img alt="EV Exec logo" class="w-20 h-20 rounded-full object-cover" loading="lazy" src="./public/images/ev-exec-image-3.jpg" width="80" height="80"/>
