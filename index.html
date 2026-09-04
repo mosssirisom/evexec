@@ -268,7 +268,6 @@ img{max-width:100%}
   flex:0 0 82%;
   scroll-snap-align:center;
   position:relative;
-  aspect-ratio:4/3;
   opacity:.62;
   transform:scale(.93);
   transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1),filter .4s cubic-bezier(.22,1,.36,1);
@@ -276,7 +275,8 @@ img{max-width:100%}
   flex-shrink:0;
 }
 .hc-slide.active{opacity:1;transform:scale(1);filter:saturate(1)}
-.hc-slide::before{
+.hc-slide-media{position:relative;aspect-ratio:4/3}
+.hc-slide-media::before{
   content:"";
   position:absolute;
   inset:-14%;
@@ -286,15 +286,36 @@ img{max-width:100%}
   opacity:.7;
   transition:opacity .4s cubic-bezier(.22,1,.36,1);
 }
-.hc-slide.active::before{opacity:1}
-.hc-slide img{
+.hc-slide.active .hc-slide-media::before{opacity:1}
+.hc-slide-media img{
   width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;
   -webkit-mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
   mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
   filter:drop-shadow(0 20px 40px rgba(0,0,0,.5)) drop-shadow(0 4px 16px rgba(0,0,0,.3));
   transition:filter .4s cubic-bezier(.22,1,.36,1);
 }
-.hc-slide.active img{filter:drop-shadow(0 30px 56px rgba(0,0,0,.6)) drop-shadow(0 6px 20px rgba(213,165,56,.1))}
+.hc-slide.active .hc-slide-media img{filter:drop-shadow(0 30px 56px rgba(0,0,0,.6)) drop-shadow(0 6px 20px rgba(213,165,56,.1))}
+.hc-slide-placeholder{
+  width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:radial-gradient(circle at 50% 30%,rgba(213,165,56,.12),rgba(2,8,19,.4) 70%),#07111f;
+  -webkit-mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+  mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+}
+.hc-slide-placeholder svg{width:52px;height:52px;stroke:rgba(213,165,56,.55);fill:none;stroke-width:1.5}
+.hc-slide-placeholder span{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.hc-badge{
+  position:absolute;top:12px;left:12px;z-index:4;
+  background:rgba(213,165,56,.95);color:#06101c;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+.hc-slide-info{padding:16px 6px 0;text-align:center}
+.hc-slide-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff}
+.hc-slide-specs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
+.hc-slide-spec{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:rgba(255,255,255,.72);font-weight:600}
+.hc-slide-spec svg{width:15px;height:15px;stroke:#d5a538;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.hc-slide-traits{margin-top:6px;font-size:12px;color:rgba(255,255,255,.42);letter-spacing:.02em}
 .hc-arrow{
   position:absolute;top:50%;transform:translateY(-50%);
   width:46px;height:46px;border-radius:50%;
@@ -885,31 +906,56 @@ Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
 
 <div class="w-full max-w-5xl mt-8">
   <div class="hero-carousel" id="heroCarousel">
-    <div class="hc-track" id="hcTrack" role="region" aria-label="EV Exec Tesla Model Y photo gallery" tabindex="0">
-      <div class="hc-slide"><img src="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/P2QF5LbQhc9gOiH2dzCue/DBG-NWeoTqIWEh1McNdbI.jpg" alt="EV Exec navy Tesla Model Y parked on Blackpool promenade at sunset" loading="eager" fetchpriority="high" width="1024" height="576"/></div>
-      <div class="hc-slide"><img src="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/CWxq5HUU113yoodMZ9gln/kSyZWWxzqr5oKHtMXTYoe.jpg" alt="EV Exec navy Tesla Model Y side profile on the Blackpool coast road at dusk" loading="lazy" width="1024" height="576"/></div>
-      <div class="hc-slide"><img src="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/hfkvHWqe2jmS6njZkwdFI/j17BvcwfYvP6QMb2o0I70.jpg" alt="EV Exec navy Tesla Model Y rear view near Blackpool Tower at night" loading="lazy" width="1024" height="576"/></div>
-      <div class="hc-slide"><img src="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/oZQOTLFAdi9GSjsoXldGx/BEn66ep9w-uOheETP2gdv.jpg" alt="EV Exec navy Tesla Model Y outside a seafront hotel at blue hour" loading="lazy" width="1024" height="576"/></div>
-      <div class="hc-slide"><img src="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/ukl2HVXbRdF7rN2PcIMOi/08lbAC0WO8sP-XmgsPwGu.jpg" alt="Premium leather interior of the EV Exec Tesla Model Y" loading="lazy" width="1024" height="576"/></div>
+    <div class="hc-track" id="hcTrack" role="region" aria-label="Choose your EV Exec vehicle" tabindex="0">
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <span class="hc-badge">Most Popular</span>
+          <img src="./public/images/ev-exec-tesla-model-y-navy.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1600" height="1259"/>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Tesla Model Y</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>4 Suitcases</span>
+          </div>
+          <p class="hc-slide-traits">Electric &middot; Whisper-Quiet &middot; Panoramic Roof</p>
+        </div>
+      </div>
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <div class="hc-slide-placeholder"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><use href="#i-car"></use></svg><span>Photo coming soon</span></div>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Tesla Model Y Juniper</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>4 Suitcases</span>
+          </div>
+          <p class="hc-slide-traits">Electric &middot; Refreshed Interior &middot; Whisper-Quiet</p>
+        </div>
+      </div>
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <div class="hc-slide-placeholder"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><use href="#i-car"></use></svg><span>Photo coming soon</span></div>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Skoda Enyaq</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>5 Suitcases</span>
+          </div>
+          <p class="hc-slide-traits">Electric &middot; Spacious &middot; Family-Friendly</p>
+        </div>
+      </div>
+
     </div>
-    <button class="hc-arrow hc-prev" id="hcPrev" type="button" aria-label="Previous vehicle photo"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-    <button class="hc-arrow hc-next" id="hcNext" type="button" aria-label="Next vehicle photo"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    <button class="hc-arrow hc-prev" id="hcPrev" type="button" aria-label="Previous vehicle"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="hc-arrow hc-next" id="hcNext" type="button" aria-label="Next vehicle"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
     <div class="hc-dots" id="hcDots"></div>
   </div>
-</div>
-
-<div class="mt-5 flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1.5 text-center">
-<span class="font-bold text-white text-sm">Tesla Model Y</span>
-<span class="text-white/25">·</span>
-<span class="text-white/62 text-sm">4 Passengers</span>
-<span class="text-white/25">·</span>
-<span class="text-white/62 text-sm">4 Suitcases</span>
-<span class="text-white/25">·</span>
-<span class="text-white/62 text-sm">100% Electric</span>
-<span class="text-white/25">·</span>
-<span class="text-white/62 text-sm">Whisper-Quiet</span>
-<span class="text-white/25">·</span>
-<span class="text-white/62 text-sm">Panoramic Roof</span>
 </div>
 
 <script>
@@ -927,7 +973,7 @@ Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'hc-dot' + (i === 0 ? ' active' : '');
-    b.setAttribute('aria-label', 'Go to vehicle photo ' + (i + 1));
+    b.setAttribute('aria-label', 'Go to vehicle ' + (i + 1));
     b.addEventListener('click', function () { scrollToSlide(i); });
     dotsWrap.appendChild(b);
     return b;
@@ -1044,7 +1090,12 @@ Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
 })();
 </script>
 
-<div class="mt-8 flex gap-4">
+<a href="https://g.page/r/CVPMqDntIQ3xEAE/review" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 no-underline text-white/75 text-sm">
+<svg class="clean-icon" aria-hidden="true"><use href="#i-star"></use></svg>
+<span><span class="font-bold text-white">5.0</span> Google Reviews</span>
+</a>
+
+<div class="mt-6 flex gap-4">
 <a class="btn-gold rounded-md px-7 py-4 font-bold inline-flex items-center" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
 <a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold btn-dark inline-flex items-center" href="https://wa.me/447721070370" target="_blank" rel="noopener"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>WhatsApp Us</a>
 </div>
