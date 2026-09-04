@@ -252,7 +252,15 @@ img{max-width:100%}
   gap:14px;
   padding:0 9%;
   cursor:grab;
-  touch-action:pan-y;
+  /* Both directions are native pannable gestures here — the browser
+     locks to whichever axis the swipe actually starts moving in, so
+     a horizontal swipe scrolls the carousel and a vertical one scrolls
+     the page, with no custom JS needed to arbitrate. touch-action:pan-y
+     alone would have restricted this element to vertical-only panning,
+     breaking horizontal touch-scroll on the carousel itself. */
+  touch-action:pan-x pan-y;
+  overscroll-behavior-x:contain;
+  -webkit-tap-highlight-color:transparent;
 }
 .hc-track::-webkit-scrollbar{display:none}
 .hc-track.dragging{cursor:grabbing;scroll-snap-type:none}
@@ -294,6 +302,8 @@ img{max-width:100%}
   color:#d5a538;display:flex;align-items:center;justify-content:center;
   cursor:pointer;z-index:5;backdrop-filter:blur(6px);
   transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),border-color .3s cubic-bezier(.22,1,.36,1);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
 }
 .hc-arrow:hover{background:rgba(213,165,56,.18);border-color:rgba(213,165,56,.75);transform:translateY(-50%) scale(1.08)}
 .hc-arrow:active{transform:translateY(-50%) scale(.96)}
@@ -301,7 +311,7 @@ img{max-width:100%}
 .hc-prev{left:2px}
 .hc-next{right:2px}
 .hc-dots{display:flex;justify-content:center;gap:8px;margin-top:16px}
-.hc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1);border:none;padding:0}
+.hc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1);border:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .hc-dot.active{background:#d5a538;width:22px;border-radius:999px}
 @media(max-width:900px){.hc-slide{flex-basis:88%}.hc-track{padding:0 6%}}
 .navlink{position:relative}
