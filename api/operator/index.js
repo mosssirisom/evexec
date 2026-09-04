@@ -15,6 +15,7 @@ const { parseBody } = require('../../lib/parse');
 const { operatorPage } = require('../../lib/pages');
 const { emailLayout } = require('../../lib/emailLayout');
 const { logMany } = require('../../lib/notifyLog');
+const { sendOrQueue } = require('../../lib/notificationQueue');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
@@ -85,8 +86,8 @@ async function handleAction(req, res) {
     const smsTxt = [`Hi ${firstName}, great news! EV Exec can take your transfer.`, '', route, `${date} at ${time}`, price ? `Price: £${price}` : '', '', 'Please choose your payment method to confirm:', paymentUrl, '', 'Questions? 07721 070370'].filter(l => l !== null).join('\n');
     const emailHtml = emailLayout({ title: 'Your EV Exec Transfer is Accepted', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">Great news! Your airport transfer has been accepted. Please choose your payment method to confirm.</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(booking)}${price ? `<p style="margin:0 0 24px;font-family:Inter,Arial,sans-serif;font-size:26px;font-weight:900;color:#d5a538">£${price}</p>` : ''}<a href="${paymentUrl}" style="display:block;background:#d5a538;color:#06101c;font-family:Inter,Arial,sans-serif;font-size:15px;font-weight:700;text-align:center;text-decoration:none;padding:14px 20px;border-radius:8px">Choose Payment Method</a><p style="margin-top:20px;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
     const acceptTasks = [];
-    if (booking.customer_email) acceptTasks.push(sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted: ${route}`, html: emailHtml }));
-    else if (booking.customer_phone) acceptTasks.push(sendSMS(booking.customer_phone, smsTxt));
+    if (booking.customer_email) acceptTasks.push(sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: `EV Exec Transfer Accepted: ${route}`, html: emailHtml }), { booking_id: booking.id, type: 'accepted', channel: 'email', recipient: booking.customer_email, subject: `EV Exec Transfer Accepted: ${route}`, html: emailHtml }));
+    else if (booking.customer_phone) acceptTasks.push(sendOrQueue(() => sendSMS(booking.customer_phone, smsTxt), { booking_id: booking.id, type: 'accepted', channel: 'sms', recipient: booking.customer_phone, body: smsTxt }));
     await Promise.allSettled(acceptTasks);
     return res.end(operatorPage('Booking Accepted ✓', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been notified and sent a payment link.</p>`));
   } catch (err) { console.error('Operator action error:', err); res.statusCode = 500; return res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false)); }

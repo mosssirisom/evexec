@@ -5,6 +5,7 @@ const { sendPushToCustomer } = require('../../lib/push');
 const { emailLayout } = require('../../lib/emailLayout');
 const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
+const { sendOrQueue } = require('../../lib/notificationQueue');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
@@ -118,8 +119,8 @@ async function sendReminders(due, type) {
     await Promise.allSettled([
       // Email primary, SMS fallback only when there's no email on file
       hasEmail
-        ? sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })
-        : (hasPhone ? sendSMS(booking.customer_phone, smsBody) : null),
+        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml })
+        : (hasPhone ? sendOrQueue(() => sendSMS(booking.customer_phone, smsBody), { booking_id: booking.id, type: logType, channel: 'sms', recipient: booking.customer_phone, body: smsBody }) : null),
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
       logMany(booking.id, logType, logEntries)
     ].filter(Boolean));
