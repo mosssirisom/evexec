@@ -4,6 +4,7 @@ const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
 const { isValidUUID } = require('../../lib/supabase');
 const { awardPoints } = require('../../lib/points');
+const { normaliseUkPhone } = require('../../lib/notify');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -235,6 +236,7 @@ async function handleClaimBooking(req, res, user) {
   catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
 
   const ref = String(body.ref || '').trim().toUpperCase();
+  const phone = normaliseUkPhone(body.phone || '');
   if (!ref.startsWith('EVX-') || ref.length < 7) {
     res.statusCode = 400;
     return res.end(JSON.stringify({ error: 'Invalid booking reference. Format: EVX-XXXXXX' }));
@@ -242,7 +244,7 @@ async function handleClaimBooking(req, res, user) {
 
   try {
     const r = await fetch(
-      `${SUPABASE_URL()}/rest/v1/bookings?ref=eq.${encodeURIComponent(ref)}&select=id,ref,user_id,return_journey,customer_email,status&limit=1`,
+      `${SUPABASE_URL()}/rest/v1/bookings?ref=eq.${encodeURIComponent(ref)}&select=id,ref,user_id,return_journey,customer_email,customer_phone,status&limit=1`,
       { headers: headers() }
     );
     if (!r.ok) throw new Error('Database error');
@@ -265,9 +267,20 @@ async function handleClaimBooking(req, res, user) {
 
     const bookingEmail = normaliseEmail(booking.customer_email || '');
     const userEmail    = normaliseEmail(user.email || '');
-    if (bookingEmail && userEmail && bookingEmail !== userEmail) {
-      res.statusCode = 403;
-      return res.end(JSON.stringify({ error: 'This booking reference does not match your account email' }));
+    if (bookingEmail) {
+      if (userEmail && bookingEmail !== userEmail) {
+        res.statusCode = 403;
+        return res.end(JSON.stringify({ error: 'This booking reference does not match your account email' }));
+      }
+    } else {
+      // No email on file for this booking — verify with phone instead, so a
+      // bare reference number (visible in emails/SMS the customer received)
+      // isn't enough on its own to link someone else's booking to your account.
+      const bookingPhone = normaliseUkPhone(booking.customer_phone || '');
+      if (!bookingPhone || !phone || bookingPhone !== phone) {
+        res.statusCode = 403;
+        return res.end(JSON.stringify({ error: 'phone_required', message: 'This booking has no email on file. Enter the phone number used when booking to verify it\'s yours.' }));
+      }
     }
 
     const upd = await fetch(
