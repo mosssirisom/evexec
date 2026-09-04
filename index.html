@@ -973,7 +973,45 @@ Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
   track.addEventListener('pointercancel', endDrag);
   track.addEventListener('pointerleave', endDrag);
 
+  // Auto-rotate: advance every 4.5s, pause immediately on any user
+  // interaction (touch, swipe, drag, arrows, dots, keyboard), resume
+  // 5s after the last interaction. Off entirely for reduced-motion
+  // users, and paused while the tab isn't visible.
+  var AUTO_INTERVAL = 4500;
+  var RESUME_DELAY = 5000;
+  var autoTimer = null;
+  var resumeTimer = null;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  }
+  function startAuto() {
+    stopAuto();
+    if (reducedMotion || document.hidden || slides.length < 2) return;
+    autoTimer = setInterval(function () {
+      scrollToSlide((currentIndex + 1) % slides.length);
+    }, AUTO_INTERVAL);
+  }
+  function onUserInteraction() {
+    stopAuto();
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(function () { resumeTimer = null; startAuto(); }, RESUME_DELAY);
+  }
+
+  track.addEventListener('pointerdown', onUserInteraction);
+  track.addEventListener('touchstart', onUserInteraction, { passive: true });
+  if (prevBtn) prevBtn.addEventListener('click', onUserInteraction);
+  if (nextBtn) nextBtn.addEventListener('click', onUserInteraction);
+  dots.forEach(function (d) { d.addEventListener('click', onUserInteraction); });
+  track.addEventListener('keydown', onUserInteraction);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopAuto();
+    else if (!resumeTimer) startAuto();
+  });
+
   setActive(0);
+  startAuto();
 })();
 </script>
 
