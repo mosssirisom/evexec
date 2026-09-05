@@ -611,7 +611,6 @@ main,footer{position:relative;z-index:1}
   border:1px solid rgba(213,165,56,.55);color:var(--gold);
   border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.04);
 }
-.mobile-sticky{display:none}
 /* Return section */
 .return-section{
   border:1px solid rgba(213,165,56,.22);border-radius:12px;
@@ -631,9 +630,6 @@ main,footer{position:relative;z-index:1}
 }
 @media(max-width:900px){.hero{min-height:auto}}
 @media(max-width:768px){
-  body{
-    padding-bottom:105px;
-  }
   #siteHeader{
     padding:12px 14px;
   }
@@ -670,17 +666,6 @@ main,footer{position:relative;z-index:1}
   .hero h1{font-size:38px}
   .hero .mt-8.flex{flex-direction:column}
   .return-grid{grid-template-columns:1fr}
-  .mobile-sticky{
-    display:grid;grid-template-columns:1fr 1fr;gap:10px;
-    position:fixed;left:12px;right:12px;bottom:12px;z-index:80;
-  }
-  .mobile-sticky a{
-    text-align:center;border-radius:12px;padding:14px 12px;
-    font-weight:900;box-shadow:0 14px 35px rgba(0,0,0,.35);
-  }
-  footer{padding-bottom:90px!important}
-  /* Prevent last content section from being permanently obscured by the sticky bar */
-  main > *:last-child { padding-bottom: 90px !important; }
 }
 @media(min-width:768px){.return-grid{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){
@@ -1761,12 +1746,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </div>
 </footer>
 
-<!-- Mobile Sticky CTA -->
-<div class="mobile-sticky">
-<a class="btn-gold" href="#quote">Book Now</a>
-<a class="rounded-md border border-[#d5a538] bg-[#020813]/95 text-white" href="https://wa.me/447721070370">WhatsApp</a>
-</div>
-
 <script>
 (function(){
   // Header scroll
@@ -1776,31 +1755,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
   onScroll();
   window.addEventListener('scroll', onScroll, {passive:true});
-
-  // Sticky CTA bar visibility
-  var stickyCta = document.querySelector('.mobile-sticky');
-  var _ctaFooterHidden = false;
-  var _ctaMenuHidden   = false;
-  var _ctaWizardHidden = false;
-
-  function syncCtaVisibility() {
-    if (!stickyCta) return;
-    var hide = _ctaFooterHidden || _ctaMenuHidden || _ctaWizardHidden;
-    stickyCta.style.transition = 'opacity .25s, transform .25s';
-    stickyCta.style.opacity    = hide ? '0' : '';
-    stickyCta.style.transform  = hide ? 'translateY(20px)' : '';
-    stickyCta.style.pointerEvents = hide ? 'none' : '';
-  }
-
-  // 1. Hide when footer enters viewport
-  var siteFooter = document.querySelector('footer#contact') || document.querySelector('footer');
-  if (siteFooter && stickyCta) {
-    var footerObserver = new IntersectionObserver(function(entries) {
-      _ctaFooterHidden = entries[0].isIntersecting;
-      syncCtaVisibility();
-    }, { threshold: 0 });
-    footerObserver.observe(siteFooter);
-  }
 
   // Mobile menu
   var menuToggle = document.getElementById('menuToggle');
@@ -1812,16 +1766,12 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     void mobileMenu.offsetWidth; // force reflow so CSS transition fires on iOS Safari
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
-    _ctaMenuHidden = true;
-    syncCtaVisibility();
     if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'true'); menuToggle.setAttribute('aria-label', 'Close menu'); }
   }
   function closeMobileMenu() {
     mobileMenu.classList.remove('open');
     setTimeout(function() { mobileMenu.style.display = ''; }, 300);
     document.body.style.overflow = '';
-    _ctaMenuHidden = false;
-    syncCtaVisibility();
     if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Open menu'); }
   }
 
@@ -1955,11 +1905,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if (n === 1) bwRenderStep1();
     if (n === 2) bwRenderStep2();
     if (n === 3) bwRenderStep3();
-    // 2b. Hide sticky CTA when user is mid-booking (step 2 or 3)
-    if (typeof _ctaWizardHidden !== 'undefined') {
-      _ctaWizardHidden = n > 1;
-      syncCtaVisibility();
-    }
     var quoteEl = document.getElementById('quote');
     if (quoteEl) quoteEl.scrollIntoView({ behavior:'smooth', block:'start' });
   }
@@ -2254,11 +2199,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         }
         var quoteEl2 = document.getElementById('quote');
         if (quoteEl2) quoteEl2.scrollIntoView({ behavior:'smooth', block:'start' });
-        // Restore sticky CTA after successful submission
-        if (typeof _ctaWizardHidden !== 'undefined') {
-          _ctaWizardHidden = false;
-          syncCtaVisibility();
-        }
         sessionStorage.setItem('evexec_submitted', Date.now().toString());
       } else {
         throw new Error(data.error || 'Something went wrong. Please try again.');
