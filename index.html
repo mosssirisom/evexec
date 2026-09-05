@@ -594,15 +594,16 @@ main,footer{position:relative;z-index:1}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   flex:1;width:100%;gap:0;padding:0 32px;
 }
-.mobile-menu-links a{
+.mobile-menu-links a,.mobile-menu-links button{
   display:block;width:100%;text-align:center;
   padding:18px 0;font-size:22px;font-weight:700;letter-spacing:.04em;
   color:rgba(255,255,255,.80);
   border-bottom:1px solid rgba(255,255,255,.07);
   transition:color .18s;
+  background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;cursor:pointer;
 }
-.mobile-menu-links a:first-child{border-top:1px solid rgba(255,255,255,.07)}
-.mobile-menu-links a:hover,.mobile-menu-links a:active{color:var(--gold)}
+.mobile-menu-links a:first-child,.mobile-menu-links button:first-child{border-top:1px solid rgba(255,255,255,.07)}
+.mobile-menu-links a:hover,.mobile-menu-links a:active,.mobile-menu-links button:hover,.mobile-menu-links button:active{color:var(--gold)}
 .mobile-menu-footer{
   width:100%;padding:24px 24px max(24px,env(safe-area-inset-bottom));
   border-top:1px solid rgba(255,255,255,.07);
@@ -791,6 +792,7 @@ main,footer{position:relative;z-index:1}
 
 <div class="hidden md:flex items-center gap-2 flex-shrink-0">
 <a class="btn-gold rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
+<button id="navSupportBtn" type="button" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all inline-flex items-center"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>Support</button>
 <a href="/account" id="navAccountBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all" style="display:none">My Account</a>
 <button id="navSignInBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all">Sign In</button>
 </div>
@@ -823,6 +825,7 @@ main,footer{position:relative;z-index:1}
     <a href="#contact">Contact</a>
     <a href="/booking">My Booking</a>
     <a href="/account">My Account</a>
+    <button id="mobileSupportBtn" type="button">Support</button>
   </div>
   <!-- Book Now CTA -->
   <div class="mobile-menu-footer">
@@ -2363,11 +2366,9 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 .tab-btn.active{background:rgba(213,165,56,.12);border-color:rgba(213,165,56,.3);color:#d5a538}
 .tab-btn:hover:not(.active){color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
 /* Chat widget */
-.chat-fab{position:fixed;bottom:24px;right:24px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#d5a538,#f2c66d);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(213,165,56,.35);transition:transform .2s,box-shadow .2s}
-.chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 48px rgba(213,165,56,.45)}
-.chat-panel{position:fixed;bottom:92px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+.chat-panel{position:fixed;bottom:24px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
 .chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-@media(max-width:767px){.chat-fab{bottom:84px}.chat-panel{bottom:152px}}
+@media(max-width:767px){.chat-panel{bottom:12px;right:12px;left:12px;width:auto}}
 .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:160px;max-height:300px}
 .chat-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.5}
 .chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
@@ -2393,11 +2394,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     <button id="pushPromptDismiss" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;font-size:12px;cursor:pointer">Not now</button>
   </div>
 </div>
-
-<!-- Chat FAB -->
-<button class="chat-fab" id="chatFab" aria-label="Open support chat">
-  <svg style="width:22px;height:22px;fill:none;stroke:#06101c;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
 
 <!-- Chat panel -->
 <div class="chat-panel" id="chatPanel" role="dialog" aria-label="EV Exec support chat" aria-modal="false">
@@ -2575,7 +2571,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   });
 
   // ── CHAT BOT ─────────────────────────────────────────────────
-  var chatFab   = document.getElementById('chatFab');
+  var chatFab       = document.getElementById('navSupportBtn');
+  var chatFabMobile = document.getElementById('mobileSupportBtn');
   var chatPanel = document.getElementById('chatPanel');
   var chatClose = document.getElementById('chatClose');
   var chatMsgs  = document.getElementById('chatMessages');
@@ -2633,12 +2630,18 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     },300);
   }
 
-  if(chatFab) chatFab.addEventListener('click', function(){
+  function toggleChatPanel(){
     chatPanel.classList.toggle('open');
     if(chatPanel.classList.contains('open') && !chatMsgs.children.length){
       chatAddMsg("Hi! I'm the EV Exec assistant. How can I help?",'bot');
       chatSetQuick(FAQ.slice(0,4));
     }
+  }
+  if(chatFab) chatFab.addEventListener('click', toggleChatPanel);
+  if(chatFabMobile) chatFabMobile.addEventListener('click', function(){
+    var menuCloseBtn = document.getElementById('menuClose');
+    if(menuCloseBtn) menuCloseBtn.click();
+    toggleChatPanel();
   });
   if(chatClose) chatClose.addEventListener('click', function(){ chatPanel.classList.remove('open'); });
   var chatSendBtn = document.getElementById('chatSendBtn');
