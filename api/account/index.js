@@ -10,6 +10,14 @@ const { stripeRequest, getOrCreateStripeCustomer } = require('../../lib/stripeCu
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// Stripe payment method IDs are pm_ followed only by alphanumerics. A bare
+// `startsWith('pm_')` check lets the rest of the string through unchecked --
+// since it's interpolated straight into a Stripe API URL path, a value like
+// `pm_x/../../customers/cus_someoneElse` would make this server call an
+// arbitrary Stripe endpoint with its own secret key. This regex is the real
+// boundary; startsWith alone is not.
+const VALID_PM_ID = /^pm_[a-zA-Z0-9]+$/;
+
 function headers(extra = {}) {
   return {
     'Content-Type': 'application/json',
@@ -355,7 +363,7 @@ async function handlePaymentMethods(req, res, user) {
 
   if (req.method === 'DELETE') {
     const id = (req.query && req.query.id) || '';
-    if (!id.startsWith('pm_')) {
+    if (!VALID_PM_ID.test(id)) {
       res.statusCode = 400;
       return res.end(JSON.stringify({ error: 'Valid payment method id required' }));
     }
@@ -412,7 +420,7 @@ async function handlePaymentMethodDefault(req, res, user) {
   catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
 
   const pmId = String(body.paymentMethodId || '');
-  if (!pmId.startsWith('pm_')) {
+  if (!VALID_PM_ID.test(pmId)) {
     res.statusCode = 400;
     return res.end(JSON.stringify({ error: 'Valid payment method id required' }));
   }
