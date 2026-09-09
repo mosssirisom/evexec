@@ -5,9 +5,18 @@ const { parseBody }  = require('../../lib/parse');
 const { isValidUUID } = require('../../lib/supabase');
 const { awardPoints } = require('../../lib/points');
 const { normaliseUkPhone } = require('../../lib/notify');
+const { stripeRequest, getOrCreateStripeCustomer } = require('../../lib/stripeCustomer');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Stripe payment method IDs are pm_ followed only by alphanumerics. A bare
+// `startsWith('pm_')` check lets the rest of the string through unchecked --
+// since it's interpolated straight into a Stripe API URL path, a value like
+// `pm_x/../../customers/cus_someoneElse` would make this server call an
+// arbitrary Stripe endpoint with its own secret key. This regex is the real
+// boundary; startsWith alone is not.
+const VALID_PM_ID = /^pm_[a-zA-Z0-9]+$/;
 
 function headers(extra = {}) {
   return {
@@ -75,7 +84,7 @@ async function handleProfile(req, res, user) {
     try { body = await parseBody(req); }
     catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
 
-    const allowed = ['full_name', 'phone', 'avatar_url', 'push_enabled'];
+    const allowed = ['full_name', 'phone', 'avatar_url', 'push_enabled', 'notify_email', 'notify_sms'];
     const update = {};
     for (const k of allowed) { if (k in body) update[k] = body[k]; }
 
@@ -303,6 +312,205 @@ async function handleClaimBooking(req, res, user) {
   }
 }
 
+async function getProfileRow(userId) {
+  const r = await fetch(
+    `${SUPABASE_URL()}/rest/v1/profiles?id=eq.${userId}&select=*&limit=1`,
+    { headers: headers() }
+  );
+  if (!r.ok) throw new Error(await r.text());
+  const rows = await r.json();
+  return rows[0] || null;
+}
+
+// ── GET|POST|DELETE /api/account/payment-methods ───────────────────────────
+// Real saved cards via a Stripe Customer per user. Card data never touches
+// this server: the client collects it with Stripe.js/Elements and confirms
+// the SetupIntent directly with Stripe, so only a payment_method id (never a
+// card number) ever reaches this API.
+
+async function handlePaymentMethods(req, res, user) {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    res.statusCode = 503;
+    return res.end(JSON.stringify({ error: 'Payments are not configured yet.' }));
+  }
+
+  if (req.method === 'GET') {
+    try {
+      const profile = await getProfileRow(user.id);
+      if (!profile?.stripe_customer_id) {
+        return res.end(JSON.stringify({ paymentMethods: [], defaultId: null }));
+      }
+      const [pms, customer] = await Promise.all([
+        stripeRequest(`payment_methods?customer=${profile.stripe_customer_id}&type=card`),
+        stripeRequest(`customers/${profile.stripe_customer_id}`)
+      ]);
+      const paymentMethods = (pms.data || []).map(pm => ({
+        id: pm.id,
+        brand: pm.card?.brand || 'card',
+        last4: pm.card?.last4 || '····',
+        expMonth: pm.card?.exp_month,
+        expYear: pm.card?.exp_year
+      }));
+      return res.end(JSON.stringify({
+        paymentMethods,
+        defaultId: customer.invoice_settings?.default_payment_method || null
+      }));
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  if (req.method === 'DELETE') {
+    const id = (req.query && req.query.id) || '';
+    if (!VALID_PM_ID.test(id)) {
+      res.statusCode = 400;
+      return res.end(JSON.stringify({ error: 'Valid payment method id required' }));
+    }
+    try {
+      const profile = await getProfileRow(user.id);
+      const pm = await stripeRequest(`payment_methods/${id}`);
+      if (!profile?.stripe_customer_id || pm.customer !== profile.stripe_customer_id) {
+        res.statusCode = 403;
+        return res.end(JSON.stringify({ error: 'This card does not belong to your account' }));
+      }
+      await stripeRequest(`payment_methods/${id}/detach`, new URLSearchParams());
+      return res.end(JSON.stringify({ ok: true }));
+    } catch (err) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: err.message }));
+    }
+  }
+
+  res.statusCode = 405;
+  res.end(JSON.stringify({ error: 'Method not allowed' }));
+}
+
+async function handlePaymentMethodSetupIntent(req, res, user) {
+  if (req.method !== 'POST') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+  if (!process.env.STRIPE_SECRET_KEY) {
+    res.statusCode = 503;
+    return res.end(JSON.stringify({ error: 'Payments are not configured yet.' }));
+  }
+  try {
+    const profile = await getProfileRow(user.id);
+    const customerId = await getOrCreateStripeCustomer(user, profile);
+    const params = new URLSearchParams();
+    params.set('customer', customerId);
+    params.set('payment_method_types[]', 'card');
+    params.set('usage', 'off_session');
+    const setupIntent = await stripeRequest('setup_intents', params);
+    return res.end(JSON.stringify({ clientSecret: setupIntent.client_secret }));
+  } catch (err) {
+    res.statusCode = 500;
+    return res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+async function handlePaymentMethodDefault(req, res, user) {
+  if (req.method !== 'POST') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+  let body;
+  try { body = await parseBody(req); }
+  catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
+
+  const pmId = String(body.paymentMethodId || '');
+  if (!VALID_PM_ID.test(pmId)) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Valid payment method id required' }));
+  }
+
+  try {
+    const profile = await getProfileRow(user.id);
+    const pm = await stripeRequest(`payment_methods/${pmId}`);
+    if (!profile?.stripe_customer_id || pm.customer !== profile.stripe_customer_id) {
+      res.statusCode = 403;
+      return res.end(JSON.stringify({ error: 'This card does not belong to your account' }));
+    }
+    const params = new URLSearchParams();
+    params.set('invoice_settings[default_payment_method]', pmId);
+    await stripeRequest(`customers/${profile.stripe_customer_id}`, params);
+    return res.end(JSON.stringify({ ok: true }));
+  } catch (err) {
+    res.statusCode = 500;
+    return res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+// ── GET /api/account/receipt?bookingId=... ──────────────────────────────────
+// Card payments get Stripe's own hosted receipt. Cash/bank-transfer bookings
+// have no Stripe object to point at, so a structured breakdown is returned
+// instead for the frontend to render as a simple on-page receipt.
+
+async function handleReceipt(req, res, user) {
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+  const bookingId = (req.query && req.query.bookingId) || '';
+  if (!isValidUUID(bookingId)) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Valid bookingId required' }));
+  }
+
+  try {
+    const r = await fetch(
+      `${SUPABASE_URL()}/rest/v1/bookings?id=eq.${bookingId}&select=*&limit=1`,
+      { headers: headers() }
+    );
+    if (!r.ok) throw new Error(await r.text());
+    const rows = await r.json();
+    const booking = rows[0];
+    if (!booking) {
+      res.statusCode = 404;
+      return res.end(JSON.stringify({ error: 'Booking not found' }));
+    }
+
+    const owns = booking.user_id === user.id ||
+      (booking.customer_email && normaliseEmail(booking.customer_email) === normaliseEmail(user.email));
+    if (!owns) {
+      res.statusCode = 403;
+      return res.end(JSON.stringify({ error: 'This booking is not on your account' }));
+    }
+
+    let stripeReceiptUrl = null;
+    if (booking.stripe_session_id && process.env.STRIPE_SECRET_KEY) {
+      try {
+        const session = await stripeRequest(`checkout/sessions/${booking.stripe_session_id}`);
+        if (session.payment_intent) {
+          const pi = await stripeRequest(`payment_intents/${session.payment_intent}?expand[]=latest_charge`);
+          stripeReceiptUrl = pi.latest_charge?.receipt_url || null;
+        }
+      } catch { /* fall through to the structured breakdown */ }
+    }
+
+    return res.end(JSON.stringify({
+      stripeReceiptUrl,
+      booking: {
+        ref: booking.ref,
+        journeyType: booking.journey_type,
+        pickupLocation: booking.pickup_location,
+        airport: booking.airport,
+        dropoffAddress: booking.dropoff_address,
+        travelDate: booking.travel_date,
+        travelTime: booking.travel_time,
+        quotedPrice: booking.quoted_price,
+        paymentMethod: booking.payment_method,
+        paymentStatus: booking.payment_status,
+        createdAt: booking.created_at
+      }
+    }));
+  } catch (err) {
+    res.statusCode = 500;
+    return res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
 // ── Router ─────────────────────────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
@@ -315,10 +523,14 @@ module.exports = async function handler(req, res) {
   }
 
   const path = (req.url || '').split('?')[0];
-  if (path.endsWith('/profile'))        return handleProfile(req, res, user);
-  if (path.endsWith('/journeys'))       return handleJourneys(req, res, user);
-  if (path.endsWith('/addresses'))      return handleAddresses(req, res, user);
-  if (path.endsWith('/claim-booking'))  return handleClaimBooking(req, res, user);
+  if (path.endsWith('/profile'))                    return handleProfile(req, res, user);
+  if (path.endsWith('/journeys'))                   return handleJourneys(req, res, user);
+  if (path.endsWith('/addresses'))                  return handleAddresses(req, res, user);
+  if (path.endsWith('/claim-booking'))              return handleClaimBooking(req, res, user);
+  if (path.endsWith('/payment-methods/setup-intent')) return handlePaymentMethodSetupIntent(req, res, user);
+  if (path.endsWith('/payment-methods/default'))    return handlePaymentMethodDefault(req, res, user);
+  if (path.endsWith('/payment-methods'))            return handlePaymentMethods(req, res, user);
+  if (path.endsWith('/receipt'))                    return handleReceipt(req, res, user);
 
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));

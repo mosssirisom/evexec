@@ -6,6 +6,8 @@
 //          POST /api/contact        → save contact message
 //          POST /api/quote-request  → save quote request
 
+const crypto = require('crypto');
+
 const SUPABASE_URL = () => process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ALLOWED_TABLES = ['quote_requests', 'contact_messages'];
@@ -17,7 +19,14 @@ function dbHeaders(extra = {}) {
 }
 function adminOk(req) {
   const pw = process.env.ADMIN_PASSWORD || '';
-  return pw && (req.headers['x-admin-password'] || '') === pw;
+  const supplied = req.headers['x-admin-password'] || '';
+  // Constant-time comparison -- a plain === here lets an attacker recover
+  // the password one character at a time by measuring response time,
+  // since string comparison short-circuits on the first mismatch. Same
+  // pattern already used correctly in api/operator/index.js and
+  // api/notifications/index.js; this endpoint had been missed.
+  if (!pw || pw.length !== supplied.length) return false;
+  return crypto.timingSafeEqual(Buffer.from(pw), Buffer.from(supplied));
 }
 async function readBody(req) {
   const chunks = []; for await (const c of req) chunks.push(c);
