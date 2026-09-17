@@ -29,7 +29,7 @@
 <meta content="EV Exec luxury Tesla Model Y airport transfer vehicle" name="twitter:image:alt"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
-<link rel="preload" as="image" href="./public/images/ev-exec-image-1.jpg" fetchpriority="high"/>
+<link rel="preload" as="image" href="https://cdn.gamma.app/1nslyfy89sa7545/design-anything/P2QF5LbQhc9gOiH2dzCue/DBG-NWeoTqIWEh1McNdbI.jpg" fetchpriority="high"/>
 <link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
 <link rel="dns-prefetch" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
@@ -75,7 +75,7 @@
         "@type": "AggregateRating",
         "ratingValue": 5,
         "bestRating": 5,
-        "reviewCount": 3
+        "reviewCount": 16
       },
       "review": [
         {
@@ -236,12 +236,107 @@ img{max-width:100%}
 .hero{
   min-height:760px;
   background:
-    linear-gradient(90deg,rgba(2,8,19,.98) 0%,rgba(2,8,19,.72) 43%,rgba(2,8,19,.24) 100%),
-    linear-gradient(0deg,#020813 0%,rgba(2,8,19,.24) 45%),
-    url('./public/images/ev-exec-image-1.jpg');
-  background-size:cover;
-  background-position:center;
+    radial-gradient(circle at 85% 8%,rgba(213,165,56,.10),transparent 32%),
+    radial-gradient(circle at 10% 85%,rgba(48,99,160,.14),transparent 34%),
+    #020813;
 }
+
+/* Hero vehicle carousel: one large centred slide, partial previews peeking either side */
+.hero-carousel{position:relative;width:100%}
+.hc-track{
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  gap:14px;
+  padding:0 6.5%;
+  cursor:grab;
+  /* Both directions are native pannable gestures here — the browser
+     locks to whichever axis the swipe actually starts moving in, so
+     a horizontal swipe scrolls the carousel and a vertical one scrolls
+     the page, with no custom JS needed to arbitrate. touch-action:pan-y
+     alone would have restricted this element to vertical-only panning,
+     breaking horizontal touch-scroll on the carousel itself. */
+  touch-action:pan-x pan-y;
+  overscroll-behavior-x:contain;
+  -webkit-tap-highlight-color:transparent;
+}
+.hc-track::-webkit-scrollbar{display:none}
+.hc-track.dragging{cursor:grabbing;scroll-snap-type:none}
+.hc-slide{
+  flex:0 0 87%;
+  scroll-snap-align:center;
+  position:relative;
+  opacity:.62;
+  transform:scale(.93);
+  transition:opacity .4s cubic-bezier(.22,1,.36,1),transform .4s cubic-bezier(.22,1,.36,1),filter .4s cubic-bezier(.22,1,.36,1);
+  filter:saturate(.85);
+  flex-shrink:0;
+}
+.hc-slide.active{opacity:1;transform:scale(1);filter:saturate(1)}
+.hc-slide-media{position:relative;aspect-ratio:4/3}
+.hc-slide-media::before{
+  content:"";
+  position:absolute;
+  inset:-14%;
+  background:radial-gradient(ellipse 60% 55% at center,rgba(213,165,56,.14),rgba(2,8,19,0) 70%);
+  filter:blur(26px);
+  z-index:-1;
+  opacity:.7;
+  transition:opacity .4s cubic-bezier(.22,1,.36,1);
+}
+.hc-slide.active .hc-slide-media::before{opacity:1}
+.hc-slide-media img{
+  width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none;
+  -webkit-mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+  mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,.5)) drop-shadow(0 4px 16px rgba(0,0,0,.3));
+  transition:filter .4s cubic-bezier(.22,1,.36,1);
+}
+.hc-slide.active .hc-slide-media img{filter:drop-shadow(0 30px 56px rgba(0,0,0,.6)) drop-shadow(0 6px 20px rgba(213,165,56,.1))}
+.hc-slide-placeholder{
+  width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:radial-gradient(circle at 50% 30%,rgba(213,165,56,.12),rgba(2,8,19,.4) 70%),#07111f;
+  -webkit-mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+  mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
+}
+.hc-slide-placeholder svg{width:52px;height:52px;stroke:rgba(213,165,56,.55);fill:none;stroke-width:1.5}
+.hc-slide-placeholder span{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+.hc-badge{
+  position:absolute;top:12px;left:12px;z-index:4;
+  background:rgba(213,165,56,.95);color:#06101c;
+  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+.hc-slide-info{padding:16px 6px 0;text-align:center}
+.hc-slide-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff}
+.hc-slide-specs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
+.hc-slide-spec{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:rgba(255,255,255,.72);font-weight:600}
+.hc-slide-spec svg{width:15px;height:15px;stroke:#d5a538;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.hc-slide-traits{display:flex;justify-content:center;flex-wrap:wrap;gap:5px 14px;margin-top:6px}
+.hc-slide-trait{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:rgba(255,255,255,.72);font-weight:600}
+.hc-slide-trait svg{width:15px;height:15px;stroke:#d5a538;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.hc-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:46px;height:46px;border-radius:50%;
+  background:rgba(2,8,19,.75);border:1px solid rgba(213,165,56,.45);
+  color:#d5a538;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;z-index:5;backdrop-filter:blur(6px);
+  transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),border-color .3s cubic-bezier(.22,1,.36,1);
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.hc-arrow:hover{background:rgba(213,165,56,.18);border-color:rgba(213,165,56,.75);transform:translateY(-50%) scale(1.08)}
+.hc-arrow:active{transform:translateY(-50%) scale(.96)}
+.hc-arrow svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.hc-prev{left:2px}
+.hc-next{right:2px}
+.hc-dots{display:flex;justify-content:center;gap:8px;margin-top:16px}
+.hc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1);border:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.hc-dot.active{background:#d5a538;width:22px;border-radius:999px}
+@media(max-width:900px){.hc-slide{flex-basis:93%}.hc-track{padding:0 3.5%}}
 .navlink{position:relative}
 .navlink:after{
   content:"";
@@ -501,15 +596,16 @@ main,footer{position:relative;z-index:1}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   flex:1;width:100%;gap:0;padding:0 32px;
 }
-.mobile-menu-links a{
+.mobile-menu-links a,.mobile-menu-links button{
   display:block;width:100%;text-align:center;
   padding:18px 0;font-size:22px;font-weight:700;letter-spacing:.04em;
   color:rgba(255,255,255,.80);
   border-bottom:1px solid rgba(255,255,255,.07);
   transition:color .18s;
+  background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;cursor:pointer;
 }
-.mobile-menu-links a:first-child{border-top:1px solid rgba(255,255,255,.07)}
-.mobile-menu-links a:hover,.mobile-menu-links a:active{color:var(--gold)}
+.mobile-menu-links a:first-child,.mobile-menu-links button:first-child{border-top:1px solid rgba(255,255,255,.07)}
+.mobile-menu-links a:hover,.mobile-menu-links a:active,.mobile-menu-links button:hover,.mobile-menu-links button:active{color:var(--gold)}
 .mobile-menu-footer{
   width:100%;padding:24px 24px max(24px,env(safe-area-inset-bottom));
   border-top:1px solid rgba(255,255,255,.07);
@@ -518,7 +614,6 @@ main,footer{position:relative;z-index:1}
   border:1px solid rgba(213,165,56,.55);color:var(--gold);
   border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.04);
 }
-.mobile-sticky{display:none}
 /* Return section */
 .return-section{
   border:1px solid rgba(213,165,56,.22);border-radius:12px;
@@ -536,11 +631,8 @@ main,footer{position:relative;z-index:1}
   background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.28);
   display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
 }
-@media(max-width:900px){.hero{min-height:auto;background-position:60% center}}
+@media(max-width:900px){.hero{min-height:auto}}
 @media(max-width:768px){
-  body{
-    padding-bottom:105px;
-  }
   #siteHeader{
     padding:12px 14px;
   }
@@ -549,7 +641,7 @@ main,footer{position:relative;z-index:1}
     height:52px!important;
   }
   #siteHeader .text-2xl{
-    font-size:28px;
+    font-size:22px;
   }
   #siteHeader .text-\[10px\]{
     font-size:9px;
@@ -559,7 +651,12 @@ main,footer{position:relative;z-index:1}
   .reveal,.image-reveal{transition-duration:.55s}
   .copy-grid,.comfort-grid,.booking-steps,.metrics-grid{grid-template-columns:1fr}
   .copy-card{padding:24px}
-  .copy-section{padding:42px 18px}
+  .copy-section{padding:32px 18px}
+  .copy-image{min-height:230px}
+  .service-list{gap:10px;margin-top:18px}
+  .service-row{padding:14px;gap:12px}
+  .calc-number{font-size:3.4rem}
+  .calc-result{padding:20px}
   .price-table thead{display:none}
   .price-table,.price-table tbody,.price-table tr,.price-table td{display:block;width:100%}
   .price-table tr{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -569,20 +666,9 @@ main,footer{position:relative;z-index:1}
     color:rgba(255,255,255,.48);font-size:11px;
     text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;
   }
-  .hero h1{font-size:48px}
+  .hero h1{font-size:38px}
   .hero .mt-8.flex{flex-direction:column}
   .return-grid{grid-template-columns:1fr}
-  .mobile-sticky{
-    display:grid;grid-template-columns:1fr 1fr;gap:10px;
-    position:fixed;left:12px;right:12px;bottom:12px;z-index:80;
-  }
-  .mobile-sticky a{
-    text-align:center;border-radius:12px;padding:14px 12px;
-    font-weight:900;box-shadow:0 14px 35px rgba(0,0,0,.35);
-  }
-  footer{padding-bottom:90px!important}
-  /* Prevent last content section from being permanently obscured by the sticky bar */
-  main > *:last-child { padding-bottom: 90px !important; }
 }
 @media(min-width:768px){.return-grid{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){
@@ -683,6 +769,11 @@ main,footer{position:relative;z-index:1}
 <symbol id="i-temp" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"></path></symbol>
 <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></symbol>
 <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></symbol>
+<symbol id="i-charging" viewBox="0 0 24 24"><rect x="5" y="16" width="14" height="4" rx="1"></rect><path d="M8 12c1.2-1 2.5-1.5 4-1.5s2.8.5 4 1.5M9.5 9c1-.8 1.8-1.1 2.5-1.1s1.5.3 2.5 1.1"></path></symbol>
+<symbol id="i-sunroof" viewBox="0 0 24 24"><path d="M3 15c0-5 4-9 9-9s9 4 9 9"></path><circle cx="12" cy="13" r="2.3"></circle><path d="M12 8.3v1M12 16.7v1M7.3 13h1M15.7 13h1"></path></symbol>
+<symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 2c.6 4 2.4 6.8 6 8-3.6 1.2-5.4 4-6 8-.6-4-2.4-6.8-6-8 3.6-1.2 5.4-4 6-8z"></path></symbol>
+<symbol id="i-expand" viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M4 15v5h5M20 15v5h-5"></path></symbol>
+<symbol id="i-family" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3"></circle><path d="M2 21c.8-3.2 2.8-5 6-5s5.2 1.8 6 5"></path><circle cx="17" cy="9" r="2.2"></circle><path d="M14.5 21c.5-2.6 2-4 4-4s3.2 1.2 3.8 3.2"></path></symbol>
 </svg>
 
 <header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4" id="siteHeader">
@@ -703,11 +794,12 @@ main,footer{position:relative;z-index:1}
 <a class="navlink" href="#about">Story</a>
 <a class="navlink" href="#reviews">Reviews</a>
 <a class="navlink" href="#contact">Contact</a>
-<a class="navlink" href="/booking">Check My Booking</a>
+<a class="navlink" href="/booking">My Booking</a>
 </div>
 
 <div class="hidden md:flex items-center gap-2 flex-shrink-0">
 <a class="btn-gold rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
+<button id="navSupportBtn" type="button" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all inline-flex items-center"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>Support</button>
 <a href="/account" id="navAccountBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all" style="display:none">My Account</a>
 <button id="navSignInBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all">Sign In</button>
 </div>
@@ -738,8 +830,9 @@ main,footer{position:relative;z-index:1}
     <a href="#about">Story</a>
     <a href="#reviews">Reviews</a>
     <a href="#contact">Contact</a>
-    <a href="/booking">Check My Booking</a>
+    <a href="/booking">My Booking</a>
     <a href="/account">My Account</a>
+    <button id="mobileSupportBtn" type="button">Support</button>
   </div>
   <!-- Book Now CTA -->
   <div class="mobile-menu-footer">
@@ -794,42 +887,218 @@ main,footer{position:relative;z-index:1}
 </div>
 
 <main>
-<section class="hero px-6 pt-32 pb-12">
+<section class="hero px-6 pt-24 lg:pt-32 pb-8 lg:pb-12">
 <div class="max-w-7xl mx-auto">
-<div class="max-w-[560px] pt-8">
+<div class="max-w-[560px] md:max-w-[820px]">
 <div class="inline-flex rounded-full bg-black/35 border border-white/10 px-4 py-1.5 text-xs uppercase tracking-[.18em] text-[#d5a538] font-bold mb-5">
-Premium. Reliable. Local.
+Executive. Reliable. Local.
 </div>
 
-<h1 class="serif text-6xl md:text-7xl leading-[.88] font-bold">
-Executive Airport <span class="gold">Transfers.</span><br/>Done Properly.
+<h1 class="serif text-3xl md:text-4xl leading-[1.05] font-bold">
+Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
 </h1>
-
-<p class="mt-6 text-lg text-white/82 leading-relaxed">
-Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
-</p>
-
-<div class="mt-5 flex flex-wrap gap-2 text-xs text-white/70">
-<span class="rounded-full border border-[#d5a538]/30 bg-[#d5a538]/10 px-3 py-2">Fully licensed</span>
-<span class="rounded-full border border-[#d5a538]/30 bg-[#d5a538]/10 px-3 py-2">Insured</span>
-<span class="rounded-full border border-[#d5a538]/30 bg-[#d5a538]/10 px-3 py-2">Enhanced DBS checked</span>
-<span class="rounded-full border border-[#d5a538]/30 bg-[#d5a538]/10 px-3 py-2">Owner-operated</span>
 </div>
+
+<div class="w-full max-w-6xl mt-6">
+  <div class="hero-carousel" id="heroCarousel">
+    <div class="hc-track" id="hcTrack" role="region" aria-label="Choose your EV Exec vehicle" tabindex="0">
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <span class="hc-badge">Most Popular</span>
+          <img src="./public/images/ev-exec-tesla-model-y-navy.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1600" height="1259"/>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Tesla Model Y</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>4 Suitcases</span>
+          </div>
+          <div class="hc-slide-traits">
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-charging"></use></svg>Wireless Charging</span>
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-sunroof"></use></svg>Panoramic Roof</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <img src="./public/images/ev-exec-tesla-model-y-juniper.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Tesla Model Y Juniper</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>4 Suitcases</span>
+          </div>
+          <div class="hc-slide-traits">
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-sparkle"></use></svg>Refreshed Interior</span>
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-charging"></use></svg>Wireless Charging</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hc-slide">
+        <div class="hc-slide-media">
+          <img src="./public/images/ev-exec-skoda-enyaq.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
+        </div>
+        <div class="hc-slide-info">
+          <p class="hc-slide-name">Skoda Enyaq</p>
+          <div class="hc-slide-specs">
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
+            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>5 Suitcases</span>
+          </div>
+          <div class="hc-slide-traits">
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-expand"></use></svg>Spacious</span>
+            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-family"></use></svg>Family-Friendly</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <button class="hc-arrow hc-prev" id="hcPrev" type="button" aria-label="Previous vehicle"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="hc-arrow hc-next" id="hcNext" type="button" aria-label="Next vehicle"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+    <div class="hc-dots" id="hcDots"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var track = document.getElementById('hcTrack');
+  if (!track) return;
+  var slides = Array.prototype.slice.call(track.querySelectorAll('.hc-slide'));
+  var dotsWrap = document.getElementById('hcDots');
+  var prevBtn = document.getElementById('hcPrev');
+  var nextBtn = document.getElementById('hcNext');
+  var currentIndex = 0;
+
+  var dots = slides.map(function (_, i) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'hc-dot' + (i === 0 ? ' active' : '');
+    b.setAttribute('aria-label', 'Go to vehicle ' + (i + 1));
+    b.addEventListener('click', function () { scrollToSlide(i); });
+    dotsWrap.appendChild(b);
+    return b;
+  });
+
+  function setActive(idx) {
+    currentIndex = idx;
+    slides.forEach(function (s, i) { s.classList.toggle('active', i === idx); });
+    dots.forEach(function (d, i) { d.classList.toggle('active', i === idx); });
+  }
+
+  function scrollToSlide(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    var slide = slides[i];
+    var target = slide.offsetLeft - (track.clientWidth - slide.offsetWidth) / 2;
+    track.scrollTo({ left: target, behavior: 'smooth' });
+  }
+
+  function nearestIndexFromScroll() {
+    var trackRect = track.getBoundingClientRect();
+    var trackCenter = trackRect.left + trackRect.width / 2;
+    var best = 0, bestDist = Infinity;
+    slides.forEach(function (s, i) {
+      var r = s.getBoundingClientRect();
+      var c = r.left + r.width / 2;
+      var d = Math.abs(c - trackCenter);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    return best;
+  }
+
+  // Native touch swipe/momentum comes free from overflow-x + scroll-snap.
+  // IntersectionObserver keeps the active slide/dot in sync with whatever
+  // scrolled into view, regardless of how the user got there.
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting && entry.intersectionRatio > 0.6) {
+        var idx = slides.indexOf(entry.target);
+        if (idx > -1) setActive(idx);
+      }
+    });
+  }, { root: track, threshold: [0.6] });
+  slides.forEach(function (s) { io.observe(s); });
+
+  if (prevBtn) prevBtn.addEventListener('click', function () { scrollToSlide(currentIndex - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function () { scrollToSlide(currentIndex + 1); });
+
+  track.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToSlide(currentIndex - 1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); scrollToSlide(currentIndex + 1); }
+  });
+
+  // Mouse drag-to-scroll (touch devices already scroll natively)
+  var isDown = false, startX = 0, scrollStart = 0;
+  track.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'touch') return;
+    isDown = true;
+    track.classList.add('dragging');
+    startX = e.clientX;
+    scrollStart = track.scrollLeft;
+    track.setPointerCapture(e.pointerId);
+  });
+  track.addEventListener('pointermove', function (e) {
+    if (!isDown) return;
+    track.scrollLeft = scrollStart - (e.clientX - startX);
+  });
+  function endDrag() {
+    if (!isDown) return;
+    isDown = false;
+    track.classList.remove('dragging');
+    scrollToSlide(nearestIndexFromScroll());
+  }
+  track.addEventListener('pointerup', endDrag);
+  track.addEventListener('pointercancel', endDrag);
+  track.addEventListener('pointerleave', endDrag);
+
+  // Auto-rotate: advance every 4.5s, pause immediately on any user
+  // interaction (touch, swipe, drag, arrows, dots, keyboard), resume
+  // 5s after the last interaction. Off entirely for reduced-motion
+  // users, and paused while the tab isn't visible.
+  var AUTO_INTERVAL = 4500;
+  var RESUME_DELAY = 5000;
+  var autoTimer = null;
+  var resumeTimer = null;
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function stopAuto() {
+    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
+  }
+  function startAuto() {
+    stopAuto();
+    if (reducedMotion || document.hidden || slides.length < 2) return;
+    autoTimer = setInterval(function () {
+      scrollToSlide((currentIndex + 1) % slides.length);
+    }, AUTO_INTERVAL);
+  }
+  function onUserInteraction() {
+    stopAuto();
+    if (resumeTimer) clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(function () { resumeTimer = null; startAuto(); }, RESUME_DELAY);
+  }
+
+  track.addEventListener('pointerdown', onUserInteraction);
+  track.addEventListener('touchstart', onUserInteraction, { passive: true });
+  if (prevBtn) prevBtn.addEventListener('click', onUserInteraction);
+  if (nextBtn) nextBtn.addEventListener('click', onUserInteraction);
+  dots.forEach(function (d) { d.addEventListener('click', onUserInteraction); });
+  track.addEventListener('keydown', onUserInteraction);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) stopAuto();
+    else if (!resumeTimer) startAuto();
+  });
+
+  setActive(0);
+  startAuto();
+})();
+</script>
 
 <div class="mt-8 flex gap-4">
 <a class="btn-gold rounded-md px-7 py-4 font-bold inline-flex items-center" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
 <a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold btn-dark inline-flex items-center" href="https://wa.me/447721070370" target="_blank" rel="noopener"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>WhatsApp Us</a>
-</div>
-
-<p class="mt-4 text-sm text-white/70">Limited daily availability to maintain our premium service standards.</p>
-
-<div class="mt-7 flex flex-wrap gap-6">
-<div class="icon-pill"><svg class="clean-icon"><use href="#i-pound"></use></svg><span>Fixed<br/>Prices</span></div>
-<div class="icon-pill"><svg class="clean-icon"><use href="#i-plane"></use></svg><span>Flight<br/>Monitoring</span></div>
-<div class="icon-pill"><svg class="clean-icon"><use href="#i-car"></use></svg><span>Premium<br/>Tesla Vehicle</span></div>
-<div class="icon-pill"><svg class="clean-icon"><use href="#i-user"></use></svg><span>Local &<br/>Reliable</span></div>
-<div class="icon-pill"><svg class="clean-icon"><use href="#i-star"></use></svg><span>5 Star Rated<br/>Service</span></div>
-</div>
 </div>
 
 <section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote">
@@ -1058,14 +1327,13 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 
 </div>
 
-<p class="text-center text-white/50 mt-5 text-sm" id="bwFooterNote">No hidden fees · Fixed prices · Professional service</p>
-<p class="text-center mt-2 text-sm text-white/40" id="bwFooterWhatsapp">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
+<p class="text-center mt-5 text-sm text-white/40" id="bwFooterWhatsapp">Prefer WhatsApp? <a class="underline text-[#d5a538]" href="https://wa.me/447721070370" rel="noopener" target="_blank">Message us directly</a></p>
 </section>
 </div>
 </section>
 
 <!-- Services -->
-<section class="px-6 py-10 reveal" id="services">
+<section class="px-6 py-7 lg:py-10 reveal" id="services">
 <div class="max-w-7xl mx-auto text-center">
 <h2 class="serif text-4xl">Why Choose <span class="gold">EV Exec?</span></h2>
 <p class="text-white/60 mt-1">Airport transfer specialists you can trust.</p>
@@ -1115,7 +1383,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 <div class="copy-card">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">EV Exec Experience</p>
 <h2 class="serif text-4xl md:text-5xl mt-3">The Journey Begins the Moment We Arrive.</h2>
-<p class="text-white/68 mt-5 leading-relaxed text-lg">From the second your driver pulls up, everything is taken care of — your luggage, your comfort, your time.</p>
+<p class="text-white/68 mt-5 leading-relaxed text-base">From the second your driver pulls up, everything is taken care of — your luggage, your comfort, your time.</p>
 
 <div class="service-list">
 <div class="service-row"><svg class="clean-icon"><use href="#i-clock"></use></svg><div><h3>We Arrive Early</h3><p>Smartly dressed, vehicle immaculate. No waiting, no stress — ever.</p></div></div>
@@ -1137,7 +1405,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 <div class="max-w-7xl mx-auto mb-9">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Onboard Comfort</p>
 <h2 class="serif text-4xl md:text-5xl mt-3">Premium Comfort, Every Mile</h2>
-<p class="text-white/65 mt-3 text-lg">Your Tesla Model Y, appointed for professional airport travel.</p>
+<p class="text-white/65 mt-3 text-base">Your Tesla Model Y, appointed for professional airport travel.</p>
 </div>
 
 <div class="comfort-grid">
@@ -1151,7 +1419,7 @@ Fixed prices. Live flight monitoring. Luxury Tesla travel. Always on time.
 </section>
 
 <!-- Prices -->
-<section class="px-6 py-8 reveal" id="prices">
+<section class="px-6 py-6 lg:py-8 reveal" id="prices">
 <div class="max-w-7xl mx-auto">
 <div class="full-price-card">
 <div class="p-7 md:p-9">
@@ -1194,12 +1462,12 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </section>
 
 <!-- CO₂ Calculator -->
-<section class="px-6 py-10 reveal" id="eco">
+<section class="px-6 py-7 lg:py-10 reveal" id="eco">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-2xl mx-auto mb-9">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Zero Emissions Travel</p>
 <h2 class="serif text-4xl md:text-5xl mt-3">Your CO₂ Saving</h2>
-<p class="text-white/62 mt-4">Every EV Exec journey is in a fully electric Tesla. See how much CO₂ you avoid versus a traditional petrol taxi.</p>
+<p class="text-white/62 mt-4">Every EV Exec journey is fully electric. See how much CO₂ you avoid versus a traditional petrol taxi.</p>
 </div>
 
 <div class="calculator-card">
@@ -1222,7 +1490,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 </section>
 
 <!-- Coverage -->
-<section class="px-6 py-10 reveal" id="areas">
+<section class="px-6 py-7 lg:py-10 reveal" id="areas">
 <div class="max-w-7xl mx-auto">
 <div class="glass rounded-lg p-7 md:p-9">
 <div class="text-center max-w-3xl mx-auto">
@@ -1237,7 +1505,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 <span class="icon"><svg class="clean-icon"><use href="#i-map"></use></svg></span>
 <h3 class="text-xl font-bold">Local Pickup Areas</h3>
 </div>
-<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
 <span>Blackpool</span><span>Lytham St Annes</span><span>Poulton-le-Fylde</span><span>Fleetwood</span><span>Thornton-Cleveleys</span><span>Bispham</span><span>Kirkham</span><span>Warton</span><span>Freckleton</span><span>Preston</span><span>South Shore</span><span>North Shore</span>
 </div>
 </article>
@@ -1247,7 +1515,7 @@ Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on r
 <span class="icon"><svg class="clean-icon"><use href="#i-plane"></use></svg></span>
 <h3 class="text-xl font-bold">Airport Destinations</h3>
 </div>
-<div class="grid sm:grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
+<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed">
 <span>Manchester Airport</span><span>Liverpool Airport</span><span>Leeds Bradford Airport</span><span>Birmingham Airport</span><span>Newcastle Airport</span><span>Heathrow Airport</span><span>Gatwick Airport</span><span>Stansted Airport</span><span>Luton Airport</span><span>Edinburgh Airport</span><span>All Major UK Airports</span><span>Long-Distance Transfers</span>
 </div>
 </article>
@@ -1275,7 +1543,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- About / Story -->
-<section class="px-6 py-8 reveal" id="about">
+<section class="px-6 py-6 lg:py-8 reveal" id="about">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 grid md:grid-cols-[190px_1fr_380px] gap-8 items-center">
 <div class="subtle-profile-wrap mx-auto">
 <div class="about-profile-shell mx-auto">
@@ -1326,7 +1594,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- Reviews -->
-<section class="px-6 py-12 reveal" id="reviews">
+<section class="px-6 py-8 lg:py-12 reveal" id="reviews">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
 <h2 class="serif text-4xl md:text-5xl">What Our Customers Say</h2>
@@ -1385,7 +1653,7 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </section>
 
 <!-- CTA Banner -->
-<section class="px-6 py-8 reveal">
+<section class="px-6 py-6 lg:py-8 reveal">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('./public/images/ev-exec-image-6.jpg');background-size:cover;background-position:center;">
 <div class="flex items-center gap-6">
 <img alt="EV Exec logo" class="w-20 h-20 rounded-full object-cover" loading="lazy" src="./public/images/ev-exec-image-3.jpg" width="80" height="80"/>
@@ -1497,12 +1765,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 </div>
 </footer>
 
-<!-- Mobile Sticky CTA -->
-<div class="mobile-sticky">
-<a class="btn-gold" href="#quote">Book Now</a>
-<a class="rounded-md border border-[#d5a538] bg-[#020813]/95 text-white" href="https://wa.me/447721070370">WhatsApp</a>
-</div>
-
 <script>
 (function(){
   // Header scroll
@@ -1512,31 +1774,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   }
   onScroll();
   window.addEventListener('scroll', onScroll, {passive:true});
-
-  // Sticky CTA bar visibility
-  var stickyCta = document.querySelector('.mobile-sticky');
-  var _ctaFooterHidden = false;
-  var _ctaMenuHidden   = false;
-  var _ctaWizardHidden = false;
-
-  function syncCtaVisibility() {
-    if (!stickyCta) return;
-    var hide = _ctaFooterHidden || _ctaMenuHidden || _ctaWizardHidden;
-    stickyCta.style.transition = 'opacity .25s, transform .25s';
-    stickyCta.style.opacity    = hide ? '0' : '';
-    stickyCta.style.transform  = hide ? 'translateY(20px)' : '';
-    stickyCta.style.pointerEvents = hide ? 'none' : '';
-  }
-
-  // 1. Hide when footer enters viewport
-  var siteFooter = document.querySelector('footer#contact') || document.querySelector('footer');
-  if (siteFooter && stickyCta) {
-    var footerObserver = new IntersectionObserver(function(entries) {
-      _ctaFooterHidden = entries[0].isIntersecting;
-      syncCtaVisibility();
-    }, { threshold: 0 });
-    footerObserver.observe(siteFooter);
-  }
 
   // Mobile menu
   var menuToggle = document.getElementById('menuToggle');
@@ -1548,16 +1785,12 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     void mobileMenu.offsetWidth; // force reflow so CSS transition fires on iOS Safari
     mobileMenu.classList.add('open');
     document.body.style.overflow = 'hidden';
-    _ctaMenuHidden = true;
-    syncCtaVisibility();
     if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'true'); menuToggle.setAttribute('aria-label', 'Close menu'); }
   }
   function closeMobileMenu() {
     mobileMenu.classList.remove('open');
     setTimeout(function() { mobileMenu.style.display = ''; }, 300);
     document.body.style.overflow = '';
-    _ctaMenuHidden = false;
-    syncCtaVisibility();
     if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Open menu'); }
   }
 
@@ -1674,8 +1907,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if (confEl) confEl.classList.add('hidden');
     var wizHeader = document.getElementById('bwWizardHeader');
     if (wizHeader) wizHeader.classList.remove('hidden');
-    var footerNote = document.getElementById('bwFooterNote');
-    if (footerNote) footerNote.classList.remove('hidden');
     var footerWa = document.getElementById('bwFooterWhatsapp');
     if (footerWa) footerWa.classList.remove('hidden');
     ['bwStep1','bwStep2','bwStep3'].forEach(function(id, idx) {
@@ -1693,11 +1924,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     if (n === 1) bwRenderStep1();
     if (n === 2) bwRenderStep2();
     if (n === 3) bwRenderStep3();
-    // 2b. Hide sticky CTA when user is mid-booking (step 2 or 3)
-    if (typeof _ctaWizardHidden !== 'undefined') {
-      _ctaWizardHidden = n > 1;
-      syncCtaVisibility();
-    }
     var quoteEl = document.getElementById('quote');
     if (quoteEl) quoteEl.scrollIntoView({ behavior:'smooth', block:'start' });
   }
@@ -1980,8 +2206,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         });
         var wizHeader2 = document.getElementById('bwWizardHeader');
         if (wizHeader2) wizHeader2.classList.add('hidden');
-        var footerNote2 = document.getElementById('bwFooterNote');
-        if (footerNote2) footerNote2.classList.add('hidden');
         var footerWa2 = document.getElementById('bwFooterWhatsapp');
         if (footerWa2) footerWa2.classList.add('hidden');
         bwShowMsg('', '');
@@ -1994,11 +2218,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
         }
         var quoteEl2 = document.getElementById('quote');
         if (quoteEl2) quoteEl2.scrollIntoView({ behavior:'smooth', block:'start' });
-        // Restore sticky CTA after successful submission
-        if (typeof _ctaWizardHidden !== 'undefined') {
-          _ctaWizardHidden = false;
-          syncCtaVisibility();
-        }
         sessionStorage.setItem('evexec_submitted', Date.now().toString());
       } else {
         throw new Error(data.error || 'Something went wrong. Please try again.');
@@ -2163,11 +2382,9 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
 .tab-btn.active{background:rgba(213,165,56,.12);border-color:rgba(213,165,56,.3);color:#d5a538}
 .tab-btn:hover:not(.active){color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
 /* Chat widget */
-.chat-fab{position:fixed;bottom:24px;right:24px;z-index:999;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#d5a538,#f2c66d);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(213,165,56,.35);transition:transform .2s,box-shadow .2s}
-.chat-fab:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 48px rgba(213,165,56,.45)}
-.chat-panel{position:fixed;bottom:92px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
+.chat-panel{position:fixed;bottom:24px;right:24px;z-index:998;width:320px;max-height:480px;background:#07111f;border:1px solid rgba(213,165,56,.25);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;transform:scale(.95) translateY(10px);opacity:0;pointer-events:none;transition:transform .25s ease,opacity .25s ease}
 .chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:auto}
-@media(max-width:767px){.chat-fab{bottom:84px}.chat-panel{bottom:152px}}
+@media(max-width:767px){.chat-panel{bottom:12px;right:12px;left:12px;width:auto}}
 .chat-messages{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:9px;min-height:160px;max-height:300px}
 .chat-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:13px;line-height:1.5}
 .chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
@@ -2193,11 +2410,6 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     <button id="pushPromptDismiss" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;font-size:12px;cursor:pointer">Not now</button>
   </div>
 </div>
-
-<!-- Chat FAB -->
-<button class="chat-fab" id="chatFab" aria-label="Open support chat">
-  <svg style="width:22px;height:22px;fill:none;stroke:#06101c;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-</button>
 
 <!-- Chat panel -->
 <div class="chat-panel" id="chatPanel" role="dialog" aria-label="EV Exec support chat" aria-modal="false">
@@ -2375,7 +2587,8 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
   });
 
   // ── CHAT BOT ─────────────────────────────────────────────────
-  var chatFab   = document.getElementById('chatFab');
+  var chatFab       = document.getElementById('navSupportBtn');
+  var chatFabMobile = document.getElementById('mobileSupportBtn');
   var chatPanel = document.getElementById('chatPanel');
   var chatClose = document.getElementById('chatClose');
   var chatMsgs  = document.getElementById('chatMessages');
@@ -2433,12 +2646,18 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     },300);
   }
 
-  if(chatFab) chatFab.addEventListener('click', function(){
+  function toggleChatPanel(){
     chatPanel.classList.toggle('open');
     if(chatPanel.classList.contains('open') && !chatMsgs.children.length){
       chatAddMsg("Hi! I'm the EV Exec assistant. How can I help?",'bot');
       chatSetQuick(FAQ.slice(0,4));
     }
+  }
+  if(chatFab) chatFab.addEventListener('click', toggleChatPanel);
+  if(chatFabMobile) chatFabMobile.addEventListener('click', function(){
+    var menuCloseBtn = document.getElementById('menuClose');
+    if(menuCloseBtn) menuCloseBtn.click();
+    toggleChatPanel();
   });
   if(chatClose) chatClose.addEventListener('click', function(){ chatPanel.classList.remove('open'); });
   var chatSendBtn = document.getElementById('chatSendBtn');
