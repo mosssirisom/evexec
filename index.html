@@ -921,40 +921,6 @@ Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
         </div>
       </div>
 
-      <div class="hc-slide">
-        <div class="hc-slide-media">
-          <img src="./public/images/ev-exec-tesla-model-y-juniper.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
-        </div>
-        <div class="hc-slide-info">
-          <p class="hc-slide-name">Tesla Model Y Juniper</p>
-          <div class="hc-slide-specs">
-            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
-            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>4 Suitcases</span>
-          </div>
-          <div class="hc-slide-traits">
-            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-sparkle"></use></svg>Refreshed Interior</span>
-            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-charging"></use></svg>Wireless Charging</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="hc-slide">
-        <div class="hc-slide-media">
-          <img src="./public/images/ev-exec-skoda-enyaq.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
-        </div>
-        <div class="hc-slide-info">
-          <p class="hc-slide-name">Skoda Enyaq</p>
-          <div class="hc-slide-specs">
-            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
-            <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>5 Suitcases</span>
-          </div>
-          <div class="hc-slide-traits">
-            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-expand"></use></svg>Spacious</span>
-            <span class="hc-slide-trait"><svg viewBox="0 0 24 24"><use href="#i-family"></use></svg>Family-Friendly</span>
-          </div>
-        </div>
-      </div>
-
     </div>
     <button class="hc-arrow hc-prev" id="hcPrev" type="button" aria-label="Previous vehicle"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
     <button class="hc-arrow hc-next" id="hcNext" type="button" aria-label="Next vehicle"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
@@ -972,6 +938,14 @@ Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
   var prevBtn = document.getElementById('hcPrev');
   var nextBtn = document.getElementById('hcNext');
   var currentIndex = 0;
+
+  if (slides.length <= 1) {
+    if (slides[0]) slides[0].classList.add('active');
+    if (dotsWrap) dotsWrap.style.display = 'none';
+    if (prevBtn) prevBtn.style.display = 'none';
+    if (nextBtn) nextBtn.style.display = 'none';
+    return;
+  }
 
   var dots = slides.map(function (_, i) {
     var b = document.createElement('button');
