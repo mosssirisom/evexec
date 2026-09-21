@@ -708,13 +708,15 @@ main,footer{position:relative;z-index:1}
 .bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
 .bw-dir-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:26px;transition:background .2s}
 .bw-dir-card.bw-selected .bw-dir-icon{background:rgba(213,165,56,.18)}
-.bw-radio{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.25);transition:all .2s;display:flex;align-items:center;justify-content:center}
-.bw-dir-card.bw-selected .bw-radio{border-color:var(--gold);background:var(--gold)}
+.bw-radio{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.25);transition:all .2s;display:flex;align-items:center;justify-content:center;color:transparent}
+.bw-radio svg{opacity:0;transition:opacity .15s}
+.bw-dir-card.bw-selected .bw-radio{border-color:var(--gold);background:var(--gold);color:#06101c}
+.bw-dir-card.bw-selected .bw-radio svg{opacity:1}
 .bw-counter-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid rgba(213,165,56,.65);background:transparent;color:var(--gold);font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
 .bw-counter-btn:hover:not(:disabled){background:rgba(213,165,56,.12)}
 .bw-counter-btn:disabled{opacity:.3;cursor:not-allowed}
 .bw-seg{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:4px;gap:4px}
-.bw-seg-btn{flex:1;padding:11px 8px;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Inter,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
+.bw-seg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Inter,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
 .bw-seg-btn.bw-active{background:var(--gold);color:#06101c}
 .bw-back-btn{width:44px;height:44px;border-radius:12px;flex-shrink:0;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:18px;transition:background .15s;display:flex;align-items:center;justify-content:center;line-height:1}
 .bw-back-btn:hover{background:rgba(255,255,255,.12)}
@@ -759,6 +761,8 @@ main,footer{position:relative;z-index:1}
 <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9L12 3z"></path></symbol>
 <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M20 4c-7.5.6-12.5 3.9-15 10 5.5.6 10-1.8 13.5-7.2M5 14c1.5 2.5 3.9 4.4 7 5"></path></symbol>
 <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7"></path></symbol>
+<symbol id="i-swap" viewBox="0 0 24 24"><path d="M3 8h14M13 4l4 4-4 4M21 16H7M11 12l-4 4 4 4"></path></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.7-5.7L20 8M20 8V4M20 8h-4M20 12a8 8 0 0 1-13.7 5.7L4 16M4 16v4M4 16h4"></path></symbol>
 <symbol id="i-phone" viewBox="0 0 24 24"><path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2"></path></symbol>
 <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></symbol>
 <symbol id="i-map" viewBox="0 0 24 24"><path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.2"></circle></symbol>
@@ -1087,7 +1091,7 @@ Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
   <!-- ── STEP 1: Journey Intent ── -->
   <div id="bwStep1" class="bw-slide">
     <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-1">Step 1 of 3</p>
-    <h3 class="text-2xl font-bold mb-1">Your Journey</h3>
+    <h3 class="serif text-3xl font-bold mb-1">Your Journey</h3>
     <p class="text-sm text-white/45 mb-5">Tell us the direction and type of your trip</p>
 
     <div class="flex flex-col gap-3 mb-6">
@@ -1097,7 +1101,7 @@ Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
           <p class="font-bold text-base">To the Airport</p>
           <p class="text-sm text-white/45 mt-1">I'm departing · drop-off</p>
         </div>
-        <div class="bw-radio" id="bwDirToRadio"></div>
+        <div class="bw-radio" id="bwDirToRadio"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></div>
       </button>
       <button class="bw-dir-card" id="bwDirFrom" type="button">
         <div class="bw-dir-icon"><svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform:rotate(135deg)"><use href="#i-plane"/></svg></div>
@@ -1105,14 +1109,14 @@ Blackpool, Fylde &amp; Wyre <span class="gold">Airport Transfers.</span>
           <p class="font-bold text-base">From the Airport</p>
           <p class="text-sm text-white/45 mt-1">I've landed · pick-up</p>
         </div>
-        <div class="bw-radio" id="bwDirFromRadio"></div>
+        <div class="bw-radio" id="bwDirFromRadio"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></div>
       </button>
     </div>
 
     <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3">Journey Type</p>
     <div class="bw-seg mb-6">
-      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button">One Way</button>
-      <button class="bw-seg-btn" id="bwTypeReturn" type="button">Return</button>
+      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg> One Way</button>
+      <button class="bw-seg-btn" id="bwTypeReturn" type="button"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repeat"/></svg> Return</button>
     </div>
 
     <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwContinue1" type="button" disabled style="opacity:.45;cursor:not-allowed;border:none">
