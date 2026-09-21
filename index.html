@@ -2132,23 +2132,28 @@ For journeys outside these areas, EV Exec can provide a fixed quote in advance d
     btn.disabled = true;
     btn.textContent = 'Sending…';
     var address = bwGetVal('bwAddress');
+    // pickup_location and dropoff_address always hold the literal address or
+    // airport name for whichever end it actually is -- never left blank in
+    // favour of the separate `airport` field. That field still gets the
+    // airport name too (pricing and flight-verification key off it), but it
+    // is never the only place the airport is recorded.
     var payload = {
       journey_type:       isFrom ? 'From Airport' : 'To Airport',
-      pickup_location:    isFrom ? null : address,
+      pickup_location:    isFrom ? (bw.airport || null) : address,
       airport:            bw.airport || null,
       flight_number:      isFrom ? (bwGetVal('bwFlight') || null) : null,
-      dropoff_address:    isFrom ? address : null,
+      dropoff_address:    isFrom ? address : (bw.airport || null),
       travel_date:        bwGetVal('bwDate') || null,
       travel_time:        bwGetVal('bwTime') || null,
       passengers:         bw.passengers,
       luggage:            bw.bags > 0 ? String(bw.bags) + ' piece' + (bw.bags !== 1 ? 's' : '') : null,
       return_journey:     isRet,
-      return_pickup:      isRet && isFrom ? address : null,
+      return_pickup:      isRet ? (isFrom ? address : (bw.airport || null)) : null,
       return_airport:     isRet ? (bw.airport || null) : null,
       return_flight:      isRet && !isFrom ? (bwGetVal('bwRetFlight') || null) : null,
       return_date:        isRet ? (bwGetVal('bwRetDate') || null) : null,
       return_time:        isRet ? (bwGetVal('bwRetTime') || null) : null,
-      return_destination: isRet && !isFrom ? address : null,
+      return_destination: isRet ? (isFrom ? (bw.airport || null) : address) : null,
       customer_name:      name,
       customer_phone:     phone,
       customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
