@@ -236,8 +236,8 @@ function driverOptions(selectedId) {
 }
 
 function routeLine(b) {
-  if (b.journey_type === 'To Airport') return esc(b.pickup_location||'—')+' → '+esc(b.airport||'—');
-  if (b.journey_type === 'From Airport') return esc(b.airport||'—')+' → '+esc(b.dropoff_address||'—');
+  // Literal pickup/drop-off always win over the airport fallback -- same
+  // precedence as the server-side email/SMS templates.
   return esc(b.pickup_location||b.airport||'—')+' → '+esc(b.dropoff_address||b.airport||'—');
 }
 

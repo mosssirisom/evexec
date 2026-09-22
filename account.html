@@ -418,9 +418,9 @@ function payLine(j) {
   return `<p class="row-sub" style="margin-top:2px">£${j.quoted_price} · ${esc(label)}</p>`;
 }
 function routeText(j) {
-  return j.journey_type === 'From Airport'
-    ? `${j.airport || 'Airport'} → ${j.dropoff_address || 'Destination'}`
-    : `${j.pickup_location || 'Pickup'} → ${j.airport || 'Airport'}`;
+  // Literal pickup/drop-off always win over the airport fallback -- same
+  // precedence as the server-side email/SMS templates.
+  return `${j.pickup_location || j.airport || 'Pickup'} → ${j.dropoff_address || j.airport || 'Destination'}`;
 }
 
 function viewTrips() {

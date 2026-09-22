@@ -385,14 +385,10 @@ body{
 
     setStatusPill(b.status, b.payment_status);
 
-    var from, to;
-    if (b.journey_type === 'From Airport') {
-      from = b.airport || 'Airport';
-      to   = b.dropoff_address || 'Your destination';
-    } else {
-      from = b.pickup_location || 'Pickup';
-      to   = b.airport || 'Airport';
-    }
+    // Literal pickup/drop-off always win over the airport fallback -- same
+    // precedence as the server-side email/SMS templates.
+    var from = b.pickup_location || b.airport || 'Pickup';
+    var to   = b.dropoff_address || b.airport || 'Your destination';
 
     document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : '');
     if (b.ref) {
