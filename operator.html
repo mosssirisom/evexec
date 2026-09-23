@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>EV Exec — Notifications</title>
+<title>EV Exec | Notifications</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#020813;color:#fff;font-family:'Inter',system-ui,sans-serif;min-height:100vh}
@@ -125,7 +125,7 @@ async function loadData() {
     ]);
     var bookingsRes = results[0], driversRes = results[1];
     var data;
-    try { data = await bookingsRes.json(); } catch (_) { setNotice('Server error — try again.'); return; }
+    try { data = await bookingsRes.json(); } catch (_) { setNotice('Server error, try again.'); return; }
     if (!bookingsRes.ok) { setNotice(data.error || 'Failed to load.'); return; }
     allBookings = data;
     if (driversRes.ok) { try { allDrivers = await driversRes.json(); } catch (_) { allDrivers = []; } }
@@ -134,7 +134,7 @@ async function loadData() {
     renderStats();
     renderList();
   } catch (e) {
-    setNotice('Network error — ' + e.message);
+    setNotice('Network error: ' + e.message);
   }
 }
 
