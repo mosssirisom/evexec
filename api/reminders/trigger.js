@@ -57,6 +57,31 @@ async function getBookingsInRange(fromDateStr, toDateStr) {
   return res.json();
 }
 
+// Batch-fetch driver name/vehicle for every assigned driver across a set of
+// bookings, so reminders can say who's picking the customer up (this is the
+// single reminder pipeline for every booking regardless of source -- see
+// the removed duplicate in enqueue_operator_customer_notifications()).
+async function getDriversByIds(ids) {
+  const unique = [...new Set(ids.filter(Boolean))];
+  if (!unique.length) return new Map();
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/drivers?id=in.(${unique.join(',')})&select=id,full_name,vehicle_registration,vehicle_model`,
+    { headers: dbHeaders() }
+  );
+  if (!res.ok) return new Map();
+  const rows = await res.json();
+  return new Map(rows.map(d => [d.id, d]));
+}
+
+function driverClause(driversById, booking) {
+  const driver = booking.assigned_driver_id ? driversById.get(booking.assigned_driver_id) : null;
+  const first = driver?.full_name ? driver.full_name.trim().split(' ')[0] : null;
+  if (!first) return '';
+  const vehicle = driver.vehicle_model || 'vehicle';
+  const reg = driver.vehicle_registration ? ` (registration ${driver.vehicle_registration})` : '';
+  return ` Your driver, ${first}, will be in a ${vehicle}${reg}.`;
+}
+
 // Bookings that already have a logged reminder of this type never get a
 // second one, even if they match the window on more than one cron run.
 async function alreadyReminded(bookingIds, type) {
@@ -117,7 +142,7 @@ async function handOffSmsToDriver(booking, message, type) {
   if (!res.ok) console.error(`Failed to create driver SMS reminder handoff for booking ${booking.id}:`, await res.text());
 }
 
-async function sendReminders(due, type) {
+async function sendReminders(due, type, driversById) {
   let sent = 0;
   for (const { booking, hoursOut } of due) {
     // Strip return leg so reminders only show details for this specific journey
@@ -128,10 +153,11 @@ async function sendReminders(due, type) {
     const firstName = (booking.customer_name || 'there').split(' ')[0];
     const method    = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
     const daysText  = type === '7day' ? 'in 7 days' : (hoursOut <= 15 ? 'today' : 'tomorrow');
+    const driverTxt = driverClause(driversById, booking);
 
     const smsBody = type === '7day'
-      ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`
-      : `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`;
+      ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`
+      : `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`;
 
     const pushTitle = type === '7day' ? 'Transfer in 7 Days' : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
     const pushBody  = `${route} ${daysText} at ${time}.`;
@@ -140,7 +166,7 @@ async function sendReminders(due, type) {
       ? `Reminder: Your Transfer in 7 Days`
       : `Reminder: Your Transfer is ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
 
-    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
+    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.${driverTxt}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
     const hasEmail = Boolean(booking.customer_email);
@@ -199,9 +225,14 @@ module.exports = async function handler(req, res) {
     const pending7 = due7.filter(({ booking }) => !sentIds7.has(booking.id));
     const pending1 = due1.filter(({ booking }) => !sentIds1.has(booking.id));
 
+    const driversById = await getDriversByIds([
+      ...pending7.map(({ booking }) => booking.assigned_driver_id),
+      ...pending1.map(({ booking }) => booking.assigned_driver_id)
+    ]);
+
     const [sent7, sent1] = await Promise.all([
-      sendReminders(pending7, '7day'),
-      sendReminders(pending1, '24hr')
+      sendReminders(pending7, '7day', driversById),
+      sendReminders(pending1, '24hr', driversById)
     ]);
 
     res.statusCode = 200;
