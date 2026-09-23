@@ -689,11 +689,20 @@ function viewRewards() {
       <p class="muted" style="margin:6px 0 0">${progressLabel}</p>
       <div class="progress"><span style="width:${fill}%"></span></div>
     </div>
-    <div class="card">
-      <div class="mini">Client Benefits</div>
-      <p class="muted" style="margin:10px 0 0">Premium EV experience on every journey</p>
-      <p class="muted">Fixed-price fares — no surge pricing</p>
-      <p class="muted" style="margin-bottom:0">100% zero-emission Tesla Model Y</p>
+    <div class="mini" style="margin:22px 0 10px">Client Benefits</div>
+    <div class="row-group">
+      <div class="row" style="cursor:default">
+        <div class="row-ico plain"><svg class="svg-fill" width="20" height="20" viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></div>
+        <div class="row-body"><div class="row-title" style="font-size:14.5px">Premium EV on every ride</div></div>
+      </div>
+      <div class="row" style="cursor:default">
+        <div class="row-ico plain"><svg class="svg" width="20" height="20" viewBox="0 0 24 24"><path d="M12 2h7a3 3 0 013 3v7a2 2 0 01-.6 1.4l-9 9a2 2 0 01-2.8 0l-7-7a2 2 0 010-2.8l9-9A2 2 0 0112 2z"/><circle cx="16.5" cy="7.5" r="1.4"/></svg></div>
+        <div class="row-body"><div class="row-title" style="font-size:14.5px">Fixed fares, never surge pricing</div></div>
+      </div>
+      <div class="row" style="cursor:default;border-bottom:0">
+        <div class="row-ico plain"><svg class="svg" width="20" height="20" viewBox="0 0 24 24"><path d="M5 21c0-9 6-15 15-15 0 9-6 15-15 15z"/><path d="M5 21c3-3 6-6 9-9"/></svg></div>
+        <div class="row-body"><div class="row-title" style="font-size:14.5px">100% electric Tesla Model Y</div></div>
+      </div>
     </div>
   `;
 }
