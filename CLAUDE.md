@@ -131,3 +131,14 @@ Migration: `20260923143619_consolidate_reminders_and_convert_received_sms.sql`.
 - `evexec/api/notifications/index.js`'s health-check test send (`handleHealth`) — an admin diagnostic button, not a customer/staff notification; lower priority since it isn't part of any automated flow.
 
 With this round done, the live DB-trigger (`enqueue_operator_customer_notifications`) and the payment-link route no longer call Twilio at all in their normal paths — the three sites above are the only ones left in the whole platform.
+
+### Update — 2026-09-24: fixed a duplicate live Twilio send on "Arrived", closing the last on-trip status-ping gap
+
+Asked to make sure the live status pings (the swipe-to-update-status flow in `evexecdriverapp`'s job detail screen, `handleStatusUpdate()`) go through the two-tap system rather than Twilio. They mostly already did — `enqueue_operator_customer_notifications()` (the DB trigger from the 2026-09-23 status-ping work above) fires on any `bookings.status` change and already routes both `En Route` and `Arrived` through email-or-two-tap. But `evexecdriverapp`'s job page had a second, separate call firing only on `Arrived`: `fireArrivedSms()` → the `notify-passenger-arrived` edge function, which was genuinely still live (email primary, real Twilio SMS fallback) — the exact site flagged as "not yet converted" in the last two updates. Every "Arrived" swipe with no customer email on file was sending both a two-tap driver handoff *and* a real Twilio SMS for the same event.
+
+Fixed by removing the redundant call and the now-dead edge function entirely — the DB trigger already covers `Arrived` the same way it covers `En Route`, so nothing customer-facing was lost, only the duplicate Twilio send. `En Route` and `Arrived` (the only two statuses reachable by the driver's swipe control before "Passenger On Board"/"Completed", which were never wired to any customer SMS) now go through the two-tap system exclusively.
+
+**Twilio SMS call sites — remaining, not yet converted:**
+- `evexec/api/operator/index.js` — operator-accepted notice to the customer (email-primary, SMS fallback), and a manual "send SMS" action available to staff from the dashboard.
+- `evexecdriverapp/supabase/functions/send-journey-receipt` — driver-triggered journey-receipt SMS to the customer after completion, via `_shared/twilio.ts`. (`notify-passenger-arrived`, its former neighbor, is gone — see above.)
+- `evexec/api/notifications/index.js`'s health-check test send (`handleHealth`) — an admin diagnostic button, not a customer/staff notification; lower priority since it isn't part of any automated flow.
