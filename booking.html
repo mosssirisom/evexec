@@ -300,7 +300,10 @@ body{
   function fmtDate(d) {
     if (!d) return 'TBC';
     try {
-      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      // d is a plain YYYY-MM-DD date with no time component, so it parses as
+      // UTC midnight -- format in UTC too, or a browser/device set to a
+      // timezone west of UTC would silently show the previous calendar day.
+      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
     } catch { return d; }
   }
 
