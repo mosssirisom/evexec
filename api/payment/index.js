@@ -5,7 +5,7 @@ module.exports.config = { api: { bodyParser: false } };
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
-const { getPrice, journeyLine } = require('../../lib/format');
+const { getPrice, routeLine, ukWhen } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 
 function isUnpaid(status) {
@@ -76,7 +76,7 @@ async function handleCreateCheckoutSession(req, res) {
   const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
   const session = await createStripeSession({
     price,
-    description: journeyLine(booking),
+    description: `${routeLine(booking)}, ${ukWhen(booking.travel_date, booking.travel_time)}`,
     bookingId,
     customerEmail: booking.customer_email,
     successUrl: `${siteUrl}/booking?id=${bookingId}&payment=success`,

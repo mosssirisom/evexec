@@ -256,8 +256,21 @@ async function handleQueue(req, res) {
   return methodNotAllowed(res);
 }
 
+// Shared secret the database and the operator app already use for push
+// webhooks (push_config.webhook_secret). Lets the bookings triggers, edge
+// functions and the operator app wake the queue straight after queueing a
+// message instead of waiting for the next sweep.
+async function webhookAuthOk(req) {
+  const given = req.headers['x-webhook-secret'];
+  if (!given) return false;
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/push_config?select=webhook_secret&id=eq.true`, { headers: dbHeaders() });
+  if (!r.ok) return false;
+  const rows = await r.json();
+  return safeEqual(String(given), String(rows[0]?.webhook_secret || ''));
+}
+
 async function handleRetry(req, res) {
-  if (!operatorAuthOk(req) && !cronAuthOk(req)) return unauthorised(res);
+  if (!operatorAuthOk(req) && !cronAuthOk(req) && !(await webhookAuthOk(req))) return unauthorised(res);
   if (req.method !== 'POST' && req.method !== 'GET') return methodNotAllowed(res);
   const result = await processDue(50);
   return ok(res, { ok: true, ...result });

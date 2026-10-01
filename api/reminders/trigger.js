@@ -2,8 +2,7 @@
 
 const { sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
-const { emailLayout } = require('../../lib/emailLayout');
-const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml } = require('../../lib/format');
+const { customerReminder } = require('../../lib/messages');
 const { logMany } = require('../../lib/notifyLog');
 const { sendOrQueue } = require('../../lib/notificationQueue');
 
@@ -85,15 +84,6 @@ async function getDriversByIds(ids) {
   return new Map(rows.map(d => [d.id, d]));
 }
 
-function driverClause(driversById, booking) {
-  const driver = booking.assigned_driver_id ? driversById.get(booking.assigned_driver_id) : null;
-  const first = driver?.full_name ? driver.full_name.trim().split(' ')[0] : null;
-  if (!first) return '';
-  const vehicle = driver.vehicle_model || 'vehicle';
-  const reg = driver.vehicle_registration ? ` (registration ${driver.vehicle_registration})` : '';
-  return ` Your driver, ${first}, will be in a ${vehicle}${reg}.`;
-}
-
 // Bookings that already have a logged reminder of this type never get a
 // second one, even if they match the window on more than one cron run.
 // Exception: a 24h reminder logged two or more UK days before travel doesn't
@@ -171,28 +161,9 @@ async function handOffSmsToDriver(booking, message, type) {
 async function sendReminders(due, type, driversById) {
   let sent = 0;
   for (const { booking, daysAway } of due) {
-    // Strip return leg so reminders only show details for this specific journey
-    const leg       = { ...booking, return_journey: false };
-    const route     = journeyLine(leg);
-    const date      = fmtDate(booking.travel_date);
-    const time      = fmtTime(booking.travel_time, booking.travel_date);
-    const firstName = (booking.customer_name || 'there').split(' ')[0];
-    const method    = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
-    const daysText  = type === '7day' ? `in ${daysAway} days` : (daysAway === 0 ? 'today' : 'tomorrow');
-    const driverTxt = driverClause(driversById, booking);
-
-    const smsBody = type === '7day'
-      ? `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText}.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`
-      : `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`;
-
-    const pushTitle = type === '7day' ? `Transfer in ${daysAway} Days` : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
-    const pushBody  = `${route} ${daysText} at ${time}.`;
-
-    const emailSubject = type === '7day'
-      ? `Reminder: Your Transfer in ${daysAway} Days`
-      : `Reminder: Your Transfer is ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
-
-    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.${driverTxt}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
+    const when = type === '7day' ? `in ${daysAway} days` : (daysAway === 0 ? 'today' : 'tomorrow');
+    const driver = booking.assigned_driver_id ? driversById.get(booking.assigned_driver_id) : null;
+    const msg = customerReminder(booking, { when, driver });
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
     const hasEmail = Boolean(booking.customer_email);
@@ -203,14 +174,12 @@ async function sendReminders(due, type, driversById) {
     logEntries.push(['push', booking.customer_email || booking.customer_phone]);
 
     await Promise.allSettled([
-      // Email primary. When there's no email on file, hand the SMS off to
-      // the assigned driver to send from their own phone -- EV Exec no
-      // longer sends customer reminder SMS via Twilio (see
-      // handOffSmsToDriver above).
+      // Email-first. No email on file -> hand the SMS off to the assigned
+      // driver via the two-tap automation instead of a direct Twilio send.
       hasEmail
-        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml })
-        : (hasPhone ? handOffSmsToDriver(booking, smsBody, type) : null),
-      sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
+        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: msg.subject, html: msg.html }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: msg.subject, html: msg.html })
+        : (hasPhone ? handOffSmsToDriver(booking, msg.text, type) : null),
+      sendPushToCustomer(booking, msg.pushTitle, msg.pushBody, '/booking?id=' + booking.id),
       logMany(booking.id, logType, logEntries)
     ].filter(Boolean));
     sent++;
