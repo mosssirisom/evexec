@@ -38,6 +38,18 @@ function londonOffsetMinutes(date) {
   return (asUtc - date.getTime()) / 60000;
 }
 
+// UK calendar date ('YYYY-MM-DD') for an instant.
+function londonDateStr(date) {
+  const p = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(date).reduce((a, x) => { a[x.type] = x.value; return a; }, {});
+  return `${p.year}-${p.month}-${p.day}`;
+}
+
+function daysBetween(fromDateStr, toDateStr) {
+  return Math.round((Date.parse(toDateStr + 'T00:00:00Z') - Date.parse(fromDateStr + 'T00:00:00Z')) / 86400000);
+}
+
 function travelDateTimeUtc(dateStr, timeStr) {
   if (!dateStr) return null;
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -84,29 +96,43 @@ function driverClause(driversById, booking) {
 
 // Bookings that already have a logged reminder of this type never get a
 // second one, even if they match the window on more than one cron run.
-async function alreadyReminded(bookingIds, type) {
-  if (!bookingIds.length) return new Set();
+// Exception: a 24h reminder logged two or more UK days before travel doesn't
+// count — it was sent too early (the old 0–48h window labelled those
+// "tomorrow"), or the booking has since moved to a later date — so the
+// customer still gets one on the day before. Rows with no timestamp count,
+// so a missing column can never cause repeat sends.
+async function alreadyReminded(due, type) {
+  if (!due.length) return new Set();
+  const travelDateById = new Map(due.map(({ booking }) => [booking.id, booking.travel_date]));
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/notification_log?booking_id=in.(${bookingIds.join(',')})&type=eq.${type}&select=booking_id`,
+    `${SUPABASE_URL}/rest/v1/notification_log?booking_id=in.(${[...travelDateById.keys()].join(',')})&type=eq.${type}&select=*`,
     { headers: dbHeaders() }
   );
   if (!res.ok) return new Set();
   const rows = await res.json();
-  return new Set(rows.map(r => r.booking_id));
+  const reminded = new Set();
+  for (const row of rows) {
+    const loggedAt = row.sent_at || row.created_at;
+    const travelDate = travelDateById.get(row.booking_id);
+    if (type === 'reminder_24h' && loggedAt && travelDate
+        && daysBetween(londonDateStr(new Date(loggedAt)), travelDate) > 1) continue;
+    reminded.add(row.booking_id);
+  }
+  return reminded;
 }
 
-// Widen the calendar-date scan well beyond the target window, then use the
-// real travel datetime (with hoursOut) to decide who's actually due. This
-// means a booking created at any time still gets caught on the very next
-// cron run once it enters the window — nothing depends on when it was made.
-function dueForReminder(list, now, minHours, maxHours) {
+// Due when the pickup is between minDays and maxDays away by UK calendar
+// date (0 = today, 1 = tomorrow) and hasn't happened yet. Using dates, not
+// hours, matters for a once-a-day cron: an early-morning pickup two days out
+// is less than 48 hours away but is not "tomorrow".
+function dueForReminder(list, now, todayLondon, minDays, maxDays) {
   return list
     .map(booking => {
       const dt = travelDateTimeUtc(booking.travel_date, booking.travel_time);
-      const hoursOut = dt ? (dt.getTime() - now.getTime()) / 3600000 : null;
-      return { booking, hoursOut };
+      const daysAway = booking.travel_date ? daysBetween(todayLondon, booking.travel_date) : null;
+      return { booking, daysAway, upcoming: Boolean(dt) && dt.getTime() > now.getTime() };
     })
-    .filter(({ hoursOut }) => hoursOut !== null && hoursOut > 0 && hoursOut >= minHours && hoursOut <= maxHours);
+    .filter(({ daysAway, upcoming }) => upcoming && daysAway !== null && daysAway >= minDays && daysAway <= maxDays);
 }
 
 // Customer reminder SMS no longer goes through Twilio. When there's no
@@ -144,7 +170,7 @@ async function handOffSmsToDriver(booking, message, type) {
 
 async function sendReminders(due, type, driversById) {
   let sent = 0;
-  for (const { booking, hoursOut } of due) {
+  for (const { booking, daysAway } of due) {
     // Strip return leg so reminders only show details for this specific journey
     const leg       = { ...booking, return_journey: false };
     const route     = journeyLine(leg);
@@ -152,18 +178,18 @@ async function sendReminders(due, type, driversById) {
     const time      = fmtTime(booking.travel_time, booking.travel_date);
     const firstName = (booking.customer_name || 'there').split(' ')[0];
     const method    = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
-    const daysText  = type === '7day' ? 'in 7 days' : (hoursOut <= 15 ? 'today' : 'tomorrow');
+    const daysText  = type === '7day' ? `in ${daysAway} days` : (daysAway === 0 ? 'today' : 'tomorrow');
     const driverTxt = driverClause(driversById, booking);
 
     const smsBody = type === '7day'
-      ? `Hi ${firstName}, reminder: your EV Exec transfer is in 7 days.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`
+      ? `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText}.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`
       : `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`;
 
-    const pushTitle = type === '7day' ? 'Transfer in 7 Days' : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
+    const pushTitle = type === '7day' ? `Transfer in ${daysAway} Days` : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
     const pushBody  = `${route} ${daysText} at ${time}.`;
 
     const emailSubject = type === '7day'
-      ? `Reminder: Your Transfer in 7 Days`
+      ? `Reminder: Your Transfer in ${daysAway} Days`
       : `Reminder: Your Transfer is ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
 
     const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.${driverTxt}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
@@ -204,22 +230,23 @@ module.exports = async function handler(req, res) {
 
   try {
     const now = new Date();
-    const today = now.toISOString().slice(0, 10);
+    const today = londonDateStr(now);
 
-    // Scan windows are deliberately wider than the target offset — with a
-    // once-a-day cron, a booking made just after today's run must still be
-    // caught by tomorrow's run instead of falling out of an exact-date match.
+    // Windows are ranges of UK calendar days rather than exact dates, so a
+    // booking made just after today's run is still caught by the next run:
+    // week-ahead reminders go out 5-7 days before travel, day-before
+    // reminders on the day before (or the same day, if booked too late).
     const [candidates7, candidates1] = await Promise.all([
-      getBookingsInRange(addDays(today, 5), addDays(today, 8)),   // ~5-8 days out
-      getBookingsInRange(today, addDays(today, 2))                // up to ~48h out
+      getBookingsInRange(addDays(today, 5), addDays(today, 7)),
+      getBookingsInRange(today, addDays(today, 1))
     ]);
 
-    const due7 = dueForReminder(candidates7, now, 24 * 5, 24 * 8);
-    const due1 = dueForReminder(candidates1, now, 0, 48);
+    const due7 = dueForReminder(candidates7, now, today, 5, 7);
+    const due1 = dueForReminder(candidates1, now, today, 0, 1);
 
     const [sentIds7, sentIds1] = await Promise.all([
-      alreadyReminded(due7.map(({ booking }) => booking.id), 'reminder_7d'),
-      alreadyReminded(due1.map(({ booking }) => booking.id), 'reminder_24h')
+      alreadyReminded(due7, 'reminder_7d'),
+      alreadyReminded(due1, 'reminder_24h')
     ]);
 
     const pending7 = due7.filter(({ booking }) => !sentIds7.has(booking.id));
