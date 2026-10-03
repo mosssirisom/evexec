@@ -8,6 +8,7 @@
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendSMS, sendEmail, sendRejectionNotice, sendWhatsApp, whatsAppReady } = require('../../lib/notify');
+const { smsEnabled } = require('../../lib/channels');
 const { sendPushToCustomer } = require('../../lib/push');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, fmtTime, getPrice, emailJourneyHtml, refBadgeHtml, singleLineSubject } = require('../../lib/format');
@@ -161,7 +162,7 @@ async function sendNotification(req, res) {
   const emailSubject = isReminder ? `Reminder: Your EV Exec Transfer on ${date}` : `Transfer Confirmed`;
   const emailHtml = emailLayout({ title: isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">${isReminder ? 'A reminder about your upcoming EV Exec airport transfer.' : 'Your airport transfer is confirmed.'}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(booking)}<p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p>` });
   const tasks = []; const logEntries = [];
-  if (channels.includes('sms') && booking.customer_phone) { tasks.push(sendSMS(booking.customer_phone, smsText)); logEntries.push(['sms', booking.customer_phone]); }
+  if (channels.includes('sms') && smsEnabled() && booking.customer_phone) { tasks.push(sendSMS(booking.customer_phone, smsText)); logEntries.push(['sms', booking.customer_phone]); }
   if (channels.includes('whatsapp') && whatsAppReady(booking)) { tasks.push(sendWhatsApp(booking.customer_phone, smsText)); logEntries.push(['whatsapp', booking.customer_phone]); }
   if (channels.includes('email') && booking.customer_email) { tasks.push(sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })); logEntries.push(['email', booking.customer_email]); }
   if (channels.includes('push')) { tasks.push(sendPushToCustomer(booking, isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', `${route} on ${date}`, '/booking?id=' + booking.id)); logEntries.push(['push', booking.customer_email || booking.customer_phone]); }

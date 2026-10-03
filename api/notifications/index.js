@@ -66,6 +66,7 @@ function mask(value) {
 function envStatus() {
   return {
     twilio: {
+      enabled: process.env.SMS_ENABLED === 'true',
       accountSid: Boolean(process.env.TWILIO_ACCOUNT_SID),
       authToken: Boolean(process.env.TWILIO_AUTH_TOKEN),
       phoneNumber: Boolean(process.env.TWILIO_PHONE_NUMBER),
