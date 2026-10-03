@@ -14,6 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 const { SITE, BUSINESS, RATING, REVIEWS, PRICES, FLEET, AREAS, SERVICES } = require('./data');
+const chrome = require('./chrome');
 
 const ROOT = path.resolve(__dirname, '../..');
 const PAGES_DIR = path.join(__dirname, 'pages');
@@ -58,79 +59,7 @@ const picture = (base, alt, { w = 1000, h = 789, eager = false, sizes = '(min-wi
   `<picture><source type="image/webp" srcset="/public/images/opt/${base}.webp"><img src="/public/images/opt/${base}.jpg" alt="${esc(alt)}" width="${w}" height="${h}" sizes="${sizes}" ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async"></picture>`;
 
 // ── shared blocks ────────────────────────────────────────────────────────
-const NAV = [
-  ['Airport Transfers', 'airport-transfers'],
-  ['Corporate', 'corporate-travel'],
-  ['Private Hire', 'private-hire'],
-  ['Fleet', 'fleet'],
-  ['Areas', 'areas'],
-  ['Reviews', '#reviews'],
-  ['FAQ', 'faq'],
-  ['My Booking', 'booking'],
-];
-
-function header(page) {
-  const links = NAV.map(([label, slug]) => {
-    const target = slug.startsWith('#') ? `/${slug}` : href(slug);
-    const cur = page.navKey === slug ? ' aria-current="page"' : '';
-    return `<a href="${target}"${cur}>${label}</a>`;
-  }).join('');
-  return `<a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/" aria-label="EV Exec home">
-      <img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44">
-      <span><b>EV EXEC</b><small>Premium Airport Transfers</small></span>
-    </a>
-    <nav class="nav" aria-label="Main">${links}</nav>
-    <div class="head-actions">
-      <a class="head-phone" href="tel:${BUSINESS.phoneIntl}">${BUSINESS.phone}</a>
-      <a class="btn btn-gold btn-sm" href="${page.bookHref || '/#quote'}">Book Now</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" data-menu>Menu</button>
-    </div>
-  </div>
-  <div class="drawer" id="drawer">
-    <nav aria-label="Mobile">${links}<a href="tel:${BUSINESS.phoneIntl}">Call ${BUSINESS.phone}</a>
-      <a class="btn btn-gold" href="${page.bookHref || '/#quote'}">Book Your Transfer</a>
-    </nav>
-  </div>
-</header>`;
-}
-
-function footer() {
-  const airports = Object.values(PRICES).filter((a) => a.slug)
-    .map((a) => `<li><a href="${href(a.slug)}">${esc(a.short || a.name)} transfers</a></li>`).join('');
-  const services = SERVICES.map((s) => `<li><a href="${href(s.slug)}">${esc(s.name)}</a></li>`).join('');
-  const areas = AREAS.filter((a) => a.slug).map((a) => `<li><a href="${href(a.slug)}">${esc(a.name)}</a></li>`).join('');
-  return `<footer class="site-footer">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <a class="brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44" loading="lazy"><span><b>EV EXEC</b><small>Premium Airport Transfers</small></span></a>
-        <p style="margin-top:14px">Premium airport transfers and private hire across Blackpool and the Fylde Coast, in a fully electric fleet.</p>
-        <address class="nap">
-          <strong style="color:#fff">EV Exec</strong>
-          <span>Serving Blackpool, Fylde &amp; Wyre</span>
-          <a href="tel:${BUSINESS.phoneIntl}">${BUSINESS.phone}</a>
-          <a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a>
-          <a href="${BUSINESS.whatsapp}" rel="noopener">WhatsApp us</a>
-        </address>
-      </div>
-      <div><h2>Services</h2><ul>${services}<li><a href="/fleet">Our fleet</a></li><li><a href="/faq">FAQ</a></li></ul></div>
-      <div><h2>Airports</h2><ul>${airports}<li><a href="/#prices">All airport prices</a></li></ul></div>
-      <div><h2>Areas</h2><ul><li><a href="/">Blackpool</a></li>${areas}<li><a href="/areas">All areas we cover</a></li></ul></div>
-    </div>
-    <div class="foot-base">
-      <span>&copy; ${new Date().getFullYear()} EV Exec. Licensed private hire.</span>
-      <span><a href="/booking">My booking</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></span>
-    </div>
-  </div>
-</footer>
-<div class="mobile-cta">
-  <a class="btn btn-gold" href="__BOOK__">Book Now</a>
-  <a class="btn btn-ghost" href="tel:${BUSINESS.phoneIntl}">${icon('phone', '')}Call</a>
-</div>`;
-}
+// Header, menus and footer come from chrome.js, shared with the homepage.
 
 const stars = '★★★★★';
 
@@ -158,13 +87,13 @@ function heroBlock(page) {
   ${crumbs(page)}
   <div class="wrap hero-grid${h.media ? ' has-media' : ''}">
     <div>
-      <span class="eyebrow">${esc(page.eyebrow)}</span>
+      <span class="pill">${esc(page.eyebrow)}</span>
       <h1>${page.h1}</h1>
       <p class="lead">${page.lead}</p>
       ${chips ? `<div class="price-chips">${chips}</div>` : ''}
       <div class="btn-row">
         <a class="btn btn-gold" href="${primary.href}">${icon('bolt', '')}${esc(primary.label)}</a>
-        <a class="btn btn-ghost" href="${secondary.href}">${esc(secondary.label)}</a>
+        <a class="btn btn-dark" href="${secondary.href}">${esc(secondary.label)}</a>
       </div>
       ${trustRow()}
     </div>
@@ -174,7 +103,8 @@ function heroBlock(page) {
 }
 
 function sectionHead(s) {
-  return `${s.eyebrow ? `<span class="eyebrow">${esc(s.eyebrow)}</span>` : ''}${s.title ? `<h2>${s.title}</h2>` : ''}${s.intro ? `<p class="intro">${s.intro}</p>` : ''}`;
+  const inner = `${s.eyebrow && s.eyebrow.trim() ? `<span class="eyebrow">${esc(s.eyebrow)}</span>` : ''}${s.title ? `<h2>${s.title}</h2>` : ''}${s.intro ? `<p class="intro">${s.intro}</p>` : ''}`;
+  return inner ? `<div class="section-head">${inner}</div>` : '';
 }
 
 const SECTIONS = {
@@ -185,8 +115,8 @@ const SECTIONS = {
     return it.href ? `<a class="card" href="${it.href}">${inner}</a>` : `<div class="card">${inner}</div>`;
   }).join('')}</div>`,
 
-  steps: (s) => `${sectionHead(s)}<div class="grid cols-${s.items.length === 4 ? 4 : 3} steps">${s.items.map((it) =>
-    `<div class="card"><h3>${it.title}</h3><p>${it.text}</p></div>`).join('')}</div>`,
+  steps: (s) => `${sectionHead(s)}<div class="grid cols-${s.items.length === 4 ? 4 : 3} steps">${s.items.map((it, i) =>
+    `<div class="card"><div class="step-number">${i + 1}</div><h3>${it.title}</h3><p>${it.text}</p></div>`).join('')}</div>`,
 
   split: (s) => `<div class="split${s.flip ? ' flip' : ''}"><div class="media">${picture(s.img, s.alt, { w: s.w || 1100, h: s.h || 825 })}</div><div>${sectionHead(s)}<div class="prose">${s.html}</div></div></div>`,
 
@@ -196,8 +126,18 @@ const SECTIONS = {
       const name = p.slug ? `<a href="${href(p.slug)}">${esc(p.name)}</a>` : esc(p.name);
       return `<tr><td>${name}</td><td class="num">${gbp(p.oneWay)}</td><td class="num">${gbp(p.ret)}</td></tr>`;
     }).join('');
-    return `${sectionHead(s)}<div class="table-wrap"><table class="price-table"><thead><tr><th scope="col">Airport</th><th scope="col">One way</th><th scope="col">Return</th></tr></thead><tbody>${rows}</tbody></table></div>
-<p class="note">${s.note || 'Fixed prices from any pickup in Blackpool and the Fylde Coast, for up to 4 passengers with standard luggage. Airport drop-off and pickup charges are included. Other airports are quoted on request.'}</p>`;
+    return `${sectionHead(s)}<div class="price-card" style="max-width:900px;margin:0 auto"><table class="price-table"><thead><tr><th scope="col">Airport</th><th scope="col">One way</th><th scope="col">Return</th></tr></thead><tbody>${rows}</tbody></table>
+<p class="price-note">${s.note || `Fixed prices from any pickup in Blackpool and the Fylde Coast, for up to 4 passengers with standard luggage. Airport drop-off and pickup charges are included. Other airports are <a class="gold" href="${quoteHref('airport')}">quoted on request</a>.`}</p></div>`;
+  },
+
+  // Compact price summary; the full list lives on /prices.
+  priceStrip: (s) => {
+    const keys = s.keys || ['manchester', 'liverpool', 'leeds'];
+    const figs = keys.map((k) => {
+      const p = PRICES[k];
+      return `<div><b>${gbp(p.oneWay)}</b>${esc(p.short || p.name)}${keys.length === 1 ? ` one way &middot; ${gbp(p.ret)} return` : ''}</div>`;
+    }).join('');
+    return `<div class="price-strip"><div><div class="figs">${figs}</div><p class="intro" style="margin-top:12px;max-width:640px">${s.text || ''}</p></div><a class="btn btn-dark" href="/prices">See all prices</a></div>`;
   },
 
   fleet: (s) => `${sectionHead(s)}<div class="grid cols-3">${FLEET.map((v) => `<article class="card fleet-card">
@@ -207,16 +147,30 @@ const SECTIONS = {
     <ul>${v.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul></div>
 </article>`).join('')}</div>${s.after ? `<p class="note">${s.after}</p>` : ''}`,
 
-  reviews: (s) => `${sectionHead(s)}<div class="card rating-box">
+  // Compact fleet summary; photos and details live on /fleet.
+  fleetMini: (s) => `<div class="price-strip"><div><span class="eyebrow">The fleet</span><div class="figs" style="margin-top:10px">${FLEET.map((v) =>
+    `<div><b style="font-size:19px;color:#fff">${esc(v.name)}</b>${v.pax} passengers &middot; ${v.cases} cases</div>`).join('')}</div><p class="intro" style="margin-top:12px;max-width:640px">${s.text || ''}</p></div><a class="btn btn-dark" href="/fleet">Our fleet</a></div>`,
+
+  reviews: (s) => `${sectionHead(s)}<div class="rating-box">
   <div class="score">${RATING.value}</div>
-  <div><div class="stars" aria-label="${RATING.value} out of 5 stars">${stars}</div><p>Rated ${RATING.value} out of 5 from ${RATING.count} Google reviews</p></div>
-  <div class="btn-row" style="margin-left:auto"><a class="btn btn-ghost btn-sm" href="${BUSINESS.googleProfile}" rel="noopener" target="_blank">Read all reviews on Google</a></div>
+  <div><div class="stars" aria-label="${RATING.value} out of 5 stars">${stars}</div><p>${RATING.count} Google reviews</p></div>
+  <a class="btn btn-dark" href="${BUSINESS.googleProfile}" rel="noopener" target="_blank">Read all on Google</a>
 </div>
-<div class="grid cols-3">${REVIEWS.map((r) => `<figure class="card review" style="margin:0">
+<div class="grid cols-3">${REVIEWS.map((r) => `<figure class="card review">
+  <figcaption class="who"><span class="avatar" aria-hidden="true">${esc(r.name[0])}</span><span><b>${esc(r.name)}</b><small>Google review &middot; ${esc(r.date)}</small></span></figcaption>
   <div class="stars" aria-label="5 out of 5 stars">${stars}</div>
   <blockquote>&ldquo;${esc(r.text)}&rdquo;</blockquote>
-  <figcaption class="who"><b>${esc(r.name)}</b> &middot; Google review, ${esc(r.date)}</figcaption>
-</figure>`).join('')}</div>`,
+</figure>`).join('')}</div>${s.leave ? `<div class="links-row"><a href="${BUSINESS.googleReview}" rel="noopener" target="_blank">Travelled with us? Leave a review on Google →</a></div>` : ''}`,
+
+  co2: (s) => `${sectionHead(s)}<div class="card calc">
+  <label for="co2Route">Select your airport</label>
+  <select id="co2Route">${Object.values(PRICES).map((p) => `<option>${esc(p.short || p.name)}</option>`).join('')}</select>
+  <div class="calc-number" id="co2Number">12</div>
+  <small>kg of CO&#8322; saved per journey compared with a typical petrol taxi</small>
+  <p class="note" style="margin-top:14px">Based on the UK petrol taxi average against a Tesla Model Y on the UK electricity grid.</p>
+</div>`,
+
+  map: (s) => `<div class="split"><div>${sectionHead(s)}<div class="prose">${s.html}</div></div><div class="map-frame"><iframe title="EV Exec coverage map: Blackpool, Fylde and Wyre" src="https://www.google.com/maps?q=Blackpool%2C%20Lancashire%2C%20UK&amp;output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></div>`,
 
   faq: (s, page) => `${sectionHead({ title: s.title || 'Frequently asked questions', eyebrow: s.eyebrow || 'FAQ', intro: s.intro })}<div class="faq">${(s.faqs || page.faqs).map((f) =>
     `<details><summary>${esc(f.q)}</summary><div class="a">${f.a.startsWith('<') ? f.a : `<p>${f.a}</p>`}</div></details>`).join('')}</div>${s.more === false ? '' : '<p class="note" style="margin-top:18px">More answers on our <a class="gold" href="/faq">FAQ page</a>.</p>'}`,
@@ -226,7 +180,7 @@ const SECTIONS = {
 
   cta: (s, page) => `<div class="cta-band"><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
   <a class="btn btn-gold" href="${(s.primary && s.primary.href) || page.bookHref || '/#quote'}">${esc((s.primary && s.primary.label) || 'Book Your Transfer')}</a>
-  <a class="btn btn-ghost" href="${(s.secondary && s.secondary.href) || `tel:${BUSINESS.phoneIntl}`}">${esc((s.secondary && s.secondary.label) || `Call ${BUSINESS.phone}`)}</a></div></div>`,
+  <a class="btn btn-dark" href="${(s.secondary && s.secondary.href) || quoteHref(page.quoteService)}">${esc((s.secondary && s.secondary.label) || 'Get a Quote')}</a></div></div>`,
 
   quoteForm: (s) => `${sectionHead(s)}<form class="card form" id="quoteForm" novalidate>
   <div class="row two">
@@ -330,8 +284,9 @@ function jsonLd(page) {
 // ── page shell ───────────────────────────────────────────────────────────
 const SCRIPT = `<script>
 (function(){
-  var b=document.querySelector('[data-menu]'),d=document.getElementById('drawer');
-  if(b&&d)b.addEventListener('click',function(){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+  var cr=document.getElementById('co2Route'),cn=document.getElementById('co2Number');
+  var co2={'Manchester Airport':12,'Liverpool Airport':9,'Leeds Bradford Airport':14,'Birmingham Airport':24,'Newcastle Airport':24};
+  if(cr&&cn)cr.addEventListener('change',function(){var v=co2[cr.value];if(v===undefined)return;cn.style.opacity='0';cn.style.transform='translateY(6px)';setTimeout(function(){cn.textContent=v;cn.style.opacity='1';cn.style.transform='translateY(0)';},190);});
   var f=document.getElementById('quoteForm');if(!f)return;
   var p=new URLSearchParams(location.search),s=p.get('service'),sel=document.getElementById('qService');
   if(s&&sel&&sel.querySelector('option[value="'+s+'"]'))sel.value=s;
@@ -383,18 +338,22 @@ function render(page) {
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+${chrome.HEAD}
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">${jsonLd(page)}</script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
 </head>
 <body>
-${header(page)}
+<a class="skip" href="#main">Skip to content</a>
+${chrome.header({ current: page.navKey, book })}
 <main id="main">
 ${heroBlock(page)}
 ${sectionsHtml(page)}
 </main>
-${footer().replace('__BOOK__', book)}
+${chrome.footer()}
+<div class="evx-mobile-cta"><a class="btn btn-gold" href="${book}">Book Now</a><a class="btn btn-dark" href="${quoteHref(page.quoteService)}">Get a Quote</a></div>
+${chrome.SCRIPT}
 ${SCRIPT}
 </body>
 </html>
@@ -422,6 +381,7 @@ const REDIRECTS = {
   '/airport-transfer-freckleton': '/airport-transfer-kirkham',
   '/airport-transfer-warton': '/airport-transfer-kirkham',
   '/executive-airport-transfers-blackpool': '/corporate-travel',
+  '/airport-transfer-thornton-cleveleys': '/airport-transfer-fleetwood',
 };
 
 function syncVercel(pages) {
@@ -441,9 +401,36 @@ function syncVercel(pages) {
   fs.writeFileSync(file, `{\n  "version": ${cfg.version},\n  "framework": ${JSON.stringify(cfg.framework)},\n  "builds": ${arr(cfg.builds)},\n  "routes": ${arr(cfg.routes)},\n  "crons": ${arr(cfg.crons)}\n}\n`);
 }
 
+// ── shared chrome on the hand-maintained pages ───────────────────────────
+// These pages are not generated, but carry the same header, menus and footer
+// between <!-- evx:header --> / <!-- evx:footer --> markers.
+const CHROME_PAGES = {
+  'index.html': { book: '#quote' },
+  'terms.html': {},
+  'privacy.html': {},
+  'booking.html': {},
+  'blog.html': {},
+  'manchester-airport-parking-vs-private-transfer.html': {},
+  'manchester-airport-transfers-from-blackpool.html': {},
+};
+
+function injectChrome() {
+  for (const [file, opts] of Object.entries(CHROME_PAGES)) {
+    const f = path.join(ROOT, file);
+    let html = fs.readFileSync(f, 'utf8');
+    const before = html;
+    if (!/<!-- evx:header -->[\s\S]*?<!-- \/evx:header -->/.test(html)) throw new Error(`${file}: missing evx:header markers`);
+    html = html.replace(/<!-- evx:header -->[\s\S]*?<!-- \/evx:header -->/, () => chrome.header({ current: opts.current || '', book: opts.book || '/#quote' }));
+    if (/<!-- evx:footer -->[\s\S]*?<!-- \/evx:footer -->/.test(html)) html = html.replace(/<!-- evx:footer -->[\s\S]*?<!-- \/evx:footer -->/, () => chrome.footer());
+    if (!html.includes('/public/css/chrome.css')) html = html.replace('</head>', `${chrome.HEAD}\n</head>`);
+    if (!html.includes('/public/js/site.js')) html = html.replace('</body>', `${chrome.SCRIPT}\n</body>`);
+    if (html !== before) fs.writeFileSync(f, html);
+  }
+}
+
 // ── main ─────────────────────────────────────────────────────────────────
 function main() {
-  const helpers = { esc, bookHref, quoteHref, PRICES, BUSINESS, RATING, AREAS, SERVICES, FLEET, gbp };
+  const helpers = { esc, bookHref, quoteHref, PRICES, BUSINESS, RATING, AREAS, SERVICES, FLEET, REVIEWS, gbp };
   const pages = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith('.js')).sort()
     .flatMap((f) => {
       const mod = require(path.join(PAGES_DIR, f));
@@ -463,6 +450,7 @@ function main() {
     const f = path.join(ROOT, `${old.slice(1)}.html`);
     if (fs.existsSync(f)) fs.unlinkSync(f);
   }
+  injectChrome();
   writeSitemap(pages, new Date().toISOString().slice(0, 10));
   syncVercel(pages);
   console.log(`built ${pages.length} pages: ${pages.map((p) => p.slug).join(', ')}`);

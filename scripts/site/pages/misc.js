@@ -4,7 +4,7 @@
 // booking system actually works (online card payment via Stripe, flight
 // tracking on inbound airport pickups, driver messages on En Route / Arrived).
 
-module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
+module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
   const groups = [
     {
       title: 'Booking',
@@ -48,7 +48,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     {
       title: 'Services and areas',
       faqs: [
-        { q: 'Do you operate outside Blackpool?', a: 'Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham and Preston. Pickups further afield are quoted individually. See <a href="/areas">areas we cover</a>.' },
+        { q: 'Do you operate outside Blackpool?', a: 'Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham and Preston. Pickups further afield are quoted individually. See <a href="/areas">areas we cover</a>.' },
         { q: 'Do you provide corporate transfers?', a: 'Yes, including invoiced bookings for companies. See <a href="/corporate-travel">corporate and executive travel</a>.' },
         { q: 'Do you do journeys that are not to an airport?', a: 'Yes: <a href="/private-hire">private hire</a> around the North West, <a href="/long-distance-transfers">long-distance transfers</a> anywhere in the UK, and <a href="/event-transfers">event and concert transfers</a>.' },
         { q: 'Are your drivers licensed?', a: 'Yes. EV Exec is a licensed private hire operator with full hire and reward insurance, and every driver is enhanced DBS checked.' },
@@ -93,7 +93,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
             { icon: 'shield', title: 'Licensed and insured', text: 'Every car is licensed for private hire and fully insured for hire and reward.' },
           ],
         },
-        { type: 'reviews', alt: true, eyebrow: 'Reviews', title: 'What customers say' },
+        { type: 'co2', eyebrow: 'Zero emissions travel', title: 'Your CO\u2082 saving', intro: 'Every EV Exec journey is fully electric. See roughly how much CO\u2082 you avoid compared with a typical petrol taxi.' },
         { type: 'cta', title: 'Book your transfer', text: 'Up to four passengers, fixed prices, flight monitoring included.' },
       ],
     },
@@ -101,7 +101,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     // ── FAQ ───────────────────────────────────────────────────────────────
     {
       slug: 'faq',
-      navKey: 'faq',
+      navKey: '',
       priority: '0.7',
       bookHref: bookHref(),
       title: 'FAQ | Airport Transfers & Private Hire | EV Exec Blackpool',
@@ -132,7 +132,81 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
       hero: { primary: { label: 'Fill in the form', href: '#quote-form' }, secondary: { label: `Call ${BUSINESS.phone}`, href: `tel:${BUSINESS.phoneIntl}` } },
       sections: [
         { type: 'quoteForm', id: 'quote-form', eyebrow: 'Your journey', title: 'Tell us about your trip' },
-        { type: 'reviews', alt: true, eyebrow: 'Reviews', title: 'Rated 5.0 on Google' },
+      ],
+    },
+
+    // ── Prices ────────────────────────────────────────────────────────────
+    {
+      slug: 'prices',
+      navKey: 'prices',
+      priority: '0.9',
+      bookHref: bookHref(),
+      quoteService: 'airport',
+      title: 'Airport Transfer Prices from Blackpool | EV Exec',
+      description: `Fixed airport transfer prices from Blackpool and the Fylde Coast: Manchester ${gbp(PRICES.manchester.oneWay)}, Liverpool ${gbp(PRICES.liverpool.oneWay)}, Leeds Bradford ${gbp(PRICES.leeds.oneWay)}. Per car, airport charges included.`,
+      eyebrow: 'Prices',
+      h1: 'Fixed prices, <span>agreed before you travel</span>',
+      crumb: 'Prices',
+      lead: 'One price list for every pickup in Blackpool, Fylde, Wyre and Preston. The price you book is the price you pay.',
+      service: {
+        name: 'Airport transfers from Blackpool and the Fylde Coast', type: 'Airport transfer',
+        offers: Object.values(PRICES).map((p) => ({ name: `${p.name}, one way`, price: p.oneWay })),
+      },
+      sections: [
+        { type: 'prices', eyebrow: 'Airport transfers', title: 'Airport price list', intro: 'One way and return, per car, from any address on the Fylde Coast.' },
+        {
+          type: 'cards', id: 'how-pricing-works', cols: 3, eyebrow: 'How pricing works', title: 'What the price includes',
+          items: [
+            { icon: 'pound', title: 'Fixed, not metered', text: 'No meter, no surge pricing and nothing added for traffic. The price is agreed when you book.' },
+            { icon: 'user', title: 'Per car, not per person', text: 'Each price covers up to four passengers with standard luggage. Bigger groups can book two cars.' },
+            { icon: 'plane', title: 'Airport charges included', text: 'Drop-off and pickup charges at the airport are part of the price, as is waiting for a delayed flight.' },
+            { icon: 'route', title: 'Returns cost less', text: 'Book both legs together and the return price is lower than two single journeys.' },
+            { icon: 'card', title: 'Pay how you prefer', text: 'Securely online by card once your booking is confirmed, by bank transfer, or on the day.' },
+            { icon: 'calendar', title: 'Free changes', text: 'Changes and cancellations more than 24 hours before travel are free. Full details are in our <a class="gold" href="/terms">terms</a>.' },
+          ],
+        },
+        {
+          type: 'prose', eyebrow: 'Anything else', title: 'Journeys not on the list',
+          html: `<p>Other airports (Heathrow, Gatwick, Stansted, Luton, East Midlands, Edinburgh), <a href="/corporate-travel">corporate travel</a>, <a href="/private-hire">private hire</a>, <a href="/long-distance-transfers">long-distance</a> and <a href="/event-transfers">event</a> journeys, and pickups just outside our area are quoted individually. <a href="${quoteHref()}">Request a quote</a> and we reply with a fixed price, usually the same day.</p>
+<p>Extra charges only ever apply to things agreed with you in advance, such as excess luggage or long waiting well beyond a reasonable flight delay.</p>`,
+        },
+        { type: 'faq' },
+        { type: 'cta', title: 'Book at a fixed price', text: 'Airport transfers book online in about two minutes.', secondary: { label: 'Get a Quote', href: '/quote' } },
+      ],
+      faqs: [
+        { q: 'Is the price per person or per car?', a: 'Per car. Each price covers up to four passengers with standard luggage.' },
+        { q: 'Are airport parking or drop-off charges extra?', a: 'No. Airport drop-off and pickup charges are included in the price.' },
+        { q: 'Do you charge more if my flight is delayed?', a: 'No. We track your flight and move your pickup at no extra charge. Only very long delays are rearranged with you, and extra waiting is never charged without your agreement.' },
+      ],
+    },
+
+    // ── Reviews ───────────────────────────────────────────────────────────
+    {
+      slug: 'reviews',
+      navKey: 'reviews',
+      priority: '0.7',
+      bookHref: bookHref(),
+      title: `Reviews | ${RATING.value} on Google | EV Exec Blackpool`,
+      description: `EV Exec is rated ${RATING.value} out of 5 from ${RATING.count} Google reviews. Read what customers say about our airport transfers from Blackpool and the Fylde Coast.`,
+      eyebrow: 'Reviews',
+      h1: `Rated ${RATING.value} <span>on Google</span>`,
+      crumb: 'Reviews',
+      lead: `Every published review of EV Exec is five stars: ${RATING.count} reviews on our Google Business Profile.`,
+      sections: [
+        { type: 'reviews', eyebrow: 'What customers say', title: 'Recent reviews', leave: true },
+        {
+          type: 'cards', cols: 3, eyebrow: 'Why customers trust us', title: 'Built on trust',
+          intro: 'An independent, owner-run Fylde Coast business. When you call, you speak to us, not a call centre or a ride-hailing app.',
+          items: [
+            { icon: 'shield', title: 'Licensed and insured', text: 'A licensed private hire operator with full hire and reward insurance.' },
+            { icon: 'user', title: 'Enhanced DBS-checked drivers', text: 'Every driver is enhanced DBS checked, polite, punctual and professional.' },
+            { icon: 'star', title: 'Founder with 12+ years’ experience', text: 'Run by a founder who has been driving people for more than twelve years.' },
+            { icon: 'plane', title: 'Flight tracking', text: 'Every airport pickup is tracked, so a delay never leaves you waiting.' },
+            { icon: 'leaf', title: '100% electric fleet', text: 'Tesla Model Y, Model Y Juniper and Škoda Enyaq, cleaned before every journey.' },
+            { icon: 'bell', title: 'Kept informed', text: 'Confirmation, a reminder with your driver and car, and a message when they set off.' },
+          ],
+        },
+        { type: 'cta', title: 'Travel with us', text: 'Fixed prices and a driver who turns up.', secondary: { label: 'Get a Quote', href: '/quote' } },
       ],
     },
   ];

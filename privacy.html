@@ -106,23 +106,41 @@ body{
   .content-card{padding:22px}
 }
 </style>
+<link rel="stylesheet" href="/public/css/chrome.css">
 </head>
 
 <body>
 
-<!-- Header -->
-<header class="sticky top-0 z-50 px-4 md:px-6 py-4 glass" style="backdrop-filter:blur(22px);background:rgba(2,8,19,.82);border-bottom:1px solid rgba(255,255,255,.10);box-shadow:0 4px 24px rgba(0,0,0,.35);">
-<div class="max-w-4xl mx-auto flex items-center justify-between">
-  <a class="flex items-center gap-3" href="/">
-    <img alt="EV Exec logo" class="w-12 h-12 rounded-full object-cover" src="./public/images/ev-exec-image-3.jpg"/>
-    <div>
-      <div class="text-xl font-black tracking-wide">EV EXEC</div>
-      <div class="text-[10px] uppercase tracking-[.20em] text-white/55">Premium Airport Transfers</div>
-    </div>
-  </a>
-  <a class="btn-gold rounded-md px-5 py-2.5 text-sm font-bold" href="/">← Back to Home</a>
+<!-- evx:header -->
+<header class="evx-header" id="siteHeader">
+<nav class="evx-nav" aria-label="Main">
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<div class="evx-actions">
+<a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
+<a class="evx-btn evx-btn-gold evx-hide-xs" href="/#quote">Book Now</a>
+<div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
+<div class="evx-dd evx-dd-right" id="evx-dd-account"><a id="navSignInBtn" href="/account"><b>Sign in</b><span>Your bookings and privilege points</span></a><a id="navAccountBtn" href="/account" style="display:none"><b>My account</b></a><a href="/booking"><b>My booking</b><span>Check a booking with your reference</span></a><a id="navSupportBtn" href="/faq"><b>Help &amp; FAQ</b></a><a href="tel:+447721070370"><b>Call 07721 070370</b></a></div></div>
+<button class="evx-menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span id="menuToggleLabel">Menu</span></button>
 </div>
+</nav>
 </header>
+<div class="evx-mmenu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="evx-mmenu-top"><button id="menuClose" type="button" aria-label="Close menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M1.5 1.5l15 15M16.5 1.5l-15 15"/></svg></button></div>
+<nav class="evx-mmenu-links" aria-label="Mobile">
+<details><summary>Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate Travel</a><a href="/private-hire">Private Hire</a><a href="/event-transfers">Event & Concert Transfers</a><a href="/long-distance-transfers">Long-distance transfers</a></div></details>
+<details><summary>Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/prices">Prices</a><a href="/prices#how-pricing-works">How Pricing Works</a><a href="/quote">Get a Quote</a></div></details>
+<a href="/fleet">Fleet</a>
+<details><summary>Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/areas#blackpool">Blackpool</a><a href="/areas">Fylde Coast</a><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a><a href="/airport-transfer-preston">Preston</a></div></details>
+<a href="/reviews">Reviews</a>
+<a href="/booking">My Booking</a>
+<a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
+<a href="/account">Sign In</a>
+</nav>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="/#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+</div>
+<!-- /evx:header -->
+<div class="evx-header-space"></div>
 
 <!-- Page Intro -->
 <main class="max-w-4xl mx-auto px-4 md:px-6 py-12">
@@ -263,21 +281,23 @@ body{
 </main>
 
 <!-- Footer -->
-<footer style="border-top:1px solid rgba(255,255,255,.08);" class="px-4 md:px-6 py-8">
-<div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-  <div class="flex items-center gap-3">
-    <img alt="EV Exec logo" class="w-10 h-10 rounded-full object-cover" loading="lazy" src="./public/images/ev-exec-image-3.jpg"/>
-    <div>
-      <div class="font-black gold text-lg">EV EXEC</div>
-      <div class="text-[10px] uppercase tracking-[.18em] text-white/45">Premium Airport Transfers</div>
-    </div>
-  </div>
-  <div class="text-sm text-white/50 text-center sm:text-right">
-    <p><a class="gold hover:text-white transition-colors" href="mailto:book@evexec.co.uk">book@evexec.co.uk</a> &nbsp;·&nbsp; <a class="gold hover:text-white transition-colors" href="tel:07721070370">07721 070370</a></p>
-    <p class="mt-1">© 2026 EV Exec. All rights reserved. &nbsp;·&nbsp; <a class="hover:text-white/80 transition-colors" href="/terms">Terms &amp; Conditions</a></p>
-  </div>
+<!-- evx:footer -->
+<footer class="evx-footer" id="contact">
+<div class="evx-foot-grid">
+<div class="evx-foot-brand">
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
+<p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
+<address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
+<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
+</div>
+<div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p></div>
 </footer>
+<!-- /evx:footer -->
 
+<script defer src="/public/js/site.js"></script>
 </body>
 </html>

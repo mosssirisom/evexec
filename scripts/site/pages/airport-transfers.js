@@ -2,7 +2,7 @@
 
 module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => ({
   slug: 'airport-transfers',
-  navKey: 'airport-transfers',
+  navKey: 'services',
   priority: '0.9',
   title: 'Airport Transfers from Blackpool & the Fylde Coast | EV Exec',
   description: `Fixed-price airport transfers from Blackpool, Lytham St Annes, Poulton, Fleetwood and Preston. Manchester from ${gbp(PRICES.manchester.oneWay)}, flight monitoring included.`,
@@ -36,9 +36,8 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => ({
       ],
     },
     {
-      type: 'prices', alt: true, id: 'prices', eyebrow: 'Fixed prices', title: 'Airport transfer prices',
-      intro: 'The price you see is the price you pay. It is the same from Blackpool, Lytham St Annes, Poulton, Thornton-Cleveleys, Fleetwood, Kirkham and Preston.',
-      note: `Prices cover up to 4 passengers with standard luggage, from any pickup in Blackpool and the Fylde Coast. Airport drop-off and pickup charges are included. Heathrow, Gatwick, Stansted, Luton, Edinburgh and other airports are quoted on request: <a class="gold" href="${quoteHref('airport')}">ask for a price</a>.`,
+      type: 'priceStrip', id: 'prices', keys: ['manchester', 'liverpool', 'leeds', 'birmingham'],
+      text: 'One way, fixed, from anywhere on the Fylde Coast, for up to four passengers. Returns, Newcastle and other airports are on the price list.',
     },
     {
       type: 'steps', eyebrow: 'How it works', title: 'From booking to the terminal',
@@ -67,11 +66,11 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => ({
         { icon: 'star', title: '5.0 on Google', text: 'Every published review of EV Exec is five stars. Read them before you book.' },
       ],
     },
-    { type: 'fleet', alt: true, eyebrow: 'The fleet', title: 'Room for you and your luggage', intro: 'Every car takes up to 4 passengers. Travelling with more than four suitcases, golf clubs or a pushchair? Tell us when you book and we will send the right car.' },
+    { type: 'fleetMini', text: 'Every car takes up to 4 passengers. Travelling with more than four suitcases, golf clubs or a pushchair? Tell us when you book and we will send the right car.' },
     {
       type: 'links', eyebrow: 'Pickup areas', title: 'Airport transfers from your town',
       intro: 'We collect from every address on the Fylde Coast. These pages cover the local details for each area.',
-      items: [{ label: 'Blackpool', href: '/' }, ...AREAS.filter((a) => a.slug).map((a) => ({ label: a.name, href: `/${a.slug}` }))],
+      items: [{ label: 'Blackpool', href: '/areas#blackpool' }, ...AREAS.filter((a) => a.slug).map((a) => ({ label: a.name, href: `/${a.slug}` }))],
     },
     { type: 'faq', alt: true },
     { type: 'cta', title: 'Book your airport transfer', text: 'Fixed price, flight monitoring and door-to-terminal service from anywhere on the Fylde Coast.', primary: { label: 'Book your transfer', href: bookHref() } },

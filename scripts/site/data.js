@@ -67,8 +67,7 @@ const AREAS = [
   { name: 'Blackpool', slug: '', note: 'Including Bispham, North Shore, South Shore and Marton' },
   { name: 'Lytham St Annes', slug: 'airport-transfer-lytham-st-annes' },
   { name: 'Poulton-le-Fylde', slug: 'airport-transfer-poulton-le-fylde' },
-  { name: 'Thornton-Cleveleys', slug: 'airport-transfer-thornton-cleveleys' },
-  { name: 'Fleetwood', slug: 'airport-transfer-fleetwood' },
+  { name: 'Fleetwood & Thornton-Cleveleys', slug: 'airport-transfer-fleetwood' },
   { name: 'Kirkham, Freckleton & Warton', slug: 'airport-transfer-kirkham' },
   { name: 'Preston', slug: 'airport-transfer-preston' },
 ];

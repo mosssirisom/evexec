@@ -36,6 +36,7 @@
 <link href="https://cdn.jsdelivr.net" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="./public/css/tw.min.css"/>
+<link rel="stylesheet" href="/public/css/chrome.css"/>
 
 <script type="application/ld+json">
 {
@@ -130,62 +131,6 @@
 }
 </script>
 
-<script type="application/ld+json">
-{
- "@context": "https://schema.org",
- "@type": "FAQPage",
- "mainEntity": [
-  {
-   "@type": "Question",
-   "name": "How much is an airport transfer from Blackpool?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "From anywhere on the Fylde Coast, one way: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215 and Newcastle £250. Returns are £160, £170, £250, £410 and £480. Prices cover up to four passengers and include airport drop-off and pickup charges."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Do you monitor flights?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Yes, on every pickup from an airport. If your flight lands early or late we move your pickup to match, at no extra charge."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Where will my driver meet me at the airport?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "We agree the meeting point with you when we confirm your booking, and your driver messages you when they have arrived."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Can I pay online?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Yes. Once your booking is confirmed you can pay securely online by card, or by bank transfer or cash on the day."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Do you only do airport transfers?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "No. We also provide corporate travel, private hire around the North West, long-distance transfers anywhere in the UK, and event and concert transfers."
-   }
-  },
-  {
-   "@type": "Question",
-   "name": "Which areas do you cover?",
-   "acceptedAnswer": {
-    "@type": "Answer",
-    "text": "Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham, Freckleton, Warton and Preston, all at the same fixed airport prices. Pickups further afield are quoted individually."
-   }
-  }
- ]
-}
-</script>
 
 <style>
 :root{
@@ -404,15 +349,6 @@ img{max-width:100%}
   display:grid;place-items:center;
   background:radial-gradient(circle,rgba(213,165,56,.13),rgba(255,255,255,.025) 55%,transparent 72%);
 }
-#siteHeader nav{
-  transition:background .45s ease, border-color .45s ease, box-shadow .45s ease;
-}
-#siteHeader.scrolled nav{
-  background:rgba(2,8,19,.72);
-  border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(22px);
-  box-shadow:0 18px 55px rgba(0,0,0,.38);
-}
 .reveal{
   opacity:0;
   transform:translateY(26px);
@@ -630,21 +566,8 @@ main,footer{position:relative;z-index:1}
   display:flex;align-items:center;justify-content:center;margin:0 auto 22px;
 }
 @media(max-width:900px){.hero{min-height:auto}}
+.hero{min-height:0}
 @media(max-width:768px){
-  #siteHeader{
-    padding:12px 14px;
-  }
-  #siteHeader img{
-    width:52px!important;
-    height:52px!important;
-  }
-  #siteHeader .text-2xl{
-    font-size:22px;
-  }
-  #siteHeader .text-\[10px\]{
-    font-size:9px;
-    letter-spacing:.18em;
-  }
   .cursor-glow{display:none}
   .reveal,.image-reveal{transition-duration:.55s}
   .copy-grid,.comfort-grid,.booking-steps,.metrics-grid{grid-template-columns:1fr}
@@ -748,6 +671,33 @@ main,footer{position:relative;z-index:1}
 
 /* Homepage additions (2026-10): hero trust row, services, fleet, FAQ */
 .hx-hero-copy{max-width:900px}
+/* Hero: mobile shows intro, cars, then buttons. Desktop puts intro and
+   buttons side by side with the cars so Book / Quote sit above the fold. */
+.hx-cars{margin-top:22px}
+@media(min-width:1024px){
+  .hx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro cars" "cta cars";column-gap:44px;align-items:center}
+  .hx-intro{grid-area:intro;align-self:end}
+  .hx-cars{grid-area:cars;margin-top:0}
+  .hx-after-cars{grid-area:cta;align-self:start}
+  .hx-top .hx-title{font-size:clamp(2.6rem,3.9vw,3.5rem)}
+  .hx-top .hc-slide{flex-basis:90%}
+  .hx-top .hc-track{padding:0 5%}
+}
+.hx-rv{display:grid;gap:22px}
+@media(min-width:768px){.hx-rv{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:767px){.hx-rv{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:6px;scrollbar-width:none}.hx-rv::-webkit-scrollbar{display:none}.hx-rv>article{flex:0 0 86%;scroll-snap-align:center}}
+@media(max-width:699px){.hx-grid-4{grid-template-columns:1fr 1fr;gap:12px}.hx-grid-4 .hx-svc{padding:18px 16px}.hx-grid-4 .hx-svc h3{font-size:1rem;margin-top:10px}.hx-grid-4 .hx-svc p{font-size:13.5px}.hx-grid-4 .hx-more{display:none}}
+.hx-why{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(min-width:1024px){.hx-why{grid-template-columns:repeat(4,1fr);gap:22px}}
+.hx-why>div{padding:22px 16px}
+.hx-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
+.hx-chips a{padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .2s,color .2s}
+.hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
+.hx-cars-mini{display:grid;gap:12px;margin-top:28px}
+@media(min-width:760px){.hx-cars-mini{grid-template-columns:repeat(3,1fr)}}
+.hx-cars-mini div{padding:18px 20px;border-radius:14px;text-align:left}
+.hx-cars-mini b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.5rem}
+.hx-cars-mini span{color:rgba(255,255,255,.62);font-size:14px}
 .hx-after-cars{margin-top:8px}
 .hx-eyebrow{display:inline-flex;border-radius:999px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);padding:6px 16px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d5a538;font-weight:700;margin:0 0 18px}
 .hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.02;font-weight:700;margin:0}
@@ -763,7 +713,7 @@ main,footer{position:relative;z-index:1}
 @media(max-width:640px){.hx-btn{flex:1 1 100%}}
 .hx-grid{display:grid;gap:16px;margin-top:32px}
 @media(min-width:700px){.hx-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1024px){.hx-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.hx-grid{grid-template-columns:repeat(3,1fr)}.hx-grid-4{grid-template-columns:repeat(4,1fr)}}
 .hx-svc{display:block;padding:26px;border-radius:14px;text-decoration:none;transition:border-color .2s,transform .2s;text-align:left}
 .hx-svc:hover{border-color:rgba(213,165,56,.55);transform:translateY(-2px)}
 .hx-svc h3{font-size:1.1rem;font-weight:700;margin:14px 0 8px}
@@ -833,70 +783,35 @@ main,footer{position:relative;z-index:1}
 <symbol id="i-family" viewBox="0 0 24 24"><circle cx="8" cy="7" r="3"></circle><path d="M2 21c.8-3.2 2.8-5 6-5s5.2 1.8 6 5"></path><circle cx="17" cy="9" r="2.2"></circle><path d="M14.5 21c.5-2.6 2-4 4-4s3.2 1.2 3.8 3.2"></path></symbol>
 </svg>
 
-<header class="fixed top-0 left-0 right-0 z-50 px-4 md:px-6 py-4" id="siteHeader">
-<nav class="max-w-7xl mx-auto flex items-center justify-between">
-<a class="flex items-center gap-3" href="/">
-<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" src="/public/images/opt/ev-exec-logo-160.jpg" width="64" height="64" decoding="async"/>
-<div>
-<div class="text-2xl font-black tracking-wide">EV EXEC</div>
-<div class="text-[10px] uppercase tracking-[.22em] text-white/60">Premium Airport Transfers</div>
+<!-- evx:header -->
+<header class="evx-header" id="siteHeader">
+<nav class="evx-nav" aria-label="Main">
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<div class="evx-actions">
+<a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
+<a class="evx-btn evx-btn-gold evx-hide-xs" href="#quote">Book Now</a>
+<div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
+<div class="evx-dd evx-dd-right" id="evx-dd-account"><a id="navSignInBtn" href="/account"><b>Sign in</b><span>Your bookings and privilege points</span></a><a id="navAccountBtn" href="/account" style="display:none"><b>My account</b></a><a href="/booking"><b>My booking</b><span>Check a booking with your reference</span></a><a id="navSupportBtn" href="/faq"><b>Help &amp; FAQ</b></a><a href="tel:+447721070370"><b>Call 07721 070370</b></a></div></div>
+<button class="evx-menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span id="menuToggleLabel">Menu</span></button>
 </div>
-</a>
-
-<div class="hidden lg:flex items-center gap-6 text-sm text-white/85">
-<a class="navlink" href="/airport-transfers">Airport Transfers</a>
-<a class="navlink" href="#services">Services</a>
-<a class="navlink" href="#prices">Prices</a>
-<a class="navlink" href="#fleet">Fleet</a>
-<a class="navlink" href="/areas">Areas</a>
-<a class="navlink" href="#reviews">Reviews</a>
-<a class="navlink" href="/faq">FAQ</a>
-<a class="navlink" href="/booking">My Booking</a>
-</div>
-
-<div class="hidden md:flex items-center gap-2 flex-shrink-0">
-<a class="btn-gold rounded-full px-6 py-2.5 text-sm font-bold" href="#quote">Book Now</a>
-<button id="navSupportBtn" type="button" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all inline-flex items-center"><svg class="btn-icon" aria-hidden="true"><use href="#i-chat"></use></svg>Support</button>
-<a href="/account" id="navAccountBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all" style="display:none">My Account</a>
-<button id="navSignInBtn" class="rounded-full px-4 py-2 text-sm font-semibold border border-white/20 text-white/70 hover:border-[#d5a538]/60 hover:text-[#d5a538] transition-all">Sign In</button>
-</div>
-<button class="menu-button lg:hidden" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
-  <span id="menuToggleLabel">Menu</span>
-</button>
 </nav>
 </header>
-
-<div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
-  <!-- Close button -->
-  <div style="width:100%;display:flex;justify-content:flex-end;padding:20px 20px 0">
-    <button id="menuClose" type="button" aria-label="Close menu"
-      style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;
-             border:1px solid rgba(213,165,56,.4);border-radius:12px;background:rgba(213,165,56,.08);cursor:pointer;">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <line x1="1.5" y1="1.5" x2="16.5" y2="16.5" stroke="#d5a538" stroke-width="2.2" stroke-linecap="round"/>
-        <line x1="16.5" y1="1.5" x2="1.5" y2="16.5" stroke="#d5a538" stroke-width="2.2" stroke-linecap="round"/>
-      </svg>
-    </button>
-  </div>
-  <!-- Nav links -->
-  <div class="mobile-menu-links">
-    <a href="/airport-transfers">Airport Transfers</a>
-    <a href="#services">Services</a>
-    <a href="#prices">Prices</a>
-    <a href="#fleet">Fleet</a>
-    <a href="/areas">Areas</a>
-    <a href="#reviews">Reviews</a>
-    <a href="/faq">FAQ</a>
-    <a href="/quote">Get a Quote</a>
-    <a href="/booking">My Booking</a>
-    <a href="/account">My Account</a>
-    <button id="mobileSupportBtn" type="button">Support</button>
-  </div>
-  <!-- Book Now CTA -->
-  <div class="mobile-menu-footer">
-    <a href="#quote" class="btn-gold" style="display:block;width:100%;text-align:center;border-radius:14px;padding:18px;font-size:17px;font-weight:900;letter-spacing:.06em;">Book Now</a>
-  </div>
+<div class="evx-mmenu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="evx-mmenu-top"><button id="menuClose" type="button" aria-label="Close menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M1.5 1.5l15 15M16.5 1.5l-15 15"/></svg></button></div>
+<nav class="evx-mmenu-links" aria-label="Mobile">
+<details><summary>Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate Travel</a><a href="/private-hire">Private Hire</a><a href="/event-transfers">Event & Concert Transfers</a><a href="/long-distance-transfers">Long-distance transfers</a></div></details>
+<details><summary>Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/prices">Prices</a><a href="/prices#how-pricing-works">How Pricing Works</a><a href="/quote">Get a Quote</a></div></details>
+<a href="/fleet">Fleet</a>
+<details><summary>Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/areas#blackpool">Blackpool</a><a href="/areas">Fylde Coast</a><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a><a href="/airport-transfer-preston">Preston</a></div></details>
+<a href="/reviews">Reviews</a>
+<a href="/booking">My Booking</a>
+<a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
+<a href="/account">Sign In</a>
+</nav>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
 </div>
+<!-- /evx:header -->
 
 <!-- AUTH MODAL -->
 <div id="authModal" role="dialog" aria-modal="true" aria-label="Sign in to EV Exec" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(2,8,19,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px">
@@ -947,21 +862,22 @@ main,footer{position:relative;z-index:1}
 <main>
 <section class="hero px-6 pt-24 lg:pt-32 pb-8 lg:pb-12">
 <div class="max-w-7xl mx-auto">
-<div class="hx-hero-copy">
+<div class="hx-top">
+<div class="hx-hero-copy hx-intro">
 <p class="hx-eyebrow">Blackpool &amp; Fylde Coast</p>
 <h1 class="serif hx-title">Premium Airport Transfers <span class="gold">&amp; Private Hire.</span></h1>
 <p class="hx-sub">Fixed-price transfers from anywhere on the Fylde Coast to Manchester, Liverpool, Leeds Bradford and every UK airport, in a fully electric fleet with licensed, professional drivers.</p>
 
 </div>
 
-<div class="w-full max-w-6xl mt-6">
+<div class="hx-cars">
   <div class="hero-carousel" id="heroCarousel">
     <div class="hc-track" id="hcTrack" role="region" aria-label="Choose your EV Exec vehicle" tabindex="0">
 
       <div class="hc-slide">
         <div class="hc-slide-media">
           <span class="hc-badge">Most Popular</span>
-          <img src="./public/images/ev-exec-tesla-model-y-navy.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1600" height="1259"/>
+          <img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1000" height="787"/>
         </div>
         <div class="hc-slide-info">
           <p class="hc-slide-name">Tesla Model Y</p>
@@ -978,7 +894,7 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <img src="./public/images/ev-exec-tesla-model-y-juniper.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
+          <img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1000" height="789"/>
         </div>
         <div class="hc-slide-info">
           <p class="hc-slide-name">Tesla Model Y Juniper</p>
@@ -995,7 +911,7 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <img src="./public/images/ev-exec-skoda-enyaq.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1600" height="1262"/>
+          <img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1000" height="789"/>
         </div>
         <div class="hc-slide-info">
           <p class="hc-slide-name">Skoda Enyaq</p>
@@ -1163,7 +1079,7 @@ main,footer{position:relative;z-index:1}
 <li><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"></use></svg>Licensed &amp; DBS-checked drivers</li>
 </ul>
 </div>
-
+</div>
 
 <section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote">
 <div style="max-width:560px;margin:0 auto">
@@ -1396,285 +1312,66 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
-<!-- Services -->
-<section class="px-6 py-7 lg:py-10 reveal" id="services">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-3xl mx-auto">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">What we do</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Airport Transfers, Business Travel <span class="gold">&amp; Private Hire</span></h2>
-<p class="text-white/62 mt-4 leading-relaxed">One local company for every pre-booked journey from the Fylde Coast.</p>
-</div>
-<div class="hx-grid">
-<a class="hx-svc glass" href="/airport-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-plane"></use></svg><h3>Airport Transfers</h3><p>Fixed prices to Manchester (£90), Liverpool (£95), Leeds Bradford (£135) and every other UK airport, with your flight home tracked.</p><span class="hx-more">Airport transfers →</span></a>
-<a class="hx-svc glass" href="/corporate-travel"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-briefcase"></use></svg><h3>Corporate &amp; Executive Travel</h3><p>Staff airport runs, visiting clients and meetings across the North West, invoiced to your company.</p><span class="hx-more">Corporate travel →</span></a>
-<a class="hx-svc glass" href="/private-hire"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-car"></use></svg><h3>Private Hire</h3><p>Pre-booked journeys to stations, hospitals, city centres and appointments, at a price agreed up front.</p><span class="hx-more">Private hire →</span></a>
-<a class="hx-svc glass" href="/long-distance-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-map"></use></svg><h3>Long-Distance Transfers</h3><p>London, Scotland, cruise ports or anywhere in the UK, door to door in a quiet electric car.</p><span class="hx-more">Long-distance →</span></a>
-<a class="hx-svc glass" href="/event-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-star"></use></svg><h3>Events &amp; Concerts</h3><p>Gigs, matches and weddings, with your journey home booked before you leave.</p><span class="hx-more">Event transfers →</span></a>
-<a class="hx-svc glass" href="/areas"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-user"></use></svg><h3>Areas We Cover</h3><p>Blackpool, Lytham St Annes, Poulton, Thornton-Cleveleys, Fleetwood, Kirkham and Preston, all at the same prices.</p><span class="hx-more">All areas →</span></a>
-</div>
-</div>
-</section>
-
-<section class="px-6 py-7 lg:py-10 reveal" id="why">
+<!-- Why EV Exec -->
+<section class="px-6 py-8 lg:py-12 reveal" id="why">
 <div class="max-w-7xl mx-auto text-center">
-<h2 class="serif text-4xl">Why Choose <span class="gold">EV Exec?</span></h2>
-<p class="text-white/60 mt-1">Airport transfer specialists you can trust.</p>
-
-<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-7 mt-8">
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-pound"></use></svg><h3 class="font-bold mt-4">Fixed Prices</h3><p class="text-sm text-white/55 mt-3">No surprises. What we quote is what you pay.</p></div>
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-plane"></use></svg><h3 class="font-bold mt-4">Flight Monitoring</h3><p class="text-sm text-white/55 mt-3">We track your flight live for perfect timing.</p></div>
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-car"></use></svg><h3 class="font-bold mt-4">Premium Electric Fleet</h3><p class="text-sm text-white/55 mt-3">Tesla Model Y and Škoda Enyaq, cleaned before every journey.</p></div>
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-user"></use></svg><h3 class="font-bold mt-4">Licensed Drivers</h3><p class="text-sm text-white/55 mt-3">Professional, enhanced DBS-checked and fully insured.</p></div>
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-star"></use></svg><h3 class="font-bold mt-4">5.0 on Google</h3><p class="text-sm text-white/55 mt-3">Rated 5.0 from 18 Google reviews.</p></div>
-<div class="glass rounded-lg p-6 min-h-[210px] reveal"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-leaf"></use></svg><h3 class="font-bold mt-4">Eco-Friendly</h3><p class="text-sm text-white/55 mt-3">Zero tailpipe emissions. Better for the planet.</p></div>
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Why EV Exec</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">A Local Firm You Can <span class="gold">Rely On</span></h2>
+<div class="hx-why mt-8">
+<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-pound"></use></svg><h3 class="font-bold mt-4">Fixed Prices</h3><p class="text-sm text-white/55 mt-2">Agreed when you book. No meter, no surge.</p></div>
+<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-plane"></use></svg><h3 class="font-bold mt-4">Flight Monitoring</h3><p class="text-sm text-white/55 mt-2">Delays tracked, pickup moved at no charge.</p></div>
+<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-user"></use></svg><h3 class="font-bold mt-4">Licensed Drivers</h3><p class="text-sm text-white/55 mt-2">Enhanced DBS-checked and fully insured.</p></div>
+<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-leaf"></use></svg><h3 class="font-bold mt-4">Electric Fleet</h3><p class="text-sm text-white/55 mt-2">Quiet, spotless and zero tailpipe emissions.</p></div>
 </div>
 </div>
 </section>
 
-<!-- Metrics Strip -->
-<section class="px-6 py-6 reveal">
+<!-- Services -->
+<section class="px-6 py-8 lg:py-12 reveal" id="services">
 <div class="max-w-7xl mx-auto">
-<div class="metrics-grid">
-<div class="metric-card">
-<svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-user"></use></svg>
-<div class="metric-label">Owner-Run</div>
-<div class="metric-sub">Local business, no call centre</div>
-</div>
-<div class="metric-card">
-<svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-pound"></use></svg>
-<div class="metric-label">Fixed Pricing</div>
-<div class="metric-sub">Quoted upfront, no meters or surprises</div>
-</div>
-<div class="metric-card">
-<svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-plane"></use></svg>
-<div class="metric-label">Live Flight Tracking</div>
-<div class="metric-sub">We adapt to delays so you never wait</div>
-</div>
-<div class="metric-card">
-<svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-car"></use></svg>
-<div class="metric-label">Electric Fleet</div>
-<div class="metric-sub">Whisper-quiet and spotless, every journey</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- Experience -->
-<section class="copy-section reveal">
-<div class="copy-grid">
-<div class="copy-card">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">EV Exec Experience</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">The Journey Begins the Moment We Arrive.</h2>
-<p class="text-white/68 mt-5 leading-relaxed text-base">From the second your driver pulls up, everything is taken care of: your luggage, your comfort, your time.</p>
-
-<div class="service-list">
-<div class="service-row"><svg class="clean-icon"><use href="#i-clock"></use></svg><div><h3>We Arrive Early</h3><p>Smartly dressed, vehicle immaculate. No waiting, no stress, ever.</p></div></div>
-<div class="service-row"><svg class="clean-icon"><use href="#i-user"></use></svg><div><h3>Your Comfort, First</h3><p>Premium heated seating, refreshments and climate set to your preference.</p></div></div>
-<div class="service-row"><svg class="clean-icon"><use href="#i-plane"></use></svg><div><h3>Live Flight Tracking</h3><p>If your flight is delayed or early, we adapt so you never wait at the airport.</p></div></div>
-<div class="service-row"><svg class="clean-icon"><use href="#i-car"></use></svg><div><h3>Whisper-Quiet Journey</h3><p>The Tesla cabin is smooth and silent. Just a calm, effortless ride.</p></div></div>
-<div class="service-row"><svg class="clean-icon"><use href="#i-map"></use></svg><div><h3>Door to Departure</h3><p>Terminal drop-off, luggage handled. Departure, stress-free.</p></div></div>
-</div>
-</div>
-
-<div class="copy-image image-reveal">
-<img alt="EV Exec Tesla interior" loading="lazy" src="./public/images/ev-exec-image-4.jpg" width="1085" height="1449"/>
-</div>
-</div>
-</section>
-
-<!-- Comfort -->
-<section class="copy-section reveal">
-<div class="max-w-7xl mx-auto mb-9">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Onboard Comfort</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Premium Comfort, Every Mile</h2>
-<p class="text-white/65 mt-3 text-base">Your Tesla Model Y, appointed for professional airport travel.</p>
-</div>
-
-<div class="comfort-grid">
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-screen"></use></svg><h3 class="font-bold text-xl mt-5">In-Vehicle Entertainment</h3><p class="text-white/62 mt-3">Stream your favourite content on the Tesla's entertainment system.</p></article>
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-user"></use></svg><h3 class="font-bold text-xl mt-5">Luxury Seating</h3><p class="text-white/62 mt-3">Generous space for passengers and luggage in premium comfort.</p></article>
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-water"></use></svg><h3 class="font-bold text-xl mt-5">Refreshments Included</h3><p class="text-white/62 mt-3">Chilled water on every transfer. Complimentary, always.</p></article>
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-phone"></use></svg><h3 class="font-bold text-xl mt-5">Device Charging</h3><p class="text-white/62 mt-3">USB-A, USB-C and wireless charging. Arrive with a full battery.</p></article>
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-temp"></use></svg><h3 class="font-bold text-xl mt-5">Climate Comfort</h3><p class="text-white/62 mt-3">Whisper-quiet cabin. Your perfect temperature, set before you board.</p></article>
-<article class="comfort-card reveal"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-leaf"></use></svg><h3 class="font-bold text-xl mt-5">Eco-Conscious Travel</h3><p class="text-white/62 mt-3">Premium electric travel with zero tailpipe emissions.</p></article>
-</div>
-</section>
-
-<!-- Prices -->
-<section class="px-6 py-6 lg:py-8 reveal" id="prices">
-<div class="max-w-7xl mx-auto">
-<div class="full-price-card">
-<div class="p-7 md:p-9">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Full Airport Price List</p>
-<h2 class="serif text-4xl md:text-5xl mt-2">Transparent Fixed Pricing.</h2>
-<p class="text-white/62 mt-3 max-w-2xl">All-inclusive. No hidden charges. Prices cover up to 4 passengers.</p>
-</div>
-
-<div class="overflow-hidden">
-<table class="price-table">
-<thead>
-<tr>
-<th scope="col">Airport</th>
-<th scope="col">One Way</th>
-<th scope="col">Return</th>
-</tr>
-</thead>
-<tbody>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="/manchester-airport-transfer-blackpool">Manchester Airport</a> <span class="badge-popular">Most Popular</span></td><td class="price-number" data-label="One Way">£90</td><td class="font-bold" data-label="Return">£160</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></td><td class="price-number" data-label="One Way">£95</td><td class="font-bold" data-label="Return">£170</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></td><td class="price-number" data-label="One Way">£135</td><td class="font-bold" data-label="Return">£250</td></tr>
-<tr><td data-label="Airport"><a class="hover:text-[#d5a538] transition-colors" href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></td><td class="price-number" data-label="One Way">£215</td><td class="font-bold" data-label="Return">£410</td></tr>
-<tr><td data-label="Airport">Newcastle Airport</td><td class="price-number" data-label="One Way">£250</td><td class="font-bold" data-label="Return">£480</td></tr>
-</tbody>
-</table>
-</div>
-
-<div class="price-note">
-Prices are based on pickup from Blackpool / Fylde Coast. Other areas quoted on request. Includes flight monitoring, airport fees, refreshments and up to 4 passengers.
-</div>
-
-<div class="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-t border-white/10">
-<div class="text-white/62">
-<p>Email: <a href="mailto:book@evexec.co.uk" class="gold">book@evexec.co.uk</a> &nbsp;·&nbsp; Phone: <a href="tel:07721070370" class="gold">07721 070370</a></p>
-</div>
-<a class="btn-gold rounded-md px-8 py-4 text-center font-bold" href="#quote">Book Now</a>
-</div>
-</div>
-</div>
-</section>
-
-<!-- CO₂ Calculator -->
-<section class="px-6 py-7 lg:py-10 reveal" id="eco">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-2xl mx-auto mb-9">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Zero Emissions Travel</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Your CO₂ Saving</h2>
-<p class="text-white/62 mt-4">Every EV Exec journey is fully electric. See how much CO₂ you avoid versus a traditional petrol taxi.</p>
-</div>
-
-<div class="calculator-card">
-<label for="co2Route" class="block text-center text-xs text-white/60 uppercase tracking-[.16em] mb-3">Select your airport</label>
-<select class="input max-w-xs mx-auto block text-center" id="co2Route">
-<option value="Manchester Airport">Manchester Airport</option>
-<option value="Liverpool Airport">Liverpool Airport</option>
-<option value="Leeds Bradford Airport">Leeds Bradford Airport</option>
-<option value="Birmingham Airport">Birmingham Airport</option>
-<option value="Newcastle Airport">Newcastle Airport</option>
-</select>
-
-<div class="calc-result">
-<div class="calc-number" id="co2Number">12</div>
-<div class="calc-small">kg of CO₂ saved per journey<br>versus a typical petrol taxi</div>
-</div>
-<p class="text-center text-white/38 text-xs mt-5">Based on UK petrol taxi average vs Tesla Model Y on the UK electricity grid.</p>
-</div>
-</div>
-</section>
-
-<!-- Coverage -->
-<section class="px-6 py-7 lg:py-10 reveal" id="areas">
-<div class="max-w-7xl mx-auto">
-<div class="glass rounded-lg p-7 md:p-9">
 <div class="text-center max-w-3xl mx-auto">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Coverage</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Areas Covered</h2>
-<p class="text-white/62 mt-4 leading-relaxed">Premium airport transfers across Blackpool, the Fylde Coast and surrounding areas.</p>
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Services</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Every Pre-Booked <span class="gold">Journey</span></h2>
 </div>
-
-<div class="grid md:grid-cols-2 gap-6 mt-9">
-<article class="rounded-lg border border-white/10 bg-white/[.035] p-6">
-<div class="flex items-center gap-3 mb-5">
-<span class="icon"><svg class="clean-icon"><use href="#i-map"></use></svg></span>
-<h3 class="text-xl font-bold">Local Pickup Areas</h3>
+<div class="hx-grid hx-grid-4">
+<a class="hx-svc glass" href="/airport-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-plane"></use></svg><h3>Airport Transfers</h3><p>Fixed prices to Manchester, Liverpool, Leeds Bradford and every UK airport.</p><span class="hx-more">Airport transfers →</span></a>
+<a class="hx-svc glass" href="/corporate-travel"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-briefcase"></use></svg><h3>Corporate Travel</h3><p>Staff, clients and meetings across the North West, invoiced to your company.</p><span class="hx-more">Corporate travel →</span></a>
+<a class="hx-svc glass" href="/private-hire"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-car"></use></svg><h3>Private Hire</h3><p>Stations, hospitals, city centres and appointments, at a price agreed up front.</p><span class="hx-more">Private hire →</span></a>
+<a class="hx-svc glass" href="/event-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-star"></use></svg><h3>Event &amp; Concert Transfers</h3><p>Gigs, matches and weddings, with your journey home already booked.</p><span class="hx-more">Event transfers →</span></a>
 </div>
-<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed hx-areas">
-<span>Blackpool</span><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood</a><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys</a><span>Bispham</span><a href="/airport-transfer-kirkham">Kirkham</a><a href="/airport-transfer-kirkham">Warton</a><a href="/airport-transfer-kirkham">Freckleton</a><a href="/airport-transfer-preston">Preston</a><span>South Shore</span><span>North Shore</span>
-</div>
-</article>
-
-<article class="rounded-lg border border-white/10 bg-white/[.035] p-6">
-<div class="flex items-center gap-3 mb-5">
-<span class="icon"><svg class="clean-icon"><use href="#i-plane"></use></svg></span>
-<h3 class="text-xl font-bold">Airport Destinations</h3>
-</div>
-<div class="grid grid-cols-2 gap-3 text-white/72 text-sm leading-relaxed hx-areas">
-<a href="/manchester-airport-transfer-blackpool">Manchester Airport</a><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a><span>Newcastle Airport</span><span>Heathrow Airport</span><span>Gatwick Airport</span><span>Stansted Airport</span><span>Luton Airport</span><span>Edinburgh Airport</span><a href="/airport-transfers">All Major UK Airports</a><a href="/long-distance-transfers">Long-Distance Transfers</a>
-</div>
-</article>
-</div>
-
-<div class="mt-7 rounded-lg border border-[#d5a538]/25 bg-[#d5a538]/[.06] p-5 text-center text-white/70 leading-relaxed">
-Same fixed prices from every area above. For pickups further afield, <a class="hx-link" href="/quote">ask for a quote</a> or see <a class="hx-link" href="/areas">all areas we cover</a>.
-</div>
-</div>
-</div>
-</section>
-
-<!-- Steps -->
-<section class="copy-section reveal">
-<div class="max-w-7xl mx-auto text-center mb-9">
-<h2 class="serif text-4xl md:text-5xl">Book in <span class="gold">3 Simple Steps</span></h2>
-<p class="text-white/65 mt-2">Reserving your premium transfer takes under 2 minutes.</p>
-</div>
-
-<div class="booking-steps">
-<article class="step-card reveal"><div class="step-number">01</div><h3 class="text-xl font-bold">Request</h3><p class="text-white/62 mt-3 leading-relaxed">Complete the booking form with your journey details.</p></article>
-<article class="step-card reveal reveal-delay-1"><div class="step-number">02</div><h3 class="text-xl font-bold">Confirm</h3><p class="text-white/62 mt-3 leading-relaxed">Receive your confirmation with a fixed, all-inclusive price.</p></article>
-<article class="step-card reveal reveal-delay-2"><div class="step-number">03</div><h3 class="text-xl font-bold">Travel</h3><p class="text-white/62 mt-3 leading-relaxed">Your driver arrives early. Sit back and enjoy the EV Exec experience.</p></article>
-</div>
-</section>
-
-<!-- About / Story -->
-<section class="px-6 py-6 lg:py-8 reveal" id="about">
-<div class="max-w-7xl mx-auto glass rounded-lg p-8 grid md:grid-cols-[190px_1fr_380px] gap-8 items-center">
-<div class="subtle-profile-wrap mx-auto">
-<div class="about-profile-shell mx-auto">
-<img alt="EV Exec owner" loading="lazy" src="./public/images/ev-exec-image-5.jpg" width="1228" height="1134"/>
-</div>
-</div>
-
-<div>
-<h2 class="serif text-4xl">Built on Trust. <span class="gold">Driven by Excellence.</span></h2>
-<p class="text-white/68 mt-4 leading-relaxed">An independent, owner-run Fylde Coast business where every journey matters.</p>
-<p class="text-white/55 mt-3 leading-relaxed">You deal directly with the owner, not a call centre or a ride-hailing app. Every driver is licensed and enhanced DBS-checked, and every car is cleaned before each journey.</p>
-
-<div class="grid md:grid-cols-3 gap-4 mt-5">
-<div><h3 class="gold font-bold">Professional</h3><p class="text-white/58 mt-1">Smart, polished and warm, every single time.</p></div>
-<div><h3 class="gold font-bold">Eco-Conscious</h3><p class="text-white/58 mt-1">100% electric fleet. Zero tailpipe emissions.</p></div>
-<div><h3 class="gold font-bold">Reliable</h3><p class="text-white/58 mt-1">Live flight tracking on every airport pickup. We adapt.</p></div>
-</div>
-</div>
-
-<ul class="space-y-3 text-white/78">
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Fully Licensed &amp; Insured</span></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Enhanced DBS-Checked Drivers</span></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Founder with 12+ Years’ Experience</span></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>Polite, Punctual &amp; Professional</span></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-check"></use></svg><span>100% Electric Fleet</span></li>
-</ul>
+<p class="text-center mt-6 text-white/62">Going further? <a class="hx-link font-semibold" href="/long-distance-transfers">Long-distance transfers anywhere in the UK →</a></p>
 </div>
 </section>
 
 <!-- Fleet -->
 <section class="px-6 py-8 lg:py-12 reveal" id="fleet">
-<div class="max-w-7xl mx-auto">
-<div class="text-center max-w-3xl mx-auto">
+<div class="max-w-7xl mx-auto text-center">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">The Fleet</p>
 <h2 class="serif text-4xl md:text-5xl mt-3">Three Electric Cars. <span class="gold">One Standard.</span></h2>
-<p class="text-white/62 mt-4 leading-relaxed">Quiet, spacious and cleaned before every journey. Every car takes up to four passengers; tell us about extra luggage and we will send the right one.</p>
+<div class="hx-cars-mini">
+<div class="glass"><b>Tesla Model Y</b><span>4 passengers &middot; 4 suitcases &middot; panoramic roof</span></div>
+<div class="glass"><b>Tesla Model Y Juniper</b><span>4 passengers &middot; 4 suitcases &middot; rear touchscreen</span></div>
+<div class="glass"><b>Škoda Enyaq</b><span>4 passengers &middot; 5 suitcases &middot; extra boot space</span></div>
 </div>
-<div class="hx-grid">
-<article class="hx-car glass"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-navy-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y at an airport at night" width="1000" height="789" loading="lazy" decoding="async"></picture>
-<div class="hx-body"><h3>Tesla Model Y</h3><div class="hx-specs"><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"></use></svg>4 passengers</span><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-briefcase"></use></svg>4 suitcases</span></div>
-<ul><li>Panoramic glass roof</li><li>Wireless and USB-C charging</li></ul></div></article>
-<article class="hx-car glass"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec grey Tesla Model Y Juniper at an airport at night" width="1000" height="789" loading="lazy" decoding="async"></picture>
-<div class="hx-body"><h3>Tesla Model Y Juniper</h3><div class="hx-specs"><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"></use></svg>4 passengers</span><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-briefcase"></use></svg>4 suitcases</span></div>
-<ul><li>The refreshed Model Y</li><li>Rear-seat touchscreen</li></ul></div></article>
-<article class="hx-car glass"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-skoda-enyaq-1000.webp"><img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec blue Skoda Enyaq at an airport at night" width="1000" height="789" loading="lazy" decoding="async"></picture>
-<div class="hx-body"><h3>Škoda Enyaq</h3><div class="hx-specs"><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-user"></use></svg>4 passengers</span><span><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-briefcase"></use></svg>5 suitcases</span></div>
-<ul><li>Room for five suitcases</li><li>Spacious and family-friendly</li></ul></div></article>
+<p class="mt-6"><a class="hx-link font-semibold" href="/fleet">Meet the fleet →</a></p>
 </div>
-<p class="text-center mt-7"><a class="hx-link font-semibold" href="/fleet">More about our fleet →</a></p>
+</section>
+
+<!-- Areas -->
+<section class="px-6 py-8 lg:py-12 reveal" id="areas">
+<div class="max-w-7xl mx-auto text-center">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Areas</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Blackpool &amp; the <span class="gold">Fylde Coast</span></h2>
+<p class="text-white/62 mt-4 max-w-2xl mx-auto">The same fixed prices from every town we cover.</p>
+<div class="hx-chips">
+<a href="/areas#blackpool">Blackpool</a>
+<a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a>
+<a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a>
+<a href="/airport-transfer-fleetwood">Fleetwood &amp; Thornton-Cleveleys</a>
+<a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a>
+<a href="/airport-transfer-preston">Preston</a>
+</div>
+<p class="mt-6"><a class="hx-link font-semibold" href="/areas">All areas we cover →</a></p>
 </div>
 </section>
 
@@ -1682,16 +1379,15 @@ Same fixed prices from every area above. For pickups further afield, <a class="h
 <section class="px-6 py-8 lg:py-12 reveal" id="reviews">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
-<h2 class="serif text-4xl md:text-5xl">What Our Customers Say</h2>
-<p class="text-white/60 mt-3">Recent Google reviews from EV Exec customers.</p>
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Reviews</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">What Our Customers Say</h2>
 </div>
 <div class="hx-rating glass">
 <div class="hx-score">5.0</div>
 <div><div class="hx-stars" aria-label="5.0 out of 5 stars">★★★★★</div><p>Rated 5.0 out of 5 from 18 Google reviews</p></div>
 </div>
-
-<div class="reviews-note mt-9">
-<div class="grid md:grid-cols-3 gap-6">
+<div class="mt-8">
+<div class="hx-rv">
 
 <article class="glass rounded-lg p-6 review-card">
 <div class="flex items-center gap-3 mb-4">
@@ -1733,189 +1429,45 @@ Same fixed prices from every area above. For pickups further afield, <a class="h
 </article>
 
 </div>
-
-<div class="mt-7 text-center">
-<a class="btn-dark glass rounded-md px-7 py-4 inline-block font-bold" href="https://g.page/r/CVPMqDntIQ3xEAE" rel="noopener" target="_blank">Read all 18 reviews on Google</a>
-<a class="hx-link inline-block mt-4 sm:mt-0 sm:ml-5 font-semibold" href="https://g.page/r/CVPMqDntIQ3xEAE/review" rel="noopener" target="_blank">Travelled with us? Leave a review</a>
 </div>
-</div>
+<p class="text-center mt-7"><a class="hx-link font-semibold" href="/reviews">More reviews →</a></p>
 </div>
 </section>
 
-<!-- FAQ -->
-<section class="px-6 py-8 lg:py-12 reveal" id="faq">
-<div class="max-w-7xl mx-auto text-center">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">FAQ</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Before You Book</h2>
-<div class="hx-faq">
-<details class="glass"><summary>How much is an airport transfer from Blackpool?</summary><div class="hx-a">From anywhere on the Fylde Coast, one way: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215 and Newcastle £250. Returns are £160, £170, £250, £410 and £480. Prices cover up to four passengers and include airport drop-off and pickup charges.</div></details>
-<details class="glass"><summary>Do you monitor flights?</summary><div class="hx-a">Yes, on every pickup from an airport. If your flight lands early or late we move your pickup to match, at no extra charge.</div></details>
-<details class="glass"><summary>Where will my driver meet me at the airport?</summary><div class="hx-a">We agree the meeting point with you when we confirm your booking, and your driver messages you when they have arrived.</div></details>
-<details class="glass"><summary>Can I pay online?</summary><div class="hx-a">Yes. Once your booking is confirmed you can pay securely online by card, or by bank transfer or cash on the day.</div></details>
-<details class="glass"><summary>Do you only do airport transfers?</summary><div class="hx-a">No. We also provide corporate travel, private hire around the North West, long-distance transfers anywhere in the UK, and event and concert transfers. <a href="/corporate-travel">Corporate travel</a> &middot; <a href="/private-hire">Private hire</a> &middot; <a href="/long-distance-transfers">Long distance</a> &middot; <a href="/event-transfers">Events</a></div></details>
-<details class="glass"><summary>Which areas do you cover?</summary><div class="hx-a">Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham, Freckleton, Warton and Preston, all at the same fixed airport prices. Pickups further afield are quoted individually. <a href="/areas">See all areas</a></div></details>
-</div>
-<p class="mt-7"><a class="hx-link font-semibold" href="/faq">More questions answered →</a></p>
-</div>
-</section>
-
-<!-- CTA Banner -->
-<section class="px-6 py-6 lg:py-8 reveal">
-<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('./public/images/ev-exec-image-6.jpg');background-size:cover;background-position:center;">
-<div class="flex items-center gap-6">
-<img alt="EV Exec logo" class="w-20 h-20 rounded-full object-cover" loading="lazy" src="/public/images/opt/ev-exec-logo-160.jpg" width="80" height="80"/>
+<!-- Final CTA -->
+<section class="px-6 py-8 lg:py-12 reveal">
+<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('/public/images/opt/ev-exec-image-6-1100.jpg');background-size:cover;background-position:center;">
 <div>
 <h2 class="serif text-4xl">Book Your Transfer</h2>
-<p class="text-white/75 mt-1">Limited daily availability. Book early to secure your time.</p>
+<p class="text-white/75 mt-1">Fixed price, flight tracked, collected from your door.</p>
 </div>
-</div>
-
 <div class="flex flex-col sm:flex-row gap-4">
-<a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Now</a>
-<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="tel:07721070370">Call: 07721 070370</a>
-</div>
-</div>
-</section>
-
-<section class="px-6 py-8 reveal" aria-label="EV Exec location map">
-<div class="max-w-7xl mx-auto">
-<div class="glass rounded-lg p-7 md:p-9">
-<div class="grid md:grid-cols-[.8fr_1.2fr] gap-8 items-center">
-<div>
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Based Locally</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Serving Blackpool, Fylde & Wyre.</h2>
-<p class="text-white/62 mt-4 leading-relaxed">Based on the Fylde Coast, EV Exec provides fixed-price airport transfers to Manchester, Liverpool, Leeds Bradford, Birmingham, Newcastle and other major UK airports, plus corporate travel and private hire across the North West.</p>
-<div class="mt-6 flex flex-col sm:flex-row gap-4">
-<a class="btn-gold rounded-md px-7 py-4 font-bold text-center" href="/quote">Request a Quote</a>
-<a class="rounded-md border border-[#d5a538]/70 px-7 py-4 font-bold text-center btn-dark" href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp</a>
-</div>
-</div>
-
-<div class="map-frame">
-<iframe
-  title="EV Exec coverage map - Blackpool, Fylde and Wyre"
-  src="https://www.google.com/maps?q=Blackpool%2C%20Lancashire%2C%20UK&output=embed"
-  loading="lazy"
-  referrerpolicy="no-referrer-when-downgrade"
-  allowfullscreen>
-</iframe>
-</div>
-</div>
+<a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Your Transfer</a>
+<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="/quote">Get a Quote</a>
 </div>
 </div>
 </section>
 </main>
 
-<footer class="px-6 py-10" id="contact">
-<div class="max-w-7xl mx-auto grid md:grid-cols-[1.2fr_.7fr_1fr_1fr] gap-10">
-<div>
-<div class="flex items-center gap-3">
-<img alt="EV Exec logo" class="w-16 h-16 rounded-full object-cover" loading="lazy" src="/public/images/opt/ev-exec-logo-160.jpg" width="64" height="64"/>
-<div>
-<div class="text-3xl font-black gold">EV EXEC</div>
-<div class="text-xs uppercase tracking-[.2em] text-white/55">Premium Airport Transfers</div>
+<!-- evx:footer -->
+<footer class="evx-footer" id="contact">
+<div class="evx-foot-grid">
+<div class="evx-foot-brand">
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
+<p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
+<address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
+<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
 </div>
-<p class="text-white/58 mt-4 max-w-xs">Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
-<p class="text-white/38 mt-2 max-w-xs text-xs leading-relaxed">Local service zones include Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham, Preston and surrounding FY postcodes.</p>
-<div class="flex gap-3 mt-5">
-<a aria-label="Call EV Exec" class="icon" href="tel:07721070370"><svg class="clean-icon"><use href="#i-phone"></use></svg></a>
-<a aria-label="WhatsApp EV Exec" class="icon" href="https://wa.me/447721070370"><svg class="clean-icon"><use href="#i-user"></use></svg></a>
-<a aria-label="Reviews" class="icon" href="#reviews"><svg class="clean-icon"><use href="#i-star"></use></svg></a>
-</div>
-</div>
-
-<div>
-<h3 class="font-bold mb-4">Services</h3>
-<ul class="space-y-2 text-white/58">
-<li><a href="/airport-transfers">Airport Transfers</a></li>
-<li><a href="/corporate-travel">Corporate &amp; Executive Travel</a></li>
-<li><a href="/private-hire">Private Hire</a></li>
-<li><a href="/long-distance-transfers">Long-Distance Transfers</a></li>
-<li><a href="/event-transfers">Events &amp; Concerts</a></li>
-<li><a href="/fleet">Our Fleet</a></li>
-<li><a href="/faq">FAQ</a></li>
-<li><a href="/quote">Get a Quote</a></li>
-<li><a href="/booking">My Booking</a></li>
-</ul>
-</div>
-
-<div>
-<h3 class="font-bold mb-4">Popular Routes</h3>
-<ul class="space-y-2 text-white/58">
-<li><a href="/manchester-airport-transfer-blackpool">Blackpool to Manchester Airport</a></li>
-<li><a href="/liverpool-airport-transfer-blackpool">Blackpool to Liverpool Airport</a></li>
-<li><a href="/leeds-bradford-airport-transfer-blackpool">Blackpool to Leeds Bradford Airport</a></li>
-<li><a href="/airport-transfer-birmingham-blackpool">Blackpool to Birmingham Airport</a></li>
-<li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes Airport Transfer</a></li>
-<li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde Airport Transfer</a></li>
-<li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton Airport Transfer</a></li>
-<li><a href="/airport-transfer-fleetwood">Fleetwood Airport Transfer</a></li>
-<li><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys Airport Transfer</a></li>
-<li><a href="/airport-transfer-preston">Preston Airport Transfer</a></li>
-<li><a href="/areas">All Areas We Cover</a></li>
-<li><a href="#prices">View All Prices</a></li>
-</ul>
-</div>
-
-<div>
-<h3 class="font-bold mb-4">Contact</h3>
-<ul class="space-y-3 text-white/70">
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-phone"></use></svg><a href="tel:07721070370">07721 070370</a></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-chat"></use></svg><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp Us</a></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-mail"></use></svg><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a></li>
-<li class="flex gap-3"><svg class="clean-icon" aria-hidden="true"><use href="#i-map"></use></svg><span>Blackpool, Fylde &amp; Wyre</span></li>
-</ul>
-</div>
-</div>
-
-<div class="max-w-7xl mx-auto footer-line mt-10 pt-5 flex flex-col md:flex-row gap-3 justify-between text-xs text-white/45">
-<p>© 2026 EV Exec. All rights reserved.</p>
-<p><a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms &amp; Conditions</a></p>
-</div>
+<div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p></div>
 </footer>
+<!-- /evx:footer -->
 
 <script>
 (function(){
-  // Header scroll
-  var header = document.getElementById('siteHeader');
-  function onScroll(){
-    if(header) header.classList.toggle('scrolled', window.scrollY > 24);
-  }
-  onScroll();
-  window.addEventListener('scroll', onScroll, {passive:true});
-
-  // Mobile menu
-  var menuToggle = document.getElementById('menuToggle');
-  var menuClose  = document.getElementById('menuClose');
-  var mobileMenu = document.getElementById('mobileMenu');
-
-  function openMobileMenu() {
-    mobileMenu.style.display = 'flex';
-    void mobileMenu.offsetWidth; // force reflow so CSS transition fires on iOS Safari
-    mobileMenu.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'true'); menuToggle.setAttribute('aria-label', 'Close menu'); }
-  }
-  function closeMobileMenu() {
-    mobileMenu.classList.remove('open');
-    setTimeout(function() { mobileMenu.style.display = ''; }, 300);
-    document.body.style.overflow = '';
-    if (menuToggle) { menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.setAttribute('aria-label', 'Open menu'); }
-  }
-
-  if(menuToggle && mobileMenu){
-    menuToggle.addEventListener('click', function(){
-      mobileMenu.classList.contains('open') ? closeMobileMenu() : openMobileMenu();
-    });
-  }
-  if(menuClose){ menuClose.addEventListener('click', closeMobileMenu); }
-  if(mobileMenu){
-    mobileMenu.querySelectorAll('a').forEach(function(link){
-      link.addEventListener('click', closeMobileMenu);
-    });
-  }
-
   // Scroll reveal
   var items = document.querySelectorAll('.reveal, .image-reveal');
   var observer = new IntersectionObserver(function(entries){
@@ -2580,7 +2132,7 @@ Same fixed prices from every area above. For pickups further afield, <a class="h
   function openModal() { if(authModal) authModal.style.display='flex'; }
   function closeModal(){ if(authModal) authModal.style.display='none'; }
 
-  if(signInBtn) signInBtn.addEventListener('click', openModal);
+  if(signInBtn) signInBtn.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
   if(authClose) authClose.addEventListener('click', closeModal);
   if(authModal) authModal.addEventListener('click', function(e){ if(e.target===authModal) closeModal(); });
   document.addEventListener('keydown', function(e){ if(e.key==='Escape' && authModal && authModal.style.display==='flex') closeModal(); });
@@ -2781,8 +2333,9 @@ Same fixed prices from every area above. For pickups further afield, <a class="h
       chatSetQuick(FAQ.slice(0,4));
     }
   }
-  if(chatFab) chatFab.addEventListener('click', toggleChatPanel);
-  if(chatFabMobile) chatFabMobile.addEventListener('click', function(){
+  if(chatFab) chatFab.addEventListener('click', function(e){ e.preventDefault(); toggleChatPanel(); });
+  if(chatFabMobile) chatFabMobile.addEventListener('click', function(e){
+    e.preventDefault();
     var menuCloseBtn = document.getElementById('menuClose');
     if(menuCloseBtn) menuCloseBtn.click();
     toggleChatPanel();
@@ -2795,5 +2348,6 @@ Same fixed prices from every area above. For pickups further afield, <a class="h
 })();
 </script>
 <script defer src="/public/js/google-places-autocomplete.js?v=evexec-20260613"></script>
+<script defer src="/public/js/site.js"></script>
 </body>
 </html>

@@ -18,15 +18,16 @@ EV Exec is an owner-run, licensed private hire business based on the Fylde Coast
 - Private hire: https://evexec.co.uk/private-hire
 - Long-distance transfers: https://evexec.co.uk/long-distance-transfers
 - Event & concert transfers: https://evexec.co.uk/event-transfers
+- Prices: https://evexec.co.uk/prices
 - Fleet: https://evexec.co.uk/fleet
+- Reviews: https://evexec.co.uk/reviews
 - FAQ: https://evexec.co.uk/faq
 
 ## Areas covered (same fixed prices)
-- Blackpool (incl. Bispham, North Shore, South Shore, Marton): https://evexec.co.uk/
+- Blackpool (incl. Bispham, North Shore, South Shore, Marton): https://evexec.co.uk/areas#blackpool
 - Lytham St Annes: https://evexec.co.uk/airport-transfer-lytham-st-annes
 - Poulton-le-Fylde: https://evexec.co.uk/airport-transfer-poulton-le-fylde
-- Thornton-Cleveleys: https://evexec.co.uk/airport-transfer-thornton-cleveleys
-- Fleetwood: https://evexec.co.uk/airport-transfer-fleetwood
+- Fleetwood & Thornton-Cleveleys: https://evexec.co.uk/airport-transfer-fleetwood
 - Kirkham, Freckleton & Warton: https://evexec.co.uk/airport-transfer-kirkham
 - Preston: https://evexec.co.uk/airport-transfer-preston
 - All areas: https://evexec.co.uk/areas

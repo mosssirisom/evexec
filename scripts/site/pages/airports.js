@@ -11,13 +11,13 @@ const HERO = {
   birmingham: { img: 'ev-exec-tesla-model-y-navy-1000', alt: 'EV Exec navy Tesla Model Y at an airport at night', w: 1000, h: 787 },
 };
 
-module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
+module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
   const crumbs = [{ name: 'Airport Transfers', slug: 'airport-transfers' }];
   const common = (key) => {
     const p = PRICES[key];
     return {
       crumbs,
-      navKey: 'airport-transfers',
+      navKey: 'services',
       priority: '0.9',
       quoteService: 'airport',
       bookHref: bookHref(p.short || p.name),
@@ -46,13 +46,8 @@ module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
   const fromTowns = {
     type: 'links', alt: true, eyebrow: 'Pickup areas', title: 'Same price from anywhere on the Fylde Coast',
     items: [
-      { label: 'Blackpool', href: '/' },
-      { label: 'Lytham St Annes', href: '/airport-transfer-lytham-st-annes' },
-      { label: 'Poulton-le-Fylde', href: '/airport-transfer-poulton-le-fylde' },
-      { label: 'Thornton-Cleveleys', href: '/airport-transfer-thornton-cleveleys' },
-      { label: 'Fleetwood', href: '/airport-transfer-fleetwood' },
-      { label: 'Kirkham, Freckleton & Warton', href: '/airport-transfer-kirkham' },
-      { label: 'Preston', href: '/airport-transfer-preston' },
+      { label: 'Blackpool', href: '/areas#blackpool' },
+      ...AREAS.filter((a) => a.slug).map((a) => ({ label: a.name, href: `/${a.slug}` })),
     ],
   };
 
@@ -88,7 +83,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
 <p>When we confirm your booking we agree where to meet, and your driver messages you when they are there. Take your time through passport control and baggage reclaim. You will be back on the M56 heading home without hunting for a taxi rank or a car park ticket machine.</p>
 <ul class="checklist"><li>Add your inbound flight number when you book.</li><li>Your phone number is how the driver reaches you, so keep it on after landing.</li></ul>`,
         },
-        { type: 'prices', keys: ['manchester', 'liverpool', 'leeds'], eyebrow: 'Prices', title: 'Manchester Airport transfer prices', intro: `${gbp(PRICES.manchester.oneWay)} one way and ${gbp(PRICES.manchester.ret)} return from any Fylde Coast address, for up to four passengers with standard luggage.` },
+        { type: 'priceStrip', keys: ['manchester'], text: `${gbp(PRICES.manchester.oneWay)} one way and ${gbp(PRICES.manchester.ret)} return from any Fylde Coast address, for up to four passengers with standard luggage.` },
         {
           type: 'cards', cols: 3, alt: true, eyebrow: 'Parking or a transfer?', title: 'Compared with driving and parking',
           intro: 'For a week away, a transfer often costs about the same as parking, without the drive home after a long flight. We have written up <a href="/manchester-airport-parking-vs-private-transfer">a fuller comparison</a>.',
@@ -141,7 +136,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
           html: `<p>We track your inbound flight and adjust the pickup if it is early or late, at no extra cost. Your meeting point is agreed when we confirm, and your driver messages you when they arrive.</p>
 <p>A Liverpool return is ${gbp(PRICES.liverpool.ret)} for both journeys, booked together in one go.</p>`,
         },
-        { type: 'prices', keys: ['liverpool', 'manchester', 'leeds'], alt: true, eyebrow: 'Prices', title: 'Liverpool Airport transfer prices', intro: `${gbp(PRICES.liverpool.oneWay)} one way and ${gbp(PRICES.liverpool.ret)} return from anywhere on the Fylde Coast.` },
+        { type: 'priceStrip', keys: ['liverpool'], text: `${gbp(PRICES.liverpool.oneWay)} one way and ${gbp(PRICES.liverpool.ret)} return from anywhere on the Fylde Coast.` },
         otherAirports('liverpool'),
         fromTowns,
         { type: 'faq' },
@@ -183,7 +178,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
           eyebrow: 'Comfort', title: 'Two hours you will not mind',
           html: '<p>Quiet electric drive, climate control set before you get in, phone charging front and back, and space to stretch out. On a longer route like this the car makes the difference.</p><ul class="checklist"><li>Up to four passengers per car</li><li>Four suitcases in the Tesla, five in the Škoda Enyaq</li><li>Flight tracked on your return</li></ul>',
         },
-        { type: 'prices', keys: ['leeds', 'manchester', 'liverpool'], alt: true, eyebrow: 'Prices', title: 'Leeds Bradford transfer prices', intro: `${gbp(PRICES.leeds.oneWay)} one way and ${gbp(PRICES.leeds.ret)} return from anywhere on the Fylde Coast.` },
+        { type: 'priceStrip', keys: ['leeds'], text: `${gbp(PRICES.leeds.oneWay)} one way and ${gbp(PRICES.leeds.ret)} return from anywhere on the Fylde Coast.` },
         otherAirports('leeds'),
         fromTowns,
         { type: 'faq' },
@@ -219,7 +214,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, gbp }) => {
           type: 'prose', alt: true, eyebrow: 'Timing', title: 'When we collect you',
           html: '<p>For a long-haul flight from Birmingham we usually suggest a pickup <strong>around five and a half hours before departure</strong>, giving time for the drive and the three hours most long-haul airlines recommend at the airport. We confirm a time with your booking.</p><p>Coming home, we track your flight and adjust the pickup if it lands early or late.</p>',
         },
-        { type: 'prices', keys: ['birmingham', 'manchester', 'liverpool', 'leeds', 'newcastle'], eyebrow: 'Prices', title: 'Birmingham Airport transfer prices', intro: `${gbp(PRICES.birmingham.oneWay)} one way and ${gbp(PRICES.birmingham.ret)} return from anywhere on the Fylde Coast.` },
+        { type: 'priceStrip', keys: ['birmingham'], text: `${gbp(PRICES.birmingham.oneWay)} one way and ${gbp(PRICES.birmingham.ret)} return from anywhere on the Fylde Coast.` },
         otherAirports('birmingham'),
         { type: 'faq', alt: true },
         { type: 'cta', title: 'Book your Birmingham Airport transfer', text: `${gbp(PRICES.birmingham.oneWay)} one way, ${gbp(PRICES.birmingham.ret)} return, door to terminal.`, primary: { label: 'Book Birmingham transfer', href: bookHref('Birmingham Airport') } },

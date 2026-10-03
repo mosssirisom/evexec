@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+<link rel="stylesheet" href="/public/css/chrome.css">
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
@@ -147,37 +148,47 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/" aria-label="EV Exec home">
-      <img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44">
-      <span><b>EV EXEC</b><small>Premium Airport Transfers</small></span>
-    </a>
-    <nav class="nav" aria-label="Main"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire" aria-current="page">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas">Areas</a><a href="/#reviews">Reviews</a><a href="/faq">FAQ</a><a href="/booking">My Booking</a></nav>
-    <div class="head-actions">
-      <a class="head-phone" href="tel:+447721070370">07721 070370</a>
-      <a class="btn btn-gold btn-sm" href="/quote?service=long-distance">Book Now</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" data-menu>Menu</button>
-    </div>
-  </div>
-  <div class="drawer" id="drawer">
-    <nav aria-label="Mobile"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire" aria-current="page">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas">Areas</a><a href="/#reviews">Reviews</a><a href="/faq">FAQ</a><a href="/booking">My Booking</a><a href="tel:+447721070370">Call 07721 070370</a>
-      <a class="btn btn-gold" href="/quote?service=long-distance">Book Your Transfer</a>
-    </nav>
-  </div>
+<!-- evx:header -->
+<header class="evx-header" id="siteHeader">
+<nav class="evx-nav" aria-label="Main">
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink is-current" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<div class="evx-actions">
+<a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
+<a class="evx-btn evx-btn-gold evx-hide-xs" href="/quote?service=long-distance">Book Now</a>
+<div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
+<div class="evx-dd evx-dd-right" id="evx-dd-account"><a id="navSignInBtn" href="/account"><b>Sign in</b><span>Your bookings and privilege points</span></a><a id="navAccountBtn" href="/account" style="display:none"><b>My account</b></a><a href="/booking"><b>My booking</b><span>Check a booking with your reference</span></a><a id="navSupportBtn" href="/faq"><b>Help &amp; FAQ</b></a><a href="tel:+447721070370"><b>Call 07721 070370</b></a></div></div>
+<button class="evx-menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span id="menuToggleLabel">Menu</span></button>
+</div>
+</nav>
 </header>
+<div class="evx-mmenu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="evx-mmenu-top"><button id="menuClose" type="button" aria-label="Close menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M1.5 1.5l15 15M16.5 1.5l-15 15"/></svg></button></div>
+<nav class="evx-mmenu-links" aria-label="Mobile">
+<details><summary>Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate Travel</a><a href="/private-hire">Private Hire</a><a href="/event-transfers">Event & Concert Transfers</a><a href="/long-distance-transfers">Long-distance transfers</a></div></details>
+<details><summary>Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/prices">Prices</a><a href="/prices#how-pricing-works">How Pricing Works</a><a href="/quote">Get a Quote</a></div></details>
+<a href="/fleet">Fleet</a>
+<details><summary>Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/areas#blackpool">Blackpool</a><a href="/areas">Fylde Coast</a><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a><a href="/airport-transfer-preston">Preston</a></div></details>
+<a href="/reviews">Reviews</a>
+<a href="/booking">My Booking</a>
+<a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
+<a href="/account">Sign In</a>
+</nav>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="/quote?service=long-distance">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+</div>
+<!-- /evx:header -->
 <main id="main">
 <section class="hero">
   <nav class="crumbs wrap" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Long-Distance Transfers</li></ol></nav>
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">Long-distance transfers</span>
+      <span class="pill">Long-distance transfers</span>
       <h1>Long-distance journeys, <span>door to door</span></h1>
       <p class="lead">London, Edinburgh, the Lake District, cruise ports or a family visit at the other end of the country. One fixed price, collected from your door and dropped at theirs.</p>
       
       <div class="btn-row">
         <a class="btn btn-gold" href="/quote?service=long-distance"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Get a quote</a>
-        <a class="btn btn-ghost" href="tel:+447721070370">Call 07721 070370</a>
+        <a class="btn btn-dark" href="tel:+447721070370">Call 07721 070370</a>
       </div>
       <ul class="trust">
   <li><span class="stars" aria-hidden="true">★★★★★</span><a href="https://g.page/r/CVPMqDntIQ3xEAE" rel="noopener" target="_blank"><strong>5.0</strong> on Google &middot; 18 reviews</a></li>
@@ -189,48 +200,39 @@
     
   </div>
 </section>
-<section class="section"><div class="wrap"><span class="eyebrow">Where to</span><h2>Journeys worth doing by car</h2><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>London and the South</h3><p>Avoid the train change and the Underground with a full suitcase. Straight to your hotel or address.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>Scotland and the Lakes</h3><p>Edinburgh, Glasgow, Windermere or Keswick, watching the scenery instead of driving the M6 yourself.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V4h6v3M9 20v1M15 20v1"/></svg><h3>Cruise ports</h3><p>Southampton, Liverpool and other ports, with all the luggage a cruise needs in the boot.</p></div></div></div></section>
-<section class="section alt"><div class="wrap"><div class="split"><div class="media"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-image-4-1100.webp"><img src="/public/images/opt/ev-exec-image-4-1100.jpg" alt="Back seats of an EV Exec Tesla Model Y with passenger screens" width="824" height="1100" sizes="(min-width: 900px) 50vw, 100vw" loading="lazy" decoding="async"></picture></div><div><span class="eyebrow">Comfort on long trips</span><h2>Built for motorway miles</h2><div class="prose"><p>Electric cars are at their best on a long run: quiet at speed, smooth, and with no engine noise to tire you out. Climate control, phone charging for every seat and plenty of legroom make a four-hour trip feel shorter.</p>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">Where to</span><h2>Journeys worth doing by car</h2></div><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>London and the South</h3><p>Avoid the train change and the Underground with a full suitcase. Straight to your hotel or address.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>Scotland and the Lakes</h3><p>Edinburgh, Glasgow, Windermere or Keswick, watching the scenery instead of driving the M6 yourself.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="7" width="12" height="13" rx="2"/><path d="M9 7V4h6v3M9 20v1M15 20v1"/></svg><h3>Cruise ports</h3><p>Southampton, Liverpool and other ports, with all the luggage a cruise needs in the boot.</p></div></div></div></section>
+<section class="section alt"><div class="wrap"><div class="split"><div class="media"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-image-4-1100.webp"><img src="/public/images/opt/ev-exec-image-4-1100.jpg" alt="Back seats of an EV Exec Tesla Model Y with passenger screens" width="824" height="1100" sizes="(min-width: 900px) 50vw, 100vw" loading="lazy" decoding="async"></picture></div><div><div class="section-head"><span class="eyebrow">Comfort on long trips</span><h2>Built for motorway miles</h2></div><div class="prose"><p>Electric cars are at their best on a long run: quiet at speed, smooth, and with no engine noise to tire you out. Climate control, phone charging for every seat and plenty of legroom make a four-hour trip feel shorter.</p>
 <p><strong>Charging, planned in advance.</strong> On longer journeys we plan a short charging stop at a motorway services, which doubles as a break for coffee and the toilet. We build it into your timings and tell you when we confirm, so it is never a surprise.</p></div></div></div></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow">Pricing</span><h2>How long-distance prices work</h2><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h11M8 12h8M9 20c2.5-2.8 2.7-6 1.5-9.5C9.8 8.2 10.9 5 14 5c1.7 0 3 .8 4 2"/></svg><h3>Quoted per journey</h3><p>Based on distance and timing, agreed in writing before you book.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg><h3>Per car, not per person</h3><p>Up to four passengers for the same price, which often beats four train tickets.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg><h3>Paying</h3><p>Card online, bank transfer or cash. For long journeys we may ask for some or all of the fare in advance.</p></div></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow">Other services</span><h2>Also from EV Exec</h2><div class="grid cols-2"><a class="card" href="/airport-transfers"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Airport transfers</h3><p>Fixed prices to every UK airport: Manchester £90, Liverpool £95, Leeds Bradford £135.</p><span class="more">Airport transfers →</span></a><a class="card" href="/corporate-travel"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7V5h8v2M4 8h16v11H4zM4 13h16"/></svg><h3>Corporate & executive travel</h3><p>Staff, client and visitor travel, invoiced to your company.</p><span class="more">Corporate travel →</span></a><a class="card" href="/private-hire"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>Private hire</h3><p>Pre-booked journeys around Lancashire and the North West.</p><span class="more">Private hire →</span></a><a class="card" href="/event-transfers"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><h3>Events & concerts</h3><p>Gigs, matches and weddings, with your journey home already booked.</p><span class="more">Event transfers →</span></a></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2><div class="faq"><details><summary>How far will you travel?</summary><div class="a"><p>Anywhere on the UK mainland. Send us the pickup and destination and we will quote.</p></div></details><details><summary>Will we need to stop to charge the car?</summary><div class="a"><p>On the longest journeys, yes: usually one short stop at a motorway services, planned in advance and included in the timings we give you.</p></div></details><details><summary>Do I need to pay in advance?</summary><div class="a"><p>For long-distance or high-value journeys we may ask for full or part payment before travel. We will tell you when we quote.</p></div></details></div><p class="note" style="margin-top:18px">More answers on our <a class="gold" href="/faq">FAQ page</a>.</p></div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><span class="eyebrow">Pricing</span><h2>How long-distance prices work</h2></div><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h11M8 12h8M9 20c2.5-2.8 2.7-6 1.5-9.5C9.8 8.2 10.9 5 14 5c1.7 0 3 .8 4 2"/></svg><h3>Quoted per journey</h3><p>Based on distance and timing, agreed in writing before you book.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg><h3>Per car, not per person</h3><p>Up to four passengers for the same price, which often beats four train tickets.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg><h3>Paying</h3><p>Card online, bank transfer or cash. For long journeys we may ask for some or all of the fare in advance.</p></div></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">Other services</span><h2>Also from EV Exec</h2></div><div class="grid cols-2"><a class="card" href="/airport-transfers"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Airport transfers</h3><p>Fixed prices to every UK airport: Manchester £90, Liverpool £95, Leeds Bradford £135.</p><span class="more">Airport transfers →</span></a><a class="card" href="/corporate-travel"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7V5h8v2M4 8h16v11H4zM4 13h16"/></svg><h3>Corporate & executive travel</h3><p>Staff, client and visitor travel, invoiced to your company.</p><span class="more">Corporate travel →</span></a><a class="card" href="/private-hire"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/></svg><h3>Private hire</h3><p>Pre-booked journeys around Lancashire and the North West.</p><span class="more">Private hire →</span></a><a class="card" href="/event-transfers"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg><h3>Events & concerts</h3><p>Gigs, matches and weddings, with your journey home already booked.</p><span class="more">Event transfers →</span></a></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div><div class="faq"><details><summary>How far will you travel?</summary><div class="a"><p>Anywhere on the UK mainland. Send us the pickup and destination and we will quote.</p></div></details><details><summary>Will we need to stop to charge the car?</summary><div class="a"><p>On the longest journeys, yes: usually one short stop at a motorway services, planned in advance and included in the timings we give you.</p></div></details><details><summary>Do I need to pay in advance?</summary><div class="a"><p>For long-distance or high-value journeys we may ask for full or part payment before travel. We will tell you when we quote.</p></div></details></div><p class="note" style="margin-top:18px">More answers on our <a class="gold" href="/faq">FAQ page</a>.</p></div></section>
 <section class="section"><div class="wrap"><div class="cta-band"><div><h2>Get a long-distance quote</h2><p>Tell us where you are going and when. We reply with a fixed price.</p></div><div class="btn-row">
   <a class="btn btn-gold" href="/quote?service=long-distance">Get a quote</a>
-  <a class="btn btn-ghost" href="tel:+447721070370">Call 07721 070370</a></div></div></div></section>
+  <a class="btn btn-dark" href="/quote?service=long-distance">Get a Quote</a></div></div></div></section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <a class="brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44" loading="lazy"><span><b>EV EXEC</b><small>Premium Airport Transfers</small></span></a>
-        <p style="margin-top:14px">Premium airport transfers and private hire across Blackpool and the Fylde Coast, in a fully electric fleet.</p>
-        <address class="nap">
-          <strong style="color:#fff">EV Exec</strong>
-          <span>Serving Blackpool, Fylde &amp; Wyre</span>
-          <a href="tel:+447721070370">07721 070370</a>
-          <a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a>
-          <a href="https://wa.me/447721070370" rel="noopener">WhatsApp us</a>
-        </address>
-      </div>
-      <div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate &amp; Executive Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/fleet">Our fleet</a></li><li><a href="/faq">FAQ</a></li></ul></div>
-      <div><h2>Airports</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport transfers</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport transfers</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport transfers</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport transfers</a></li><li><a href="/#prices">All airport prices</a></li></ul></div>
-      <div><h2>Areas</h2><ul><li><a href="/">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas we cover</a></li></ul></div>
-    </div>
-    <div class="foot-base">
-      <span>&copy; 2026 EV Exec. Licensed private hire.</span>
-      <span><a href="/booking">My booking</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></span>
-    </div>
-  </div>
-</footer>
-<div class="mobile-cta">
-  <a class="btn btn-gold" href="/quote?service=long-distance">Book Now</a>
-  <a class="btn btn-ghost" href="tel:+447721070370"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2"/></svg>Call</a>
+<!-- evx:footer -->
+<footer class="evx-footer" id="contact">
+<div class="evx-foot-grid">
+<div class="evx-foot-brand">
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
+<p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
+<address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
+<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
+</div>
+<div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p></div>
+</footer>
+<!-- /evx:footer -->
+<div class="evx-mobile-cta"><a class="btn btn-gold" href="/quote?service=long-distance">Book Now</a><a class="btn btn-dark" href="/quote?service=long-distance">Get a Quote</a></div>
+<script defer src="/public/js/site.js"></script>
 <script>
 (function(){
-  var b=document.querySelector('[data-menu]'),d=document.getElementById('drawer');
-  if(b&&d)b.addEventListener('click',function(){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+  var cr=document.getElementById('co2Route'),cn=document.getElementById('co2Number');
+  var co2={'Manchester Airport':12,'Liverpool Airport':9,'Leeds Bradford Airport':14,'Birmingham Airport':24,'Newcastle Airport':24};
+  if(cr&&cn)cr.addEventListener('change',function(){var v=co2[cr.value];if(v===undefined)return;cn.style.opacity='0';cn.style.transform='translateY(6px)';setTimeout(function(){cn.textContent=v;cn.style.opacity='1';cn.style.transform='translateY(0)';},190);});
   var f=document.getElementById('quoteForm');if(!f)return;
   var p=new URLSearchParams(location.search),s=p.get('service'),sel=document.getElementById('qService');
   if(s&&sel&&sel.querySelector('option[value="'+s+'"]'))sel.value=s;

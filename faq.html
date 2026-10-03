@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+<link rel="stylesheet" href="/public/css/chrome.css">
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
@@ -254,7 +255,7 @@
      "name": "Do you operate outside Blackpool?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham and Preston. Pickups further afield are quoted individually. See areas we cover."
+      "text": "Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham and Preston. Pickups further afield are quoted individually. See areas we cover."
      }
     },
     {
@@ -290,37 +291,47 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/" aria-label="EV Exec home">
-      <img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44">
-      <span><b>EV EXEC</b><small>Premium Airport Transfers</small></span>
-    </a>
-    <nav class="nav" aria-label="Main"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas">Areas</a><a href="/#reviews">Reviews</a><a href="/faq" aria-current="page">FAQ</a><a href="/booking">My Booking</a></nav>
-    <div class="head-actions">
-      <a class="head-phone" href="tel:+447721070370">07721 070370</a>
-      <a class="btn btn-gold btn-sm" href="/#quote">Book Now</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" data-menu>Menu</button>
-    </div>
-  </div>
-  <div class="drawer" id="drawer">
-    <nav aria-label="Mobile"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas">Areas</a><a href="/#reviews">Reviews</a><a href="/faq" aria-current="page">FAQ</a><a href="/booking">My Booking</a><a href="tel:+447721070370">Call 07721 070370</a>
-      <a class="btn btn-gold" href="/#quote">Book Your Transfer</a>
-    </nav>
-  </div>
+<!-- evx:header -->
+<header class="evx-header" id="siteHeader">
+<nav class="evx-nav" aria-label="Main">
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<div class="evx-actions">
+<a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
+<a class="evx-btn evx-btn-gold evx-hide-xs" href="/#quote">Book Now</a>
+<div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
+<div class="evx-dd evx-dd-right" id="evx-dd-account"><a id="navSignInBtn" href="/account"><b>Sign in</b><span>Your bookings and privilege points</span></a><a id="navAccountBtn" href="/account" style="display:none"><b>My account</b></a><a href="/booking"><b>My booking</b><span>Check a booking with your reference</span></a><a id="navSupportBtn" href="/faq"><b>Help &amp; FAQ</b></a><a href="tel:+447721070370"><b>Call 07721 070370</b></a></div></div>
+<button class="evx-menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span id="menuToggleLabel">Menu</span></button>
+</div>
+</nav>
 </header>
+<div class="evx-mmenu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="evx-mmenu-top"><button id="menuClose" type="button" aria-label="Close menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M1.5 1.5l15 15M16.5 1.5l-15 15"/></svg></button></div>
+<nav class="evx-mmenu-links" aria-label="Mobile">
+<details><summary>Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate Travel</a><a href="/private-hire">Private Hire</a><a href="/event-transfers">Event & Concert Transfers</a><a href="/long-distance-transfers">Long-distance transfers</a></div></details>
+<details><summary>Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/prices">Prices</a><a href="/prices#how-pricing-works">How Pricing Works</a><a href="/quote">Get a Quote</a></div></details>
+<a href="/fleet">Fleet</a>
+<details><summary>Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/areas#blackpool">Blackpool</a><a href="/areas">Fylde Coast</a><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a><a href="/airport-transfer-preston">Preston</a></div></details>
+<a href="/reviews">Reviews</a>
+<a href="/booking">My Booking</a>
+<a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
+<a href="/account">Sign In</a>
+</nav>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="/#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+</div>
+<!-- /evx:header -->
 <main id="main">
 <section class="hero">
   <nav class="crumbs wrap" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">FAQ</li></ol></nav>
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">FAQ</span>
+      <span class="pill">FAQ</span>
       <h1>Questions, <span>answered</span></h1>
       <p class="lead">Everything customers usually ask before they book. Cannot find your answer? Call 07721 070370 or WhatsApp us.</p>
       
       <div class="btn-row">
         <a class="btn btn-gold" href="/#quote"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Book Your Transfer</a>
-        <a class="btn btn-ghost" href="/quote">Get a Quote</a>
+        <a class="btn btn-dark" href="/quote">Get a Quote</a>
       </div>
       <ul class="trust">
   <li><span class="stars" aria-hidden="true">★★★★★</span><a href="https://g.page/r/CVPMqDntIQ3xEAE" rel="noopener" target="_blank"><strong>5.0</strong> on Google &middot; 18 reviews</a></li>
@@ -332,47 +343,38 @@
     
   </div>
 </section>
-<section class="section"><div class="wrap"><span class="eyebrow"> </span><h2>Booking</h2><div class="faq"><details><summary>How far in advance should I book?</summary><div class="a"><p>As soon as your plans are fixed. Early-morning airport runs and school-holiday dates are the first to go. The online form takes bookings from today onwards; for a pickup in the next few hours, call or WhatsApp us on 07721 070370 so we can check a car is free.</p></div></details><details><summary>How do I book?</summary><div class="a"><p>For airport transfers, use the <a href="/#quote">booking form</a>: it takes about two minutes and gives you a reference straight away. For anything else, <a href="/quote">request a quote</a>, call 07721 070370 or WhatsApp us.</p></div></details><details><summary>When is my booking confirmed?</summary><div class="a"><p>Once we have checked availability and confirmed by email, phone or WhatsApp. If you have not heard from us within a few hours, please call to check.</p></div></details><details><summary>Can I book for someone else?</summary><div class="a"><p>Yes. Put the passenger’s name and mobile number on the booking so the driver can contact them on the day. You can add your own details in the notes.</p></div></details><details><summary>Can I book a return transfer?</summary><div class="a"><p>Yes. Choose Return in the booking form and add the return date, time and flight number. A return costs less than two single journeys.</p></div></details><details><summary>How do I check or change my booking?</summary><div class="a"><p>Go to <a href="/booking">My Booking</a> with your reference and phone number, or contact us. Changes more than 24 hours before travel are free.</p></div></details></div></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow"> </span><h2>Prices and payment</h2><div class="faq"><details><summary>How much are your airport transfers?</summary><div class="a"><p>From anywhere on the Fylde Coast, one way: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215, Newcastle £250. Prices cover up to four passengers and include airport drop-off and pickup charges.</p></div></details><details><summary>Can I pay online?</summary><div class="a"><p>Yes. Once your booking is confirmed you can pay securely online by card. You can also pay by bank transfer or in cash on the day.</p></div></details><details><summary>Are there any extra charges?</summary><div class="a"><p>Not for standard bookings. Extra charges only apply to things agreed with you in advance, such as pickups outside our area, excess luggage or long waiting beyond a reasonable flight delay.</p></div></details><details><summary>What is your cancellation policy?</summary><div class="a"><p>Cancel more than 24 hours before travel for a full refund or free rebooking. Between 2 and 24 hours, up to 50% of the fare may be charged. Under 2 hours or a no-show, the full fare is payable. Full details are in our <a href="/terms">terms</a>.</p></div></details></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow"> </span><h2>Flights and airports</h2><div class="faq"><details><summary>Do you monitor flights?</summary><div class="a"><p>Yes, on every pickup from an airport. Add your inbound flight number when you book and we track it in real time.</p></div></details><details><summary>What happens if my flight is delayed?</summary><div class="a"><p>We move your pickup to the new landing time at no extra charge. If a delay runs into many hours, we will contact you to rearrange. Extended waiting is only charged if agreed with you first.</p></div></details><details><summary>Where will my driver meet me at the airport?</summary><div class="a"><p>We agree the meeting point with you when we confirm the booking, and your driver messages you when they have arrived. Take your time through passport control and baggage reclaim.</p></div></details><details><summary>How early will you collect me for my flight?</summary><div class="a"><p>It depends on the airport and the flight. For a European flight from Manchester we typically collect around three and a half hours before departure. We suggest a time when we confirm.</p></div></details><details><summary>Which airports do you go to?</summary><div class="a"><p>Most often Manchester, Liverpool and Leeds Bradford, plus Birmingham and Newcastle at fixed prices. Heathrow, Gatwick, Stansted, Luton, Edinburgh and others are <a href="/quote?service=airport">quoted on request</a>.</p></div></details></div></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow"> </span><h2>Cars and luggage</h2><div class="faq"><details><summary>What vehicles do you have?</summary><div class="a"><p>A Tesla Model Y, a Tesla Model Y Juniper and a Škoda Enyaq. All are fully electric and take up to four passengers. See <a href="/fleet">our fleet</a>.</p></div></details><details><summary>How much luggage can I bring?</summary><div class="a"><p>Up to four medium to large suitcases plus cabin bags in the Teslas, and up to five in the Škoda Enyaq. For golf clubs, pushchairs or anything bulky, tell us when you book.</p></div></details><details><summary>Do you provide child seats?</summary><div class="a"><p>Tell us when you book if you are travelling with a child who needs a car or booster seat, and we will make arrangements where we can.</p></div></details><details><summary>How many passengers can travel?</summary><div class="a"><p>Up to four per car. For larger groups, ask about booking two cars.</p></div></details></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow"> </span><h2>Services and areas</h2><div class="faq"><details><summary>Do you operate outside Blackpool?</summary><div class="a"><p>Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Thornton-Cleveleys, Fleetwood, Kirkham and Preston. Pickups further afield are quoted individually. See <a href="/areas">areas we cover</a>.</p></div></details><details><summary>Do you provide corporate transfers?</summary><div class="a"><p>Yes, including invoiced bookings for companies. See <a href="/corporate-travel">corporate and executive travel</a>.</p></div></details><details><summary>Do you do journeys that are not to an airport?</summary><div class="a"><p>Yes: <a href="/private-hire">private hire</a> around the North West, <a href="/long-distance-transfers">long-distance transfers</a> anywhere in the UK, and <a href="/event-transfers">event and concert transfers</a>.</p></div></details><details><summary>Are your drivers licensed?</summary><div class="a"><p>Yes. EV Exec is a licensed private hire operator with full hire and reward insurance, and every driver is enhanced DBS checked.</p></div></details></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>Booking</h2></div><div class="faq"><details><summary>How far in advance should I book?</summary><div class="a"><p>As soon as your plans are fixed. Early-morning airport runs and school-holiday dates are the first to go. The online form takes bookings from today onwards; for a pickup in the next few hours, call or WhatsApp us on 07721 070370 so we can check a car is free.</p></div></details><details><summary>How do I book?</summary><div class="a"><p>For airport transfers, use the <a href="/#quote">booking form</a>: it takes about two minutes and gives you a reference straight away. For anything else, <a href="/quote">request a quote</a>, call 07721 070370 or WhatsApp us.</p></div></details><details><summary>When is my booking confirmed?</summary><div class="a"><p>Once we have checked availability and confirmed by email, phone or WhatsApp. If you have not heard from us within a few hours, please call to check.</p></div></details><details><summary>Can I book for someone else?</summary><div class="a"><p>Yes. Put the passenger’s name and mobile number on the booking so the driver can contact them on the day. You can add your own details in the notes.</p></div></details><details><summary>Can I book a return transfer?</summary><div class="a"><p>Yes. Choose Return in the booking form and add the return date, time and flight number. A return costs less than two single journeys.</p></div></details><details><summary>How do I check or change my booking?</summary><div class="a"><p>Go to <a href="/booking">My Booking</a> with your reference and phone number, or contact us. Changes more than 24 hours before travel are free.</p></div></details></div></div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><h2>Prices and payment</h2></div><div class="faq"><details><summary>How much are your airport transfers?</summary><div class="a"><p>From anywhere on the Fylde Coast, one way: Manchester £90, Liverpool £95, Leeds Bradford £135, Birmingham £215, Newcastle £250. Prices cover up to four passengers and include airport drop-off and pickup charges.</p></div></details><details><summary>Can I pay online?</summary><div class="a"><p>Yes. Once your booking is confirmed you can pay securely online by card. You can also pay by bank transfer or in cash on the day.</p></div></details><details><summary>Are there any extra charges?</summary><div class="a"><p>Not for standard bookings. Extra charges only apply to things agreed with you in advance, such as pickups outside our area, excess luggage or long waiting beyond a reasonable flight delay.</p></div></details><details><summary>What is your cancellation policy?</summary><div class="a"><p>Cancel more than 24 hours before travel for a full refund or free rebooking. Between 2 and 24 hours, up to 50% of the fare may be charged. Under 2 hours or a no-show, the full fare is payable. Full details are in our <a href="/terms">terms</a>.</p></div></details></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>Flights and airports</h2></div><div class="faq"><details><summary>Do you monitor flights?</summary><div class="a"><p>Yes, on every pickup from an airport. Add your inbound flight number when you book and we track it in real time.</p></div></details><details><summary>What happens if my flight is delayed?</summary><div class="a"><p>We move your pickup to the new landing time at no extra charge. If a delay runs into many hours, we will contact you to rearrange. Extended waiting is only charged if agreed with you first.</p></div></details><details><summary>Where will my driver meet me at the airport?</summary><div class="a"><p>We agree the meeting point with you when we confirm the booking, and your driver messages you when they have arrived. Take your time through passport control and baggage reclaim.</p></div></details><details><summary>How early will you collect me for my flight?</summary><div class="a"><p>It depends on the airport and the flight. For a European flight from Manchester we typically collect around three and a half hours before departure. We suggest a time when we confirm.</p></div></details><details><summary>Which airports do you go to?</summary><div class="a"><p>Most often Manchester, Liverpool and Leeds Bradford, plus Birmingham and Newcastle at fixed prices. Heathrow, Gatwick, Stansted, Luton, Edinburgh and others are <a href="/quote?service=airport">quoted on request</a>.</p></div></details></div></div></section>
+<section class="section alt"><div class="wrap"><div class="section-head"><h2>Cars and luggage</h2></div><div class="faq"><details><summary>What vehicles do you have?</summary><div class="a"><p>A Tesla Model Y, a Tesla Model Y Juniper and a Škoda Enyaq. All are fully electric and take up to four passengers. See <a href="/fleet">our fleet</a>.</p></div></details><details><summary>How much luggage can I bring?</summary><div class="a"><p>Up to four medium to large suitcases plus cabin bags in the Teslas, and up to five in the Škoda Enyaq. For golf clubs, pushchairs or anything bulky, tell us when you book.</p></div></details><details><summary>Do you provide child seats?</summary><div class="a"><p>Tell us when you book if you are travelling with a child who needs a car or booster seat, and we will make arrangements where we can.</p></div></details><details><summary>How many passengers can travel?</summary><div class="a"><p>Up to four per car. For larger groups, ask about booking two cars.</p></div></details></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><h2>Services and areas</h2></div><div class="faq"><details><summary>Do you operate outside Blackpool?</summary><div class="a"><p>Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham and Preston. Pickups further afield are quoted individually. See <a href="/areas">areas we cover</a>.</p></div></details><details><summary>Do you provide corporate transfers?</summary><div class="a"><p>Yes, including invoiced bookings for companies. See <a href="/corporate-travel">corporate and executive travel</a>.</p></div></details><details><summary>Do you do journeys that are not to an airport?</summary><div class="a"><p>Yes: <a href="/private-hire">private hire</a> around the North West, <a href="/long-distance-transfers">long-distance transfers</a> anywhere in the UK, and <a href="/event-transfers">event and concert transfers</a>.</p></div></details><details><summary>Are your drivers licensed?</summary><div class="a"><p>Yes. EV Exec is a licensed private hire operator with full hire and reward insurance, and every driver is enhanced DBS checked.</p></div></details></div></div></section>
 <section class="section"><div class="wrap"><div class="cta-band"><div><h2>Ready to book?</h2><p>Airport transfers book online in two minutes. Everything else, ask us for a quote.</p></div><div class="btn-row">
   <a class="btn btn-gold" href="/#quote">Book Your Transfer</a>
-  <a class="btn btn-ghost" href="/quote">Get a quote</a></div></div></div></section>
+  <a class="btn btn-dark" href="/quote">Get a quote</a></div></div></div></section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <a class="brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44" loading="lazy"><span><b>EV EXEC</b><small>Premium Airport Transfers</small></span></a>
-        <p style="margin-top:14px">Premium airport transfers and private hire across Blackpool and the Fylde Coast, in a fully electric fleet.</p>
-        <address class="nap">
-          <strong style="color:#fff">EV Exec</strong>
-          <span>Serving Blackpool, Fylde &amp; Wyre</span>
-          <a href="tel:+447721070370">07721 070370</a>
-          <a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a>
-          <a href="https://wa.me/447721070370" rel="noopener">WhatsApp us</a>
-        </address>
-      </div>
-      <div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate &amp; Executive Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/fleet">Our fleet</a></li><li><a href="/faq">FAQ</a></li></ul></div>
-      <div><h2>Airports</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport transfers</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport transfers</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport transfers</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport transfers</a></li><li><a href="/#prices">All airport prices</a></li></ul></div>
-      <div><h2>Areas</h2><ul><li><a href="/">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas we cover</a></li></ul></div>
-    </div>
-    <div class="foot-base">
-      <span>&copy; 2026 EV Exec. Licensed private hire.</span>
-      <span><a href="/booking">My booking</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></span>
-    </div>
-  </div>
-</footer>
-<div class="mobile-cta">
-  <a class="btn btn-gold" href="/#quote">Book Now</a>
-  <a class="btn btn-ghost" href="tel:+447721070370"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2"/></svg>Call</a>
+<!-- evx:footer -->
+<footer class="evx-footer" id="contact">
+<div class="evx-foot-grid">
+<div class="evx-foot-brand">
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
+<p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
+<address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
+<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
+</div>
+<div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p></div>
+</footer>
+<!-- /evx:footer -->
+<div class="evx-mobile-cta"><a class="btn btn-gold" href="/#quote">Book Now</a><a class="btn btn-dark" href="/quote">Get a Quote</a></div>
+<script defer src="/public/js/site.js"></script>
 <script>
 (function(){
-  var b=document.querySelector('[data-menu]'),d=document.getElementById('drawer');
-  if(b&&d)b.addEventListener('click',function(){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+  var cr=document.getElementById('co2Route'),cn=document.getElementById('co2Number');
+  var co2={'Manchester Airport':12,'Liverpool Airport':9,'Leeds Bradford Airport':14,'Birmingham Airport':24,'Newcastle Airport':24};
+  if(cr&&cn)cr.addEventListener('change',function(){var v=co2[cr.value];if(v===undefined)return;cn.style.opacity='0';cn.style.transform='translateY(6px)';setTimeout(function(){cn.textContent=v;cn.style.opacity='1';cn.style.transform='translateY(0)';},190);});
   var f=document.getElementById('quoteForm');if(!f)return;
   var p=new URLSearchParams(location.search),s=p.get('service'),sel=document.getElementById('qService');
   if(s&&sel&&sel.querySelector('option[value="'+s+'"]'))sel.value=s;

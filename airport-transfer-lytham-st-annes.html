@@ -23,6 +23,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+<link rel="stylesheet" href="/public/css/chrome.css">
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
@@ -192,37 +193,47 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-header">
-  <div class="wrap">
-    <a class="brand" href="/" aria-label="EV Exec home">
-      <img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44">
-      <span><b>EV EXEC</b><small>Premium Airport Transfers</small></span>
-    </a>
-    <nav class="nav" aria-label="Main"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas" aria-current="page">Areas</a><a href="/#reviews">Reviews</a><a href="/faq">FAQ</a><a href="/booking">My Booking</a></nav>
-    <div class="head-actions">
-      <a class="head-phone" href="tel:+447721070370">07721 070370</a>
-      <a class="btn btn-gold btn-sm" href="/#quote">Book Now</a>
-      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="drawer" data-menu>Menu</button>
-    </div>
-  </div>
-  <div class="drawer" id="drawer">
-    <nav aria-label="Mobile"><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate</a><a href="/private-hire">Private Hire</a><a href="/fleet">Fleet</a><a href="/areas" aria-current="page">Areas</a><a href="/#reviews">Reviews</a><a href="/faq">FAQ</a><a href="/booking">My Booking</a><a href="tel:+447721070370">Call 07721 070370</a>
-      <a class="btn btn-gold" href="/#quote">Book Your Transfer</a>
-    </nav>
-  </div>
+<!-- evx:header -->
+<header class="evx-header" id="siteHeader">
+<nav class="evx-nav" aria-label="Main">
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink is-current" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<div class="evx-actions">
+<a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
+<a class="evx-btn evx-btn-gold evx-hide-xs" href="/#quote">Book Now</a>
+<div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
+<div class="evx-dd evx-dd-right" id="evx-dd-account"><a id="navSignInBtn" href="/account"><b>Sign in</b><span>Your bookings and privilege points</span></a><a id="navAccountBtn" href="/account" style="display:none"><b>My account</b></a><a href="/booking"><b>My booking</b><span>Check a booking with your reference</span></a><a id="navSupportBtn" href="/faq"><b>Help &amp; FAQ</b></a><a href="tel:+447721070370"><b>Call 07721 070370</b></a></div></div>
+<button class="evx-menu-btn" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu"><span id="menuToggleLabel">Menu</span></button>
+</div>
+</nav>
 </header>
+<div class="evx-mmenu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+<div class="evx-mmenu-top"><button id="menuClose" type="button" aria-label="Close menu"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M1.5 1.5l15 15M16.5 1.5l-15 15"/></svg></button></div>
+<nav class="evx-mmenu-links" aria-label="Mobile">
+<details><summary>Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/airport-transfers">Airport Transfers</a><a href="/corporate-travel">Corporate Travel</a><a href="/private-hire">Private Hire</a><a href="/event-transfers">Event & Concert Transfers</a><a href="/long-distance-transfers">Long-distance transfers</a></div></details>
+<details><summary>Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/prices">Prices</a><a href="/prices#how-pricing-works">How Pricing Works</a><a href="/quote">Get a Quote</a></div></details>
+<a href="/fleet">Fleet</a>
+<details><summary>Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div><a href="/areas#blackpool">Blackpool</a><a href="/areas">Fylde Coast</a><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a><a href="/airport-transfer-preston">Preston</a></div></details>
+<a href="/reviews">Reviews</a>
+<a href="/booking">My Booking</a>
+<a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
+<a href="/account">Sign In</a>
+</nav>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="/#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+</div>
+<!-- /evx:header -->
 <main id="main">
 <section class="hero">
   <nav class="crumbs wrap" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/areas">Areas</a></li><li aria-current="page">Lytham St Annes</li></ol></nav>
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">Lytham St Annes · FY8</span>
+      <span class="pill">Lytham St Annes · FY8</span>
       <h1>Airport transfers from <span>Lytham St Annes</span></h1>
       <p class="lead">Collections from every street in Lytham, St Annes, Ansdell and Fairhaven, taken door to terminal at a fixed price.</p>
       <div class="price-chips"><div class="chip"><b>£90</b><small>Manchester</small></div><div class="chip"><b>£95</b><small>Liverpool</small></div><div class="chip"><b>£135</b><small>Leeds Bradford</small></div></div>
       <div class="btn-row">
         <a class="btn btn-gold" href="/#quote"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Book Your Transfer</a>
-        <a class="btn btn-ghost" href="/quote?service=airport">Get a Quote</a>
+        <a class="btn btn-dark" href="/quote?service=airport">Get a Quote</a>
       </div>
       <ul class="trust">
   <li><span class="stars" aria-hidden="true">★★★★★</span><a href="https://g.page/r/CVPMqDntIQ3xEAE" rel="noopener" target="_blank"><strong>5.0</strong> on Google &middot; 18 reviews</a></li>
@@ -234,50 +245,39 @@
     
   </div>
 </section>
-<section class="section"><div class="wrap"><span class="eyebrow">From Lytham St Annes</span><h2>Typical journey times</h2><p class="intro">Door to terminal, outside rush hour. We build traffic into the pickup time we suggest.</p><div class="grid cols-3"><a class="card" href="/manchester-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Manchester &middot; about 65 min</h3><p>A short run out to the M55, then the usual route down the M6 and M61 towards the M60.</p><span class="more">Manchester Airport transfers →</span></a><a class="card" href="/liverpool-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Liverpool &middot; about 70 min</h3><p>Down the M6 and across on the M58. Often the calmer choice for an early start.</p><span class="more">Liverpool Airport transfers →</span></a><a class="card" href="/leeds-bradford-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Leeds Bradford &middot; about 2 hours</h3><p>Across the Pennines. We plan the route on the day around traffic and weather.</p><span class="more">Leeds Bradford transfers →</span></a></div></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow">Local pickups</span><h2>Lytham, St Annes, Ansdell and Fairhaven</h2><div class="prose"><p>We collect from homes, hotels and apartments right along the FY8 coast, from St Annes town centre and the seafront out to Lytham and the Green. Holiday lets and hotels are no problem; just give us the name and any access notes when you book.</p>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">From Lytham St Annes</span><h2>Typical journey times</h2><p class="intro">Door to terminal, outside rush hour. We build traffic into the pickup time we suggest.</p></div><div class="grid cols-3"><a class="card" href="/manchester-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Manchester &middot; about 65 min</h3><p>A short run out to the M55, then the usual route down the M6 and M61 towards the M60.</p><span class="more">Manchester Airport transfers →</span></a><a class="card" href="/liverpool-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Liverpool &middot; about 70 min</h3><p>Down the M6 and across on the M58. Often the calmer choice for an early start.</p><span class="more">Liverpool Airport transfers →</span></a><a class="card" href="/leeds-bradford-airport-transfer-blackpool"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Leeds Bradford &middot; about 2 hours</h3><p>Across the Pennines. We plan the route on the day around traffic and weather.</p><span class="more">Leeds Bradford transfers →</span></a></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">Local pickups</span><h2>Lytham, St Annes, Ansdell and Fairhaven</h2></div><div class="prose"><p>We collect from homes, hotels and apartments right along the FY8 coast, from St Annes town centre and the seafront out to Lytham and the Green. Holiday lets and hotels are no problem; just give us the name and any access notes when you book.</p>
 <p>Every car takes four passengers. If you are bringing golf clubs or more than four suitcases, say so when you book and we will send the <a href="/fleet">Škoda Enyaq</a>, which has room for five cases.</p></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow">Fixed prices</span><h2>Airport transfer prices from Lytham St Annes</h2><p class="intro">The same fixed prices as everywhere on the Fylde Coast. </p><div class="table-wrap"><table class="price-table"><thead><tr><th scope="col">Airport</th><th scope="col">One way</th><th scope="col">Return</th></tr></thead><tbody><tr><td><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></td><td class="num">£90</td><td class="num">£160</td></tr><tr><td><a href="/liverpool-airport-transfer-blackpool">Liverpool John Lennon Airport</a></td><td class="num">£95</td><td class="num">£170</td></tr><tr><td><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></td><td class="num">£135</td><td class="num">£250</td></tr><tr><td><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></td><td class="num">£215</td><td class="num">£410</td></tr><tr><td>Newcastle Airport</td><td class="num">£250</td><td class="num">£480</td></tr></tbody></table></div>
-<p class="note">Fixed prices from any pickup in Blackpool and the Fylde Coast, for up to 4 passengers with standard luggage. Airport drop-off and pickup charges are included. Other airports are quoted on request.</p></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow">What is included</span><h2>Every booking includes</h2><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11.5 21 4l-7.5 18-2.8-7.7L3 11.5zM21 4 10.7 14.3"/></svg><h3>Flight monitoring</h3><p>On your way home we track the flight and move your pickup if it lands early or late.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16zM10 20a2 2 0 0 0 4 0"/></svg><h3>Updates as you travel</h3><p>Booking confirmation, a reminder with your driver and car, and a message when your driver sets off.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/></svg><h3>Flexible payment</h3><p>Pay securely online by card, by bank transfer or on the day.</p></div></div></div></section>
-<section class="section"><div class="wrap"><span class="eyebrow">Nearby</span><h2>Other areas we cover</h2><ul class="link-list cols"><li><a href="/">Blackpool<span>→</span></a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde<span>→</span></a></li><li><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys<span>→</span></a></li><li><a href="/airport-transfer-fleetwood">Fleetwood<span>→</span></a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton<span>→</span></a></li><li><a href="/airport-transfer-preston">Preston<span>→</span></a></li><li><a href="/areas">All areas<span>→</span></a></li></ul></div></section>
-<section class="section alt"><div class="wrap"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2><div class="faq"><details><summary>How much is a taxi from Lytham St Annes to Manchester Airport?</summary><div class="a"><p>EV Exec charges a fixed £90 one way or £160 return from anywhere in Lytham St Annes, for up to four passengers.</p></div></details><details><summary>Do you collect from hotels and holiday lets in St Annes?</summary><div class="a"><p>Yes. Add the hotel or property name in the address and any access notes, and your driver will meet you at the door or reception.</p></div></details><details><summary>Can you take golf clubs?</summary><div class="a"><p>Yes, with notice. Tell us when you book how many bags you have so we can send a car with enough room.</p></div></details></div><p class="note" style="margin-top:18px">More answers on our <a class="gold" href="/faq">FAQ page</a>.</p></div></section>
+<section class="section"><div class="wrap"><div class="price-strip"><div><div class="figs"><div><b>£90</b>Manchester Airport</div><div><b>£95</b>Liverpool Airport</div><div><b>£135</b>Leeds Bradford Airport</div></div><p class="intro" style="margin-top:12px;max-width:640px">The same fixed prices as everywhere on the Fylde Coast. </p></div><a class="btn btn-dark" href="/prices">See all prices</a></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">Nearby</span><h2>Other areas we cover</h2></div><ul class="link-list cols"><li><a href="/areas#blackpool">Blackpool<span>→</span></a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde<span>→</span></a></li><li><a href="/airport-transfer-fleetwood">Fleetwood &amp; Thornton-Cleveleys<span>→</span></a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton<span>→</span></a></li><li><a href="/airport-transfer-preston">Preston<span>→</span></a></li><li><a href="/areas">All areas<span>→</span></a></li></ul></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">FAQ</span><h2>Frequently asked questions</h2></div><div class="faq"><details><summary>How much is a taxi from Lytham St Annes to Manchester Airport?</summary><div class="a"><p>EV Exec charges a fixed £90 one way or £160 return from anywhere in Lytham St Annes, for up to four passengers.</p></div></details><details><summary>Do you collect from hotels and holiday lets in St Annes?</summary><div class="a"><p>Yes. Add the hotel or property name in the address and any access notes, and your driver will meet you at the door or reception.</p></div></details><details><summary>Can you take golf clubs?</summary><div class="a"><p>Yes, with notice. Tell us when you book how many bags you have so we can send a car with enough room.</p></div></details></div><p class="note" style="margin-top:18px">More answers on our <a class="gold" href="/faq">FAQ page</a>.</p></div></section>
 <section class="section"><div class="wrap"><div class="cta-band"><div><h2>Book your airport transfer from Lytham St Annes</h2><p>Fixed price, collected from your door, flight tracked on the way home.</p></div><div class="btn-row">
   <a class="btn btn-gold" href="/#quote">Book Your Transfer</a>
-  <a class="btn btn-ghost" href="tel:+447721070370">Call 07721 070370</a></div></div></div></section>
+  <a class="btn btn-dark" href="/quote?service=airport">Get a Quote</a></div></div></div></section>
 </main>
-<footer class="site-footer">
-  <div class="wrap">
-    <div class="foot-grid">
-      <div>
-        <a class="brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="" width="44" height="44" loading="lazy"><span><b>EV EXEC</b><small>Premium Airport Transfers</small></span></a>
-        <p style="margin-top:14px">Premium airport transfers and private hire across Blackpool and the Fylde Coast, in a fully electric fleet.</p>
-        <address class="nap">
-          <strong style="color:#fff">EV Exec</strong>
-          <span>Serving Blackpool, Fylde &amp; Wyre</span>
-          <a href="tel:+447721070370">07721 070370</a>
-          <a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a>
-          <a href="https://wa.me/447721070370" rel="noopener">WhatsApp us</a>
-        </address>
-      </div>
-      <div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate &amp; Executive Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/fleet">Our fleet</a></li><li><a href="/faq">FAQ</a></li></ul></div>
-      <div><h2>Airports</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport transfers</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport transfers</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport transfers</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport transfers</a></li><li><a href="/#prices">All airport prices</a></li></ul></div>
-      <div><h2>Areas</h2><ul><li><a href="/">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-thornton-cleveleys">Thornton-Cleveleys</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas we cover</a></li></ul></div>
-    </div>
-    <div class="foot-base">
-      <span>&copy; 2026 EV Exec. Licensed private hire.</span>
-      <span><a href="/booking">My booking</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></span>
-    </div>
-  </div>
-</footer>
-<div class="mobile-cta">
-  <a class="btn btn-gold" href="/#quote">Book Now</a>
-  <a class="btn btn-ghost" href="tel:+447721070370"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3h8a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM11 18h2"/></svg>Call</a>
+<!-- evx:footer -->
+<footer class="evx-footer" id="contact">
+<div class="evx-foot-grid">
+<div class="evx-foot-brand">
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
+<p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
+<address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
+<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/airport-transfer-birmingham-blackpool">Birmingham Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
+</div>
+<div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a></p></div>
+</footer>
+<!-- /evx:footer -->
+<div class="evx-mobile-cta"><a class="btn btn-gold" href="/#quote">Book Now</a><a class="btn btn-dark" href="/quote?service=airport">Get a Quote</a></div>
+<script defer src="/public/js/site.js"></script>
 <script>
 (function(){
-  var b=document.querySelector('[data-menu]'),d=document.getElementById('drawer');
-  if(b&&d)b.addEventListener('click',function(){var o=d.classList.toggle('open');b.setAttribute('aria-expanded',o);b.textContent=o?'Close':'Menu';});
+  var cr=document.getElementById('co2Route'),cn=document.getElementById('co2Number');
+  var co2={'Manchester Airport':12,'Liverpool Airport':9,'Leeds Bradford Airport':14,'Birmingham Airport':24,'Newcastle Airport':24};
+  if(cr&&cn)cr.addEventListener('change',function(){var v=co2[cr.value];if(v===undefined)return;cn.style.opacity='0';cn.style.transform='translateY(6px)';setTimeout(function(){cn.textContent=v;cn.style.opacity='1';cn.style.transform='translateY(0)';},190);});
   var f=document.getElementById('quoteForm');if(!f)return;
   var p=new URLSearchParams(location.search),s=p.get('service'),sel=document.getElementById('qService');
   if(s&&sel&&sel.querySelector('option[value="'+s+'"]'))sel.value=s;

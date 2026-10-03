@@ -26,7 +26,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     // ── Corporate ─────────────────────────────────────────────────────────
     servicePage({
       slug: 'corporate-travel',
-      navKey: 'corporate-travel',
+      navKey: 'services',
       quoteService: 'corporate',
       title: 'Corporate & Executive Travel, Blackpool & Fylde | EV Exec',
       description: 'Executive car travel for Fylde Coast businesses: airport runs, client pickups, station transfers and meetings across the North West, invoiced to your company.',
@@ -84,7 +84,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     // ── Private hire ──────────────────────────────────────────────────────
     servicePage({
       slug: 'private-hire',
-      navKey: 'private-hire',
+      navKey: 'services',
       quoteService: 'private-hire',
       title: 'Private Hire in Blackpool & the Fylde Coast | EV Exec',
       description: 'Pre-booked private hire from Blackpool and the Fylde Coast to stations, hospitals, city centres and appointments across the North West, in quiet electric cars.',
@@ -119,7 +119,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
             { title: 'Travel', text: 'We collect you from your door at the agreed time. Pay online by card, by bank transfer or on the day.' },
           ],
         },
-        { type: 'fleet', alt: true, eyebrow: 'The cars', title: 'Our fleet', intro: 'Every car takes up to 4 passengers. If you need help getting in and out, let us know and your driver will allow extra time.' },
+        { type: 'fleetMini', text: 'Every car takes up to 4 passengers. If you need help getting in and out, let us know and your driver will allow extra time.' },
         otherServices('private-hire'),
         { type: 'faq' },
         { type: 'cta', title: 'Get a price for your journey', text: 'Tell us where and when, and we will reply with a fixed price.', primary: { label: 'Get a quote', href: quoteHref('private-hire') } },
@@ -135,7 +135,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     // ── Long distance ─────────────────────────────────────────────────────
     servicePage({
       slug: 'long-distance-transfers',
-      navKey: 'private-hire',
+      navKey: 'services',
       quoteService: 'long-distance',
       title: 'Long-Distance Transfers from Blackpool & Fylde | EV Exec',
       description: 'Door-to-door long-distance transfers from Blackpool and the Fylde Coast to London, Scotland, cruise ports and anywhere in the UK. Fixed quote before you book.',
@@ -181,7 +181,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     // ── Events ────────────────────────────────────────────────────────────
     servicePage({
       slug: 'event-transfers',
-      navKey: 'private-hire',
+      navKey: 'services',
       quoteService: 'event',
       title: 'Event, Concert & Wedding Transfers | Blackpool | EV Exec',
       description: 'Pre-booked transfers to concerts, football, weddings and nights out from Blackpool and the Fylde Coast, with your journey home arranged before you go.',
@@ -212,7 +212,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
             { title: 'Enjoy the night', text: 'Dropped near the entrance, collected afterwards, home to your door.' },
           ],
         },
-        { type: 'fleet', alt: true, eyebrow: 'The cars', title: 'Our fleet', intro: 'Every car takes up to four passengers. For a bigger group, ask about booking more than one car.' },
+        { type: 'fleetMini', text: 'Every car takes up to four passengers. For a bigger group, ask about booking more than one car.' },
         otherServices('event-transfers'),
         { type: 'faq' },
         { type: 'cta', title: 'Book your event transfer', text: 'Tell us the venue and date, and we will quote for there and back.', primary: { label: 'Get a quote', href: quoteHref('event') } },
