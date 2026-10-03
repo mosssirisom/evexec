@@ -9,5 +9,6 @@ Disallow: /account
 Disallow: /account.html
 Disallow: /account-premium
 Disallow: /notification-control
+Disallow: /booking
 
 Sitemap: https://evexec.co.uk/sitemap.xml
