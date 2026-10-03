@@ -6,6 +6,7 @@ const { verifyAuth } = require('../../lib/auth');
 const { sendWebPush, getSubscriptions, deleteExpiredSubscription } = require('../../lib/push');
 const { sendSMS, sendEmail, normaliseUkPhone } = require('../../lib/notify');
 const { processDue } = require('../../lib/notificationQueue');
+const { dbRpc } = require('../../lib/supabase');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
@@ -257,8 +258,18 @@ async function handleQueue(req, res) {
   return methodNotAllowed(res);
 }
 
+// Supabase pg_cron's every-minute sweep authenticates with a token that only
+// exists in the Supabase vault; we check it by asking the DB, so the secret
+// never has to be copied into Vercel.
+async function sweepTokenOk(req) {
+  const m = /^Bearer (.+)$/.exec(req.headers.authorization || '');
+  if (!m) return false;
+  try { return (await dbRpc('verify_notification_sweep_token', { p_token: m[1] })) === true; }
+  catch (err) { console.error('Sweep token check failed:', err.message || err); return false; }
+}
+
 async function handleRetry(req, res) {
-  if (!operatorAuthOk(req) && !cronAuthOk(req)) return unauthorised(res);
+  if (!operatorAuthOk(req) && !cronAuthOk(req) && !(await sweepTokenOk(req))) return unauthorised(res);
   if (req.method !== 'POST' && req.method !== 'GET') return methodNotAllowed(res);
   const result = await processDue(50);
   return ok(res, { ok: true, ...result });
