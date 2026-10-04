@@ -268,3 +268,12 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 - **Privilege Points:** 1 point per completed journey (each leg; return legs are separate bookings). Source of truth is `points_transactions`; balance = sum of rows. The DB trigger `award_journey_points` (on bookings) awards once per booking (unique index) to `bookings.user_id`, else the account with the matching confirmed email; `sync_my_points()` catches up on account load. Nothing awards points at booking or claim time; `profiles.privilege_points` is deprecated. Corrections: insert an `adjustment`/`reversal` row.
 - **Profiles:** customers can read but not write their own `profiles` row (grants revoked); all writes go through the server with the service key. The two old "insert/update own profile" policies remain but are inert.
 - **Supabase MCP note:** `execute_sql`/`apply_migration` statements containing DROP hang (confirmation prompt) and time out; avoid DROP or apply via the dashboard.
+
+## Update — 2026-10-04: customer invoices in My Account (live)
+
+- **Data:** customers see the operator app's own `invoices` rows (numbering `INV-####`, trigger `set_invoice_number`). `invoices.booking_id` links an invoice to its booking; unique index `invoices_one_per_booking` prevents duplicates. Migration `20261004200000_customer_invoices.sql`.
+- **Auto-creation:** trigger `ensure_invoice_on_completion` calls `private.ensure_invoice_for_booking()` when a booking becomes Completed (links an existing hand-made invoice by ref first; skips unpriced bookings and auto-created return legs, whose fare is a £0 "Return transfer" line on the outbound invoice). `sync_my_invoices()` catches up a signed-in customer's own completed bookings. Historic completed bookings were deliberately not back-filled.
+- **Customer status:** Void → Cancelled; Paid if invoice or booking is Paid; unpaid cancelled booking → Cancelled; else Outstanding. "Invoiced" is not "Paid". Drafts are hidden unless the booking is Paid/Invoiced.
+- **API:** `GET /api/account/invoices`, `GET /api/account/invoice?id=` (`api/account/index.js`), ownership via `ownsBooking()` (`user_id`, or null `user_id` + exact confirmed account email); anything else is 404. Business details come from `tenants.brand.invoice`, not code.
+- **PDF:** `public/js/invoice-pdf.js` (html2canvas + jsPDF), A4, matches the operator invoice, file `EV-EXEC-Invoice-<number>.pdf`.
+- **Testing note:** rolled-back DB tests still consume `invoice_seq`; reset with `setval('public.invoice_seq', <highest INV number>)` afterwards.
