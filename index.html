@@ -34,7 +34,7 @@
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link rel="dns-prefetch" href="https://cdn.jsdelivr.net"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="./public/css/tw.min.css"/>
 <link rel="stylesheet" href="/public/css/chrome.css"/>
 
@@ -522,9 +522,9 @@ main,footer{position:relative;z-index:1}
 .hx-cars{margin-top:22px}
 /* Phones: keep intro -> cars -> buttons, but tighter so Book and Quote land on the first screen */
 @media(max-width:1023px){
-  .hx-top .hx-title{font-size:clamp(2.05rem,8.6vw,2.6rem)}
+  .hx-top .hx-title{font-size:clamp(2rem,8.4vw,2.5rem)}
   .hx-eyebrow{margin-bottom:12px}
-  .hx-sub{font-size:1rem;margin-top:12px}
+  .hx-sub{font-size:1rem;margin-top:14px}
   .hx-cars{margin-top:12px}
   .hx-top .hc-slide-media{aspect-ratio:16/10.5}
   .hx-top .hc-slide-info{padding-top:6px}
@@ -532,13 +532,17 @@ main,footer{position:relative;z-index:1}
   .hx-top .hc-dots{margin-top:4px}
   .hx-after-cars .hx-cta{margin-top:14px}
 }
-.hx-loc{display:block;margin-top:14px;font-family:Inter,Arial,sans-serif;font-size:clamp(.82rem,1.6vw,.95rem);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82)}
+/* Hero heading: lighter serif, gold italic second line, hairline location label */
+.hx-l1{display:block}
+.hx-l2{display:block;font-style:italic;font-weight:500;color:#d5a538;margin-top:2px}
+.hx-loc{display:flex;align-items:center;gap:14px;margin-top:22px;font:600 11.5px/1 Inter,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:rgba(213,165,56,.92)}
+.hx-loc::before{content:"";flex:none;width:36px;height:1px;background:linear-gradient(90deg,#d5a538,rgba(213,165,56,.15))}
 @media(min-width:1024px){
   .hx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro cars" "cta cars";column-gap:44px;align-items:center}
   .hx-intro{grid-area:intro;align-self:end}
   .hx-cars{grid-area:cars;margin-top:0}
   .hx-after-cars{grid-area:cta;align-self:start}
-  .hx-top .hx-title{font-size:clamp(2.6rem,3.9vw,3.5rem)}
+  .hx-top .hx-title{font-size:clamp(2.6rem,3.6vw,3.35rem)}
   .hx-top .hc-slide{flex-basis:90%}
   .hx-top .hc-track{padding:0 5%}
 }
@@ -551,8 +555,8 @@ main,footer{position:relative;z-index:1}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
 .hx-after-cars{margin-top:8px}
 .hx-eyebrow{display:inline-flex;border-radius:999px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);padding:6px 16px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d5a538;font-weight:700;margin:0 0 18px}
-.hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.02;font-weight:700;margin:0}
-.hx-sub{color:rgba(255,255,255,.72);font-size:1.08rem;line-height:1.6;margin:16px 0 0;max-width:680px}
+.hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.02;font-weight:500;letter-spacing:-.01em;margin:0}
+.hx-sub{color:rgba(255,255,255,.64);font-size:1.02rem;line-height:1.75;margin:18px 0 0;max-width:31em}
 .hx-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .hx-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.02em;text-decoration:none}
 .hx-btn-ghost{border:1px solid rgba(213,165,56,.7);color:#fff}
@@ -717,8 +721,8 @@ main,footer{position:relative;z-index:1}
 <div class="hx-top">
 <div class="hx-hero-copy hx-intro">
 <p class="hx-eyebrow">EV Exec</p>
-<h1 class="serif hx-title">Premium Airport Transfers <span class="gold">&amp; Private Hire</span><span class="hx-loc">Blackpool &amp; Fylde Coast</span></h1>
-<p class="hx-sub">Fixed-price transfers from anywhere on the Fylde Coast to Manchester, Liverpool, Leeds Bradford and every UK airport, in quiet electric cars with licensed drivers.</p>
+<h1 class="serif hx-title"><span class="hx-l1">Premium Airport Transfers</span> <em class="hx-l2">&amp; Private Hire</em><span class="hx-loc">Blackpool &amp; Fylde Coast</span></h1>
+<p class="hx-sub">Fixed-price transfers to Manchester, Liverpool, Leeds Bradford and every UK airport, in quiet electric cars.</p>
 
 </div>
 
