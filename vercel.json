@@ -16,13 +16,7 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/(.*)", "continue": true, "headers": {
-      "X-Content-Type-Options": "nosniff",
-      "X-Frame-Options": "SAMEORIGIN",
-      "Content-Security-Policy": "frame-ancestors 'self'",
-      "Referrer-Policy": "strict-origin-when-cross-origin",
-      "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\")"
-    } },
+    { "src": "/(.*)", "continue": true, "headers": {"X-Content-Type-Options": "nosniff", "X-Frame-Options": "SAMEORIGIN", "Content-Security-Policy": "frame-ancestors 'self'", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\")"} },
     { "src": "/api/booking/(.*)", "dest": "/api/booking/index.js" },
     { "src": "/api/operator/(.*)", "dest": "/api/operator/index.js" },
     { "src": "/api/payment/(.*)", "dest": "/api/payment/index.js" },
