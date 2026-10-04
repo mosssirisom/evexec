@@ -377,12 +377,12 @@ function viewHome() {
       </button>
     </div>
     <div style="margin-top:16px">
-      <div class="mini" style="margin-bottom:10px">Claim a Booking</div>
+      <div class="mini" style="margin-bottom:10px">Add a Booking</div>
       <div class="card">
-        <p class="muted" style="margin:0 0 14px">Booked by phone or WhatsApp? Enter your reference to add it here. You earn a Privilege Point for every completed journey.</p>
+        <p class="muted" style="margin:0 0 14px">Booked by phone or WhatsApp?</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input class="input" id="claimRefInput" placeholder="e.g. EVX-1A2B3C4D" maxlength="20" style="flex:1 1 160px;letter-spacing:.05em">
-          <button class="btn btn-gold" id="claimRefBtn" style="flex:0 0 auto">Claim</button>
+          <button class="btn btn-gold" id="claimRefBtn" style="flex:0 0 auto">Add</button>
         </div>
         <input class="input hidden" id="claimPhoneInput" placeholder="Phone number used when booking" type="tel" style="margin-top:8px">
         <p id="claimRefMsg" class="muted" style="margin:10px 0 0;font-size:13px"></p>
@@ -397,7 +397,7 @@ function wireHome() {
     const phone = ($('claimPhoneInput').value || '').trim();
     const m = $('claimRefMsg');
     if (!ref.startsWith('EVX-') || ref.length < 7) { m.textContent = 'Enter a valid booking reference (e.g. EVX-XXXXXXXX).'; m.style.color = 'var(--danger)'; return; }
-    m.style.color = ''; m.textContent = 'Claiming…';
+    m.style.color = ''; m.textContent = 'Adding…';
     try {
       const d = await api('/api/account/claim-booking', { method: 'POST', body: JSON.stringify({ ref, phone }) });
       if (d.already_claimed) { toast('This booking is already in your account.'); m.textContent = ''; return; }
