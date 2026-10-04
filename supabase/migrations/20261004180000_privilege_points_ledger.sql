@@ -65,7 +65,7 @@ begin
 
   insert into public.points_transactions (tenant_id, user_id, booking_id, points, type, note)
   values (b.tenant_id, uid, b.id, 1, 'journey_completed',
-          concat_ws(' · ', b.ref, coalesce(b.airport, b.journey_type), to_char(b.travel_date, 'DD Mon YYYY')))
+          concat_ws(' · ', b.ref, coalesce(b.airport, b.journey_type), to_char(b.travel_date, 'DD/MM/YYYY')))
   on conflict (booking_id) where type = 'journey_completed' do nothing;
 end;
 $$;
