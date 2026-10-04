@@ -4,7 +4,7 @@
 // structured data. Keep in line with lib/format.js PRICES (what the booking
 // form charges), terms.html and the Google Business Profile.
 
-const SITE = 'https://evexec.co.uk';
+const SITE = 'https://www.evexec.co.uk';
 
 const BUSINESS = {
   name: 'EV Exec',

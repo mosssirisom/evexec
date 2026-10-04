@@ -11,4 +11,4 @@ Disallow: /account-premium
 Disallow: /notification-control
 Disallow: /booking
 
-Sitemap: https://evexec.co.uk/sitemap.xml
+Sitemap: https://www.evexec.co.uk/sitemap.xml

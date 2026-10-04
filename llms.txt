@@ -5,36 +5,36 @@
 EV Exec is an owner-run, licensed private hire business based on the Fylde Coast, Lancashire. It provides fixed-price airport transfers, corporate and executive travel, pre-booked private hire, long-distance transfers and event transfers. All drivers are licensed and enhanced DBS checked.
 
 ## Fixed airport prices (one way / return, from anywhere on the Fylde Coast, up to 4 passengers)
-- Manchester Airport: £90 / £160 — https://evexec.co.uk/manchester-airport-transfer-blackpool
-- Liverpool John Lennon Airport: £95 / £170 — https://evexec.co.uk/liverpool-airport-transfer-blackpool
-- Leeds Bradford Airport: £135 / £250 — https://evexec.co.uk/leeds-bradford-airport-transfer-blackpool
-- Birmingham Airport: £215 / £410 — https://evexec.co.uk/airport-transfers
+- Manchester Airport: £90 / £160 — https://www.evexec.co.uk/manchester-airport-transfer-blackpool
+- Liverpool John Lennon Airport: £95 / £170 — https://www.evexec.co.uk/liverpool-airport-transfer-blackpool
+- Leeds Bradford Airport: £135 / £250 — https://www.evexec.co.uk/leeds-bradford-airport-transfer-blackpool
+- Birmingham Airport: £215 / £410 — https://www.evexec.co.uk/airport-transfers
 - Newcastle Airport: £250 / £480
-- Other UK airports: quoted on request — https://evexec.co.uk/quote
+- Other UK airports: quoted on request — https://www.evexec.co.uk/quote
 
 ## Services
-- Airport transfers: https://evexec.co.uk/airport-transfers
-- Corporate & executive travel: https://evexec.co.uk/corporate-travel
-- Private hire: https://evexec.co.uk/private-hire
-- Long-distance transfers: https://evexec.co.uk/long-distance-transfers
-- Event & concert transfers: https://evexec.co.uk/event-transfers
-- Prices: https://evexec.co.uk/prices
-- Fleet: https://evexec.co.uk/fleet
-- Reviews: https://evexec.co.uk/reviews
-- FAQ: https://evexec.co.uk/faq
+- Airport transfers: https://www.evexec.co.uk/airport-transfers
+- Corporate & executive travel: https://www.evexec.co.uk/corporate-travel
+- Private hire: https://www.evexec.co.uk/private-hire
+- Long-distance transfers: https://www.evexec.co.uk/long-distance-transfers
+- Event & concert transfers: https://www.evexec.co.uk/event-transfers
+- Prices: https://www.evexec.co.uk/prices
+- Fleet: https://www.evexec.co.uk/fleet
+- Reviews: https://www.evexec.co.uk/reviews
+- FAQ: https://www.evexec.co.uk/faq
 
 ## Areas covered (same fixed prices)
-- Blackpool (incl. Bispham, North Shore, South Shore, Marton): https://evexec.co.uk/areas#blackpool
-- Lytham St Annes: https://evexec.co.uk/airport-transfer-lytham-st-annes
-- Poulton-le-Fylde: https://evexec.co.uk/airport-transfer-poulton-le-fylde
-- Fleetwood & Thornton-Cleveleys: https://evexec.co.uk/airport-transfer-fleetwood
-- Kirkham, Freckleton & Warton: https://evexec.co.uk/airport-transfer-kirkham
-- Preston: https://evexec.co.uk/airport-transfer-preston
-- All areas: https://evexec.co.uk/areas
+- Blackpool (incl. Bispham, North Shore, South Shore, Marton): https://www.evexec.co.uk/areas#blackpool
+- Lytham St Annes: https://www.evexec.co.uk/airport-transfer-lytham-st-annes
+- Poulton-le-Fylde: https://www.evexec.co.uk/airport-transfer-poulton-le-fylde
+- Fleetwood & Thornton-Cleveleys: https://www.evexec.co.uk/airport-transfer-fleetwood
+- Kirkham, Freckleton & Warton: https://www.evexec.co.uk/airport-transfer-kirkham
+- Preston: https://www.evexec.co.uk/airport-transfer-preston
+- All areas: https://www.evexec.co.uk/areas
 
 ## Booking
-- Airport transfers book online: https://evexec.co.uk/#quote
-- Everything else: request a quote at https://evexec.co.uk/quote
+- Airport transfers book online: https://www.evexec.co.uk/#quote
+- Everything else: request a quote at https://www.evexec.co.uk/quote
 - Payment: secure online card payment, bank transfer or cash on the day
 - Flight monitoring on every airport pickup
 
