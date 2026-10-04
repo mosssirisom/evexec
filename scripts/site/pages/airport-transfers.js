@@ -27,12 +27,12 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => ({
   sections: [
     {
       type: 'cards', cols: 2, eyebrow: 'Choose your airport', title: 'The airports we drive to most',
-      intro: 'One-way prices from anywhere on the Fylde Coast. Each route has its own page with journey times and what happens when you land. Returns and other airports are on the <a href="/prices">price list</a>.',
+      intro: 'One-way prices from anywhere on the Fylde Coast. Manchester, Liverpool and Leeds Bradford each have their own page with journey times and what happens when you land. Returns and other airports are on the <a href="/prices">price list</a>.',
       items: [
         { icon: 'plane', title: `Manchester Airport &middot; ${gbp(PRICES.manchester.oneWay)}`, text: 'Our busiest route. Around an hour down the M55, M6 and M61, dropped at your terminal.', href: '/manchester-airport-transfer-blackpool', more: 'Manchester transfers' },
         { icon: 'plane', title: `Liverpool John Lennon &middot; ${gbp(PRICES.liverpool.oneWay)}`, text: 'Often the easier airport from the Fylde: one terminal, short walk from drop-off to check-in.', href: '/liverpool-airport-transfer-blackpool', more: 'Liverpool transfers' },
         { icon: 'plane', title: `Leeds Bradford &middot; ${gbp(PRICES.leeds.oneWay)}`, text: 'Across the Pennines to Yeadon, for when the flight or fare you want leaves from Leeds Bradford.', href: '/leeds-bradford-airport-transfer-blackpool', more: 'Leeds Bradford transfers' },
-        { icon: 'plane', title: `Birmingham Airport &middot; ${gbp(PRICES.birmingham.oneWay)}`, text: 'A longer run south on the M6 for long-haul and holiday flights that only leave from the Midlands.', href: '/airport-transfer-birmingham-blackpool', more: 'Birmingham transfers' },
+        { icon: 'plane', title: `Birmingham Airport &middot; ${gbp(PRICES.birmingham.oneWay)}`, text: 'About two and a half hours down the M6, for flights only available from the Midlands. For long-haul we suggest a pickup around five and a half hours before departure.', href: bookHref('Birmingham Airport'), more: 'Book Birmingham' },
       ],
     },
     {

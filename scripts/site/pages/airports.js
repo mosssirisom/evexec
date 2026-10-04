@@ -178,37 +178,5 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
       ],
     },
 
-    // ── Birmingham ────────────────────────────────────────────────────────
-    {
-      ...common('birmingham'),
-      slug: 'airport-transfer-birmingham-blackpool',
-      title: `Blackpool to Birmingham Airport Transfer | £${PRICES.birmingham.oneWay} | EV Exec`,
-      description: `Fixed-price Birmingham Airport transfers from Blackpool and the Fylde Coast: £${PRICES.birmingham.oneWay} one way, £${PRICES.birmingham.ret} return. Door to terminal, no parking to book.`,
-      eyebrow: 'Birmingham Airport',
-      h1: 'Blackpool to <span>Birmingham Airport</span>',
-      crumb: 'Birmingham Airport',
-      lead: 'For flights that only leave from the Midlands. A direct run down the M6 in a comfortable electric car, door to terminal, at a price fixed before you travel.',
-      sections: [
-        {
-          type: 'cards', cols: 3, eyebrow: 'The route', title: 'Down the M6',
-          items: [
-            { icon: 'clock', title: 'Two and a half hours', text: 'About 130 miles, almost all of it on the M6. We allow extra for roadworks and the stretch around Birmingham.' },
-            { icon: 'map', title: 'Terminal drop-off', text: 'Straight to departures. No long-stay parking to book and no shuttle bus.' },
-            { icon: 'user', title: 'Shared cost', text: `${gbp(PRICES.birmingham.oneWay)} covers up to four passengers, which often beats parking for a fortnight away.` },
-          ],
-        },
-        {
-          type: 'prose', alt: true, eyebrow: 'Timing', title: 'When we collect you',
-          html: '<p>For a long-haul flight from Birmingham we usually suggest a pickup <strong>around five and a half hours before departure</strong>, giving time for the drive and the three hours most long-haul airlines recommend at the airport. We confirm a time with your booking.</p><p>Coming home, we track your flight and adjust the pickup if it lands early or late.</p>',
-        },
-        otherAirports('birmingham'),
-        { type: 'faq', alt: true },
-        { type: 'cta', title: 'Book your Birmingham Airport transfer', text: `${gbp(PRICES.birmingham.oneWay)} one way, ${gbp(PRICES.birmingham.ret)} return, door to terminal.`, primary: { label: 'Book Your Birmingham Transfer', href: bookHref('Birmingham Airport') } },
-      ],
-      faqs: [
-        { q: 'How much is a transfer from Blackpool to Birmingham Airport?', a: `${gbp(PRICES.birmingham.oneWay)} one way or ${gbp(PRICES.birmingham.ret)} return from anywhere on the Fylde Coast, for up to four passengers.` },
-        { q: 'How long does the journey take?', a: 'Allow about two and a half hours. We add time for traffic around Birmingham when we set your pickup.' },
-      ],
-    },
   ];
 };
