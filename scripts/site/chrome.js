@@ -56,7 +56,7 @@ function header({ current = '', book = '/#quote' } = {}) {
   return `<!-- evx:header -->
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
-<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-name">EV EXEC</span></a>
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>
 <ul class="evx-menu">${items}</ul>
 <div class="evx-actions">
 <a class="evx-phone" href="tel:${BUSINESS.phoneIntl}" aria-label="Call EV Exec on ${BUSINESS.phone}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>${BUSINESS.phone}</a>

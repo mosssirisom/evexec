@@ -11,6 +11,9 @@
 .evx-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;flex-shrink:0}
 .evx-brand img{width:56px;height:56px;border-radius:50%;object-fit:cover}
 .evx-brand-name{display:block;font-size:22px;font-weight:900;letter-spacing:.025em;line-height:1.1}
+.evx-brand-text{display:flex;flex-direction:column}
+.evx-brand-motto{display:flex;align-items:center;gap:7px;margin-top:6px;font:600 8.5px/1 Inter,Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(213,165,56,.92);white-space:nowrap}
+.evx-brand-motto i{flex:none;width:3px;height:3px;transform:rotate(45deg);background:#d5a538;opacity:.85}
 .evx-brand-tag{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:3px}
 .evx-gold{color:#d5a538}
 
@@ -53,7 +56,7 @@
 @media(min-width:800px){.evx-hide-sm{display:inline-flex}}
 @media(min-width:1160px){.evx-menu{display:flex}.evx-menu-btn{display:none}}
 @media(max-width:1159px){.evx-account{display:none}}
-@media(max-width:560px){.evx-header{padding:10px 10px}.evx-brand img{width:48px;height:48px}.evx-brand-name{font-size:20px}.evx-brand-tag{font-size:8.5px;letter-spacing:.17em}}
+@media(max-width:560px){.evx-header{padding:10px 10px}.evx-brand img{width:48px;height:48px}.evx-brand-name{font-size:20px}.evx-brand-tag{font-size:8.5px;letter-spacing:.17em}.evx-brand-motto{font-size:7px;letter-spacing:.18em;gap:5px;margin-top:5px}}
 /* Space under the fixed header on pages without a full-bleed hero. */
 .evx-header-space{height:96px}
 @media(max-width:560px){.evx-header-space{height:82px}}
