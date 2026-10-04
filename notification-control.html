@@ -56,7 +56,7 @@ var secret='';
 function esc(v){return String(v||'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]);});}
 function setNotice(v){document.getElementById('notice').textContent=v||'';}
 function toast(v){var t=document.getElementById('toast');t.textContent=v;t.classList.add('show');clearTimeout(t._timer);t._timer=setTimeout(function(){t.classList.remove('show');},2600);}
-function fmt(v){if(!v)return '—';try{return new Date(v).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}catch(e){return v;}}
+function fmt(v){if(!v)return '—';try{var d=new Date(v),z={timeZone:'Europe/London'};return d.toLocaleDateString('en-GB',Object.assign({day:'2-digit',month:'2-digit',year:'numeric'},z))+' '+d.toLocaleTimeString('en-GB',Object.assign({hour:'2-digit',minute:'2-digit',hourCycle:'h23'},z));}catch(e){return v;}}
 function getSecret(){return document.getElementById('secret').value.trim();}
 function stat(n,label){return '<div class="stat"><strong>'+esc(n)+'</strong><span>'+esc(label)+'</span></div>';}
 function render(data){

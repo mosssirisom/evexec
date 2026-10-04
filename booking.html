@@ -332,7 +332,8 @@ body{
       // d is a plain YYYY-MM-DD date with no time component, so it parses as
       // UTC midnight -- format in UTC too, or a browser/device set to a
       // timezone west of UTC would silently show the previous calendar day.
-      return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+      var m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      return m ? m[3] + '/' + m[2] + '/' + m[1] : d;
     } catch { return d; }
   }
 
@@ -422,18 +423,18 @@ body{
     var from = b.pickup_location || b.airport || 'Pickup';
     var to   = b.dropoff_address || b.airport || 'Your destination';
 
-    document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : '');
+    document.getElementById('bookingSubline').textContent  = fmtDate(b.travel_date) + (b.travel_time ? ' at ' + String(b.travel_time).slice(0, 5) : '');
     if (b.ref) {
       document.getElementById('bookingRef').textContent = b.ref;
       document.getElementById('refBadge').classList.remove('hidden');
     }
 
     renderRoute(from, to);
-    addDetailRow('Date', fmtDate(b.travel_date) + (b.travel_time ? ' at ' + b.travel_time : ''));
+    addDetailRow('Date', fmtDate(b.travel_date) + (b.travel_time ? ' at ' + String(b.travel_time).slice(0, 5) : ''));
     if (b.passengers) addDetailRow('Passengers', b.passengers);
     if (b.luggage)    addDetailRow('Luggage', b.luggage);
     if (b.flight_number) addDetailRow('Flight', b.flight_number);
-    if (b.return_journey) addDetailRow('Return', fmtDate(b.return_date) + (b.return_time ? ' at ' + b.return_time : ''));
+    if (b.return_journey) addDetailRow('Return', fmtDate(b.return_date) + (b.return_time ? ' at ' + String(b.return_time).slice(0, 5) : ''));
 
     if (b.quoted_price) {
       show('priceDisplay');

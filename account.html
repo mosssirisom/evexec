@@ -244,6 +244,10 @@ let session = null, profile = null, pointsHistory = [], journeys = [], addresses
 let route = 'home'; // home | trips | account | account/profile | account/payments | account/rewards | account/notifications | account/security | account/addresses
 let tripFilter = 'all', tripQuery = '';
 
+// House date style: DD/MM/YYYY, 24-hour HH:MM (UK time for timestamps).
+function fmtDate(d) { const m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : (d || ''); }
+function fmtTime(t) { const m = String(t || '').match(/^(\d{1,2}):(\d{2})/); return m ? `${m[1].padStart(2, '0')}:${m[2]}` : (t || ''); }
+function fmtStamp(ts) { return ts ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'Europe/London' }) : ''; }
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function initials(name) { return String(name||'').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase() || 'EV'; }
 function tier(pts) { return pts >= 20 ? 'Executive' : pts >= 10 ? 'Preferred' : 'Client'; }
@@ -443,7 +447,7 @@ function viewTrips() {
           <div class="row-ico"><svg class="svg" width="21" height="21" viewBox="0 0 24 24"><path d="M5 16l1.6-4.8A3 3 0 019.4 9h5.2a3 3 0 012.8 2.2L19 16"/><circle cx="8" cy="17" r="1.5"/><circle cx="16" cy="17" r="1.5"/><path d="M4 16h16"/></svg></div>
           <div class="row-body">
             <div class="row-title">${esc(routeText(j))}</div>
-            <p class="row-sub">${esc((j.travel_date || 'Date TBC') + ' · ' + (j.travel_time || 'Time TBC'))}</p>
+            <p class="row-sub">${esc((j.travel_date ? fmtDate(j.travel_date) : 'Date TBC') + ' · ' + (j.travel_time ? fmtTime(j.travel_time) : 'Time TBC'))}</p>
             ${payLine(j)}
           </div>
           <span class="pill">${esc(statusOf(j))}</span>
@@ -469,7 +473,7 @@ async function openTripDetail(id) {
   overlay.className = 'overlay';
   overlay.innerHTML = `<div class="sheet">
     <h2 style="margin:0 0 4px;font-size:19px">${esc(routeText(j))}</h2>
-    <p class="muted" style="margin:0 0 18px">${esc(j.ref || '')} · ${esc((j.travel_date||'') + ' · ' + (j.travel_time||''))}</p>
+    <p class="muted" style="margin:0 0 18px">${esc(j.ref || '')} · ${esc(fmtDate(j.travel_date) + ' · ' + fmtTime(j.travel_time))}</p>
     <div id="receiptBody"><div class="sk sk-line" style="width:80%"></div><div class="sk sk-line" style="width:60%"></div></div>
     <button class="btn btn-ghost btn-block" id="closeTrip" style="margin-top:18px">Close</button>
   </div>`;
@@ -489,7 +493,7 @@ async function openTripDetail(id) {
         <div class="row-group">
           <div class="row" style="cursor:default"><div class="row-body"><div class="row-sub">Fare</div><div class="row-title">£${esc(bk.quotedPrice ?? '—')}</div></div></div>
           <div class="row" style="cursor:default"><div class="row-body"><div class="row-sub">Payment</div><div class="row-title">${esc(bk.paymentMethod || 'TBC')} · ${esc(bk.paymentStatus || 'Pending')}</div></div></div>
-          <div class="row" style="cursor:default"><div class="row-body"><div class="row-sub">Booked</div><div class="row-title">${esc(new Date(bk.createdAt).toLocaleDateString('en-GB'))}</div></div></div>
+          <div class="row" style="cursor:default"><div class="row-body"><div class="row-sub">Booked</div><div class="row-title">${esc(fmtStamp(bk.createdAt))}</div></div></div>
         </div>`;
     }
   } catch (e) {
@@ -711,7 +715,7 @@ function viewRewards() {
       <div class="row" style="cursor:default${i === pointsHistory.length - 1 ? ';border-bottom:0' : ''}">
         <div class="row-body">
           <div class="row-title" style="font-size:14.5px">${t.type === 'journey_completed' ? 'Completed journey' : t.type === 'reversal' ? 'Points reversed' : 'Points adjustment'}</div>
-          <p class="row-sub">${esc(t.note || new Date(t.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }))}</p>
+          <p class="row-sub">${esc(t.note || fmtStamp(t.created_at))}</p>
         </div>
         <strong class="${t.points > 0 ? 'gold' : ''}" style="font-size:15px">${t.points > 0 ? '+' : ''}${t.points}</strong>
       </div>`).join('')}</div>`

@@ -196,9 +196,9 @@ function stat(n, label) {
 
 function formatDate(d,t) {
   if (!d) return '—';
-  var dt = new Date(d+'T00:00:00');
-  var s = dt.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-  return t ? s+' at '+t : s;
+  var m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  var s = m ? m[3]+'/'+m[2]+'/'+m[1] : d;
+  return t ? s+' at '+String(t).slice(0,5) : s;
 }
 
 function esc(v){ return String(v||'').replace(/[&<>'"]/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]);}); }
@@ -216,7 +216,7 @@ function notifPills(notifications) {
       var channels = items.map(function(i){ return i.channel; }).join('+');
       var latest = items.reduce(function(a,b){ return a.sent_at > b.sent_at ? a : b; });
       var d = new Date(latest.sent_at);
-      var when = d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      var when = d.toLocaleDateString('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Europe/London'}) + ' ' + d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',hourCycle:'h23',timeZone:'Europe/London'});
       var label = {received:'Received',confirmation:'Confirmed',rejection:'Rejected',reminder_7d:'7-Day',reminder_24h:'24-Hour',manual:'Manual',manual_reminder:'Manual Reminder'}[type]||type;
       return '<span class="notif-pill pill-'+esc(type)+'">'+esc(label)+' ('+esc(channels)+') · '+esc(when)+'</span>';
     }).join('') +
