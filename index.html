@@ -1112,6 +1112,7 @@ main,footer{position:relative;z-index:1}
         <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required type="tel" inputmode="tel" autocomplete="tel"/>
         <label for="bwEmail" class="sr-only">Email address</label>
         <input class="input" id="bwEmail" placeholder="Email address (optional)" type="email" autocomplete="email"/>
+        <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave this empty<input id="bwCompanyWebsite" tabindex="-1" autocomplete="off"/></label></div>
       </div>
     </div>
 
@@ -1688,7 +1689,8 @@ main,footer{position:relative;z-index:1}
       customer_name:      name,
       customer_phone:     phone,
       customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
-      additional_stops:   (bw.stops || []).filter(function(s){ return s.trim(); })
+      additional_stops:   (bw.stops || []).filter(function(s){ return s.trim(); }),
+      company_website:    bwGetVal('bwCompanyWebsite') || ''
     };
     try {
       var bwHeaders = {'Content-Type':'application/json'};
