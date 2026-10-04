@@ -277,3 +277,13 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 - **API:** `GET /api/account/invoices`, `GET /api/account/invoice?id=` (`api/account/index.js`), ownership via `ownsBooking()` (`user_id`, or null `user_id` + exact confirmed account email); anything else is 404. Business details come from `tenants.brand.invoice`, not code.
 - **PDF:** `public/js/invoice-pdf.js` (html2canvas + jsPDF), A4, matches the operator invoice, file `EV-EXEC-Invoice-<number>.pdf`.
 - **Testing note:** rolled-back DB tests still consume `invoice_seq`; reset with `setval('public.invoice_seq', <highest INV number>)` afterwards.
+
+## Update — 2026-10-04: product audit fixes (live)
+
+- **Canonical host is `https://www.evexec.co.uk`** (the bare domain redirects there). `SITE` in `scripts/site/data.js` and the hand-maintained pages use it; keep new pages on www.
+- **Security headers** on every response via the first route in `vercel.json` (nosniff, SAMEORIGIN + CSP `frame-ancestors 'self'`, referrer policy, permissions policy). `npm run build:pages` rewrites `vercel.json` to one-line format; that's expected.
+- **Booking API guards** (`validateBooking()` in `api/booking/index.js`): honeypot `company_website` (wizard sends it empty; filled → fake success, nothing saved), field length caps, email format, travel date required and not in the past (UK date), return not before outbound, passengers 1–16, max 5 extra stops.
+- **Cookie consent:** Google Analytics (`G-QY9XHDNSMC`) loads only after Accept, via `public/js/consent.js` (localStorage `evx_consent`). Never add the gtag snippet directly to a page. Footer "Cookie settings" calls `evxCookieSettings()`.
+- **Privacy policy** rewritten 04/10/2026 to list every processor (Supabase Frankfurt, Vercel, Stripe, Resend, Google, AeroDataBox, drivers) and six-year retention for tax records. Update it whenever a new service starts handling customer data.
+- **Next.js patched:** Driver App 15.5.27, Operator 16.3.6 (critical advisories in older versions).
+- **Open (awaiting user):** automatic flight checks never succeed (`verify-flight` rejects the website cron's key as "Unauthorized"; fixing increases paid AeroDataBox calls); no database backups (Supabase free plan); legacy `/operator`, `/notification-control`, `/account-premium` still public; leaked-password protection, DMARC `p=none`, Vercel plan check and licence number are user actions.
