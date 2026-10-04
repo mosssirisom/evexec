@@ -16,6 +16,8 @@ a{color:inherit}
 p{margin:0 0 1em}
 h1,h2,h3{margin:0;line-height:1.1}
 h1,h2,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700}
+/* Section headings match the homepage's lighter serif. */
+h2{font-weight:500}
 h3{font-size:1.06rem;font-weight:800}
 .gold{color:var(--gold)}
 .wrap{max-width:1280px;margin:0 auto;padding:0 24px}
@@ -177,7 +179,7 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .link-list a span{color:var(--gold);font-size:14px;white-space:nowrap}
 
 /* CTA band: homepage "Book Your Transfer" banner */
-.cta-band{display:grid;gap:18px;align-items:center;padding:30px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.7)),url('/public/images/opt/ev-exec-image-6-1100.jpg') center/cover}
+.cta-band{display:grid;gap:18px;align-items:center;padding:30px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.7)) center/cover}
 .cta-band h2{font-size:clamp(1.9rem,3.8vw,2.5rem);margin:0 0 6px}
 .cta-band p{margin:0;color:rgba(255,255,255,.75)}
 @media(min-width:860px){.cta-band{grid-template-columns:1fr auto;padding:34px 40px}}

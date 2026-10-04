@@ -9,17 +9,18 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
     priority: '0.8',
     bookHref: quoteHref(p.quoteService),
     ...p,
-    hero: { primary: { label: 'Get a quote', href: quoteHref(p.quoteService) }, secondary: callBtn, ...(p.hero || {}) },
+    hero: { primary: { label: 'Get a Quote', href: quoteHref(p.quoteService) }, secondary: callBtn, ...(p.hero || {}) },
   });
+  // Short cross-links only: the full descriptions live on each service page.
   const otherServices = (skip) => ({
-    type: 'cards', cols: 2, eyebrow: 'Other services', title: 'Also from EV Exec',
+    type: 'links', eyebrow: 'Other services', title: 'Also from EV Exec',
     items: [
-      { icon: 'plane', title: 'Airport transfers', text: `Fixed prices to every UK airport: Manchester ${gbp(PRICES.manchester.oneWay)}, Liverpool ${gbp(PRICES.liverpool.oneWay)}, Leeds Bradford ${gbp(PRICES.leeds.oneWay)}.`, href: '/airport-transfers', more: 'Airport transfers' },
-      { icon: 'briefcase', title: 'Corporate & executive travel', text: 'Staff, client and visitor travel, invoiced to your company.', href: '/corporate-travel', more: 'Corporate travel' },
-      { icon: 'route', title: 'Private hire', text: 'Pre-booked journeys around Lancashire and the North West.', href: '/private-hire', more: 'Private hire' },
-      { icon: 'calendar', title: 'Long-distance transfers', text: 'Door to door anywhere in the UK, quoted before you book.', href: '/long-distance-transfers', more: 'Long-distance transfers' },
-      { icon: 'music', title: 'Events & concerts', text: 'Gigs, matches and weddings, with your journey home already booked.', href: '/event-transfers', more: 'Event transfers' },
-    ].filter((c) => c.href !== `/${skip}`).slice(0, 4),
+      { label: 'Airport transfers', href: '/airport-transfers', tag: `from ${gbp(PRICES.manchester.oneWay)}` },
+      { label: 'Corporate travel', href: '/corporate-travel' },
+      { label: 'Private hire', href: '/private-hire' },
+      { label: 'Long-distance transfers', href: '/long-distance-transfers' },
+      { label: 'Event & concert transfers', href: '/event-transfers' },
+    ].filter((c) => c.href !== `/${skip}`),
   });
 
   return [
@@ -71,7 +72,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
         },
         otherServices('corporate-travel'),
         { type: 'faq', alt: true },
-        { type: 'cta', title: 'Talk to us about business travel', text: 'Tell us the journeys you make and we will come back with prices and invoicing options.', primary: { label: 'Get a quote', href: quoteHref('corporate') } },
+        { type: 'cta', title: 'Talk to us about business travel', text: 'Tell us the journeys you make and we will come back with prices and invoicing options.', primary: { label: 'Get a Quote', href: quoteHref('corporate') } },
       ],
       faqs: [
         { q: 'Can you invoice our company rather than the passenger paying?', a: 'Yes. Tell us when you request a quote and we will agree invoicing with you before the first journey.' },
@@ -122,7 +123,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
         { type: 'fleetMini', text: 'Every car takes up to 4 passengers. If you need help getting in and out, let us know and your driver will allow extra time.' },
         otherServices('private-hire'),
         { type: 'faq' },
-        { type: 'cta', title: 'Get a price for your journey', text: 'Tell us where and when, and we will reply with a fixed price.', primary: { label: 'Get a quote', href: quoteHref('private-hire') } },
+        { type: 'cta', title: 'Get a price for your journey', text: 'Tell us where and when, and we will reply with a fixed price.', primary: { label: 'Get a Quote', href: quoteHref('private-hire') } },
       ],
       faqs: [
         { q: 'How much does private hire cost?', a: 'It depends on distance and timing, so every journey is quoted individually before you book. The price you accept is the price you pay.' },
@@ -169,7 +170,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
         },
         otherServices('long-distance-transfers'),
         { type: 'faq' },
-        { type: 'cta', title: 'Get a long-distance quote', text: 'Tell us where you are going and when. We reply with a fixed price.', primary: { label: 'Get a quote', href: quoteHref('long-distance') } },
+        { type: 'cta', title: 'Get a long-distance quote', text: 'Tell us where you are going and when. We reply with a fixed price.', primary: { label: 'Get a Quote', href: quoteHref('long-distance') } },
       ],
       faqs: [
         { q: 'How far will you travel?', a: 'Anywhere on the UK mainland. Send us the pickup and destination and we will quote.' },
@@ -215,7 +216,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, gbp }) => {
         { type: 'fleetMini', text: 'Every car takes up to four passengers. For a bigger group, ask about booking more than one car.' },
         otherServices('event-transfers'),
         { type: 'faq' },
-        { type: 'cta', title: 'Book your event transfer', text: 'Tell us the venue and date, and we will quote for there and back.', primary: { label: 'Get a quote', href: quoteHref('event') } },
+        { type: 'cta', title: 'Book your event transfer', text: 'Tell us the venue and date, and we will quote for there and back.', primary: { label: 'Get a Quote', href: quoteHref('event') } },
       ],
       faqs: [
         { q: 'What happens if the concert finishes late?', a: 'Message your driver. Reasonable overruns are part of the service. If you expect to be much later than planned, any extra waiting is agreed with you before it is charged.' },

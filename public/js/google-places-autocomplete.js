@@ -5,11 +5,8 @@
 
       if (!googleMapsApiKey) {
         try {
-          const cfgRes = await fetch('/api/config');
-          if (cfgRes.ok) {
-            const cfg = await cfgRes.json();
-            googleMapsApiKey = cfg.googleMapsApiKey || cfg.googleMapsKey || '';
-          }
+          const cfg = window.evexecConfig ? await window.evexecConfig() : await fetch('/api/config').then(function(r){ return r.ok ? r.json() : {}; });
+          googleMapsApiKey = cfg.googleMapsApiKey || cfg.googleMapsKey || '';
         } catch (_) {}
       }
 
@@ -54,7 +51,8 @@
   function initBookingAutocomplete(PlaceAutocompleteElement) {
     const addressInput = document.getElementById('bwAddress');
 
-    if (!addressInput || addressInput.dataset.googleAttached === 'true') {
+    // Never swap the field out from under someone who has already started typing.
+    if (!addressInput || addressInput.dataset.googleAttached === 'true' || addressInput.value || document.activeElement === addressInput) {
       return;
     }
 
@@ -132,9 +130,25 @@
     };
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadGooglePlaces);
-  } else {
+  // Google Maps is large, so it loads only when someone starts using the
+  // booking form (the address field is on step 2, after they pick a
+  // direction), not on every page view.
+  var started = false;
+  function start() {
+    if (started) return;
+    started = true;
     loadGooglePlaces();
+  }
+  function arm() {
+    var form = document.getElementById('quote');
+    if (!form) return;
+    ['pointerdown', 'focusin', 'keydown', 'touchstart'].forEach(function (t) {
+      form.addEventListener(t, start, { once: true, passive: true });
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arm);
+  } else {
+    arm();
   }
 })();

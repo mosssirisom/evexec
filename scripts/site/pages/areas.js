@@ -47,13 +47,8 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
           { icon: 'plane', title: `Leeds Bradford &middot; ${t.times[2]}`, text: t.routeNotes[2], href: '/leeds-bradford-airport-transfer-blackpool', more: 'Leeds Bradford transfers' },
         ],
       },
-      { type: 'prose', eyebrow: 'Local pickups', title: t.localTitle, html: t.localHtml },
-      { type: 'priceStrip', text: `The same fixed prices as everywhere on the Fylde Coast. ${t.priceNote || ''}` },
+      { type: 'prose', eyebrow: 'Local pickups', title: t.localTitle, html: `${t.localHtml}\n<p>${t.priceNote || 'Prices are the same as everywhere else on the Fylde Coast.'} <a href="/prices">See all prices</a>.</p>` },
       ...(t.extra ? [t.extra] : []),
-      {
-        type: 'links', eyebrow: 'Nearby', title: 'Other areas we cover',
-        items: [{ label: 'Blackpool', href: '/areas#blackpool' }, ...AREAS.filter((a) => a.slug && a.slug !== t.slug).map((a) => ({ label: a.name, href: `/${a.slug}` })), { label: 'All areas', href: '/areas' }],
-      },
       { type: 'faq' },
       { type: 'cta', title: `Book your airport transfer from ${t.short || t.name}`, text: 'Fixed price, collected from your door, flight tracked on the way home.' },
     ],
@@ -126,8 +121,6 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
       faqs: [
         { q: 'How much is a taxi from Fleetwood or Cleveleys to Manchester Airport?', a: `${gbp(PRICES.manchester.oneWay)} one way or ${gbp(PRICES.manchester.ret)} return, fixed, for up to four passengers. There is no extra charge for Fleetwood or Thornton-Cleveleys.` },
         { q: 'How long does it take to get to Manchester Airport from here?', a: 'About an hour and a quarter outside rush hour. We add time for the A585 when we set your pickup.' },
-        { q: 'How early will you collect me for a morning flight?', a: 'For a European flight from Manchester, usually around three and a half hours before departure. We confirm the exact time when we confirm your booking.' },
-        { q: 'Can I book the return journey at the same time?', a: 'Yes. Choose Return in the booking form and add your return flight. We track it and collect you when it lands.' },
       ],
     }),
     town({

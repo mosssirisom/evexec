@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8"/>
-<link rel="icon" href="./public/images/ev-exec-logo.jpg" type="image/jpeg"/>
-<link rel="apple-touch-icon" href="./public/images/ev-exec-logo.jpg"/>
+<link rel="icon" href="/public/images/opt/ev-exec-logo-160.jpg" type="image/jpeg"/>
+<link rel="apple-touch-icon" href="/public/images/opt/ev-exec-logo-160.jpg"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Blackpool Airport Transfers &amp; Private Hire | EV Exec</title>
 <meta content="Premium airport transfers and private hire from Blackpool and the Fylde Coast. Fixed prices, flight monitoring and a fully electric fleet. Rated 5.0 on Google." name="description"/>
@@ -19,13 +19,13 @@
 <meta content="Blackpool Airport Transfers &amp; Private Hire | EV Exec" name="twitter:title"/>
 <meta content="Fixed prices, live flight monitoring and a fully electric fleet. Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast." name="twitter:description"/>
 <meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" property="og:image"/>
-<meta content="1200" property="og:image:width"/>
-<meta content="630" property="og:image:height"/>
-<meta content="EV Exec luxury Tesla Model Y airport transfer vehicle" property="og:image:alt"/>
+<meta content="1448" property="og:image:width"/>
+<meta content="1086" property="og:image:height"/>
+<meta content="EV Exec electric car on Blackpool promenade at sunset" property="og:image:alt"/>
 <meta content="EV Exec" property="og:site_name"/>
 <meta content="en_GB" property="og:locale"/>
 <meta content="https://evexec.co.uk/public/images/ev-exec-image-1.jpg" name="twitter:image"/>
-<meta content="EV Exec luxury Tesla Model Y airport transfer vehicle" name="twitter:image:alt"/>
+<meta content="EV Exec electric car on Blackpool promenade at sunset" name="twitter:image:alt"/>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
 <link rel="dns-prefetch" href="https://www.googletagmanager.com"/>
@@ -47,7 +47,7 @@
       "@id": "https://evexec.co.uk/#business",
       "name": "EV Exec",
       "url": "https://evexec.co.uk/",
-      "description": "Premium airport transfers and private hire from Blackpool and the Fylde Coast in a fully electric fleet (Tesla Model Y and Skoda Enyaq). Fixed prices and live flight monitoring.",
+      "description": "Premium airport transfers and private hire from Blackpool and the Fylde Coast in a fully electric fleet (Tesla Model Y and Škoda Enyaq). Fixed prices and live flight monitoring.",
       "telephone": "+447721070370",
       "email": "book@evexec.co.uk",
       "priceRange": "££",
@@ -219,6 +219,7 @@ img{max-width:100%}
 }
 .hc-slide.active{opacity:1;transform:scale(1);filter:saturate(1)}
 .hc-slide-media{position:relative;aspect-ratio:4/3}
+.hc-slide-media picture{display:block;width:100%;height:100%}
 .hc-slide-media::before{
   content:"";
   position:absolute;
@@ -359,9 +360,8 @@ img{max-width:100%}
 .btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
 .clean-icon,.clean-icon-lg{transition:transform .3s ease, opacity .3s ease}
 .glass:hover .clean-icon,.glass:hover .clean-icon-lg{transform:translateY(-2px)}
-.hero h1,.hero p,.hero .btn-gold,.hero .btn-dark{animation:heroRise .8s cubic-bezier(.2,.8,.2,1) both}
-.hero p{animation-delay:.08s}
-.hero .btn-gold,.hero .btn-dark{animation-delay:.16s}
+/* Only the hero buttons ease in; the heading and photos paint straight away (faster LCP). */
+.hx-after-cars{animation:heroRise .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes heroRise{
   from{opacity:0;transform:translateY(22px)}
   to{opacity:1;transform:translateY(0)}
@@ -546,17 +546,9 @@ main,footer{position:relative;z-index:1}
 @media(min-width:768px){.hx-rv{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:767px){.hx-rv{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:6px;scrollbar-width:none}.hx-rv::-webkit-scrollbar{display:none}.hx-rv>article{flex:0 0 86%;scroll-snap-align:center}}
 @media(max-width:699px){.hx-grid-4{grid-template-columns:1fr 1fr;gap:12px}.hx-grid-4 .hx-svc{padding:18px 16px}.hx-grid-4 .hx-svc h3{font-size:1rem;margin-top:10px}.hx-grid-4 .hx-svc p{font-size:13.5px}.hx-grid-4 .hx-more{display:none}}
-.hx-why{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-@media(min-width:1024px){.hx-why{grid-template-columns:repeat(4,1fr);gap:22px}}
-.hx-why>div{padding:22px 16px}
 .hx-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
 .hx-chips a{padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .2s,color .2s}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
-.hx-cars-mini{display:grid;gap:12px;margin-top:28px}
-@media(min-width:760px){.hx-cars-mini{grid-template-columns:repeat(3,1fr)}}
-.hx-cars-mini div{padding:18px 20px;border-radius:14px;text-align:left}
-.hx-cars-mini b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.5rem}
-.hx-cars-mini span{color:rgba(255,255,255,.62);font-size:14px}
 .hx-after-cars{margin-top:8px}
 .hx-eyebrow{display:inline-flex;border-radius:999px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.1);padding:6px 16px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#d5a538;font-weight:700;margin:0 0 18px}
 .hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.02;font-weight:700;margin:0}
@@ -737,7 +729,7 @@ main,footer{position:relative;z-index:1}
       <div class="hc-slide">
         <div class="hc-slide-media">
           <span class="hc-badge">Most Popular</span>
-          <img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1000" height="787"/>
+          <picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-navy-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1000" height="787" decoding="async"/></picture>
         </div>
         <div class="hc-slide-info">
           <p class="hc-slide-name">Tesla Model Y</p>
@@ -754,7 +746,7 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1000" height="789"/>
+          <picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec grey Tesla Model Y Juniper parked at night with airport control tower in the background" loading="lazy" width="1000" height="789" decoding="async"/></picture>
         </div>
         <div class="hc-slide-info">
           <p class="hc-slide-name">Tesla Model Y Juniper</p>
@@ -771,10 +763,10 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1000" height="789"/>
+          <picture><source type="image/webp" srcset="/public/images/opt/ev-exec-skoda-enyaq-1000.webp"><img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec blue Skoda Enyaq parked at night with airport control tower in the background" loading="lazy" width="1000" height="789" decoding="async"/></picture>
         </div>
         <div class="hc-slide-info">
-          <p class="hc-slide-name">Skoda Enyaq</p>
+          <p class="hc-slide-name">Škoda Enyaq</p>
           <div class="hc-slide-specs">
             <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-user"></use></svg>4 Passengers</span>
             <span class="hc-slide-spec"><svg viewBox="0 0 24 24"><use href="#i-briefcase"></use></svg>5 Suitcases</span>
@@ -1172,20 +1164,6 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
-<!-- Why EV Exec -->
-<section class="px-6 py-8 lg:py-12 reveal" id="why">
-<div class="max-w-7xl mx-auto text-center">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Why EV Exec</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">A Local Firm You Can <span class="gold">Rely On</span></h2>
-<div class="hx-why mt-8">
-<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-pound"></use></svg><h3 class="font-bold mt-4">Fixed Prices</h3><p class="text-sm text-white/55 mt-2">Agreed when you book. No meter, no surge.</p></div>
-<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-plane"></use></svg><h3 class="font-bold mt-4">Flight Monitoring</h3><p class="text-sm text-white/55 mt-2">Delays tracked, pickup moved at no charge.</p></div>
-<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-user"></use></svg><h3 class="font-bold mt-4">Licensed Drivers</h3><p class="text-sm text-white/55 mt-2">Enhanced DBS-checked and fully insured.</p></div>
-<div class="glass rounded-lg"><svg class="clean-icon-lg mx-auto" aria-hidden="true"><use href="#i-leaf"></use></svg><h3 class="font-bold mt-4">Electric Fleet</h3><p class="text-sm text-white/55 mt-2">Quiet, spotless and zero tailpipe emissions.</p></div>
-</div>
-</div>
-</section>
-
 <!-- Services -->
 <section class="px-6 py-8 lg:py-12 reveal" id="services">
 <div class="max-w-7xl mx-auto">
@@ -1200,20 +1178,6 @@ main,footer{position:relative;z-index:1}
 <a class="hx-svc glass" href="/event-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-star"></use></svg><h3>Event &amp; Concert Transfers</h3><p>Gigs, matches and weddings, with your journey home already booked.</p><span class="hx-more">Event transfers →</span></a>
 </div>
 <p class="text-center mt-6 text-white/62">Going further? <a class="hx-link font-semibold" href="/long-distance-transfers">Long-distance transfers anywhere in the UK →</a></p>
-</div>
-</section>
-
-<!-- Fleet -->
-<section class="px-6 py-8 lg:py-12 reveal" id="fleet">
-<div class="max-w-7xl mx-auto text-center">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">The Fleet</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Three Electric Cars. <span class="gold">One Standard.</span></h2>
-<div class="hx-cars-mini">
-<div class="glass"><b>Tesla Model Y</b><span>4 passengers &middot; 4 suitcases &middot; panoramic roof</span></div>
-<div class="glass"><b>Tesla Model Y Juniper</b><span>4 passengers &middot; 4 suitcases &middot; rear touchscreen</span></div>
-<div class="glass"><b>Škoda Enyaq</b><span>4 passengers &middot; 5 suitcases &middot; extra boot space</span></div>
-</div>
-<p class="mt-6"><a class="hx-link font-semibold" href="/fleet">Meet the fleet →</a></p>
 </div>
 </section>
 
@@ -1296,7 +1260,7 @@ main,footer{position:relative;z-index:1}
 
 <!-- Final CTA -->
 <section class="px-6 py-8 lg:py-12 reveal">
-<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6" style="background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.6)),url('/public/images/opt/ev-exec-image-6-1100.jpg');background-size:cover;background-position:center;">
+<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 evx-lazy-bg">
 <div>
 <h2 class="serif text-4xl">Book Your Transfer</h2>
 <p class="text-white/75 mt-1">Fixed price, flight tracked, collected from your door.</p>
@@ -1973,17 +1937,37 @@ main,footer{position:relative;z-index:1}
   </div>
 </div>
 
-<script async src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+// One shared /api/config request for every script on the page.
+window.evexecConfig = window.evexecConfig || (function(){ var p; return function(){ return p || (p = fetch('/api/config').then(function(r){ return r.ok ? r.json() : {}; })); }; })();
 (async function() {
   // ── CONFIG ────────────────────────────────────────────────────
   var cfg = {};
-  try { cfg = await fetch('/api/config').then(function(r){ return r.json(); }); } catch(e) {}
+  try { cfg = await window.evexecConfig(); } catch(e) {}
   var SB_URL  = cfg.supabaseUrl  || '';
   var SB_ANON = cfg.supabaseAnon || '';
   var VAPID   = cfg.vapidPublic  || '';
-  var sb = (SB_URL && SB_ANON && window.supabase) ? window.supabase.createClient(SB_URL, SB_ANON) : null;
-  window._evexecSb = sb;
+  // The Supabase client (sign-in, account) is not needed for the first
+  // screen, so its library loads once the page is idle, or straight away
+  // if someone opens the sign-in box. initAuth() wires it up when ready.
+  var sb = null;
+  window._evexecSb = null;
+  var sbLoading = null;
+  function loadSupabase() {
+    if (sbLoading || !SB_URL || !SB_ANON) return sbLoading;
+    sbLoading = new Promise(function(resolve, reject){
+      if (window.supabase) return resolve();
+      var sc = document.createElement('script');
+      sc.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      sc.async = true; sc.onload = resolve; sc.onerror = reject;
+      document.head.appendChild(sc);
+    }).then(function(){
+      sb = window.supabase.createClient(SB_URL, SB_ANON);
+      window._evexecSb = sb;
+      initAuth();
+    }).catch(function(e){ console.warn('Sign-in unavailable', e); });
+    return sbLoading;
+  }
   window._evexecSession = null;
 
   // ── AUTH MODAL ───────────────────────────────────────────────
@@ -1992,7 +1976,7 @@ main,footer{position:relative;z-index:1}
   var signInBtn   = document.getElementById('navSignInBtn');
   var navAccount  = document.getElementById('navAccountBtn');
 
-  function openModal() { if(authModal) authModal.style.display='flex'; }
+  function openModal() { loadSupabase(); if(authModal) authModal.style.display='flex'; }
   function closeModal(){ if(authModal) authModal.style.display='none'; }
 
   if(signInBtn) signInBtn.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
@@ -2026,8 +2010,8 @@ main,footer{position:relative;z-index:1}
     document.querySelector('[data-mtab="signin"]').classList.add('active');
   });
 
-  // Sign in
-  if(sb) {
+  // Sign in, sign up, reset and session state (needs the Supabase client)
+  function initAuth() {
     var mSiBtn = document.getElementById('mSiBtn');
     if(mSiBtn) mSiBtn.addEventListener('click', async function(){
       var email = document.getElementById('mSiEmail').value.trim();
@@ -2095,6 +2079,10 @@ main,footer{position:relative;z-index:1}
       }
     });
   }
+  (function whenIdle(){
+    function go(){ ('requestIdleCallback' in window) ? requestIdleCallback(loadSupabase, { timeout: 3000 }) : setTimeout(loadSupabase, 1500); }
+    if (document.readyState === 'complete') go(); else window.addEventListener('load', go, { once: true });
+  })();
 
   // ── PUSH PROMPT ──────────────────────────────────────────────
   var pushPrompt = document.getElementById('pushPrompt');
@@ -2210,7 +2198,7 @@ main,footer{position:relative;z-index:1}
 
 })();
 </script>
-<script defer src="/public/js/google-places-autocomplete.js?v=evexec-20260613"></script>
+<script defer src="/public/js/google-places-autocomplete.js?v=evexec-20261004"></script>
 <script defer src="/public/js/site.js"></script>
 </body>
 </html>

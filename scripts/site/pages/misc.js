@@ -85,14 +85,6 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
 <li><strong>Cleaned before every journey,</strong> inside and out.</li>
 </ul>`,
         },
-        {
-          type: 'cards', cols: 3, eyebrow: 'Why electric', title: 'Better than a traditional taxi',
-          items: [
-            { icon: 'leaf', title: 'Zero tailpipe emissions', text: 'A cleaner way to travel, especially on long airport runs.' },
-            { icon: 'car', title: 'Calmer journeys', text: 'Smooth and quiet, so you can sleep, read or take a call.' },
-            { icon: 'shield', title: 'Licensed and insured', text: 'Every car is licensed for private hire and fully insured for hire and reward.' },
-          ],
-        },
         { type: 'co2', eyebrow: 'Zero emissions travel', title: 'Your CO\u2082 saving', intro: 'Every EV Exec journey is fully electric. See roughly how much CO\u2082 you avoid compared with a typical petrol taxi.' },
         { type: 'cta', title: 'Book your transfer', text: 'Up to four passengers, fixed prices, flight monitoring included.' },
       ],
@@ -112,7 +104,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
       lead: `Everything customers usually ask before they book. Cannot find your answer? Call ${BUSINESS.phone} or WhatsApp us.`,
       sections: [
         ...groups.map((g, i) => ({ type: 'faq', alt: i % 2 === 1, eyebrow: ' ', title: g.title, faqs: g.faqs, more: false })),
-        { type: 'cta', title: 'Ready to book?', text: 'Airport transfers book online in two minutes. Everything else, ask us for a quote.', secondary: { label: 'Get a quote', href: '/quote' } },
+        { type: 'cta', title: 'Ready to book?', text: 'Airport transfers book online in two minutes. Everything else, ask us for a quote.', secondary: { label: 'Get a Quote', href: '/quote' } },
       ],
       faqs: groups.flatMap((g) => g.faqs),
     },
@@ -132,6 +124,32 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
       hero: { primary: { label: 'Fill in the form', href: '#quote-form' }, secondary: { label: `Call ${BUSINESS.phone}`, href: `tel:${BUSINESS.phoneIntl}` } },
       sections: [
         { type: 'quoteForm', id: 'quote-form', eyebrow: 'Your journey', title: 'Tell us about your trip' },
+      ],
+    },
+
+    // ── 404 (served by Vercel for unknown URLs; not in the sitemap) ──────
+    {
+      slug: '404',
+      noindex: true,
+      bookHref: bookHref(),
+      title: 'Page Not Found | EV Exec',
+      description: 'The page you were looking for could not be found.',
+      eyebrow: 'Page not found',
+      h1: 'Sorry, that page <span>has moved</span>',
+      crumb: 'Page not found',
+      lead: 'The link may be out of date. These are the pages most people are looking for.',
+      hero: { trust: false },
+      sections: [
+        {
+          type: 'links', cols: false, title: '',
+          items: [
+            { label: 'Book an airport transfer', href: '/#quote' },
+            { label: 'Prices', href: '/prices' },
+            { label: 'Get a quote', href: '/quote' },
+            { label: 'Check my booking', href: '/booking' },
+            { label: 'Help and FAQ', href: '/faq' },
+          ],
+        },
       ],
     },
 

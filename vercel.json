@@ -40,7 +40,6 @@
     { "src": "/airport-transfer-fleetwood", "dest": "/airport-transfer-fleetwood.html" },
     { "src": "/airport-transfer-kirkham", "dest": "/airport-transfer-kirkham.html" },
     { "src": "/airport-transfer-preston", "dest": "/airport-transfer-preston.html" },
-    { "src": "/manchester-airport-transfers-from-blackpool", "dest": "/manchester-airport-transfers-from-blackpool.html" },
     { "src": "/blog", "dest": "/blog.html" },
     { "src": "/manchester-airport-parking-vs-private-transfer", "dest": "/manchester-airport-parking-vs-private-transfer.html" },
     { "src": "/account-premium", "dest": "/account-premium.html" },
@@ -61,6 +60,7 @@
     { "src": "/airport-transfer-warton", "status": 301, "headers": {"Location": "/airport-transfer-kirkham"} },
     { "src": "/executive-airport-transfers-blackpool", "status": 301, "headers": {"Location": "/corporate-travel"} },
     { "src": "/airport-transfer-thornton-cleveleys", "status": 301, "headers": {"Location": "/airport-transfer-fleetwood"} },
+    { "src": "/manchester-airport-transfers-from-blackpool", "status": 301, "headers": {"Location": "/manchester-airport-transfer-blackpool"} },
     { "src": "/public/(.*)", "dest": "/public/$1" },
     { "src": "/", "dest": "/index.html" }
   ],

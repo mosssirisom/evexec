@@ -61,6 +61,19 @@
   if (close && menu) close.addEventListener('click', closeMenu);
   if (menu) [].forEach.call(menu.querySelectorAll('a'), function (a) { a.addEventListener('click', closeMenu); });
 
+  // CTA banner photos load just before they scroll into view.
+  var lazyBgs = document.querySelectorAll('.evx-lazy-bg');
+  if (lazyBgs.length) {
+    if ('IntersectionObserver' in window) {
+      var bgIo = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-loaded'); bgIo.unobserve(e.target); } });
+      }, { rootMargin: '400px 0px' });
+      [].forEach.call(lazyBgs, function (el) { bgIo.observe(el); });
+    } else {
+      [].forEach.call(lazyBgs, function (el) { el.classList.add('is-loaded'); });
+    }
+  }
+
   // Sticky Book / Quote bar (phones): out of the way while the page's own
   // Book / Quote buttons or a booking form are on screen.
   var cta = document.getElementById('evxMobileCta');

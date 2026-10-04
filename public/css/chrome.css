@@ -83,6 +83,7 @@
 /* Footer (original homepage footer layout) */
 .evx-footer{position:relative;z-index:1;padding:44px 24px 28px;border-top:1px solid rgba(255,255,255,.08);font-family:Inter,Arial,sans-serif;color:rgba(255,255,255,.6);font-size:14.5px}
 .evx-foot-grid{max-width:1280px;margin:0 auto;display:grid;gap:34px}
+@media(max-width:759px){.evx-foot-grid{grid-template-columns:1fr 1fr;gap:28px 18px}.evx-foot-brand{grid-column:1/-1}.evx-foot-grid>div:last-child{grid-column:1/-1}.evx-foot-grid>div:last-child ul{grid-template-columns:1fr 1fr;column-gap:18px}}
 @media(min-width:760px){.evx-foot-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
 .evx-footer h2{font:700 15px Inter,Arial,sans-serif;color:#fff;margin:0 0 14px}
 .evx-footer ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
@@ -103,4 +104,7 @@
 .evx-mobile-cta.is-away{transform:translateY(110%)}
 @media(min-width:760px){.evx-mobile-cta{display:none}}
 @media(max-width:759px){body.evx-has-cta{padding-bottom:calc(70px + env(safe-area-inset-bottom))}}
+/* Decorative background photo for CTA banners, loaded by site.js only when
+   the banner is about to scroll into view. */
+.evx-lazy-bg.is-loaded{background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),url('/public/images/opt/ev-exec-image-6-1100.jpg');background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),image-set(url('/public/images/opt/ev-exec-image-6-1100.webp') type('image/webp'),url('/public/images/opt/ev-exec-image-6-1100.jpg') type('image/jpeg'));background-size:cover;background-position:center}
 @media(prefers-reduced-motion:reduce){.evx-dd,.evx-mmenu,.evx-nav,.evx-btn{transition:none}}

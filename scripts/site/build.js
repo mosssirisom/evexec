@@ -178,7 +178,7 @@ const SECTIONS = {
   links: (s) => `${sectionHead(s)}<ul class="link-list${s.cols === false ? '' : ' cols'}">${s.items.map((it) =>
     `<li><a href="${it.href}">${esc(it.label)}${it.tag ? `<span>${esc(it.tag)}</span>` : '<span>→</span>'}</a></li>`).join('')}</ul>`,
 
-  cta: (s, page) => `<div class="cta-band" data-evx-cta-zone><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
+  cta: (s, page) => `<div class="cta-band evx-lazy-bg" data-evx-cta-zone><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
   <a class="btn btn-gold" href="${(s.primary && s.primary.href) || page.bookHref || '/#quote'}">${esc((s.primary && s.primary.label) || 'Book Your Transfer')}</a>
   <a class="btn btn-dark" href="${(s.secondary && s.secondary.href) || quoteHref(page.quoteService)}">${esc((s.secondary && s.secondary.label) || 'Get a Quote')}</a></div></div>`,
 
@@ -329,7 +329,7 @@ function render(page) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(page.title)}</title>
 <meta name="description" content="${esc(page.description)}">
-<link rel="canonical" href="${canonical}">
+${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" href="${canonical}">`}
 <meta name="theme-color" content="#020813">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="EV Exec">
@@ -346,7 +346,7 @@ function render(page) {
 <link rel="apple-touch-icon" href="/public/images/opt/ev-exec-logo-160.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;900&display=swap">
 ${chrome.HEAD}
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">${jsonLd(page)}</script>
@@ -376,11 +376,10 @@ function writeSitemap(pages, today) {
     { slug: '', priority: '1.0', freq: 'weekly' },
     { slug: 'blog', priority: '0.5', freq: 'monthly' },
     { slug: 'manchester-airport-parking-vs-private-transfer', priority: '0.5', freq: 'yearly' },
-    { slug: 'manchester-airport-transfers-from-blackpool', priority: '0.5', freq: 'yearly' },
     { slug: 'terms', priority: '0.2', freq: 'yearly' },
     { slug: 'privacy', priority: '0.2', freq: 'yearly' },
   ];
-  const all = [...extra, ...pages.map((p) => ({ slug: p.slug, priority: p.priority || '0.8', freq: 'monthly' }))];
+  const all = [...extra, ...pages.filter((p) => !p.noindex).map((p) => ({ slug: p.slug, priority: p.priority || '0.8', freq: 'monthly' }))];
   const body = all.map((p) => `  <url>\n    <loc>${url(p.slug)}</loc>\n    <lastmod>${today}</lastmod>\n    <changefreq>${p.freq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`).join('\n');
   fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`);
 }
@@ -391,6 +390,8 @@ const REDIRECTS = {
   '/airport-transfer-warton': '/airport-transfer-kirkham',
   '/executive-airport-transfers-blackpool': '/corporate-travel',
   '/airport-transfer-thornton-cleveleys': '/airport-transfer-fleetwood',
+  // Thin blog post that competed with the Manchester page for the same search.
+  '/manchester-airport-transfers-from-blackpool': '/manchester-airport-transfer-blackpool',
 };
 
 function syncVercel(pages) {
@@ -401,7 +402,7 @@ function syncVercel(pages) {
   const have = new Set(routes.map((r) => r.src));
   const add = [];
   for (const [src, to] of Object.entries(REDIRECTS)) add.push({ src, status: 301, headers: { Location: to } });
-  for (const p of pages) if (!have.has(`/${p.slug}`)) add.push({ src: `/${p.slug}`, dest: `/${p.slug}.html` });
+  for (const p of pages) if (!p.noindex && !have.has(`/${p.slug}`)) add.push({ src: `/${p.slug}`, dest: `/${p.slug}.html` });
   routes.splice(anchor, 0, ...add);
   cfg.routes = routes;
   // Keep the file's one-entry-per-line layout so diffs stay readable.
@@ -420,7 +421,6 @@ const CHROME_PAGES = {
   'booking.html': {},
   'blog.html': {},
   'manchester-airport-parking-vs-private-transfer.html': {},
-  'manchester-airport-transfers-from-blackpool.html': {},
 };
 
 function injectChrome() {
