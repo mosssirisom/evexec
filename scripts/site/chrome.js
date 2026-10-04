@@ -56,7 +56,7 @@ function header({ current = '', book = '/#quote' } = {}) {
   return `<!-- evx:header -->
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
-<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-name">EV EXEC</span></a>
 <ul class="evx-menu">${items}</ul>
 <div class="evx-actions">
 <a class="evx-phone" href="tel:${BUSINESS.phoneIntl}" aria-label="Call EV Exec on ${BUSINESS.phone}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>${BUSINESS.phone}</a>
@@ -89,7 +89,7 @@ function footer() {
 <footer class="evx-footer" id="contact">
 <div class="evx-foot-grid">
 <div class="evx-foot-brand">
-<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span><span class="evx-brand-name evx-gold">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
+<a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span class="evx-brand-name evx-gold">EV EXEC</span></a>
 <p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
 <p class="evx-foot-rating"><a href="${BUSINESS.googleProfile}" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> ${RATING.value} on Google &middot; ${RATING.count} reviews</a></p>
 <address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:${BUSINESS.phoneIntl}">${BUSINESS.phone}</a><a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp us</a></address>
