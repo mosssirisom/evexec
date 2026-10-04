@@ -156,6 +156,17 @@ label.field .field-label{display:block;margin-bottom:6px;font-size:11px;letter-s
 #cardElement{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px}
 
 .search-row{display:flex;gap:8px;margin-bottom:14px}
+/* invoices */
+.pill.paid{border-color:rgba(74,222,128,.35);background:rgba(74,222,128,.1);color:var(--success)}
+.pill.cancelled{border-color:rgba(255,255,255,.18);background:rgba(255,255,255,.05);color:var(--muted)}
+.kv{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}
+.kv:last-child{border-bottom:0}
+.kv span:first-child{color:var(--muted);flex:0 0 auto}
+.kv span:last-child{text-align:right;font-weight:600;overflow-wrap:anywhere}
+.kv.line span:first-child{flex:1 1 auto;min-width:0;color:#fff;font-weight:500;line-height:1.4}
+.kv.line span:last-child{flex:0 0 auto;white-space:nowrap;overflow-wrap:normal}
+.inv-actions{display:grid;gap:10px;margin-top:16px}
+.inv-actions .btn{min-height:52px;font-size:15px}
 .chip-row{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
 .chip-row::-webkit-scrollbar{display:none}
 .chip{flex:0 0 auto;padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);cursor:pointer}
@@ -222,6 +233,7 @@ label.field .field-label{display:block;margin-bottom:6px;font-size:11px;letter-s
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://js.stripe.com/v3/"></script>
+<script src="/public/js/invoice-pdf.js" defer></script>
 <script>
 (async () => {
 'use strict';
@@ -243,6 +255,11 @@ if (cfg.stripePublishableKey && window.Stripe) stripe = Stripe(cfg.stripePublish
 let session = null, profile = null, pointsHistory = [], journeys = [], addresses = [], paymentMethods = [], defaultPmId = null;
 let route = 'home'; // home | trips | account | account/profile | account/payments | account/rewards | account/notifications | account/security | account/addresses
 let tripFilter = 'all', tripQuery = '';
+let invoicesList = null, invoiceQuery = '', invoiceBack = 'account/invoices';
+const invoiceCache = {};
+// "account/invoice/<id>" shows one invoice; every other route is a VIEWS key.
+function viewKey(r) { return String(r || '').startsWith('account/invoice/') ? 'account/invoice' : r; }
+function invoicePill(status) { return `<span class="pill ${status === 'Paid' ? 'paid' : status === 'Cancelled' ? 'cancelled' : ''}">${esc(status)}</span>`; }
 
 // House date style: DD/MM/YYYY, 24-hour HH:MM (UK time for timestamps).
 function fmtDate(d) { const m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? `${m[3]}/${m[2]}/${m[1]}` : (d || ''); }
@@ -305,13 +322,14 @@ function renderHeader() {
     home: '', trips: 'Trips', account: 'Account',
     'account/profile': 'Profile', 'account/payments': 'Payments',
     'account/rewards': 'Rewards', 'account/notifications': 'Notifications',
-    'account/security': 'Security', 'account/addresses': 'Saved Addresses'
+    'account/security': 'Security', 'account/addresses': 'Saved Addresses',
+    'account/invoices': 'Invoices', 'account/invoice': 'Invoice'
   };
   if (!isSub) {
     $('headInner').innerHTML = `<a href="/" class="brand"><img src="./public/images/ev-exec-image-3.jpg" alt="EV Exec logo"><div><div class="brand-title">EV EXEC</div><div class="brand-sub">My Account</div></div></a>`;
   } else {
-    $('headInner').innerHTML = `<button class="head-back" id="backBtn"><svg class="svg" width="18" height="18" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button><div class="head-title">${esc(titles[route] || '')}</div>`;
-    $('backBtn').onclick = () => go('account');
+    $('headInner').innerHTML = `<button class="head-back" id="backBtn" aria-label="Back"><svg class="svg" width="18" height="18" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button><div class="head-title">${esc(titles[viewKey(route)] || '')}</div>`;
+    $('backBtn').onclick = () => go(viewKey(route) === 'account/invoice' ? invoiceBack : 'account');
   }
 }
 
@@ -475,11 +493,25 @@ async function openTripDetail(id) {
     <h2 style="margin:0 0 4px;font-size:19px">${esc(routeText(j))}</h2>
     <p class="muted" style="margin:0 0 18px">${esc(j.ref || '')} · ${esc(fmtDate(j.travel_date) + ' · ' + fmtTime(j.travel_time))}</p>
     <div id="receiptBody"><div class="sk sk-line" style="width:80%"></div><div class="sk sk-line" style="width:60%"></div></div>
+    ${j.invoice ? `
+    <div class="mini" style="margin:20px 0 10px">Invoice</div>
+    <div class="row-group"><div class="row" style="cursor:default">
+      <div class="row-body"><div class="row-title">Invoice ${esc(j.invoice.number)}</div>${j.invoice.coversReturn ? '<p class="row-sub">Covers your return journey</p>' : ''}</div>
+      ${invoicePill(j.invoice.status)}
+    </div></div>
+    <div class="inv-actions">
+      <button class="btn btn-gold btn-block" id="tripInvView">View Invoice</button>
+      <button class="btn btn-ghost btn-block" id="tripInvPdf">Download PDF</button>
+    </div>` : ''}
     <button class="btn btn-ghost btn-block" id="closeTrip" style="margin-top:18px">Close</button>
   </div>`;
   document.body.appendChild(overlay);
   overlay.querySelector('#closeTrip').onclick = () => overlay.remove();
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+  if (j.invoice) {
+    overlay.querySelector('#tripInvView').onclick = () => { overlay.remove(); openInvoice(j.invoice.id, 'trips'); };
+    overlay.querySelector('#tripInvPdf').onclick = e => downloadInvoicePdf(j.invoice.id, e.currentTarget);
+  }
 
   try {
     const r = await api('/api/account/receipt?bookingId=' + encodeURIComponent(id));
@@ -513,6 +545,7 @@ function viewAccount() {
     ['account/payments', 'Payments', 'Saved cards', 'card'],
     ['account/rewards', 'Rewards', tier(profile?.privilege_points ?? 0) + ' tier', 'star'],
     ['account/notifications', 'Notifications', 'Email, SMS, push', 'bell'],
+    ['account/invoices', 'Invoices', 'Receipts for your journeys', 'doc'],
     ['account/addresses', 'Saved Addresses', addresses.length + ' saved', 'pin'],
     ['account/security', 'Security', 'Password', 'lock'],
   ];
@@ -522,7 +555,8 @@ function viewAccount() {
     star: '<path d="M12 2l2.8 6.5 7 .6-5.3 4.6 1.6 6.9L12 17l-6.1 3.6 1.6-6.9L2.2 9.1l7-.6L12 2z"/>',
     bell: '<path d="M6 8a6 6 0 0112 0c0 5 2 6 2 6H4s2-1 2-6z"/><path d="M9.5 20a2.5 2.5 0 005 0"/>',
     pin: '<path d="M12 21s7-6.4 7-12a7 7 0 10-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
-    lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/>'
+    lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/>',
+    doc: '<path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>'
   };
 
   return `
@@ -866,6 +900,117 @@ function wireAddresses() {
   });
 }
 
+// ── VIEW: invoices ───────────────────────────────────────────────────────
+async function loadInvoices() {
+  try { invoicesList = (await api('/api/account/invoices')).invoices || []; }
+  catch (e) { invoicesList = []; toast(e.message, 'error'); }
+}
+
+function viewInvoices() {
+  const all = invoicesList || [];
+  if (!all.length) {
+    return `<div class="empty"><div class="empty-icon"><svg class="svg" width="32" height="32" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg></div>
+      <h2 style="margin:0 0 6px;font-size:18px">No invoices yet</h2>
+      <p class="muted" style="margin:0;font-size:14px">Your invoices will appear here once a journey has been completed and invoiced.</p></div>`;
+  }
+  const q = invoiceQuery.trim().toLowerCase();
+  const list = q ? all.filter(i => [i.number, i.route, i.bookingRef, fmtDate(i.issueDate), i.status].join(' ').toLowerCase().includes(q)) : all;
+  return `
+    ${all.length > 5 ? `<div class="search-row"><input class="input" id="invoiceSearch" placeholder="Search by invoice, reference or route" value="${esc(invoiceQuery)}"></div>` : ''}
+    ${list.length ? `<div class="row-group">${list.map(i => `
+      <button class="row" data-invoice="${esc(i.id)}">
+        <div class="row-body">
+          <div class="row-title">Invoice ${esc(i.number)}</div>
+          <p class="row-sub">${esc(fmtDate(i.issueDate))} · ${esc(i.route)}</p>
+          <p class="row-sub" style="margin-top:6px;color:#fff;font-weight:700">£${(Number(i.total) || 0).toFixed(2)}</p>
+        </div>
+        ${invoicePill(i.status)}
+      </button>`).join('')}</div>` : `<div class="empty"><p class="muted">No invoices match that search.</p></div>`}`;
+}
+
+function wireInvoices() {
+  const s = $('invoiceSearch');
+  if (s) s.oninput = e => { invoiceQuery = e.target.value; renderInto(); const n = $('invoiceSearch'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); };
+  document.querySelectorAll('[data-invoice]').forEach(b => b.onclick = () => openInvoice(b.dataset.invoice, 'account/invoices'));
+}
+
+function openInvoice(id, back) { invoiceBack = back || 'account/invoices'; go('account/invoice/' + id); }
+
+async function getInvoice(id) {
+  if (!invoiceCache[id]) invoiceCache[id] = await api('/api/account/invoice?id=' + encodeURIComponent(id));
+  return invoiceCache[id];
+}
+
+async function beforeInvoice() {
+  const id = route.slice('account/invoice/'.length);
+  try { await getInvoice(id); } catch (e) { invoiceCache[id] = { error: e.message }; }
+}
+
+function viewInvoice() {
+  const id = route.slice('account/invoice/'.length);
+  const d = invoiceCache[id];
+  if (!d || d.error) return `<div class="empty"><p class="muted">${esc((d && d.error) || 'Invoice not found.')}</p></div>`;
+  const inv = d.invoice, biz = d.business, j = inv.journey || {};
+  const kv = (k, v) => v ? `<div class="kv"><span>${esc(k)}</span><span>${esc(v)}</span></div>` : '';
+  return `
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div><div class="mini gold">${esc(biz.name || 'EV Exec')} · Invoice</div>
+          <h1 style="font-size:24px;margin:8px 0 0">${esc(inv.number)}</h1></div>
+        ${invoicePill(inv.status)}
+      </div>
+      <div style="margin-top:14px">
+        ${kv('Invoice date', fmtDate(inv.issueDate))}
+        ${inv.status === 'Outstanding' ? kv('Due by', fmtDate(inv.dueDate)) : ''}
+        ${kv('Booking ref', inv.booking.ref)}
+      </div>
+    </div>
+    <div class="mini" style="margin:20px 0 10px">Bill to</div>
+    <div class="card">${kv('Name', inv.customer.name)}${kv('Email', inv.customer.email)}${kv('Phone', inv.customer.phone)}</div>
+    <div class="mini" style="margin:20px 0 10px">Journey</div>
+    <div class="card">
+      ${kv('Pickup', j.pickup)}${kv('Destination', j.dropoff)}${kv('Date', fmtDate(j.date))}${kv('Pickup time', j.time)}
+      ${j.flight ? kv('Flight', j.flight) : ''}${j.returnDate ? kv('Return', [fmtDate(j.returnDate), j.returnTime].filter(Boolean).join(' at ')) : ''}
+    </div>
+    <div class="mini" style="margin:20px 0 10px">Charges</div>
+    <div class="card">
+      ${inv.lineItems.map(li => `<div class="kv line"><span>${esc(li.description)}</span><span>£${(li.quantity * li.unitPrice).toFixed(2)}</span></div>`).join('')}
+      ${inv.vatAmount ? kv('VAT', '£' + inv.vatAmount.toFixed(2)) : ''}
+      <div class="kv" style="font-size:16px"><span style="color:#fff;font-weight:800">Total</span><span class="gold" style="font-weight:900">£${inv.total.toFixed(2)}</span></div>
+      ${kv('Payment method', inv.paymentMethod)}
+      <div class="kv"><span>Status</span><span>${invoicePill(inv.status)}</span></div>
+    </div>
+    <div class="inv-actions">
+      <button class="btn btn-gold btn-block" id="invPdf">Download PDF</button>
+      <button class="btn btn-ghost btn-block" id="invBooking">View Booking</button>
+    </div>
+    <p class="muted" style="text-align:center;font-size:12px;margin:18px 0 0;line-height:1.6">${esc(biz.name || '')}${biz.addressLines && biz.addressLines.length ? ' · ' + esc(biz.addressLines.slice(1).join(', ')) : ''}<br>${esc([biz.phone, biz.email, biz.web].filter(Boolean).join(' · '))}</p>`;
+}
+
+async function downloadInvoicePdf(id, btn) {
+  const label = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparing PDF…'; }
+  try {
+    const d = await getInvoice(id);
+    if (!window.EvxInvoice) throw new Error('The PDF tools are still loading. Please try again.');
+    await window.EvxInvoice.download(d);
+  } catch (e) { toast(e.message || 'Could not create the PDF.', 'error'); }
+  finally { if (btn) { btn.disabled = false; btn.textContent = label; } }
+}
+
+function wireInvoice() {
+  const id = route.slice('account/invoice/'.length);
+  const d = invoiceCache[id];
+  if (!d || d.error) return;
+  $('invPdf').onclick = () => downloadInvoicePdf(id, $('invPdf'));
+  $('invBooking').onclick = async () => {
+    const bid = d.invoice.booking.id;
+    go('trips');
+    if (!journeys.find(x => x.id === bid)) await loadAll();
+    openTripDetail(bid);
+  };
+}
+
 // ── render dispatch ──────────────────────────────────────────────────────
 const VIEWS = {
   home: { render: viewHome, wire: wireHome },
@@ -877,10 +1022,12 @@ const VIEWS = {
   'account/notifications': { render: viewNotifications, wire: wireNotifications, before: refreshPushState },
   'account/security': { render: viewSecurity, wire: wireSecurity },
   'account/addresses': { render: viewAddresses, wire: wireAddresses },
+  'account/invoices': { render: viewInvoices, wire: wireInvoices, before: loadInvoices },
+  'account/invoice': { render: viewInvoice, wire: wireInvoice, before: beforeInvoice },
 };
 
 function renderInto() {
-  const v = VIEWS[route] || VIEWS.home;
+  const v = VIEWS[viewKey(route)] || VIEWS.home;
   $('view').innerHTML = v.render();
   document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
   if (v.wire) v.wire();
@@ -888,7 +1035,7 @@ function renderInto() {
 
 async function render() {
   renderHeader();
-  const v = VIEWS[route] || VIEWS.home;
+  const v = VIEWS[viewKey(route)] || VIEWS.home;
   $('view').innerHTML = skeletonRows(3);
   if (v.before) await v.before();
   renderInto();
@@ -932,7 +1079,7 @@ sb.auth.onAuthStateChange(async (_, s) => {
     $('dashboard').classList.remove('hidden');
     $('bottomNav').classList.remove('hidden');
     route = (location.hash || '#home').slice(1);
-    if (!VIEWS[route]) route = 'home';
+    if (!VIEWS[viewKey(route)]) route = 'home';
     await loadAll();
   } else {
     $('authGate').classList.remove('hidden');
@@ -948,7 +1095,7 @@ if (initial) {
   $('dashboard').classList.remove('hidden');
   $('bottomNav').classList.remove('hidden');
   route = (location.hash || '#home').slice(1);
-  if (!VIEWS[route]) route = 'home';
+  if (!VIEWS[viewKey(route)]) route = 'home';
   await loadAll();
 }
 })();

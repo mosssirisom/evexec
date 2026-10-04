@@ -149,57 +149,236 @@ async function handleProfile(req, res, user, token) {
   res.end(JSON.stringify({ error: 'Method not allowed' }));
 }
 
+// ── Bookings owned by the signed-in customer ──────────────────────────────
+// A booking is the customer's when it is linked to their account, or when it
+// has no account and its email is exactly their (confirmed) account email.
+// Every journey, receipt and invoice lookup goes through this rule.
+
+const BOOKING_FIELDS = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email,user_id,driver_notes,notes';
+
+function ownsBooking(row, user) {
+  const email = normaliseEmail(user.email);
+  return Boolean(row) && (row.user_id === user.id || (!row.user_id && email && normaliseEmail(row.customer_email) === email));
+}
+
+async function fetchOwnedBookings(user) {
+  const email = normaliseEmail(user.email);
+  const requests = [
+    fetch(`${SUPABASE_URL()}/rest/v1/bookings?user_id=eq.${user.id}&select=${BOOKING_FIELDS}&order=created_at.desc&limit=100`, { headers: headers() })
+  ];
+  if (email) {
+    requests.push(fetch(
+      // ilike only to ignore capital letters: % and _ are escaped so they
+      // match literally, and rows are re-checked for an exact match below.
+      `${SUPABASE_URL()}/rest/v1/bookings?customer_email=ilike.${encodeURIComponent(email.replace(/[\\%_]/g, c => '\\' + c))}&select=${BOOKING_FIELDS}&order=created_at.desc&limit=100`,
+      { headers: headers() }
+    ));
+  }
+  const responses = await Promise.all(requests);
+  const merged = [];
+  const seen = new Set();
+  for (const r of responses) {
+    if (!r.ok) continue;
+    for (const row of await r.json()) {
+      if (seen.has(row.id) || !ownsBooking(row, user)) continue;
+      seen.add(row.id);
+      merged.push(row);
+    }
+  }
+  merged.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  return merged.slice(0, 100);
+}
+
+// ── Invoices ───────────────────────────────────────────────────────────────
+// The operator app's invoices table is the single source: one invoice per
+// booking (database-enforced), created when the booking is completed. A
+// return trip is two bookings; the outbound invoice covers both, so the
+// return leg points to it.
+
+const INVOICE_FIELDS = 'id,invoice_number,booking_id,booking_ref,customer_name,customer_email,customer_phone,customer_address,line_items,journey,subtotal,vat_rate,vat_amount,total,status,issue_date,due_date,notes,tenant_id';
+
+// Draft invoices are the office's work in progress: customers only see an
+// invoice once it has been issued (sent, paid or voided) or the booking has
+// been marked invoiced/paid.
+function invoiceVisible(inv, booking) {
+  return inv.status !== 'Draft' || ['Paid', 'Invoiced'].includes(booking?.payment_status);
+}
+
+// Paid when either the invoice or the booking is marked paid; a voided
+// invoice, or an unpaid cancelled booking, is Cancelled; otherwise Outstanding.
+function invoiceStatus(inv, booking) {
+  if (inv.status === 'Void') return 'Cancelled';
+  if (inv.status === 'Paid' || booking?.payment_status === 'Paid') return 'Paid';
+  if (booking && /^cancel/i.test(booking.status || '')) return 'Cancelled';
+  return 'Outstanding';
+}
+
+function outboundRefOf(booking) {
+  const m = String(booking.notes || '').match(/Outbound ref: (EVX-[A-Z0-9]+)/);
+  return m ? m[1] : null;
+}
+
+function routeOf(b) {
+  return `${b.pickup_location || b.airport || 'Pickup'} → ${b.dropoff_address || b.airport || 'Destination'}`;
+}
+
+async function syncMyInvoices(token) {
+  if (!token) return;
+  await fetch(`${SUPABASE_URL()}/rest/v1/rpc/sync_my_invoices`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: `Bearer ${token}` },
+    body: '{}'
+  }).catch(() => {});
+}
+
+// Invoices for the given bookings, keyed by booking id. Return legs get their
+// outbound booking's invoice (looked up by reference among the same
+// customer's bookings only).
+async function invoicesForBookings(bookings) {
+  const ids = bookings.map(b => b.id);
+  const byId = new Map();
+  if (!ids.length) return byId;
+  const r = await fetch(`${SUPABASE_URL()}/rest/v1/invoices?booking_id=in.(${ids.join(',')})&select=${INVOICE_FIELDS}`, { headers: headers() });
+  if (!r.ok) throw new Error(await r.text());
+  const rows = await r.json();
+  const bookingById = new Map(bookings.map(b => [b.id, b]));
+  for (const inv of rows) {
+    const bk = bookingById.get(inv.booking_id);
+    if (bk && invoiceVisible(inv, bk)) byId.set(bk.id, { inv, booking: bk });
+  }
+  const byRef = new Map(bookings.map(b => [b.ref, b]));
+  for (const b of bookings) {
+    if (byId.has(b.id)) continue;
+    const outbound = byRef.get(outboundRefOf(b));
+    if (outbound && byId.has(outbound.id)) byId.set(b.id, { ...byId.get(outbound.id), viaReturnLeg: true });
+  }
+  return byId;
+}
+
+function invoiceSummary(inv, booking) {
+  return {
+    id: inv.id,
+    number: inv.invoice_number,
+    issueDate: inv.issue_date,
+    status: invoiceStatus(inv, booking),
+    total: Number(inv.total) || 0,
+    route: routeOf(booking),
+    bookingId: booking.id,
+    bookingRef: booking.ref
+  };
+}
+
 // ── GET /api/account/journeys ──────────────────────────────────────────────
 
-async function handleJourneys(req, res, user) {
+async function handleJourneys(req, res, user, token) {
   if (req.method !== 'GET') {
     res.statusCode = 405;
     return res.end(JSON.stringify({ error: 'Method not allowed' }));
   }
 
   try {
-    const email  = normaliseEmail(user.email);
-    const fields = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email,user_id,driver_notes';
-
-    const requests = [
-      fetch(
-        `${SUPABASE_URL()}/rest/v1/bookings?user_id=eq.${user.id}&select=${fields}&order=created_at.desc&limit=100`,
-        { headers: headers() }
-      )
-    ];
-
-    if (email) {
-      requests.push(fetch(
-        // ilike only to ignore capital letters: % and _ are escaped so they
-        // match literally, and rows are re-checked for an exact match below.
-        `${SUPABASE_URL()}/rest/v1/bookings?customer_email=ilike.${encodeURIComponent(email.replace(/[\\%_]/g, c => '\\' + c))}&select=${fields}&order=created_at.desc&limit=100`,
-        { headers: headers() }
-      ));
-    }
-
-    const responses = await Promise.all(requests);
-    const merged = [];
-    const seen = new Set();
-
-    for (const r of responses) {
-      if (!r.ok) continue;
-      const rows = await r.json();
-      for (const row of rows) {
-        if (seen.has(row.id)) continue;
-        const mine = row.user_id === user.id || (!row.user_id && email && normaliseEmail(row.customer_email) === email);
-        if (!mine) continue;
-        seen.add(row.id);
-        merged.push(row);
-      }
-    }
-
-    merged.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-
+    await syncMyInvoices(token);
+    const owned = await fetchOwnedBookings(user);
+    const invoices = await invoicesForBookings(owned);
+    const journeys = attachCustomerStatus(owned).map(j => {
+      const found = invoices.get(j.id);
+      const { notes, ...rest } = j;
+      return { ...rest, invoice: found ? { id: found.inv.id, number: found.inv.invoice_number, status: invoiceStatus(found.inv, found.booking), coversReturn: Boolean(found.viaReturnLeg) } : null };
+    });
     res.statusCode = 200;
-    res.end(JSON.stringify({ journeys: attachCustomerStatus(merged.slice(0, 100)) }));
+    res.end(JSON.stringify({ journeys }));
   } catch (err) {
     res.statusCode = 500;
     res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+// ── GET /api/account/invoices ──────────────────────────────────────────────
+
+async function handleInvoices(req, res, user, token) {
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+  try {
+    await syncMyInvoices(token);
+    const owned = await fetchOwnedBookings(user);
+    const invoices = await invoicesForBookings(owned);
+    const list = [];
+    const seen = new Set();
+    for (const { inv, booking } of invoices.values()) {
+      if (seen.has(inv.id)) continue;
+      seen.add(inv.id);
+      list.push(invoiceSummary(inv, booking));
+    }
+    list.sort((a, b) => String(b.issueDate || '').localeCompare(String(a.issueDate || '')) || String(b.number).localeCompare(String(a.number)));
+    res.end(JSON.stringify({ invoices: list }));
+  } catch (err) {
+    res.statusCode = 500;
+    res.end(JSON.stringify({ error: err.message }));
+  }
+}
+
+// ── GET /api/account/invoice?id=… ──────────────────────────────────────────
+// Ownership is checked against the invoice's booking on every request; an
+// invoice that is not the customer's is reported as not found.
+
+async function handleInvoice(req, res, user) {
+  if (req.method !== 'GET') {
+    res.statusCode = 405;
+    return res.end(JSON.stringify({ error: 'Method not allowed' }));
+  }
+  const id = (req.query && req.query.id) || '';
+  if (!isValidUUID(id)) {
+    res.statusCode = 400;
+    return res.end(JSON.stringify({ error: 'Valid invoice id required' }));
+  }
+  const notFound = () => { res.statusCode = 404; return res.end(JSON.stringify({ error: 'Invoice not found' })); };
+  try {
+    const r = await fetch(`${SUPABASE_URL()}/rest/v1/invoices?id=eq.${id}&select=${INVOICE_FIELDS}&limit=1`, { headers: headers() });
+    if (!r.ok) throw new Error(await r.text());
+    const inv = (await r.json())[0];
+    if (!inv || !inv.booking_id) return notFound();
+
+    const br = await fetch(`${SUPABASE_URL()}/rest/v1/bookings?id=eq.${inv.booking_id}&select=${BOOKING_FIELDS}&limit=1`, { headers: headers() });
+    if (!br.ok) throw new Error(await br.text());
+    const booking = (await br.json())[0];
+    if (!ownsBooking(booking, user) || !invoiceVisible(inv, booking)) return notFound();
+
+    const tr = await fetch(`${SUPABASE_URL()}/rest/v1/tenants?id=eq.${inv.tenant_id || booking.tenant_id || '00000000-0000-0000-0000-000000000001'}&select=name,brand&limit=1`, { headers: headers() });
+    const tenant = tr.ok ? (await tr.json())[0] : null;
+    const biz = (tenant && tenant.brand && tenant.brand.invoice) || {};
+
+    return res.end(JSON.stringify({
+      invoice: {
+        id: inv.id,
+        number: inv.invoice_number,
+        issueDate: inv.issue_date,
+        dueDate: inv.due_date,
+        status: invoiceStatus(inv, booking),
+        customer: { name: inv.customer_name, email: inv.customer_email, phone: inv.customer_phone, address: inv.customer_address },
+        lineItems: Array.isArray(inv.line_items) ? inv.line_items.map(li => ({ description: li.description, quantity: Number(li.quantity) || 0, unitPrice: Number(li.unit_price) || 0 })) : [],
+        journey: inv.journey || {},
+        subtotal: Number(inv.subtotal) || 0,
+        vatRate: Number(inv.vat_rate) || 0,
+        vatAmount: Number(inv.vat_amount) || 0,
+        total: Number(inv.total) || 0,
+        paymentTerms: (inv.notes && inv.notes.trim()) || biz.payment_terms || '',
+        paymentMethod: booking.payment_method || null,
+        booking: { id: booking.id, ref: booking.ref, status: booking.status }
+      },
+      business: {
+        name: biz.business_name || (tenant && tenant.name) || 'EV Exec',
+        addressLines: biz.address_lines || [],
+        phone: biz.phone || '',
+        email: biz.email || '',
+        web: biz.web || '',
+        tagline: biz.tagline || []
+      }
+    }));
+  } catch (err) {
+    res.statusCode = 500;
+    return res.end(JSON.stringify({ error: err.message }));
   }
 }
 
@@ -513,9 +692,7 @@ async function handleReceipt(req, res, user) {
       return res.end(JSON.stringify({ error: 'Booking not found' }));
     }
 
-    const owns = booking.user_id === user.id ||
-      (booking.customer_email && normaliseEmail(booking.customer_email) === normaliseEmail(user.email));
-    if (!owns) {
+    if (!ownsBooking(booking, user)) {
       res.statusCode = 403;
       return res.end(JSON.stringify({ error: 'This booking is not on your account' }));
     }
@@ -566,7 +743,10 @@ module.exports = async function handler(req, res) {
 
   const path = (req.url || '').split('?')[0];
   if (path.endsWith('/profile'))                    return handleProfile(req, res, user, (req.headers['authorization'] || '').replace(/^Bearer /, ''));
-  if (path.endsWith('/journeys'))                   return handleJourneys(req, res, user);
+  const token = (req.headers['authorization'] || '').replace(/^Bearer /, '');
+  if (path.endsWith('/journeys'))                   return handleJourneys(req, res, user, token);
+  if (path.endsWith('/invoices'))                   return handleInvoices(req, res, user, token);
+  if (path.endsWith('/invoice'))                    return handleInvoice(req, res, user);
   if (path.endsWith('/addresses'))                  return handleAddresses(req, res, user);
   if (path.endsWith('/claim-booking'))              return handleClaimBooking(req, res, user);
   if (path.endsWith('/payment-methods/setup-intent')) return handlePaymentMethodSetupIntent(req, res, user);
