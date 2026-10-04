@@ -201,63 +201,6 @@ async function handleHealth(req, res) {
   return res.end(JSON.stringify({ ok: tests.every(t => t.ok), environment: envStatus(), tests }));
 }
 
-function safeLimit(value) {
-  const n = parseInt(value, 10);
-  if (!Number.isFinite(n)) return 100;
-  return Math.max(1, Math.min(n, 250));
-}
-
-async function handleQueue(req, res) {
-  if (!operatorAuthOk(req)) return unauthorised(res);
-
-  if (req.method === 'GET') {
-    const url = new URL(req.url, 'https://evexec.co.uk');
-    const status = url.searchParams.get('status');
-    const bookingId = url.searchParams.get('booking_id');
-    const limit = safeLimit(url.searchParams.get('limit'));
-    const filters = [];
-    if (status) filters.push(`status=eq.${encodeURIComponent(status)}`);
-    if (bookingId) filters.push(`booking_id=eq.${encodeURIComponent(bookingId)}`);
-    const query = [
-      ...filters,
-      'select=id,booking_id,type,channel,recipient,subject,status,attempts,next_attempt_at,sent_at,last_error,created_at,meta',
-      'order=created_at.desc',
-      `limit=${limit}`
-    ].join('&');
-
-    const queueRes = await fetch(`${SUPABASE_URL}/rest/v1/notification_queue?${query}`, { headers: dbHeaders() });
-    if (!queueRes.ok) throw new Error(`Notification queue fetch failed: ${await queueRes.text()}`);
-    const rows = await queueRes.json();
-
-    const countsRes = await fetch(`${SUPABASE_URL}/rest/v1/notification_queue?select=status`, { headers: dbHeaders() });
-    let summary = { pending: 0, sent: 0, failed: 0, total: rows.length };
-    if (countsRes.ok) {
-      const all = await countsRes.json();
-      summary = all.reduce((acc, row) => {
-        acc.total += 1;
-        acc[row.status] = (acc[row.status] || 0) + 1;
-        return acc;
-      }, { pending: 0, sent: 0, failed: 0, total: 0 });
-    }
-
-    return ok(res, { ok: true, summary, items: rows.map(row => ({ ...row, recipient_masked: mask(row.recipient), recipient: undefined })) });
-  }
-
-  if (req.method === 'POST') {
-    const body = await readJson(req);
-    if (body.action !== 'requeue' || !body.id) return badRequest(res, 'Expected action=requeue and id');
-    const patchRes = await fetch(`${SUPABASE_URL}/rest/v1/notification_queue?id=eq.${encodeURIComponent(body.id)}`, {
-      method: 'PATCH',
-      headers: dbHeaders({ Prefer: 'return=minimal' }),
-      body: JSON.stringify({ status: 'pending', next_attempt_at: new Date().toISOString(), last_error: null })
-    });
-    if (!patchRes.ok) throw new Error(`Notification requeue failed: ${await patchRes.text()}`);
-    return ok(res, { ok: true, id: body.id, status: 'pending' });
-  }
-
-  return methodNotAllowed(res);
-}
-
 // Supabase pg_cron's every-minute sweep authenticates with a token that only
 // exists in the Supabase vault; we check it by asking the DB, so the secret
 // never has to be copied into Vercel.
@@ -366,7 +309,6 @@ module.exports = async function handler(req, res) {
     if (path.endsWith('/subscribe')) return handleSubscribe(req, res);
     if (path.endsWith('/send')) return handleSend(req, res);
     if (path.endsWith('/health')) return handleHealth(req, res);
-    if (path.endsWith('/queue')) return handleQueue(req, res);
     if (path.endsWith('/retry')) return handleRetry(req, res);
     if (path.endsWith('/resend-webhook')) return handleResendWebhook(req, res);
     if (path.endsWith('/sms-status')) return handleSmsStatus(req, res);

@@ -393,6 +393,8 @@ const REDIRECTS = {
   '/manchester-airport-transfers-from-blackpool': '/manchester-airport-transfer-blackpool',
   // Too little unique to say for its own page; the route is covered on /airport-transfers and /prices.
   '/airport-transfer-birmingham-blackpool': '/airport-transfers',
+  // Old account page design, retired 2026-10-04.
+  '/account-premium': '/account',
 };
 
 function syncVercel(pages) {

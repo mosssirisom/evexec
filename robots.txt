@@ -4,11 +4,8 @@ Allow: /
 # Private / utility pages — do not index
 Disallow: /admin/
 Disallow: /api/
-Disallow: /operator
 Disallow: /account
 Disallow: /account.html
-Disallow: /account-premium
-Disallow: /notification-control
 Disallow: /booking
 
 Sitemap: https://www.evexec.co.uk/sitemap.xml

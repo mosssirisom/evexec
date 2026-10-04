@@ -1,24 +1,19 @@
 'use strict';
 
-// Handles: /api/operator/accept, /api/operator/reject (HTML pages)
-//          /api/operator/bookings (GET — admin list)
-//          /api/operator/notify   (POST — send notification)
-//          /api/operator/manage   (GET/POST — legacy alias)
+// Handles: /api/operator/accept, /api/operator/reject (HTML pages opened from
+// the signed links in the operator's new-booking email).
+//
+// The secret-gated /bookings, /drivers, /assign, /notify and /manage routes
+// served the old /operator page, retired 2026-10-04 (the Operator app does
+// all of this now).
 
-const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
-const { sendSMS, sendEmail, sendRejectionNotice, sendWhatsApp, whatsAppReady } = require('../../lib/notify');
-const { smsEnabled } = require('../../lib/channels');
-const { sendPushToCustomer } = require('../../lib/push');
+const { sendSMS, sendEmail, sendRejectionNotice } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, fmtTime, getPrice, emailJourneyHtml, refBadgeHtml, singleLineSubject } = require('../../lib/format');
-const { parseBody } = require('../../lib/parse');
 const { operatorPage } = require('../../lib/pages');
 const { emailLayout } = require('../../lib/emailLayout');
-const { logMany } = require('../../lib/notifyLog');
 const { sendOrQueue } = require('../../lib/notificationQueue');
-
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 
 function esc(str) {
   return String(str == null ? '' : str)
@@ -27,18 +22,6 @@ function esc(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-function dbHeaders() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  return { 'Content-Type': 'application/json', apikey: key, Authorization: `Bearer ${key}` };
-}
-
-function authOk(req) {
-  const secret = req.headers['x-operator-secret'];
-  const expected = process.env.OPERATOR_ACTION_SECRET;
-  return expected && secret && secret.length === expected.length &&
-    crypto.timingSafeEqual(Buffer.from(secret), Buffer.from(expected));
 }
 
 // ── Accept / Reject ────────────────────────────────────────────────────────
@@ -95,97 +78,12 @@ async function handleAction(req, res) {
   } catch (err) { console.error('Operator action error:', err); res.statusCode = 500; return res.end(operatorPage('Error', '<p>Something went wrong. Please try again or contact support.</p>', false)); }
 }
 
-// ── Bookings list ──────────────────────────────────────────────────────────
-
-async function listBookings(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  try {
-    const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-    const cutoffStr = cutoff.toISOString().slice(0, 10);
-    const [bookingsRes, logsRes] = await Promise.all([
-      fetch(`${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${cutoffStr}&select=id,ref,customer_name,customer_phone,customer_email,travel_date,travel_time,status,payment_method,payment_status,journey_type,pickup_location,airport,dropoff_address,assigned_driver_id&order=travel_date.asc&limit=200`, { headers: dbHeaders() }),
-      fetch(`${SUPABASE_URL}/rest/v1/notification_log?select=booking_id,type,channel,recipient,sent_at&order=sent_at.desc&limit=2000`, { headers: dbHeaders() })
-    ]);
-    if (!bookingsRes.ok) throw new Error('Failed to load bookings');
-    const bookings = await bookingsRes.json();
-    let logs = []; if (logsRes.ok) logs = await logsRes.json();
-    const logsByBooking = {};
-    for (const log of logs) { if (!logsByBooking[log.booking_id]) logsByBooking[log.booking_id] = []; logsByBooking[log.booking_id].push(log); }
-    res.end(JSON.stringify(bookings.map(b => ({ ...b, notifications: logsByBooking[b.id] || [] }))));
-  } catch (err) { console.error('Operator bookings error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to load bookings' })); }
-}
-
-// ── Drivers list ───────────────────────────────────────────────────────────
-
-async function listDrivers(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  try {
-    const driversRes = await fetch(`${SUPABASE_URL}/rest/v1/drivers?select=id,name,vehicle,plate,is_online,status&order=name.asc`, { headers: dbHeaders() });
-    if (!driversRes.ok) throw new Error('Failed to load drivers');
-    const drivers = await driversRes.json();
-    res.end(JSON.stringify(drivers));
-  } catch (err) { console.error('Operator drivers error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to load drivers' })); }
-}
-
-// ── Assign driver to booking ──────────────────────────────────────────────
-
-async function assignDriver(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  let body; try { body = await parseBody(req); } catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
-  const { booking_id, driver_id } = body;
-  if (!booking_id || !isValidUUID(booking_id)) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Valid booking_id required' })); }
-  if (driver_id && !isValidUUID(driver_id)) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid driver_id' })); }
-  try {
-    const booking = await dbGet('bookings', booking_id);
-    if (!booking) { res.statusCode = 404; return res.end(JSON.stringify({ error: 'Booking not found' })); }
-    const driverIdValue = driver_id || null;
-    await dbUpdate('bookings', booking_id, { assigned_driver_id: driverIdValue, driver_id: driverIdValue });
-    res.end(JSON.stringify({ ok: true, booking_id, driver_id: driverIdValue }));
-  } catch (err) { console.error('Operator assign error:', err); res.statusCode = 500; res.end(JSON.stringify({ error: 'Failed to assign driver' })); }
-}
-
-// ── Send notification ──────────────────────────────────────────────────────
-
-async function sendNotification(req, res) {
-  res.setHeader('Content-Type', 'application/json');
-  let body; try { body = await parseBody(req); } catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid body' })); }
-  const { booking_id, channels, message_type } = body;
-  if (!booking_id || !channels || !channels.length) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'booking_id and channels required' })); }
-  const booking = await dbGet('bookings', booking_id);
-  if (!booking) { res.statusCode = 404; return res.end(JSON.stringify({ error: 'Booking not found' })); }
-  const route = journeyLine(booking); const date = fmtDate(booking.travel_date);
-  const time = fmtTime(booking.travel_time, booking.travel_date);
-  const firstName = (booking.customer_name || 'there').split(' ')[0];
-  const method = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
-  const isReminder = (message_type || 'manual') === 'manual_reminder';
-  const smsText = isReminder ? `Hi ${firstName}, a reminder from EV Exec about your upcoming transfer.\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370` : `Hi ${firstName}, your EV Exec transfer is confirmed!\n\n${route}\n${date} at ${time}\nPayment: ${method}\n\nQuestions: 07721 070370`;
-  const emailSubject = isReminder ? `Reminder: Your EV Exec Transfer on ${date}` : `Transfer Confirmed`;
-  const emailHtml = emailLayout({ title: isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">${isReminder ? 'A reminder about your upcoming EV Exec airport transfer.' : 'Your airport transfer is confirmed.'}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(booking)}<p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p>` });
-  const tasks = []; const logEntries = [];
-  if (channels.includes('sms') && smsEnabled() && booking.customer_phone) { tasks.push(sendSMS(booking.customer_phone, smsText)); logEntries.push(['sms', booking.customer_phone]); }
-  if (channels.includes('whatsapp') && whatsAppReady(booking)) { tasks.push(sendWhatsApp(booking.customer_phone, smsText)); logEntries.push(['whatsapp', booking.customer_phone]); }
-  if (channels.includes('email') && booking.customer_email) { tasks.push(sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml })); logEntries.push(['email', booking.customer_email]); }
-  if (channels.includes('push')) { tasks.push(sendPushToCustomer(booking, isReminder ? 'Upcoming Transfer' : 'Transfer Confirmed', `${route} on ${date}`, '/booking?id=' + booking.id)); logEntries.push(['push', booking.customer_email || booking.customer_phone]); }
-  if (!tasks.length) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'No valid channels for this booking' })); }
-  tasks.push(logMany(booking_id, message_type || 'manual', logEntries));
-  await Promise.allSettled(tasks);
-  res.end(JSON.stringify({ ok: true, sent: logEntries.map(([ch]) => ch) }));
-}
-
 // ── Router ─────────────────────────────────────────────────────────────────
 
 module.exports = async function handler(req, res) {
   const path = (req.url || '').split('?')[0];
-
   if (path.endsWith('/accept') || path.endsWith('/reject')) return handleAction(req, res);
-
+  res.statusCode = 404;
   res.setHeader('Content-Type', 'application/json');
-  if (!authOk(req)) { res.statusCode = 401; return res.end(JSON.stringify({ error: 'Unauthorised' })); }
-
-  if ((path.endsWith('/bookings') || path.endsWith('/manage')) && req.method === 'GET') return listBookings(req, res);
-  if (path.endsWith('/drivers') && req.method === 'GET') return listDrivers(req, res);
-  if (path.endsWith('/assign') && req.method === 'POST') return assignDriver(req, res);
-  if ((path.endsWith('/notify') || path.endsWith('/manage')) && req.method === 'POST') return sendNotification(req, res);
-
-  res.statusCode = 404; res.end(JSON.stringify({ error: 'Not found' }));
+  res.end(JSON.stringify({ error: 'Not found' }));
 };
