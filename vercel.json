@@ -62,7 +62,9 @@
     { "src": "/airport-transfer-thornton-cleveleys", "status": 301, "headers": {"Location": "/airport-transfer-fleetwood"} },
     { "src": "/manchester-airport-transfers-from-blackpool", "status": 301, "headers": {"Location": "/manchester-airport-transfer-blackpool"} },
     { "src": "/public/(.*)", "dest": "/public/$1" },
-    { "src": "/", "dest": "/index.html" }
+    { "src": "/", "dest": "/index.html" },
+    { "handle": "filesystem" },
+    { "src": "/.*", "status": 404, "dest": "/404.html" }
   ],
   "crons": [
     { "path": "/api/reminders/trigger", "schedule": "0 8 * * *" },

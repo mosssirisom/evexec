@@ -404,6 +404,12 @@ function syncVercel(pages) {
   for (const [src, to] of Object.entries(REDIRECTS)) add.push({ src, status: 301, headers: { Location: to } });
   for (const p of pages) if (!p.noindex && !have.has(`/${p.slug}`)) add.push({ src: `/${p.slug}`, dest: `/${p.slug}.html` });
   routes.splice(anchor, 0, ...add);
+  // Unknown URLs: after Vercel has checked the real files, serve the
+  // branded 404 page (legacy routes do not pick up 404.html on their own).
+  const tail = [{ handle: 'filesystem' }, { src: '/.*', status: 404, dest: '/404.html' }];
+  const core = routes.filter((r) => r.handle !== 'filesystem' && !(r.status === 404 && r.dest === '/404.html'));
+  routes.length = 0;
+  routes.push(...core, ...tail);
   cfg.routes = routes;
   // Keep the file's one-entry-per-line layout so diffs stay readable.
   const line = (o) => JSON.stringify(o).replace(/":/g, '": ').replace(/,"/g, ', "').replace(/^\{/, '{ ').replace(/\}$/, ' }');
