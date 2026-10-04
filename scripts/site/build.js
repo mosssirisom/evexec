@@ -350,8 +350,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 ${chrome.HEAD}
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">${jsonLd(page)}</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
+<script src="/public/js/consent.js" defer></script>
 </head>
 <body class="evx-has-cta">
 <a class="skip" href="#main">Skip to content</a>
