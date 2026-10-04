@@ -240,7 +240,7 @@ let stripe = null;
 if (cfg.stripePublishableKey && window.Stripe) stripe = Stripe(cfg.stripePublishableKey);
 
 // ── state ────────────────────────────────────────────────────────────────
-let session = null, profile = null, journeys = [], addresses = [], paymentMethods = [], defaultPmId = null;
+let session = null, profile = null, pointsHistory = [], journeys = [], addresses = [], paymentMethods = [], defaultPmId = null;
 let route = 'home'; // home | trips | account | account/profile | account/payments | account/rewards | account/notifications | account/security | account/addresses
 let tripFilter = 'all', tripQuery = '';
 
@@ -323,6 +323,7 @@ async function loadAll() {
       api('/api/account/addresses')
     ]);
     profile = pr.profile;
+    pointsHistory = pr.points_history || [];
     journeys = jr.journeys || [];
     addresses = ar.addresses || [];
   } catch (e) {
@@ -342,8 +343,8 @@ async function loadPaymentMethods() {
 // ── VIEW: home ───────────────────────────────────────────────────────────
 function viewHome() {
   const completed = journeys.filter(j => j.status === 'Completed').length;
-  const upcoming = journeys.filter(j => !['Completed','Cancelled'].includes(j.status));
-  const pts = profile?.privilege_points ?? completed;
+  const upcoming = journeys.filter(j => j.upcoming);
+  const pts = profile?.privilege_points ?? 0;
   const name = profile?.full_name || session.user.user_metadata?.full_name || session.user.email;
   const avatar = profile?.avatar_url
     ? `<img class="avatar-img" style="width:56px;height:56px" src="${esc(profile.avatar_url)}" alt="">`
@@ -378,7 +379,7 @@ function viewHome() {
     <div style="margin-top:16px">
       <div class="mini" style="margin-bottom:10px">Claim a Booking</div>
       <div class="card">
-        <p class="muted" style="margin:0 0 14px">Booked by phone or WhatsApp? Enter your reference to add it here and earn points.</p>
+        <p class="muted" style="margin:0 0 14px">Booked by phone or WhatsApp? Enter your reference to add it here. You earn a Privilege Point for every completed journey.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input class="input" id="claimRefInput" placeholder="e.g. EVX-1A2B3C4D" maxlength="20" style="flex:1 1 160px;letter-spacing:.05em">
           <button class="btn btn-gold" id="claimRefBtn" style="flex:0 0 auto">Claim</button>
@@ -400,7 +401,7 @@ function wireHome() {
     try {
       const d = await api('/api/account/claim-booking', { method: 'POST', body: JSON.stringify({ ref, phone }) });
       if (d.already_claimed) { toast('This booking is already in your account.'); m.textContent = ''; return; }
-      toast(`+${d.points_awarded} Privilege Point${d.points_awarded === 1 ? '' : 's'} earned`, 'success');
+      toast(d.completed ? 'Booking added. Your Privilege Point has been added.' : 'Booking added. You\'ll earn a Privilege Point once the journey is completed.', 'success');
       $('claimRefInput').value = ''; m.textContent = '';
       await loadAll();
     } catch (e) {
@@ -426,7 +427,7 @@ function routeText(j) {
 function viewTrips() {
   const q = tripQuery.trim().toLowerCase();
   let list = journeys;
-  if (tripFilter === 'upcoming') list = list.filter(j => !['Completed','Cancelled'].includes(j.status));
+  if (tripFilter === 'upcoming') list = list.filter(j => j.upcoming);
   if (tripFilter === 'completed') list = list.filter(j => j.status === 'Completed');
   if (q) list = list.filter(j => (j.ref||'').toLowerCase().includes(q) || routeText(j).toLowerCase().includes(q));
 
@@ -675,7 +676,7 @@ async function wirePayments() {
 
 // ── VIEW: rewards ────────────────────────────────────────────────────────
 function viewRewards() {
-  const pts = profile?.privilege_points ?? journeys.filter(j => j.status === 'Completed').length;
+  const pts = profile?.privilege_points ?? 0;
   const t = tier(pts);
   const progressLabel = pts >= 20 ? 'Maximum tier reached' : pts >= 10 ? `${20 - pts} more points to reach <span class="gold">Executive</span>` : `${10 - pts} more points to reach <span class="gold">Preferred</span>`;
   const fill = Math.min(100, pts < 10 ? pts * 10 : pts < 20 ? 50 + (pts - 10) * 5 : 100);
@@ -701,9 +702,20 @@ function viewRewards() {
       </div>
       <div class="row" style="cursor:default;border-bottom:0">
         <div class="row-ico plain"><svg class="svg" width="20" height="20" viewBox="0 0 24 24"><path d="M5 21c0-9 6-15 15-15 0 9-6 15-15 15z"/><path d="M5 21c3-3 6-6 9-9"/></svg></div>
-        <div class="row-body"><div class="row-title" style="font-size:14.5px">100% electric Tesla Model Y</div></div>
+        <div class="row-body"><div class="row-title" style="font-size:14.5px">100% electric premium fleet</div></div>
       </div>
     </div>
+    <div class="mini" style="margin:22px 0 10px">Your Points</div>
+    <p class="muted" style="margin:0 0 10px;font-size:13px">You earn 1 Privilege Point for every completed journey. A return trip earns a point for each leg.</p>
+    ${pointsHistory.length ? `<div class="row-group">${pointsHistory.map((t, i) => `
+      <div class="row" style="cursor:default${i === pointsHistory.length - 1 ? ';border-bottom:0' : ''}">
+        <div class="row-body">
+          <div class="row-title" style="font-size:14.5px">${t.type === 'journey_completed' ? 'Completed journey' : t.type === 'reversal' ? 'Points reversed' : 'Points adjustment'}</div>
+          <p class="row-sub">${esc(t.note || new Date(t.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }))}</p>
+        </div>
+        <strong class="${t.points > 0 ? 'gold' : ''}" style="font-size:15px">${t.points > 0 ? '+' : ''}${t.points}</strong>
+      </div>`).join('')}</div>`
+      : `<div class="card"><p class="muted" style="margin:0">No points yet. Your first point arrives after your first completed journey.</p></div>`}
   `;
 }
 

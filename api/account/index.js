@@ -3,12 +3,14 @@
 const { verifyAuth } = require('../../lib/auth');
 const { parseBody }  = require('../../lib/parse');
 const { isValidUUID } = require('../../lib/supabase');
-const { awardPoints } = require('../../lib/points');
 const { normaliseUkPhone } = require('../../lib/notify');
 const { stripeRequest, getOrCreateStripeCustomer } = require('../../lib/stripeCustomer');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
+// Public anon key (same one /api/config hands the browser); used only to call
+// sync_my_points() as the signed-in customer.
+const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlvbHRrbWh0eHdsdXF4eHBld2JsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0ODMwNjgsImV4cCI6MjA5NTA1OTA2OH0.kLwJK13TsSNn4oK3NZj33awGigWfdKgPP-cbqpqrIbo';
 
 // Stripe payment method IDs are pm_ followed only by alphanumerics. A bare
 // `startsWith('pm_')` check lets the rest of the string through unchecked --
@@ -31,48 +33,84 @@ function normaliseEmail(email) {
   return String(email || '').trim().toLowerCase();
 }
 
+const DONE_STATUSES = ['Completed', 'completed', 'Cancelled', 'cancelled', 'Canceled', 'canceled', 'rejected', 'No Show', 'no show'];
+
+function isNoShow(booking) {
+  return booking.status === 'No Show' || booking.status === 'no show' ||
+    (/^cancel/i.test(booking.status || '') && String(booking.driver_notes || '').includes('[No Show]'));
+}
+
 function customerStatus(booking) {
   const status = booking.status || '';
-  const paymentStatus = booking.payment_status || '';
   const driverId = booking.assigned_driver_id || booking.driver_id || null;
 
-  if (status === 'Cancelled') return 'Unavailable';
-  if (status === 'Completed') return 'Trip Completed';
-  if (status === 'Passenger On Board') return 'Passenger On Board';
-  if (status === 'Driver Arrived') return 'Driver Arrived';
-  if (status === 'En Route') return 'Driver En Route';
-
-  if (status === 'Dispatched') {
-    if (driverId) return 'Driver Confirmed';
-    if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced' || paymentStatus === 'paid' || paymentStatus === 'cash_on_day') {
-      return 'Trip Confirmed';
-    }
-    return 'Trip Confirmed';
-  }
-
+  if (isNoShow(booking)) return 'No Show';
+  if (/^cancel/i.test(status)) return 'Cancelled';
+  if (status === 'rejected') return 'Unavailable';
+  if (/^completed$/i.test(status)) return 'Trip Completed';
+  if (status === 'Passenger On Board' || /^active$/i.test(status)) return 'On Board';
+  if (/^arrived$/i.test(status)) return 'Driver Arrived';
+  if (status === 'En Route' || status === 'en_route') return 'Driver En Route';
+  if (['Dispatched', 'accepted', 'confirmed'].includes(status)) return driverId ? 'Driver Confirmed' : 'Trip Confirmed';
   return 'Awaiting Approval';
 }
 
+// Today's date in the UK as YYYY-MM-DD.
+function ukToday() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+}
+
+// Upcoming = not finished and not in the past. A journey already under way
+// (En Route / Arrived / On Board) stays upcoming until it is completed.
+function isUpcoming(booking, today) {
+  if (DONE_STATUSES.includes(booking.status)) return false;
+  if (['En Route', 'en_route', 'Arrived', 'arrived', 'Passenger On Board', 'active', 'Active'].includes(booking.status)) return true;
+  return !booking.travel_date || booking.travel_date >= today;
+}
+
 function attachCustomerStatus(rows) {
-  return rows.map(row => ({
-    ...row,
-    customer_status: customerStatus(row)
-  }));
+  const today = ukToday();
+  return rows.map(row => {
+    const { driver_notes, ...rest } = row;
+    return { ...rest, customer_status: customerStatus(row), upcoming: isUpcoming(row, today) };
+  });
+}
+
+// Privilege Points balance and history from the points ledger. The ledger is
+// written only by the database (one point per completed journey, once per
+// booking); sync_my_points() catches up any completed journeys of this
+// customer that were not awarded yet. It runs as the customer, using their
+// own token, so it can only ever touch their own bookings.
+async function getPoints(user, token) {
+  if (token) {
+    await fetch(`${SUPABASE_URL()}/rest/v1/rpc/sync_my_points`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: `Bearer ${token}` },
+      body: '{}'
+    }).catch(() => {});
+  }
+  const r = await fetch(
+    `${SUPABASE_URL()}/rest/v1/points_transactions?user_id=eq.${user.id}&select=points,type,note,created_at&order=created_at.desc&limit=200`,
+    { headers: headers() }
+  );
+  if (!r.ok) throw new Error(await r.text());
+  const history = await r.json();
+  return { balance: history.reduce((sum, t) => sum + (t.points || 0), 0), history };
 }
 
 // ── GET|PATCH /api/account/profile ─────────────────────────────────────────
 
-async function handleProfile(req, res, user) {
+async function handleProfile(req, res, user, token) {
   if (req.method === 'GET') {
     try {
-      const r = await fetch(
-        `${SUPABASE_URL()}/rest/v1/profiles?id=eq.${user.id}&select=*&limit=1`,
-        { headers: headers() }
-      );
+      const [r, points] = await Promise.all([
+        fetch(`${SUPABASE_URL()}/rest/v1/profiles?id=eq.${user.id}&select=*&limit=1`, { headers: headers() }),
+        getPoints(user, token)
+      ]);
       if (!r.ok) throw new Error(await r.text());
       const rows = await r.json();
-      const profile = rows[0] || { id: user.id, privilege_points: 0, push_enabled: false };
-      return res.end(JSON.stringify({ profile }));
+      const profile = { ...(rows[0] || { id: user.id, push_enabled: false }), privilege_points: points.balance };
+      return res.end(JSON.stringify({ profile, points_history: points.history }));
     } catch (err) {
       res.statusCode = 500;
       return res.end(JSON.stringify({ error: err.message }));
@@ -99,7 +137,8 @@ async function handleProfile(req, res, user) {
       );
       if (!r.ok) throw new Error(await r.text());
       const rows = await r.json();
-      return res.end(JSON.stringify({ profile: rows[0] || null }));
+      const points = await getPoints(user, null);
+      return res.end(JSON.stringify({ profile: rows[0] ? { ...rows[0], privilege_points: points.balance } : null }));
     } catch (err) {
       res.statusCode = 500;
       return res.end(JSON.stringify({ error: err.message }));
@@ -120,7 +159,7 @@ async function handleJourneys(req, res, user) {
 
   try {
     const email  = normaliseEmail(user.email);
-    const fields = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email';
+    const fields = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email,user_id,driver_notes';
 
     const requests = [
       fetch(
@@ -131,7 +170,9 @@ async function handleJourneys(req, res, user) {
 
     if (email) {
       requests.push(fetch(
-        `${SUPABASE_URL()}/rest/v1/bookings?customer_email=ilike.${encodeURIComponent(email)}&select=${fields}&order=created_at.desc&limit=100`,
+        // ilike only to ignore capital letters: % and _ are escaped so they
+        // match literally, and rows are re-checked for an exact match below.
+        `${SUPABASE_URL()}/rest/v1/bookings?customer_email=ilike.${encodeURIComponent(email.replace(/[\\%_]/g, c => '\\' + c))}&select=${fields}&order=created_at.desc&limit=100`,
         { headers: headers() }
       ));
     }
@@ -145,6 +186,8 @@ async function handleJourneys(req, res, user) {
       const rows = await r.json();
       for (const row of rows) {
         if (seen.has(row.id)) continue;
+        const mine = row.user_id === user.id || (!row.user_id && email && normaliseEmail(row.customer_email) === email);
+        if (!mine) continue;
         seen.add(row.id);
         merged.push(row);
       }
@@ -266,7 +309,7 @@ async function handleClaimBooking(req, res, user) {
     const booking = rows[0];
 
     if (booking.user_id === user.id) {
-      return res.end(JSON.stringify({ ok: true, points_awarded: 0, already_claimed: true }));
+      return res.end(JSON.stringify({ ok: true, already_claimed: true }));
     }
 
     if (booking.user_id && booking.user_id !== user.id) {
@@ -302,10 +345,9 @@ async function handleClaimBooking(req, res, user) {
     );
     if (!upd.ok) throw new Error('Failed to link booking');
 
-    const delta = booking.return_journey ? 2 : 1;
-    await awardPoints(user.id, delta);
-
-    return res.end(JSON.stringify({ ok: true, points_awarded: delta }));
+    // Points are not awarded here: the database awards one point when a
+    // linked journey is completed (straight away if it already is).
+    return res.end(JSON.stringify({ ok: true, completed: /^completed$/i.test(booking.status || '') }));
   } catch (err) {
     res.statusCode = 500;
     return res.end(JSON.stringify({ error: err.message || 'Failed to claim booking' }));
@@ -523,7 +565,7 @@ module.exports = async function handler(req, res) {
   }
 
   const path = (req.url || '').split('?')[0];
-  if (path.endsWith('/profile'))                    return handleProfile(req, res, user);
+  if (path.endsWith('/profile'))                    return handleProfile(req, res, user, (req.headers['authorization'] || '').replace(/^Bearer /, ''));
   if (path.endsWith('/journeys'))                   return handleJourneys(req, res, user);
   if (path.endsWith('/addresses'))                  return handleAddresses(req, res, user);
   if (path.endsWith('/claim-booking'))              return handleClaimBooking(req, res, user);
