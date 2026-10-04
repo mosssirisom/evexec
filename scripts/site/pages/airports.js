@@ -67,7 +67,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
         {
           type: 'prose', alt: true, eyebrow: 'Timing your pickup', title: 'When should we collect you?',
           html: `<p>For a European flight we usually collect you around <strong>three and a half hours before departure</strong>: an hour on the road, a buffer for the M60, and the two hours most airlines ask for at check-in. For long-haul, add another half hour. We will suggest a time when we confirm your booking, and you can always ask for earlier.</p>
-<p>Early-morning departures are the most popular slot from the Fylde Coast. A 6am flight means a 2:30am pickup, and those dates fill up first, so book as soon as your flights are confirmed.</p>`,
+<p>Early-morning departures are the most popular slot from the Fylde Coast. A 06:00 flight means a 02:30 pickup, and those dates fill up first, so book as soon as your flights are confirmed.</p>`,
         },
         {
           type: 'split', img: 'ev-exec-image-4-1100', w: 824, h: 1100, alt: 'Rear passenger view inside an EV Exec Tesla Model Y with entertainment screens',
@@ -159,7 +159,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
         },
         {
           type: 'prose', alt: true, eyebrow: 'Timing', title: 'Planning an early flight',
-          html: `<p>Because the drive is longer, we normally collect you <strong>around four hours before a European departure</strong>. For a 7am flight that means a 3am pickup. It is an early start, but you can sleep in the back of a quiet electric car rather than drive yourself across the Pennines in the dark.</p>
+          html: `<p>Because the drive is longer, we normally collect you <strong>around four hours before a European departure</strong>. For a 07:00 flight that means a 03:00 pickup. It is an early start, but you can sleep in the back of a quiet electric car rather than drive yourself across the Pennines in the dark.</p>
 <p>Leeds Bradford is the highest airport in England, and low cloud or fog occasionally diverts arriving flights. If your flight home is diverted, call us: we will talk through the options for collecting you from where you land.</p>`,
         },
         {
