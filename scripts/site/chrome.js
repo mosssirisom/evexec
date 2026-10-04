@@ -59,6 +59,7 @@ function header({ current = '', book = '/#quote' } = {}) {
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
 <ul class="evx-menu">${items}</ul>
 <div class="evx-actions">
+<a class="evx-phone" href="tel:${BUSINESS.phoneIntl}" aria-label="Call EV Exec on ${BUSINESS.phone}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>${BUSINESS.phone}</a>
 <a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
 <a class="evx-btn evx-btn-gold evx-hide-xs" href="${book}">Book Now</a>
 <div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account">${userIcon}</button>
@@ -77,7 +78,7 @@ ${MENU.map((m) => m.href
 <a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
 <a href="/account">Sign In</a>
 </nav>
-<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="${book}">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="${book}">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a><p class="evx-mmenu-contact"><a href="tel:${BUSINESS.phoneIntl}">Call ${BUSINESS.phone}</a><span aria-hidden="true">&middot;</span><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp</a></p></div>
 </div>
 <!-- /evx:header -->`;
 }
@@ -102,7 +103,13 @@ function footer() {
 <!-- /evx:footer -->`;
 }
 
+function mobileCta({ book = '/#quote', bookLabel = 'Book Now', quote = '/quote', quoteLabel = 'Get a Quote' } = {}) {
+  return `<!-- evx:cta -->
+<div class="evx-mobile-cta" id="evxMobileCta"><a class="evx-btn evx-btn-gold" href="${book}">${bookLabel}</a><a class="evx-btn evx-btn-dark" href="${quote}">${quoteLabel}</a></div>
+<!-- /evx:cta -->`;
+}
+
 const HEAD = '<link rel="stylesheet" href="/public/css/chrome.css">';
 const SCRIPT = '<script defer src="/public/js/site.js"></script>';
 
-module.exports = { header, footer, HEAD, SCRIPT, MENU, bolt };
+module.exports = { header, footer, mobileCta, HEAD, SCRIPT, MENU, bolt };

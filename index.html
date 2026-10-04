@@ -238,14 +238,9 @@ img{max-width:100%}
   transition:filter .4s cubic-bezier(.22,1,.36,1);
 }
 .hc-slide.active .hc-slide-media img{filter:drop-shadow(0 30px 56px rgba(0,0,0,.6)) drop-shadow(0 6px 20px rgba(213,165,56,.1))}
-.hc-slide-placeholder{
-  width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-  background:radial-gradient(circle at 50% 30%,rgba(213,165,56,.12),rgba(2,8,19,.4) 70%),#07111f;
-  -webkit-mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
-  mask-image:radial-gradient(ellipse 56% 58% at center,#000 32%,rgba(0,0,0,.6) 66%,transparent 100%);
-}
-.hc-slide-placeholder svg{width:52px;height:52px;stroke:rgba(213,165,56,.55);fill:none;stroke-width:1.5}
-.hc-slide-placeholder span{font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;font-weight:700}
+
+
+
 .hc-badge{
   position:absolute;top:12px;left:12px;z-index:4;
   background:rgba(213,165,56,.95);color:#06101c;
@@ -279,17 +274,12 @@ img{max-width:100%}
 .hc-dots{display:flex;justify-content:center;gap:8px;margin-top:16px}
 .hc-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);cursor:pointer;transition:background .3s cubic-bezier(.22,1,.36,1),transform .3s cubic-bezier(.22,1,.36,1),width .3s cubic-bezier(.22,1,.36,1);border:none;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .hc-dot.active{background:#d5a538;width:22px;border-radius:999px}
+.hc-dot,.hc-dot.active{box-sizing:content-box;padding:12px 5px;background-clip:content-box}
 @media(max-width:900px){.hc-slide{flex-basis:93%}.hc-track{padding:0 3.5%}}
-.navlink{position:relative}
-.navlink:after{
-  content:"";
-  position:absolute;
-  left:0;right:100%;bottom:-8px;height:2px;
-  background:var(--gold);
-  transition:.25s ease;
-}
-.navlink:hover:after,.navlink.active:after{right:0}
-.icon-pill{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.75)}
+
+
+
+
 .icon{
   width:28px;height:28px;border-radius:50%;
   display:grid;place-items:center;
@@ -317,7 +307,7 @@ img{max-width:100%}
 }
 .input::placeholder{color:rgba(255,255,255,.40)}
 .input option{color:#06101c}
-.footer-line{border-top:1px solid rgba(255,255,255,.1)}
+
 .clean-icon{
   width:34px;height:34px;
   color:var(--gold);
@@ -344,11 +334,7 @@ img{max-width:100%}
   stroke-linejoin:round;
 }
 .review-stars .clean-icon{fill:var(--gold);stroke:var(--gold)}
-.subtle-profile-wrap{
-  width:160px;height:160px;border-radius:50%;
-  display:grid;place-items:center;
-  background:radial-gradient(circle,rgba(213,165,56,.13),rgba(255,255,255,.025) 55%,transparent 72%);
-}
+
 .reveal{
   opacity:0;
   transform:translateY(26px);
@@ -397,118 +383,38 @@ main,footer{position:relative;z-index:1}
   border-color:rgba(213,165,56,.38);
   box-shadow:0 24px 70px rgba(0,0,0,.32);
 }
-.about-profile-shell{
-  width:138px;height:138px;border-radius:999px;
-  display:grid;place-items:center;
-  position:relative;isolation:isolate;
-  background:
-    radial-gradient(circle at 50% 44%, rgba(213,165,56,.20), rgba(213,165,56,.045) 52%, transparent 72%),
-    linear-gradient(145deg, rgba(255,255,255,.08), rgba(255,255,255,.025));
-  border:1px solid rgba(213,165,56,.22);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 18px 48px rgba(0,0,0,.38), 0 0 55px rgba(213,165,56,.08);
-}
-.about-profile-shell:before{
-  content:"";position:absolute;inset:-14px;border-radius:999px;
-  background:radial-gradient(circle, rgba(213,165,56,.13), transparent 68%);
-  filter:blur(10px);z-index:-1;
-}
-.about-profile-shell img{
-  width:118px!important;height:118px!important;
-  border-radius:999px;object-fit:cover;
-  border:1px solid rgba(255,255,255,.10);
-  box-shadow:0 10px 28px rgba(0,0,0,.35);
-}
-.price-table{width:100%;border-collapse:separate;border-spacing:0}
-.price-table th{
-  color:rgba(255,255,255,.72);font-size:12px;
-  letter-spacing:.14em;text-transform:uppercase;text-align:left;
-  padding:18px 20px;
-  background:rgba(255,255,255,.045);
-  border-bottom:1px solid rgba(255,255,255,.10);
-}
-.price-table td{padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.075)}
-.price-table tr:last-child td{border-bottom:0}
-.price-table tr{transition:background .25s ease}
-.price-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.022)}
-.price-table tr:hover td{background:rgba(213,165,56,.045)}
-.full-price-card{
-  background:
-    linear-gradient(180deg,rgba(255,255,255,.072),rgba(255,255,255,.035)),
-    radial-gradient(circle at 82% 0%,rgba(213,165,56,.10),transparent 40%);
-  border:1px solid rgba(213,165,56,.22);
-  border-radius:18px;overflow:hidden;
-}
-.price-table td.price-number{color:var(--gold);font-size:24px;font-weight:900}
-.price-note{
-  padding:18px 22px;border-top:1px solid rgba(255,255,255,.08);
-  color:rgba(255,255,255,.64);font-size:14px;
-}
-.badge-popular{
-  display:inline-block;
-  background:linear-gradient(135deg,#f1c56a,#d5a538);
-  color:#06101c;font-size:10px;font-weight:700;
-  letter-spacing:.08em;text-transform:uppercase;
-  border-radius:999px;padding:2px 9px;
-  margin-left:8px;vertical-align:middle;
-}
-.copy-section{padding:56px 24px}
-.copy-grid{
-  max-width:1280px;margin:0 auto;
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:28px;align-items:stretch;
-}
-.copy-card{
-  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
-  border:1px solid rgba(255,255,255,.11);
-  border-radius:18px;padding:34px;
-  box-shadow:0 20px 65px rgba(0,0,0,.28);
-}
-.copy-card:hover{border-color:rgba(213,165,56,.28);transform:translateY(-3px)}
-.copy-image{
-  min-height:420px;border-radius:18px;overflow:hidden;
-  border:1px solid rgba(213,165,56,.22);background:#07111f;
-}
-.copy-image img{width:100%;height:100%;object-fit:cover;display:block}
-.service-list{display:grid;gap:14px;margin-top:24px}
-.service-row{
-  display:grid;grid-template-columns:44px 1fr;gap:16px;
-  padding:18px;border:1px solid rgba(255,255,255,.085);
-  border-radius:14px;background:rgba(255,255,255,.035);
-  transition:transform .3s ease,border-color .3s ease,background .3s ease;
-}
-.service-row:hover{transform:translateY(-2px);border-color:rgba(213,165,56,.30);background:rgba(213,165,56,.045)}
-.service-row h3{font-weight:800;margin:0 0 6px}
-.service-row p{color:rgba(255,255,255,.64);line-height:1.55;margin:0}
-.comfort-grid{
-  max-width:1280px;margin:0 auto;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:18px;
-}
-.comfort-card{
-  border-radius:18px;padding:26px;
-  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
-  border:1px solid rgba(255,255,255,.105);
-}
-.comfort-card:hover{transform:translateY(-4px);border-color:rgba(213,165,56,.28);box-shadow:0 24px 70px rgba(0,0,0,.32)}
-.booking-steps{
-  max-width:1280px;margin:0 auto;
-  display:grid;grid-template-columns:repeat(3,1fr);gap:20px;
-}
-.step-card{
-  border-radius:18px;padding:28px;
-  background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.10);
-}
-.step-number{
-  width:42px;height:42px;border-radius:999px;
-  display:grid;place-items:center;
-  color:var(--gold);border:1px solid rgba(213,165,56,.5);
-  margin-bottom:18px;font-weight:900;
-}
-.reviews-note{
-  max-width:1280px;margin:0 auto;
-  border-radius:18px;border:1px solid rgba(213,165,56,.22);
-  background:linear-gradient(180deg,rgba(213,165,56,.06),rgba(255,255,255,.025));
-  padding:28px;
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .review-avatar{
   width:38px;height:38px;border-radius:50%;
   display:grid;place-items:center;
@@ -517,43 +423,17 @@ main,footer{position:relative;z-index:1}
   color:var(--gold);border:1px solid rgba(213,165,56,.30);
   flex-shrink:0;
 }
-.mobile-menu{
-  display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;z-index:9999;
-  background:rgba(2,8,19,.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
-  flex-direction:column;align-items:center;justify-content:space-between;
-  padding:0;overflow:hidden;
-  opacity:0;transform:translateY(-12px);
-  transition:opacity .28s cubic-bezier(.2,.8,.2,1),transform .28s cubic-bezier(.2,.8,.2,1);
-}
-.mobile-menu.open{opacity:1;transform:translateY(0)}
-.mobile-menu-links{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  flex:1;width:100%;gap:0;padding:0 32px;
-}
-.mobile-menu-links a,.mobile-menu-links button{
-  display:block;width:100%;text-align:center;
-  padding:18px 0;font-size:22px;font-weight:700;letter-spacing:.04em;
-  color:rgba(255,255,255,.80);
-  border-bottom:1px solid rgba(255,255,255,.07);
-  transition:color .18s;
-  background:none;border-left:none;border-right:none;border-top:none;font-family:inherit;cursor:pointer;
-}
-.mobile-menu-links a:first-child,.mobile-menu-links button:first-child{border-top:1px solid rgba(255,255,255,.07)}
-.mobile-menu-links a:hover,.mobile-menu-links a:active,.mobile-menu-links button:hover,.mobile-menu-links button:active{color:var(--gold)}
-.mobile-menu-footer{
-  width:100%;padding:24px 24px max(24px,env(safe-area-inset-bottom));
-  border-top:1px solid rgba(255,255,255,.07);
-}
-.menu-button{
-  border:1px solid rgba(213,165,56,.55);color:var(--gold);
-  border-radius:10px;padding:10px 12px;background:rgba(255,255,255,.04);
-}
+
+
+
+
+
+
+
+
 /* Return section */
-.return-section{
-  border:1px solid rgba(213,165,56,.22);border-radius:12px;
-  padding:20px 22px;background:rgba(213,165,56,.04);
-}
-.return-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:14px}
+
+
 /* Form message */
 #formMsg{font-size:13px;text-align:center;margin-top:10px;min-height:20px}
 #formMsg.error{color:#f97066}
@@ -570,55 +450,37 @@ main,footer{position:relative;z-index:1}
 @media(max-width:768px){
   .cursor-glow{display:none}
   .reveal,.image-reveal{transition-duration:.55s}
-  .copy-grid,.comfort-grid,.booking-steps,.metrics-grid{grid-template-columns:1fr}
-  .copy-card{padding:24px}
-  .copy-section{padding:32px 18px}
-  .copy-image{min-height:230px}
-  .service-list{gap:10px;margin-top:18px}
-  .service-row{padding:14px;gap:12px}
-  .calc-number{font-size:3.4rem}
-  .calc-result{padding:20px}
-  .price-table thead{display:none}
-  .price-table,.price-table tbody,.price-table tr,.price-table td{display:block;width:100%}
-  .price-table tr{padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-  .price-table td{border:0;padding:8px 18px}
-  .price-table td:before{
-    content:attr(data-label);display:block;
-    color:rgba(255,255,255,.48);font-size:11px;
-    text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;
-  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   .hero h1{font-size:38px}
   .hero .mt-8.flex{flex-direction:column}
-  .return-grid{grid-template-columns:1fr}
+  
 }
-@media(min-width:768px){.return-grid{grid-template-columns:repeat(4,1fr)}}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .reveal,.image-reveal{opacity:1!important;transform:none!important;filter:none!important}
 }
 ::selection{background:rgba(213,165,56,.4);color:#06101c}
 /* Metrics strip */
-.metrics-grid{
-  display:grid;grid-template-columns:repeat(2,1fr);
-  gap:1px;background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;
-}
-@media(min-width:640px){.metrics-grid{grid-template-columns:repeat(4,1fr)}}
-.metric-card{
-  background:rgba(255,255,255,.035);padding:28px 20px;text-align:center;
-  transition:background .25s ease;
-}
-.metric-card:hover{background:rgba(213,165,56,.055)}
-.metric-label{font-weight:700;font-size:15px;margin-top:10px}
-.metric-sub{color:rgba(255,255,255,.50);font-size:12px;margin-top:5px;line-height:1.45}
+
+
+
+
+
 /* Map embed */
-.map-frame{
-  border-radius:16px;overflow:hidden;
-  border:1px solid rgba(213,165,56,.15);
-  width:100%;height:280px;
-}
-@media(min-width:768px){.map-frame{height:360px;}}
-.map-frame iframe{width:100%;height:100%;border:0;display:block}
+
+
 /* ── Booking Wizard ── */
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;transition:border-color .2s}
 .bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Inter,Arial,sans-serif;color:#fff}
@@ -648,32 +510,29 @@ main,footer{position:relative;z-index:1}
 .bw-slide{animation:bwSlideIn .3s cubic-bezier(.2,.8,.2,1) both}
 
 /* CO2 calculator */
-.calculator-card{
-  max-width:620px;margin:0 auto;
-  background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
-  border:1px solid rgba(213,165,56,.20);border-radius:18px;padding:36px;
-}
-.calc-result{
-  background:rgba(213,165,56,.06);border:1px solid rgba(213,165,56,.18);
-  border-radius:12px;padding:28px;margin-top:20px;text-align:center;
-  /* Lock the container height so switching values never shifts layout */
-  min-height:148px;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-}
-.calc-number{
-  font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:700;
-  color:var(--gold);line-height:1;
-  /* Smooth opacity + subtle lift for value transitions */
-  transition:opacity .18s ease,transform .18s ease;
-  will-change:opacity,transform;
-}
-.calc-small{color:rgba(255,255,255,.60);font-size:14px;margin-top:6px;line-height:1.5}
+
+
+
+
 
 /* Homepage additions (2026-10): hero trust row, services, fleet, FAQ */
 .hx-hero-copy{max-width:900px}
 /* Hero: mobile shows intro, cars, then buttons. Desktop puts intro and
    buttons side by side with the cars so Book / Quote sit above the fold. */
 .hx-cars{margin-top:22px}
+/* Phones: keep intro -> cars -> buttons, but tighter so Book and Quote land on the first screen */
+@media(max-width:1023px){
+  .hx-top .hx-title{font-size:clamp(2.05rem,8.6vw,2.6rem)}
+  .hx-eyebrow{margin-bottom:12px}
+  .hx-sub{font-size:1rem;margin-top:12px}
+  .hx-cars{margin-top:12px}
+  .hx-top .hc-slide-media{aspect-ratio:16/10.5}
+  .hx-top .hc-slide-info{padding-top:6px}
+  .hx-top .hc-slide-traits{display:none}
+  .hx-top .hc-dots{margin-top:4px}
+  .hx-after-cars .hx-cta{margin-top:14px}
+}
+.hx-loc{display:block;margin-top:14px;font-family:Inter,Arial,sans-serif;font-size:clamp(.82rem,1.6vw,.95rem);font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.82)}
 @media(min-width:1024px){
   .hx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro cars" "cta cars";column-gap:44px;align-items:center}
   .hx-intro{grid-area:intro;align-self:end}
@@ -707,7 +566,7 @@ main,footer{position:relative;z-index:1}
 .hx-btn-ghost{border:1px solid rgba(213,165,56,.7);color:#fff}
 .hx-trust{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:rgba(255,255,255,.8)}
 .hx-trust li{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.82)}
-.hx-trust a{text-decoration:none}.hx-trust a:hover{text-decoration:underline}
+.hx-trust a{text-decoration:none;display:inline-block;padding:9px 0;margin:-9px 0}.hx-trust a:hover{text-decoration:underline}
 .hx-stars{color:#d5a538;letter-spacing:1px}
 .hx-ic{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @media(max-width:640px){.hx-btn{flex:1 1 100%}}
@@ -719,33 +578,33 @@ main,footer{position:relative;z-index:1}
 .hx-svc h3{font-size:1.1rem;font-weight:700;margin:14px 0 8px}
 .hx-svc p{color:rgba(255,255,255,.62);font-size:15px;line-height:1.6;margin:0}
 .hx-svc .hx-more{display:inline-block;margin-top:14px;color:#d5a538;font-size:14px;font-weight:600}
-.hx-car{border-radius:14px;overflow:hidden;text-align:left}
-.hx-car picture,.hx-car img{display:block;width:100%;aspect-ratio:1000/789;object-fit:cover;background:#050c18}
-.hx-car .hx-body{padding:20px 22px 24px}
-.hx-car h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;margin:0}
-.hx-specs{display:flex;gap:16px;margin:8px 0 10px;font-size:14px}
-.hx-specs span{display:inline-flex;align-items:center;gap:6px}
-.hx-car ul{margin:0;padding-left:18px;color:rgba(255,255,255,.62);font-size:14.5px;line-height:1.7}
+
+
+
+
+
+
+
 .hx-rating{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 26px;margin:28px auto 0;padding:18px 24px;border-radius:14px;max-width:760px}
 .hx-rating .hx-score{font-family:'Cormorant Garamond',serif;font-size:3rem;line-height:1;color:#d5a538;font-weight:700}
 .hx-rating .hx-stars{font-size:20px;letter-spacing:2px}
 .hx-rating p{margin:2px 0 0;color:rgba(255,255,255,.65);font-size:14px}
-.hx-faq{max-width:860px;margin:30px auto 0;display:grid;gap:10px;text-align:left}
-.hx-faq details{border-radius:14px}
-.hx-faq summary{list-style:none;cursor:pointer;padding:18px 52px 18px 20px;font-weight:600;position:relative}
-.hx-faq summary::-webkit-details-marker{display:none}
-.hx-faq summary::after{content:'+';position:absolute;right:20px;top:50%;transform:translateY(-50%);color:#d5a538;font-size:22px;font-weight:400}
-.hx-faq details[open] summary::after{content:'\2212'}
-.hx-faq .hx-a{padding:0 20px 18px;color:rgba(255,255,255,.66);line-height:1.65}
+
+
+
+
+
+
+
 .hx-faq .hx-a a,.hx-link{color:#d5a538}
 /* The about card's 3-column grid is wider than a tablet screen; stack it until desktop. */
 @media(max-width:1023px){#about>div{grid-template-columns:1fr !important}}
-.hx-areas a{text-decoration:underline;text-decoration-color:rgba(213,165,56,.45);text-underline-offset:3px}
-.hx-areas a:hover{color:#d5a538}
+
+
 </style>
 </head>
 
-<body>
+<body class="evx-has-cta">
 <div aria-hidden="true" class="cursor-glow"></div>
 
 <svg height="0" style="position:absolute" width="0">
@@ -789,6 +648,7 @@ main,footer{position:relative;z-index:1}
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-tag">Premium Airport Transfers</span></span></a>
 <ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
 <div class="evx-actions">
+<a class="evx-phone" href="tel:+447721070370" aria-label="Call EV Exec on 07721 070370"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>07721 070370</a>
 <a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
 <a class="evx-btn evx-btn-gold evx-hide-xs" href="#quote">Book Now</a>
 <div class="evx-has-dd evx-account"><button class="evx-icon-btn" type="button" aria-label="Account and help" aria-expanded="false" aria-controls="evx-dd-account"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg></button>
@@ -809,7 +669,7 @@ main,footer{position:relative;z-index:1}
 <a href="/faq" id="mobileSupportBtn">Help &amp; FAQ</a>
 <a href="/account">Sign In</a>
 </nav>
-<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+<div class="evx-mmenu-foot"><a class="evx-btn evx-btn-gold" href="#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a><p class="evx-mmenu-contact"><a href="tel:+447721070370">Call 07721 070370</a><span aria-hidden="true">&middot;</span><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp</a></p></div>
 </div>
 <!-- /evx:header -->
 
@@ -864,9 +724,9 @@ main,footer{position:relative;z-index:1}
 <div class="max-w-7xl mx-auto">
 <div class="hx-top">
 <div class="hx-hero-copy hx-intro">
-<p class="hx-eyebrow">Blackpool &amp; Fylde Coast</p>
-<h1 class="serif hx-title">Premium Airport Transfers <span class="gold">&amp; Private Hire.</span></h1>
-<p class="hx-sub">Fixed-price transfers from anywhere on the Fylde Coast to Manchester, Liverpool, Leeds Bradford and every UK airport, in a fully electric fleet with licensed, professional drivers.</p>
+<p class="hx-eyebrow">EV Exec</p>
+<h1 class="serif hx-title">Premium Airport Transfers <span class="gold">&amp; Private Hire</span><span class="hx-loc">Blackpool &amp; Fylde Coast</span></h1>
+<p class="hx-sub">Fixed-price transfers from anywhere on the Fylde Coast to Manchester, Liverpool, Leeds Bradford and every UK airport, in quiet electric cars with licensed drivers.</p>
 
 </div>
 
@@ -1068,7 +928,7 @@ main,footer{position:relative;z-index:1}
 </script>
 
 <div class="hx-hero-copy hx-after-cars">
-<div class="hx-cta">
+<div class="hx-cta" data-evx-cta-zone>
 <a class="btn-gold hx-btn" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
 <a class="btn-dark hx-btn hx-btn-ghost" href="/quote">Get a Quote</a>
 </div>
@@ -1081,7 +941,7 @@ main,footer{position:relative;z-index:1}
 </div>
 </div>
 
-<section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote">
+<section class="glass rounded-lg p-7 mt-9 max-w-[1210px]" id="quote" data-evx-cta-zone>
 <div style="max-width:560px;margin:0 auto">
 
   <!-- Title + Step Progress -->
@@ -1441,7 +1301,7 @@ main,footer{position:relative;z-index:1}
 <h2 class="serif text-4xl">Book Your Transfer</h2>
 <p class="text-white/75 mt-1">Fixed price, flight tracked, collected from your door.</p>
 </div>
-<div class="flex flex-col sm:flex-row gap-4">
+<div class="flex flex-col sm:flex-row gap-4" data-evx-cta-zone>
 <a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Your Transfer</a>
 <a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="/quote">Get a Quote</a>
 </div>
@@ -1449,6 +1309,9 @@ main,footer{position:relative;z-index:1}
 </section>
 </main>
 
+<!-- evx:cta -->
+<div class="evx-mobile-cta" id="evxMobileCta"><a class="evx-btn evx-btn-gold" href="#quote">Book Now</a><a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a></div>
+<!-- /evx:cta -->
 <!-- evx:footer -->
 <footer class="evx-footer" id="contact">
 <div class="evx-foot-grid">

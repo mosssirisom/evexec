@@ -43,6 +43,10 @@
 .evx-icon-btn:hover,.evx-account.open .evx-icon-btn{border-color:rgba(213,165,56,.72);color:#d5a538}
 .evx-icon-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .evx-account{position:relative}
+.evx-phone{display:none;align-items:center;gap:7px;margin-right:6px;font:600 14px Inter,Arial,sans-serif;color:rgba(255,255,255,.85);text-decoration:none;white-space:nowrap}
+.evx-phone svg{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.evx-phone:hover{color:#d5a538}
+@media(min-width:1360px){.evx-phone{display:inline-flex}}
 .evx-menu-btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(213,165,56,.55);background:rgba(255,255,255,.04);color:#d5a538;font:600 15px Inter,Arial,sans-serif;cursor:pointer}
 .evx-hide-xs,.evx-hide-sm{display:none}
 @media(min-width:560px){.evx-hide-xs{display:inline-flex}}
@@ -72,6 +76,9 @@
 .evx-mmenu-links>a:nth-last-child(-n+3){font-size:16px;font-weight:600;color:rgba(255,255,255,.6);padding:12px 0}
 .evx-mmenu-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 20px max(20px,env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.07)}
 .evx-mmenu-foot .evx-btn{min-height:54px;border-radius:14px;font-size:16px}
+.evx-mmenu-contact{grid-column:1/-1;display:flex;justify-content:center;gap:12px;margin:4px 0 0;font-size:15px;color:rgba(255,255,255,.4)}
+.evx-mmenu-contact a{color:rgba(255,255,255,.8);text-decoration:none;padding:8px 4px}
+.evx-mmenu-contact a:hover{color:#d5a538}
 
 /* Footer (original homepage footer layout) */
 .evx-footer{position:relative;z-index:1;padding:44px 24px 28px;border-top:1px solid rgba(255,255,255,.08);font-family:Inter,Arial,sans-serif;color:rgba(255,255,255,.6);font-size:14.5px}
@@ -89,4 +96,11 @@
 .evx-foot-base{max-width:1280px;margin:34px auto 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;font-size:12.5px;color:rgba(255,255,255,.45)}
 .evx-foot-base p{margin:0}
 .evx-btn-icon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Sticky Book / Quote bar on phones. site.js slides it away while a page's
+   own Book / Quote buttons or a booking form are on screen. */
+.evx-mobile-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(2,8,19,.94);border-top:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:transform .25s ease}
+.evx-mobile-cta .evx-btn{min-height:48px;border-radius:12px;font-size:15px}
+.evx-mobile-cta.is-away{transform:translateY(110%)}
+@media(min-width:760px){.evx-mobile-cta{display:none}}
+@media(max-width:759px){body.evx-has-cta{padding-bottom:calc(70px + env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.evx-dd,.evx-mmenu,.evx-nav,.evx-btn{transition:none}}

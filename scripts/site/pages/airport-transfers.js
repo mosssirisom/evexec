@@ -58,12 +58,12 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => ({
     {
       type: 'cards', cols: 3, eyebrow: 'Why EV Exec', title: 'A better start to the trip than a taxi rank',
       items: [
-        { icon: 'pound', title: 'Agreed before you travel', text: 'No meter, no surge pricing, no extra for luggage or airport drop-off charges.' },
+        { icon: 'pound', title: 'Agreed before you travel', text: 'No meter and no surge pricing. Standard luggage and airport drop-off charges are included.' },
         { icon: 'car', title: 'Quiet electric cars', text: 'Tesla Model Y and Škoda Enyaq, cleaned before every journey, with phone charging on board.' },
         { icon: 'shield', title: 'Licensed and insured', text: 'Licensed private hire with full hire and reward insurance. Every driver is enhanced DBS checked.' },
         { icon: 'bell', title: 'You always know what is happening', text: 'Booking confirmation, a reminder with your driver’s details, and a message when they are on the way.' },
         { icon: 'card', title: 'Pay the way you prefer', text: 'Secure online card payment, bank transfer, or cash on the day.' },
-        { icon: 'star', title: '5.0 on Google', text: 'Every published review of EV Exec is five stars. Read them before you book.' },
+        { icon: 'star', title: '5.0 on Google', text: 'Rated 5.0 out of 5 from 18 Google reviews. Read them before you book.' },
       ],
     },
     { type: 'fleetMini', text: 'Every car takes up to 4 passengers. Travelling with more than four suitcases, golf clubs or a pushchair? Tell us when you book and we will send the right car.' },

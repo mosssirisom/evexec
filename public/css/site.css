@@ -201,8 +201,7 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .form-msg{min-height:22px;font-size:14px;margin:0;text-align:center}
 .form-msg.ok{color:#4ade80}.form-msg.err{color:#f97066}
 
-/* Mobile sticky CTA (shared, also on the homepage) */
-.evx-mobile-cta{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(2,8,19,.94);border-top:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-@media(min-width:760px){.evx-mobile-cta{display:none}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
-@media(max-width:759px){body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}}
+/* Larger tap areas without changing the look */
+.trust a{display:inline-block;padding:9px 0;margin:-9px 0}
+.price-table td a{display:inline-block;padding:10px 0;margin:-10px 0}

@@ -60,4 +60,17 @@
   if (toggle && menu) toggle.addEventListener('click', function () { menu.classList.contains('open') ? closeMenu() : openMenu(); });
   if (close && menu) close.addEventListener('click', closeMenu);
   if (menu) [].forEach.call(menu.querySelectorAll('a'), function (a) { a.addEventListener('click', closeMenu); });
+
+  // Sticky Book / Quote bar (phones): out of the way while the page's own
+  // Book / Quote buttons or a booking form are on screen.
+  var cta = document.getElementById('evxMobileCta');
+  var zones = document.querySelectorAll('[data-evx-cta-zone]');
+  if (cta && zones.length && 'IntersectionObserver' in window) {
+    var seen = new Set();
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { if (e.isIntersecting) seen.add(e.target); else seen.delete(e.target); });
+      cta.classList.toggle('is-away', seen.size > 0);
+    });
+    [].forEach.call(zones, function (z) { io.observe(z); });
+  }
 })();

@@ -91,11 +91,11 @@ function heroBlock(page) {
       <h1>${page.h1}</h1>
       <p class="lead">${page.lead}</p>
       ${chips ? `<div class="price-chips">${chips}</div>` : ''}
-      <div class="btn-row">
+      <div class="btn-row" data-evx-cta-zone>
         <a class="btn btn-gold" href="${primary.href}">${icon('bolt', '')}${esc(primary.label)}</a>
         <a class="btn btn-dark" href="${secondary.href}">${esc(secondary.label)}</a>
       </div>
-      ${trustRow()}
+      ${h.trust === false ? '' : trustRow()}
     </div>
     ${h.media ? `<div class="hero-media">${picture(h.media.img, h.media.alt, { w: h.media.w || 1100, h: h.media.h || 825, eager: true, sizes: '(min-width: 900px) 40vw, 100vw' })}</div>` : ''}
   </div>
@@ -154,7 +154,7 @@ const SECTIONS = {
   reviews: (s) => `${sectionHead(s)}<div class="rating-box">
   <div class="score">${RATING.value}</div>
   <div><div class="stars" aria-label="${RATING.value} out of 5 stars">${stars}</div><p>${RATING.count} Google reviews</p></div>
-  <a class="btn btn-dark" href="${BUSINESS.googleProfile}" rel="noopener" target="_blank">Read all on Google</a>
+  <a class="btn btn-dark" href="${BUSINESS.googleProfile}" rel="noopener" target="_blank">Read all ${RATING.count} on Google</a>
 </div>
 <div class="grid cols-3">${REVIEWS.map((r) => `<figure class="card review">
   <figcaption class="who"><span class="avatar" aria-hidden="true">${esc(r.name[0])}</span><span><b>${esc(r.name)}</b><small>Google review &middot; ${esc(r.date)}</small></span></figcaption>
@@ -178,11 +178,11 @@ const SECTIONS = {
   links: (s) => `${sectionHead(s)}<ul class="link-list${s.cols === false ? '' : ' cols'}">${s.items.map((it) =>
     `<li><a href="${it.href}">${esc(it.label)}${it.tag ? `<span>${esc(it.tag)}</span>` : '<span>→</span>'}</a></li>`).join('')}</ul>`,
 
-  cta: (s, page) => `<div class="cta-band"><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
+  cta: (s, page) => `<div class="cta-band" data-evx-cta-zone><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
   <a class="btn btn-gold" href="${(s.primary && s.primary.href) || page.bookHref || '/#quote'}">${esc((s.primary && s.primary.label) || 'Book Your Transfer')}</a>
   <a class="btn btn-dark" href="${(s.secondary && s.secondary.href) || quoteHref(page.quoteService)}">${esc((s.secondary && s.secondary.label) || 'Get a Quote')}</a></div></div>`,
 
-  quoteForm: (s) => `${sectionHead(s)}<form class="card form" id="quoteForm" novalidate>
+  quoteForm: (s) => `${sectionHead(s)}<form class="card form" id="quoteForm" novalidate data-evx-cta-zone>
   <div class="row two">
     <label>What do you need?
       <select name="service" id="qService">
@@ -309,6 +309,15 @@ const SCRIPT = `<script>
 })();
 </script>`;
 
+// Quoted services (and the quote page itself) lead with Get a Quote + Call;
+// everything else with Book Now + Get a Quote.
+function mobileCtaFor(page, book) {
+  const call = { quote: `tel:${BUSINESS.phoneIntl}`, quoteLabel: 'Call us' };
+  if (page.slug === 'quote') return { book: '/#quote', ...call };
+  if (book.startsWith('/quote')) return { book, bookLabel: 'Get a Quote', ...call };
+  return { book, quote: quoteHref(page.quoteService) };
+}
+
 function render(page) {
   const canonical = url(page.slug);
   const ogImage = `${SITE}/public/images/${page.ogImage || 'ev-exec-image-1.jpg'}`;
@@ -344,15 +353,15 @@ ${chrome.HEAD}
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-QY9XHDNSMC"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-QY9XHDNSMC');</script>
 </head>
-<body>
+<body class="evx-has-cta">
 <a class="skip" href="#main">Skip to content</a>
-${chrome.header({ current: page.navKey, book })}
+${chrome.header({ current: page.navKey, book: book.startsWith('/quote') ? '/#quote' : book })}
 <main id="main">
 ${heroBlock(page)}
 ${sectionsHtml(page)}
 </main>
 ${chrome.footer()}
-<div class="evx-mobile-cta"><a class="btn btn-gold" href="${book}">Book Now</a><a class="btn btn-dark" href="${quoteHref(page.quoteService)}">Get a Quote</a></div>
+${chrome.mobileCta(mobileCtaFor(page, book))}
 ${chrome.SCRIPT}
 ${SCRIPT}
 </body>
@@ -405,7 +414,7 @@ function syncVercel(pages) {
 // These pages are not generated, but carry the same header, menus and footer
 // between <!-- evx:header --> / <!-- evx:footer --> markers.
 const CHROME_PAGES = {
-  'index.html': { book: '#quote' },
+  'index.html': { book: '#quote', cta: true },
   'terms.html': {},
   'privacy.html': {},
   'booking.html': {},
@@ -421,6 +430,7 @@ function injectChrome() {
     const before = html;
     if (!/<!-- evx:header -->[\s\S]*?<!-- \/evx:header -->/.test(html)) throw new Error(`${file}: missing evx:header markers`);
     html = html.replace(/<!-- evx:header -->[\s\S]*?<!-- \/evx:header -->/, () => chrome.header({ current: opts.current || '', book: opts.book || '/#quote' }));
+    if (opts.cta) html = html.replace(/<!-- evx:cta -->[\s\S]*?<!-- \/evx:cta -->/, () => chrome.mobileCta({ book: opts.book }));
     if (/<!-- evx:footer -->[\s\S]*?<!-- \/evx:footer -->/.test(html)) html = html.replace(/<!-- evx:footer -->[\s\S]*?<!-- \/evx:footer -->/, () => chrome.footer());
     if (!html.includes('/public/css/chrome.css')) html = html.replace('</head>', `${chrome.HEAD}\n</head>`);
     if (!html.includes('/public/js/site.js')) html = html.replace('</body>', `${chrome.SCRIPT}\n</body>`);
