@@ -1,15 +1,49 @@
 'use strict';
 
-module.exports.config = { api: { bodyParser: false } };
 
 const crypto = require('crypto');
-const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
+const { dbGet, dbUpdate, dbUpdateWhere, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
 const { getPrice, journeyLine } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 
 function isUnpaid(status) {
   return status !== 'Paid' && status !== 'Invoiced';
+}
+
+// Confirmed = the operator accepted it (in the Operator app, which records
+// operator_response, or from the email link, which also sets Dispatched) and
+// it hasn't been cancelled or completed.
+function isConfirmed(b) {
+  if (!b) return false;
+  if (['Cancelled', 'Completed', 'No Show'].includes(b.status)) return false;
+  if (b.operator_response === 'rejected') return false;
+  return b.operator_response === 'accepted' || ['Dispatched', 'En Route', 'Arrived', 'Passenger On Board'].includes(b.status);
+}
+function readyForPayment(b) { return isConfirmed(b) && isUnpaid(b.payment_status); }
+
+// Records a Stripe card payment once. The update only matches a booking that
+// isn't already Paid, so a repeated webhook, or the webhook and the return
+// check both arriving, can't double-record or re-send the notifications.
+async function recordCardPayment(bookingId, session) {
+  const rows = await dbUpdateWhere('bookings', bookingId, 'or=(payment_status.is.null,payment_status.neq.Paid)', {
+    payment_status: 'Paid',
+    payment_method: 'Card',
+    stripe_session_id: session.id
+  });
+  const booking = rows && rows[0];
+  if (!booking) return { recorded: false };
+  const receiptUrl = session.payment_intent ? await getStripeReceiptUrl(session.payment_intent) : null;
+  await sendConfirmations(booking, '', receiptUrl);
+  return { recorded: true };
+}
+
+async function getStripeSession(sessionId) {
+  const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, {
+    headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` }
+  });
+  if (!res.ok) return null;
+  return res.json();
 }
 
 function json(res, statusCode, payload) {
@@ -24,6 +58,7 @@ function routeName(req) {
   if (path.endsWith('/create-checkout-session')) return 'create-checkout-session';
   if (path.endsWith('/confirm-cash')) return 'confirm-cash';
   if (path.endsWith('/stripe-webhook')) return 'stripe-webhook';
+  if (path.endsWith('/verify')) return 'verify';
   return 'index';
 }
 
@@ -67,8 +102,7 @@ async function handleCreateCheckoutSession(req, res) {
   const booking = await dbGet('bookings', bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found' });
 
-  const readyForPayment = booking.status === 'Dispatched' && isUnpaid(booking.payment_status);
-  if (!readyForPayment) return json(res, 400, { error: 'Booking is not ready for payment' });
+  if (!readyForPayment(booking)) return json(res, 400, { error: 'Booking is not ready for payment' });
 
   const price = getPrice(booking);
   if (!price) return json(res, 400, { error: 'Price not available yet. Please contact EV Exec.' });
@@ -87,6 +121,25 @@ async function handleCreateCheckoutSession(req, res) {
   return json(res, 200, { url: session.url });
 }
 
+// Called by the booking page when the customer returns from Stripe
+// (?payment=success). Asks Stripe for the booking's Checkout Session and, if
+// it is paid, records it the same way as the webhook. So the payment is
+// recorded even if a webhook is delayed or fails.
+async function handleVerify(req, res) {
+  if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
+  const body = await parseBody(req);
+  const bookingId = body.bookingId;
+  if (!bookingId || !isValidUUID(bookingId)) return json(res, 400, { error: 'Invalid booking ID' });
+  const booking = await dbGet('bookings', bookingId);
+  if (!booking) return json(res, 404, { error: 'Booking not found' });
+  if (booking.payment_status === 'Paid') return json(res, 200, { paid: true });
+  if (!booking.stripe_session_id) return json(res, 200, { paid: false });
+  const session = await getStripeSession(booking.stripe_session_id);
+  if (!session || session.payment_status !== 'paid' || session.metadata?.bookingId !== bookingId) return json(res, 200, { paid: false });
+  await recordCardPayment(bookingId, session);
+  return json(res, 200, { paid: true });
+}
+
 async function handleConfirmCash(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
 
@@ -97,11 +150,14 @@ async function handleConfirmCash(req, res) {
   const booking = await dbGet('bookings', bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found' });
 
-  const readyForPayment = booking.status === 'Dispatched' && isUnpaid(booking.payment_status);
-  if (!readyForPayment) return json(res, 400, { error: 'Booking cannot be confirmed in its current state' });
+  if (!readyForPayment(booking)) return json(res, 400, { error: 'Booking cannot be confirmed in its current state' });
+  // Already chose cash: nothing to change, don't send the notices again.
+  if (String(booking.payment_method || '').toLowerCase() === 'cash') return json(res, 200, { success: true });
 
-  await dbUpdate('bookings', bookingId, { payment_method: 'cash', payment_status: 'Invoiced' });
-  await sendConfirmations({ ...booking, payment_method: 'cash', payment_status: 'Invoiced' });
+  // Cash is recorded the way the Operator app records it: method Cash, still
+  // Unpaid until the driver collects it. Never marked Paid here.
+  await dbUpdate('bookings', bookingId, { payment_method: 'Cash', payment_status: 'Unpaid' });
+  await sendConfirmations({ ...booking, payment_method: 'Cash', payment_status: 'Unpaid' });
   return json(res, 200, { success: true });
 }
 
@@ -165,7 +221,7 @@ async function handleStripeWebhook(req, res) {
     return res.end(`Webhook Error: ${err.message}`);
   }
 
-  if (event.type === 'checkout.session.completed') {
+  if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
     const session = event.data.object;
     const bookingId = session.metadata?.bookingId;
 
@@ -175,22 +231,10 @@ async function handleStripeWebhook(req, res) {
         return json(res, 200, { received: true });
       }
       try {
-        const booking = await dbGet('bookings', bookingId);
-        const readyForPayment = booking && booking.status === 'Dispatched' && isUnpaid(booking.payment_status);
-
-        if (readyForPayment) {
-          const receiptUrl = session.payment_intent
-            ? await getStripeReceiptUrl(session.payment_intent)
-            : null;
-          await dbUpdate('bookings', bookingId, {
-            payment_status: 'Paid',
-            payment_method: 'card',
-            stripe_session_id: session.id
-          });
-          await sendConfirmations({ ...booking, payment_method: 'card', payment_status: 'Paid' }, '', receiptUrl);
-        } else {
-          console.log(`Webhook: booking ${bookingId} not readyForPayment (status=${booking?.status}, payment_status=${booking?.payment_status}) — skipping`);
-        }
+        // Money has been taken, so it is recorded whatever the booking's
+        // status (an operator may need to refund a cancelled one).
+        const out = await recordCardPayment(bookingId, session);
+        if (!out.recorded) console.log(`Webhook: booking ${bookingId} already Paid — duplicate event ignored`);
       } catch (err) {
         console.error('Webhook processing error:', err);
         res.statusCode = 500;
@@ -208,9 +252,15 @@ module.exports = async function handler(req, res) {
     if (route === 'create-checkout-session') return handleCreateCheckoutSession(req, res);
     if (route === 'confirm-cash') return handleConfirmCash(req, res);
     if (route === 'stripe-webhook') return handleStripeWebhook(req, res);
+    if (route === 'verify') return handleVerify(req, res);
     return json(res, 200, { ok: true, service: 'payment' });
   } catch (err) {
     console.error('Payment router error:', err);
     return json(res, 500, { error: err.message || 'Payment request failed. Please try again.' });
   }
 };
+
+// Set after the handler: assigning module.exports above replaced an earlier
+// config export, so body parsing was never actually turned off. Stripe's
+// signature needs the raw bytes.
+module.exports.config = { api: { bodyParser: false } };

@@ -437,7 +437,7 @@ function wireHome() {
 function statusOf(j) { return j.customer_status || (j.status === 'Completed' ? 'Trip Completed' : j.status === 'Cancelled' ? 'Unavailable' : j.status || 'Awaiting Approval'); }
 function payLine(j) {
   if (!j.quoted_price || j.status === 'Cancelled') return '';
-  const label = j.payment_status === 'Paid' ? 'Paid' : j.payment_method === 'cash' ? 'Cash on the day' : j.payment_method ? 'Card payment' : 'Payment pending';
+  const label = j.payment_status === 'Paid' ? 'Paid' : String(j.payment_method || '').toLowerCase() === 'cash' ? 'Cash on the day' : j.payment_method ? 'Card payment' : 'Payment pending';
   return `<p class="row-sub" style="margin-top:2px">£${j.quoted_price} · ${esc(label)}</p>`;
 }
 function routeText(j) {

@@ -336,7 +336,15 @@ body{
     } catch { return d; }
   }
 
-  function setStatusPill(status, paymentStatus) {
+  // Confirmed = accepted by the operator (Operator app records
+  // operator_response; the email link also sets Dispatched).
+  function isConfirmed(b) {
+    if (['Cancelled', 'Completed', 'No Show'].includes(b.status) || b.operator_response === 'rejected') return false;
+    return b.operator_response === 'accepted' || b.status === 'Dispatched';
+  }
+  function isCashChosen(b) { return String(b.payment_method || '').toLowerCase() === 'cash'; }
+
+  function setStatusPill(status, paymentStatus, b) {
     var pill = document.getElementById('statusPill');
     // Map DB status values to display labels + CSS class
     if (status === 'Cancelled') {
@@ -348,11 +356,8 @@ body{
     if (['En Route', 'Passenger On Board'].includes(status)) {
       pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
     }
-    if (status === 'Dispatched') {
-      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced') {
-        pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
-      }
-      pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
+    if (b && isConfirmed(b)) {
+      pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
     }
     // Unassigned / Unassigned / Missed Call Recovery
     pill.textContent = 'Awaiting Confirmation'; pill.className = 'status-pill status-pending';
@@ -415,7 +420,7 @@ body{
     hide('stateLoading');
     show('stateContent');
 
-    setStatusPill(b.status, b.payment_status);
+    setStatusPill(b.status, b.payment_status, b);
 
     // Literal pickup/drop-off always win over the airport fallback -- same
     // precedence as the server-side email/SMS templates.
@@ -441,29 +446,29 @@ body{
     }
 
     // Status-specific panels — mapped to actual DB status values
-    if (b.status === 'Unassigned' || b.status === 'Unassigned / Missed Call Recovery') {
-      show('panelPending');
-      return;
-    }
-
-    if (b.status === 'Dispatched') {
-      var paid = b.payment_status === 'Paid' || b.payment_status === 'Invoiced';
-      if (paid) {
+    if (isConfirmed(b)) {
+      var paid = b.payment_status === 'Paid';
+      if (paid || b.payment_status === 'Invoiced' || isCashChosen(b)) {
         show('panelConfirmed');
-        var method = b.payment_method === 'cash'
-          ? 'Payment: Cash on the day of travel.'
-          : 'Payment: Paid by card online.';
-        if (b.payment_method) {
-          document.getElementById('confirmedMsg').textContent =
-            'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
-        }
-        if (b.payment_method === 'card') {
+        var method = paid
+          ? (isCashChosen(b) ? 'Payment: Paid in cash.' : 'Payment: Paid by card online.')
+          : isCashChosen(b) ? 'Payment: Cash on the day of travel.'
+          : 'Payment: On account.';
+        document.getElementById('confirmedMsg').textContent =
+          'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
+        if (paid && String(b.payment_method || '').toLowerCase() === 'card') {
           document.getElementById('receiptNote').classList.remove('hidden');
         }
         return;
       }
       if (payment === 'success') {
         show('panelPaymentPending');
+        // Ask the server to check the payment with Stripe straight away, so
+        // it is recorded even if Stripe's webhook is slow or fails.
+        fetch('/api/payment/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: queryId }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { if (d && d.paid) window.location.reload(); })
+          .catch(function () {});
         var pollCount = 0;
         var pollTimer = setInterval(async function () {
           pollCount++;
@@ -481,13 +486,18 @@ body{
           try {
             var pr = await fetch('/api/booking/get?id=' + encodeURIComponent(queryId));
             var pd = await pr.json();
-            if (pd.payment_status === 'Paid' || pd.payment_status === 'Invoiced') { clearInterval(pollTimer); window.location.reload(); }
+            if (pd.payment_status === 'Paid') { clearInterval(pollTimer); window.location.reload(); }
           } catch (_) {}
         }, 3000);
       } else {
         show('panelPayment');
         if (payment === 'cancelled') show('panelCancelled');
       }
+      return;
+    }
+
+    if (b.status === 'Unassigned' || b.status === 'Unassigned / Missed Call Recovery') {
+      show('panelPending');
       return;
     }
 

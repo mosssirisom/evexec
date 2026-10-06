@@ -8,7 +8,7 @@ const {journeyLine,fmtDate,fmtTime,lookupPrice,getPrice,buildOperatorJobOfferSms
 const {parseBody}=require('../../lib/parse');
 const {emailLayout}=require('../../lib/emailLayout');
 const {verifyAuth}=require('../../lib/auth');
-const SAFE=new Set(['id','ref','status','journey_type','pickup_location','airport','flight_number','dropoff_address','travel_date','travel_time','passengers','luggage','return_journey','return_airport','return_date','return_time','quoted_price','payment_method','payment_status','customer_name']);
+const SAFE=new Set(['id','ref','status','journey_type','pickup_location','airport','flight_number','dropoff_address','travel_date','travel_time','passengers','luggage','return_journey','return_airport','return_date','return_time','quoted_price','payment_method','payment_status','customer_name','operator_response']);
 // Fire-and-forget initial flight verification (Requirement 7). Runs
 // server-to-server against the evexecoperator Supabase Edge Function
 // (verify-flight), which does the actual AeroDataBox lookup and persists
