@@ -3,7 +3,7 @@
 const { sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const { emailLayout } = require('../../lib/emailLayout');
-const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml } = require('../../lib/format');
+const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml, paymentLine } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
 const { sendOrQueue } = require('../../lib/notificationQueue');
 
@@ -177,7 +177,7 @@ async function sendReminders(due, type, driversById) {
     const date      = fmtDate(booking.travel_date);
     const time      = fmtTime(booking.travel_time, booking.travel_date);
     const firstName = (booking.customer_name || 'there').split(' ')[0];
-    const method    = booking.payment_method === 'cash' ? 'Cash on the day' : 'Paid by card';
+    const method    = paymentLine(booking);
     const daysText  = type === '7day' ? `in ${daysAway} days` : (daysAway === 0 ? 'today' : 'tomorrow');
     const driverTxt = driverClause(driversById, booking);
 
