@@ -295,3 +295,12 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 - **Privacy policy** rewritten 04/10/2026 to list every processor (Supabase Frankfurt, Vercel, Stripe, Resend, Google, AeroDataBox, drivers) and six-year retention for tax records. Update it whenever a new service starts handling customer data.
 - **Next.js patched:** Driver App 15.5.27, Operator 16.3.6 (critical advisories in older versions).
 - **Open (awaiting user):** automatic flight checks never succeed (`verify-flight` rejects the website cron's key as "Unauthorized"; fixing increases paid AeroDataBox calls); no database backups (Supabase free plan); legacy `/operator`, `/notification-control`, `/account-premium` still public; leaked-password protection, DMARC `p=none`, Vercel plan check and licence number are user actions.
+
+## Update — 2026-10-06: the booking → payment flow (source of truth)
+
+1. Customer books on the website → `bookings` row (Unassigned, Unpaid, price, ref) + "Booking Request Received" email; operator push via the DB trigger.
+2. Operator accepts (Operator app `booking-response`, or the email link `api/operator/accept`) → `operator_response = 'accepted'` (email link also sets Dispatched) → "Booking Confirmed" email: full details, then the **Payment** section with **Pay Now** → `https://www.evexec.co.uk/booking?id=<id>`. Do not remove this section. Reject → `operator_response = 'rejected'`, status Cancelled, "Booking Unavailable" email, no payment link.
+3. Booking page offers **Pay by Card** (`/api/payment/create-checkout-session`, Stripe, `metadata[bookingId]`) or **Pay Cash** (`/api/payment/confirm-cash` → `payment_method = 'Cash'`, `payment_status = 'Unpaid'`, never Paid). A booking is payable when confirmed (`isConfirmed()` in `api/payment/index.js` and `booking.html`).
+4. Card paid → `recordCardPayment()` (idempotent: updates only a not-yet-Paid row) from the Stripe webhook **or** `/api/payment/verify` (called when the customer returns from Stripe). Sets Paid / Card, emails the customer "Payment Received", emails `OPERATOR_EMAIL` "EV Exec Payment Received", and pushes Operator app devices through the Operator app's `/api/push/dispatch` (`notification` override). The driver app shows "Payment received" / "Customer paying cash" alerts (`components/job-notifier.tsx`).
+5. Payment method values are capitalised like the Operator app: `Cash`, `Card`, `Bank Transfer`.
+
