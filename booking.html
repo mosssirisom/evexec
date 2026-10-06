@@ -213,7 +213,7 @@ body{
 
   <!-- Accepted: payment options -->
   <div id="panelPayment" class="hidden">
-    <p class="text-white/65 mb-5 leading-relaxed">Your booking is confirmed. Please choose how you'd like to pay:</p>
+    <p class="text-white/65 mb-5 leading-relaxed">Your transfer has been accepted. Please choose how you'd like to pay:</p>
     <div class="grid gap-4 payment-grid" style="grid-template-columns:1fr 1fr">
 
       <div class="glass rounded-xl p-6 flex flex-col gap-4">
@@ -357,7 +357,10 @@ body{
       pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
     }
     if (b && isConfirmed(b)) {
-      pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
+      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced' || isCashChosen(b)) {
+        pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
+      }
+      pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
     }
     // Unassigned / Unassigned / Missed Call Recovery
     pill.textContent = 'Awaiting Confirmation'; pill.className = 'status-pill status-pending';
