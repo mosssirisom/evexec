@@ -10,6 +10,14 @@ This applies to all three repos in this project (`evexec`, `evexecoperator`, `ev
 - **Prefer free tiers and already-provisioned infrastructure.** When a task could be done either by spinning up a paid resource (e.g. a Supabase branch to test a migration) or by a slower/more careful free alternative (e.g. read-only validation queries plus additive, reversible migrations applied directly, with review), default to the free alternative unless the user has explicitly approved the paid one.
 - Abandon or redesign any plan that turns out to require a new cost, rather than proceeding and asking forgiveness after the fact.
 
+# Date and time format (hard rule, user decision)
+
+**Every date anywhere in EV Exec is DD/MM/YYYY. Every time is 24-hour HH:MM, UK time.** This applies to all three repos (`evexec`, `evexecoperator`, `evexecdriverapp`) and the shared Supabase project: screens, emails, texts (including two-tap `sms:` messages), push notifications, PDFs/invoices, subjects, toasts and database templates. Never show `YYYY-MM-DD`, US order, or a written-out month.
+
+- Plain `YYYY-MM-DD` values are rearranged directly (no `Date` parsing, so no timezone can shift the day). Use the shared helpers: `evexec/lib/format.js` `fmtDate`, `evexecoperator/src/lib/dates.ts` (`fmtDate`, `fmtDateTime`), `evexecdriverapp/lib/format.ts` (`formatDate`, `formatStamp*`). In SQL use `to_char(..., 'DD/MM/YYYY')`.
+- Timestamps are shown in `Europe/London` time.
+- Only exception: native `<input type="date">` / `<input type="time">` pickers, which follow the phone's own settings.
+
 # Production baseline
 
 **Current production source: `main` (2026-10-03).** On the user's instruction, the branch `claude/multi-tenant-dispatch-saas-56jats` (which production had been built from since 2026-10-01, deployment `dpl_9evhNW7Zf5zsVe8PfqzZDZuDFKrS` from commit `9a6849e`) was merged into `main` together with the dormant-Twilio change, and `main` was deployed to production. `main` is the production branch in Vercel and is again the single source of truth for the live site; treat the branch as merged history. The notes below about deploying from that branch are kept as history only.
