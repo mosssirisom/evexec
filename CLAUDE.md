@@ -312,6 +312,8 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 - From 04/10 the endpoint URL (`https://evexec.co.uk/...`) answered with a redirect to www, which Stripe treats as a failure. URL changed to www on 06/10 17:20 UTC, one minute after deployment `dpl_CKvh…` (3b37234, stream read first) went live.
 - After that, production answers a bad-signature probe with "Signature mismatch", so the body is read correctly, yet Stripe's retries were still not acknowledged. The remaining cause is therefore the signature check itself (secret value, stray whitespace, or a header with more than one `v1` entry, which the old parser dropped). `STRIPE_WEBHOOK_SECRET` is a Vercel "sensitive" variable (value unreadable), created 25/05/2026 20:04 UTC, 60 s after endpoint `we_1Tb4iG6n70MGfLL7dIFcecxO`.
 
+- **Confirmed 07/10/2026 after deploying `ebe9fd8` (`dpl_5DBAd3F91qUy9HN5otAXXmwUoQ9y`):** the rejection diagnostics show the configured `STRIPE_WEBHOOK_SECRET` does **not** start with `whsec_` (no stray whitespace either). It is not a webhook signing secret, so no Stripe delivery could ever verify. Fix: copy the endpoint's signing secret from the Stripe Dashboard (Workbench → Webhooks → the www endpoint → Signing secret) into Vercel `STRIPE_WEBHOOK_SECRET` (Production and Preview), then redeploy.
+
 **Fix (`api/payment/index.js`, `lib/payments.js`, `lib/stripeEvents.js`, `vercel.json`):**
 - `vercel.json` sets `"config": { "helpers": false }` on `api/payment/index.js`, so the function gets the untouched request stream on every Vercel launcher version.
 - Signature: every `v1` entry is checked (secret rolling), the secret is trimmed, several secrets can be set comma-separated, constant-time compare, 300 s tolerance.
