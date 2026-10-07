@@ -314,6 +314,8 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 
 - **Confirmed 07/10/2026 after deploying `ebe9fd8` (`dpl_5DBAd3F91qUy9HN5otAXXmwUoQ9y`):** the rejection diagnostics show the configured `STRIPE_WEBHOOK_SECRET` does **not** start with `whsec_` (no stray whitespace either). It is not a webhook signing secret, so no Stripe delivery could ever verify. Fix: copy the endpoint's signing secret from the Stripe Dashboard (Workbench → Webhooks → the www endpoint → Signing secret) into Vercel `STRIPE_WEBHOOK_SECRET` (Production and Preview), then redeploy.
 
+- **Fixed and verified 07/10/2026:** the user replaced `STRIPE_WEBHOOK_SECRET` with the endpoint's `whsec_` signing secret (08:32 UTC) and production was redeployed (`dpl_4PyEa55JjoEMUQBfcmhp3yogPnPv`, `3503844`). Stripe then delivered `evt_1UNYPT6n70MGfLL70Ed0Qnws` twice (08:35:10 and 08:35:27 UTC, a scheduled retry plus the Dashboard Resend): both verified, both recorded in `stripe_webhook_events` as `already_paid` (attempts 2), Stripe shows `pending_webhooks: 0`. The booking was not changed again and no email, push or queued notice was sent; its only notices are still the three from 07:51.
+
 **Fix (`api/payment/index.js`, `lib/payments.js`, `lib/stripeEvents.js`, `vercel.json`):**
 - `vercel.json` sets `"config": { "helpers": false }` on `api/payment/index.js`, so the function gets the untouched request stream on every Vercel launcher version.
 - Signature: every `v1` entry is checked (secret rolling), the secret is trimmed, several secrets can be set comma-separated, constant-time compare, 300 s tolerance.
