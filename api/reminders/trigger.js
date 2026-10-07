@@ -135,9 +135,10 @@ function dueForReminder(list, now, todayLondon, minDays, maxDays) {
     .filter(({ daysAway, upcoming }) => upcoming && daysAway !== null && daysAway >= minDays && daysAway <= maxDays);
 }
 
-// Customer reminder SMS no longer goes through Twilio. When there's no
-// email on file, the generated message is handed off to the assigned
-// driver instead: a row is written here (status='pending'), a pg_cron
+// Customer reminder SMS no longer goes through Twilio. Every customer with a
+// phone number gets one (alongside the email, when there is one): the
+// generated message is handed off to the assigned driver instead: a row is
+// written here (status='pending'), a pg_cron
 // sweep (send-customer-sms-reminder-push) push-notifies the driver, and
 // the driver reviews + sends the SMS themselves from their own phone via
 // the native Messages app on a dedicated reminder screen in the driver app.
@@ -146,7 +147,7 @@ function dueForReminder(list, now, todayLondon, minDays, maxDays) {
 // same window never creates a second handoff for the same reminder.
 async function handOffSmsToDriver(booking, message, type) {
   if (!booking.assigned_driver_id) {
-    console.warn(`Reminder due for booking ${booking.id} has no email on file and no assigned driver -- customer will not be reminded by SMS.`);
+    console.warn(`Reminder due for booking ${booking.id} has no assigned driver -- customer will not be reminded by SMS.`);
     return;
   }
   const reminderType = type === '7day' ? '7day' : '24hr';
@@ -199,17 +200,18 @@ async function sendReminders(due, type, driversById) {
     const hasPhone = Boolean(booking.customer_phone);
     const logEntries = [];
     if (hasEmail) logEntries.push(['email', booking.customer_email]);
-    else if (hasPhone && booking.assigned_driver_id) logEntries.push(['driver_sms_handoff', booking.assigned_driver_id]);
+    if (hasPhone && booking.assigned_driver_id) logEntries.push(['driver_sms_handoff', booking.assigned_driver_id]);
     logEntries.push(['push', booking.customer_email || booking.customer_phone]);
 
     await Promise.allSettled([
-      // Email primary. When there's no email on file, hand the SMS off to
-      // the assigned driver to send from their own phone -- EV Exec no
-      // longer sends customer reminder SMS via Twilio (see
-      // handOffSmsToDriver above).
+      // Both channels, independently: the email whenever there's an email on
+      // file, and the SMS whenever there's a phone number, handed off to the
+      // assigned driver to send from their own phone -- EV Exec no longer
+      // sends customer reminder SMS via Twilio (see handOffSmsToDriver above).
       hasEmail
         ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml })
-        : (hasPhone ? handOffSmsToDriver(booking, smsBody, type) : null),
+        : null,
+      hasPhone ? handOffSmsToDriver(booking, smsBody, type) : null,
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
       logMany(booking.id, logType, logEntries)
     ].filter(Boolean));

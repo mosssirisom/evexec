@@ -341,3 +341,10 @@ Full audit, search-intent map and plan: `docs/seo/2026-10-07-seo-audit.md`. Conv
 - **Structured data.** One business entity, `BUSINESS_LD` in build.js (`LocalBusiness`, `@id` `https://www.evexec.co.uk/#business`), on every generated page and injected into index.html between `<!-- evx:ld -->` markers. Town-level address only (service-area business, no street address). No `aggregateRating`/`review` markup: Google does not show stars for reviews a business publishes about itself, and the visible reviews have month-only dates. Keep the reviews visible on the page. Business facts live in `scripts/site/data.js` `BUSINESS`.
 - **Internal links.** Town pages link to each airport page (journey-time cards); airport pages link back to every town page (first section intro, `TOWNS` in `pages/airports.js`). Anchors are worded differently on each page.
 - **No doorway pages.** Route pages per town+airport and a separate Blackpool page were considered and not built (see the audit). Decide new pages from Search Console data.
+
+## Update — 2026-10-07: customer reminders go by email AND two-tap SMS
+
+User decision: every customer gets both reminders on every channel they have. The week-ahead (5–7 days before) and day-before reminders are sent by email when there is an email on file **and** handed off to the assigned driver as a two-tap SMS when there is a phone number (before this, the SMS handoff was only created when there was no email). No Twilio: the driver sends it from their own phone.
+
+- Website: `evexec/api/reminders/trigger.js` creates both independently; the cron still runs once a day (`0 8 * * *`, 09:00 UK in summer) and picks bookings by UK calendar date. No driver assigned → email only (warning logged). Tests: `npm run test:unit` (`tests/unit/reminders.test.cjs`).
+- Driver app: the job screen offers "Send Week-Ahead Reminder" (2–7 days before, once the website has handed one off, or when opened from its notification) as well as "Send 24hr Reminder"; the "Customer reminder due" push links to `/jobs/<id>?reminder=7day|24hr`. The text is generated when the driver taps ("in 6 days" / "tomorrow" / "today"), so it is never stale.
