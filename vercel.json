@@ -4,7 +4,7 @@
   "builds": [
     { "src": "api/booking/index.js", "use": "@vercel/node" },
     { "src": "api/operator/index.js", "use": "@vercel/node" },
-    { "src": "api/payment/index.js", "use": "@vercel/node" },
+    { "src": "api/payment/index.js", "use": "@vercel/node", "config": { "helpers": false } },
     { "src": "api/account/index.js", "use": "@vercel/node" },
     { "src": "api/notifications/index.js", "use": "@vercel/node" },
     { "src": "api/leads.js", "use": "@vercel/node" },

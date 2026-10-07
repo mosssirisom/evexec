@@ -468,7 +468,7 @@ body{
         show('panelPaymentPending');
         // Ask the server to check the payment with Stripe straight away, so
         // it is recorded even if Stripe's webhook is slow or fails.
-        fetch('/api/payment/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: queryId }) })
+        fetch('/api/payment/verify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: queryId, sessionId: params.get('session_id') || undefined }) })
           .then(function (r) { return r.json(); })
           .then(function (d) { if (d && d.paid) window.location.reload(); })
           .catch(function () {});

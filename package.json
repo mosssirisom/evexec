@@ -12,7 +12,8 @@
     "test": "playwright test --config=tests/playwright.config.ts",
     "test:api": "playwright test --config=tests/playwright.config.ts tests/e2e/01-booking-api.spec.ts tests/e2e/03-payment-flow.spec.ts tests/e2e/04-operator-flow.spec.ts tests/e2e/05-account-api.spec.ts tests/e2e/06-price-and-format.spec.ts --project='Desktop Chrome'",
     "test:ui": "playwright test --config=tests/playwright.config.ts tests/e2e/02-booking-wizard-ui.spec.ts",
-    "test:report": "playwright show-report tests/playwright-report"
+    "test:report": "playwright show-report tests/playwright-report",
+    "test:unit": "node --test tests/unit/payment-webhook.test.cjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.48.0",
