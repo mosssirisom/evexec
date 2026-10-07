@@ -11,6 +11,15 @@ const HERO = {
   birmingham: { img: 'ev-exec-tesla-model-y-navy-1000', alt: 'EV Exec navy Tesla Model Y at an airport at night', w: 1000, h: 787 },
 };
 
+// Short pointer from each airport page to the town pages, so the airport and
+// the pickup areas link both ways. Worded differently on each page.
+const town = (slug, label) => `<a href="/${slug}">${label}</a>`;
+const TOWNS = {
+  manchester: `The price is the same from every Fylde Coast town. For local pickup notes and journey times, see transfers from ${town('airport-transfer-lytham-st-annes', 'Lytham St Annes')}, ${town('airport-transfer-poulton-le-fylde', 'Poulton-le-Fylde')}, ${town('airport-transfer-fleetwood', 'Fleetwood and Thornton-Cleveleys')}, ${town('airport-transfer-kirkham', 'Kirkham')} and ${town('airport-transfer-preston', 'Preston')}.`,
+  liverpool: `Travelling from ${town('airport-transfer-lytham-st-annes', 'St Annes or Lytham')}, ${town('airport-transfer-poulton-le-fylde', 'Poulton')}, ${town('airport-transfer-fleetwood', 'Fleetwood or Cleveleys')}, ${town('airport-transfer-kirkham', 'Kirkham or Freckleton')} or ${town('airport-transfer-preston', 'Preston')}? It is the same fixed price, and each town page has its own journey times.`,
+  leeds: `We collect from across the Fylde for the same price, including ${town('airport-transfer-preston', 'Preston')}, ${town('airport-transfer-kirkham', 'Kirkham and Warton')}, ${town('airport-transfer-lytham-st-annes', 'Lytham St Annes')}, ${town('airport-transfer-poulton-le-fylde', 'Poulton-le-Fylde')} and ${town('airport-transfer-fleetwood', 'Fleetwood')}.`,
+};
+
 module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
   const crumbs = [{ name: 'Airport Transfers', slug: 'airport-transfers' }];
   const common = (key) => {
@@ -57,7 +66,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
       lead: 'Our most-booked route. We collect you from home anywhere on the Fylde Coast and drop you at your terminal’s departures forecourt, for one fixed price agreed before you travel.',
       sections: [
         {
-          type: 'cards', cols: 3, eyebrow: 'The route', title: 'What to expect on the way',
+          type: 'cards', cols: 3, eyebrow: 'The route', title: 'What to expect on the way', intro: TOWNS.manchester,
           items: [
             { icon: 'clock', title: 'Around an hour', text: 'About 60 miles via the M55, M6, M61 and M60. Allow 60 to 75 minutes off-peak and longer on weekday mornings around the M60.' },
             { icon: 'map', title: 'Straight to your terminal', text: 'Tell us your terminal when you book. We drop you outside departures, so there is no transfer bus from a car park.' },
@@ -109,7 +118,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
       lead: 'A straightforward run down the M6 and M58 to Speke. Liverpool’s single terminal makes it one of the least stressful airports to fly from, and we take you right to the door.',
       sections: [
         {
-          type: 'cards', cols: 3, eyebrow: 'The route', title: 'Liverpool John Lennon from the Fylde',
+          type: 'cards', cols: 3, eyebrow: 'The route', title: 'Liverpool John Lennon from the Fylde', intro: TOWNS.liverpool,
           items: [
             { icon: 'clock', title: 'About an hour and a quarter', text: 'Around 55 miles: M55, M6 and M58, then through to Speke. It avoids the M60, so mornings are usually more predictable than Manchester.' },
             { icon: 'map', title: 'One terminal', text: 'Check-in, security and arrivals are all in one building. Drop-off is a short walk from the desks.' },
@@ -150,7 +159,7 @@ module.exports = ({ bookHref, quoteHref, PRICES, AREAS, gbp }) => {
       lead: 'The longest of our regular routes, across the Pennines to Yeadon. A comfortable car and a fixed price make it an easy option when the flight you want leaves from Leeds Bradford.',
       sections: [
         {
-          type: 'cards', cols: 3, eyebrow: 'The route', title: 'Over the Pennines',
+          type: 'cards', cols: 3, eyebrow: 'The route', title: 'Over the Pennines', intro: TOWNS.leeds,
           items: [
             { icon: 'clock', title: 'Around two hours', text: 'Roughly 75 miles. We pick the route on the day, over the tops or via the M62, depending on traffic and weather.' },
             { icon: 'map', title: 'One terminal', text: 'Leeds Bradford has a single terminal. We drop you at the front, close to check-in.' },

@@ -63,7 +63,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
       navKey: 'fleet',
       priority: '0.7',
       bookHref: bookHref(),
-      title: 'Our Fleet | Tesla Model Y & Škoda Enyaq | EV Exec',
+      title: 'Our Electric Fleet | Tesla Model Y & Škoda Enyaq | EV Exec',
       description: 'EV Exec’s fully electric fleet: Tesla Model Y, Tesla Model Y Juniper and Škoda Enyaq. Up to four passengers and five suitcases, cleaned before every journey.',
       eyebrow: 'Our fleet',
       h1: 'A fully electric fleet, <span>kept immaculate</span>',

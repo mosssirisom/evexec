@@ -16,6 +16,10 @@ const BUSINESS = {
   whatsapp: 'https://wa.me/447721070370',
   googleProfile: 'https://g.page/r/CVPMqDntIQ3xEAE',
   googleReview: 'https://g.page/r/CVPMqDntIQ3xEAE/review',
+  // Square logo for structured data, and the main brand photo.
+  logo: { url: `${SITE}/public/images/ev-exec-logo-512.jpg`, width: 512, height: 512 },
+  image: `${SITE}/public/images/ev-exec-image-1.jpg`,
+  description: 'Premium airport transfers and private hire from Blackpool and the Fylde Coast in a fully electric fleet (Tesla Model Y and Škoda Enyaq). Fixed prices and live flight monitoring.',
 };
 
 // Google rating as shown on the Business Profile (user-confirmed 2026-10-03).

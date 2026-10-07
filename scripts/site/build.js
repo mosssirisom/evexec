@@ -232,21 +232,60 @@ function sectionsHtml(page) {
 }
 
 // ── structured data ──────────────────────────────────────────────────────
-const BUSINESS_REF = {
-  '@type': ['TaxiService', 'LocalBusiness'],
+// The one description of the business, identical on every page (the homepage
+// gets it injected between <!-- evx:ld --> markers). A service-area business:
+// town only, no street address. No rating or review markup: Google does not
+// show stars for reviews a business publishes about itself, and the visible
+// reviews on the site carry month-only dates.
+const BUSINESS_LD = {
+  '@type': 'LocalBusiness',
   '@id': `${SITE}/#business`,
   name: BUSINESS.name,
   url: `${SITE}/`,
+  logo: { '@type': 'ImageObject', url: BUSINESS.logo.url, width: BUSINESS.logo.width, height: BUSINESS.logo.height },
+  image: [BUSINESS.image, BUSINESS.logo.url],
+  description: BUSINESS.description,
   telephone: BUSINESS.phoneIntl,
   email: BUSINESS.email,
-  image: `${SITE}/public/images/ev-exec-image-1.jpg`,
   priceRange: '££',
   address: { '@type': 'PostalAddress', addressLocality: 'Blackpool', addressRegion: 'Lancashire', addressCountry: 'GB' },
-  areaServed: ['Blackpool', 'Fylde', 'Wyre', 'Preston'].map((n) => ({ '@type': 'AdministrativeArea', name: n })),
+  areaServed: [
+    ...['Blackpool', 'Fylde', 'Wyre', 'Preston'].map((n) => ({ '@type': 'AdministrativeArea', name: n })),
+    ...['Lytham St Annes', 'Poulton-le-Fylde', 'Fleetwood', 'Thornton-Cleveleys', 'Kirkham'].map((n) => ({ '@type': 'Place', name: n })),
+  ],
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '00:00', closes: '23:59',
+  },
+  sameAs: [BUSINESS.googleProfile],
+  hasMap: BUSINESS.googleProfile,
+  founder: { '@type': 'Person', '@id': `${SITE}/#founder`, name: 'Moss', jobTitle: 'Founder & Driver' },
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Airport transfers from Blackpool and the Fylde Coast',
+    itemListElement: Object.values(PRICES).map((p) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'TaxiService', name: `${p.name} transfer from Blackpool and the Fylde Coast`, ...(p.slug ? { url: url(p.slug) } : {}) },
+      price: String(p.oneWay), priceCurrency: 'GBP',
+    })),
+  },
 };
 
+// Homepage graph: the business, the website (site name in search results) and the page.
+function homeJsonLd() {
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@graph': [
+      BUSINESS_LD,
+      { '@type': 'WebSite', '@id': `${SITE}/#website`, url: `${SITE}/`, name: BUSINESS.name, inLanguage: 'en-GB', publisher: { '@id': `${SITE}/#business` } },
+      { '@type': 'WebPage', '@id': `${SITE}/#webpage`, url: `${SITE}/`, name: 'Blackpool Airport Transfers & Private Hire | EV Exec', isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#business` } },
+    ],
+  }, null, 1).replace(/</g, '\\u003c');
+}
+
 function jsonLd(page) {
-  const graph = [BUSINESS_REF];
+  const graph = [BUSINESS_LD];
   const trail = [{ name: 'Home', slug: '' }, ...(page.crumbs || []), { name: page.crumb || strip(page.h1), slug: page.slug }];
   graph.push({
     '@type': 'BreadcrumbList',
@@ -282,6 +321,22 @@ function jsonLd(page) {
 }
 
 // ── page shell ───────────────────────────────────────────────────────────
+// Icons and fonts shared by every page. Square icons (Google's search-result
+// favicon must be square, a multiple of 48px). Fonts are the same Inter and
+// Cormorant Garamond files Google Fonts serves, hosted here so the first paint
+// does not wait on two third-party connections.
+// Each page keeps exactly the font faces it requested from Google Fonts before
+// (public/css/fonts-<set>.css), so nothing renders differently. The heading and
+// body faces are preloaded so text paints in its final font (no layout shift).
+const headCommon = (fontSet) => `<!-- evx:head -->
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
+<link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
+${['inter-normal-latin', 'cormorant-garamond-normal-latin', ...(fontSet === 'home' ? ['cormorant-garamond-italic-latin'] : [])]
+    .map((f) => `<link rel="preload" href="/public/fonts/${f}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n')}
+<link rel="stylesheet" href="/public/css/fonts-${fontSet}.css">
+<!-- /evx:head -->`;
+
 const SCRIPT = `<script>
 (function(){
   var cr=document.getElementById('co2Route'),cn=document.getElementById('co2Number');
@@ -342,11 +397,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <meta name="twitter:title" content="${esc(page.title)}">
 <meta name="twitter:description" content="${esc(page.description)}">
 <meta name="twitter:image" content="${ogImage}">
-<link rel="icon" href="/public/images/opt/ev-exec-logo-160.jpg" type="image/jpeg">
-<link rel="apple-touch-icon" href="/public/images/opt/ev-exec-logo-160.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+${headCommon('site')}
 ${chrome.HEAD}
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">${jsonLd(page)}</script>
@@ -432,7 +483,36 @@ const CHROME_PAGES = {
   'manchester-airport-parking-vs-private-transfer.html': {},
 };
 
+// Hand-maintained pages also share the icon/font block. Old Google Fonts links,
+// their preconnects and the old non-square icon are replaced by headCommon().
+const HEAD_PAGES = { 'index.html': 'home', 'terms.html': 'doc', 'privacy.html': 'doc', 'booking.html': 'doc', 'manchester-airport-parking-vs-private-transfer.html': 'doc', 'blog.html': 'blog', 'account.html': 'account' };
+
+function normalizeHead(file, html) {
+  const block = headCommon(HEAD_PAGES[file]);
+  if (/<!-- evx:head -->[\s\S]*?<!-- \/evx:head -->/.test(html)) {
+    return html.replace(/<!-- evx:head -->[\s\S]*?<!-- \/evx:head -->/, () => block);
+  }
+  const stripped = html
+    .replace(/[ \t]*<link[^>]*href="https:\/\/fonts\.googleapis\.com\/css2[^"]*"[^>]*>\s*\n?/g, '')
+    .replace(/[ \t]*<link[^>]*rel="(?:preconnect|dns-prefetch)"[^>]*href="https:\/\/fonts\.(?:googleapis|gstatic)\.com"[^>]*>\s*\n?/g, '')
+    .replace(/[ \t]*<link[^>]*href="https:\/\/fonts\.(?:googleapis|gstatic)\.com"[^>]*rel="(?:preconnect|dns-prefetch)"[^>]*>\s*\n?/g, '')
+    .replace(/[ \t]*<link[^>]*rel="(?:icon|shortcut icon|apple-touch-icon)"[^>]*>\s*\n?/g, '')
+    .replace(/[ \t]*<link[^>]*href="[^"]*"[^>]*rel="(?:icon|shortcut icon|apple-touch-icon)"[^>]*>\s*\n?/g, '');
+  if (/fonts\.googleapis\.com/.test(stripped)) throw new Error(`${file}: Google Fonts reference left in head`);
+  return stripped.replace(/(<meta charset="utf-8"\s*\/?>\s*\n?)/i, (m) => `${m}${block}\n`);
+}
+
 function injectChrome() {
+  for (const file of Object.keys(HEAD_PAGES)) {
+    const f = path.join(ROOT, file);
+    const html = fs.readFileSync(f, 'utf8');
+    let out = normalizeHead(file, html);
+    if (file === 'index.html') {
+      if (!/<!-- evx:ld -->[\s\S]*?<!-- \/evx:ld -->/.test(out)) throw new Error('index.html: missing evx:ld markers');
+      out = out.replace(/<!-- evx:ld -->[\s\S]*?<!-- \/evx:ld -->/, () => `<!-- evx:ld --><script type="application/ld+json">${homeJsonLd()}</script><!-- /evx:ld -->`);
+    }
+    if (out !== html) fs.writeFileSync(f, out);
+  }
   for (const [file, opts] of Object.entries(CHROME_PAGES)) {
     const f = path.join(ROOT, file);
     let html = fs.readFileSync(f, 'utf8');

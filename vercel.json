@@ -4,7 +4,7 @@
   "builds": [
     { "src": "api/booking/index.js", "use": "@vercel/node" },
     { "src": "api/operator/index.js", "use": "@vercel/node" },
-    { "src": "api/payment/index.js", "use": "@vercel/node", "config": { "helpers": false } },
+    { "src": "api/payment/index.js", "use": "@vercel/node", "config": {"helpers": false} },
     { "src": "api/account/index.js", "use": "@vercel/node" },
     { "src": "api/notifications/index.js", "use": "@vercel/node" },
     { "src": "api/leads.js", "use": "@vercel/node" },
@@ -13,10 +13,16 @@
     { "src": "*.html", "use": "@vercel/static" },
     { "src": "*.xml", "use": "@vercel/static" },
     { "src": "*.txt", "use": "@vercel/static" },
+    { "src": "favicon.ico", "use": "@vercel/static" },
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
     { "src": "/(.*)", "continue": true, "headers": {"X-Content-Type-Options": "nosniff", "X-Frame-Options": "SAMEORIGIN", "Content-Security-Policy": "frame-ancestors 'self'", "Referrer-Policy": "strict-origin-when-cross-origin", "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(self \"https://js.stripe.com\")"} },
+    { "src": "/index\\.html", "status": 308, "headers": {"Location": "/"} },
+    { "src": "/((?!api/|public/).+)\\.html", "status": 308, "headers": {"Location": "/$1"} },
+    { "src": "/((?!api/).+)/", "status": 308, "headers": {"Location": "/$1"} },
+    { "src": "/(booking|account)", "headers": {"X-Robots-Tag": "noindex"}, "continue": true },
+    { "src": "/(.*)", "has": [{"type": "host", "value": "evexec.vercel.app"}], "headers": {"X-Robots-Tag": "noindex"}, "continue": true },
     { "src": "/api/booking/(.*)", "dest": "/api/booking/index.js" },
     { "src": "/api/operator/(.*)", "dest": "/api/operator/index.js" },
     { "src": "/api/payment/(.*)", "dest": "/api/payment/index.js" },

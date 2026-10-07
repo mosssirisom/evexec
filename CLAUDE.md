@@ -329,3 +329,15 @@ Audit only, no redesign. Fixed: homepage hero now reads "EV Exec" / "Premium Air
 
 **Historic gap found and fixed:** booking EVX-MRHRUTAGJYI7 (travel 25/07/2026, Completed) was Unpaid in the database although its Stripe checkout `cs_live_a1pFsqJ3…` (`pi_3TwRi76n70MGfLL70dj5CbYh`) was paid £160.00 on 23/07/2026, not refunded or disputed. Marked Paid / Card on 07/10/2026 on the user's instruction; no notifications were sent (the payment triggers only react to status changes or pending reminders).
 
+
+## Update — 2026-10-07: technical SEO pass (no design changes)
+
+Full audit, search-intent map and plan: `docs/seo/2026-10-07-seo-audit.md`. Conventions to keep:
+
+- **One URL per page.** `vercel.json` redirects (308) `/index.html` → `/`, `/<page>.html` → `/<page>` and `/<page>/` → `/<page>` (not `/api/`, not `/public/`). Keep internal links on the clean URL.
+- **Private pages** (`/booking`, `/account`) are crawlable but `noindex` (meta tag + `X-Robots-Tag` route header); do not put them back in robots.txt `Disallow` (Google would then never see the noindex). `/api/` stays disallowed. The `evexec.vercel.app` host gets `X-Robots-Tag: noindex`.
+- **Head block.** `npm run build:pages` writes the same icon/font block (between `<!-- evx:head -->` markers) into every page, generated or hand-maintained (`HEAD_PAGES` in build.js). Icons: `/favicon.ico` (32/48), `public/images/ev-exec-icon-192.png`, `ev-exec-icon-180.png` (Apple). Google needs a square favicon.
+- **Fonts are self-hosted** (`public/fonts/`, SIL OFL, licences alongside): the same files Google Fonts serves. Each page group keeps the exact faces it used before, via `public/css/fonts-<set>.css` (`home`, `site`, `doc`, `blog`, `account`). Inter and Cormorant Garamond normal are preloaded, plus Cormorant italic on the homepage (prevents a layout shift). Never re-add a fonts.googleapis.com link.
+- **Structured data.** One business entity, `BUSINESS_LD` in build.js (`LocalBusiness`, `@id` `https://www.evexec.co.uk/#business`), on every generated page and injected into index.html between `<!-- evx:ld -->` markers. Town-level address only (service-area business, no street address). No `aggregateRating`/`review` markup: Google does not show stars for reviews a business publishes about itself, and the visible reviews have month-only dates. Keep the reviews visible on the page. Business facts live in `scripts/site/data.js` `BUSINESS`.
+- **Internal links.** Town pages link to each airport page (journey-time cards); airport pages link back to every town page (first section intro, `TOWNS` in `pages/airports.js`). Anchors are worded differently on each page.
+- **No doorway pages.** Route pages per town+airport and a separate Blackpool page were considered and not built (see the audit). Decide new pages from Search Console data.

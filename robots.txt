@@ -1,11 +1,9 @@
 User-agent: *
 Allow: /
 
-# Private / utility pages — do not index
+# API and admin endpoints. Booking and account pages are crawlable but
+# carry noindex (meta tag and X-Robots-Tag), so they never appear in results.
 Disallow: /admin/
 Disallow: /api/
-Disallow: /account
-Disallow: /account.html
-Disallow: /booking
 
 Sitemap: https://www.evexec.co.uk/sitemap.xml

@@ -88,7 +88,7 @@
 .evx-foot-grid{max-width:1280px;margin:0 auto;display:grid;gap:34px}
 @media(max-width:759px){.evx-foot-grid{grid-template-columns:1fr 1fr;gap:28px 18px}.evx-foot-brand{grid-column:1/-1}.evx-foot-grid>div:last-child{grid-column:1/-1}.evx-foot-grid>div:last-child ul{grid-template-columns:1fr 1fr;column-gap:18px}}
 @media(min-width:760px){.evx-foot-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
-.evx-footer h2{font:700 15px Inter,Arial,sans-serif;color:#fff;margin:0 0 14px}
+.evx-footer h2,.evx-footer .evx-foot-h{font:700 15px Inter,Arial,sans-serif;color:#fff;margin:0 0 14px}
 .evx-footer ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
 .evx-footer a{color:inherit;text-decoration:none}
 .evx-footer a:hover{color:#d5a538}

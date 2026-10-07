@@ -18,27 +18,37 @@
 <meta name="twitter:title" content="Blackpool to Manchester Airport Transfer | £90 Fixed | EV Exec">
 <meta name="twitter:description" content="Blackpool and Fylde Coast to Manchester Airport for £90 one way, £160 return. Door to terminal, flight monitored on your return.">
 <meta name="twitter:image" content="https://www.evexec.co.uk/public/images/ev-exec-image-1.jpg">
-<link rel="icon" href="/public/images/opt/ev-exec-logo-160.jpg" type="image/jpeg">
-<link rel="apple-touch-icon" href="/public/images/opt/ev-exec-logo-160.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;900&display=swap">
+<!-- evx:head -->
+<link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
+<link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
+<link rel="preload" href="/public/fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/public/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/public/css/fonts-site.css">
+<!-- /evx:head -->
 <link rel="stylesheet" href="/public/css/chrome.css">
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
  "@graph": [
   {
-   "@type": [
-    "TaxiService",
-    "LocalBusiness"
-   ],
+   "@type": "LocalBusiness",
    "@id": "https://www.evexec.co.uk/#business",
    "name": "EV Exec",
    "url": "https://www.evexec.co.uk/",
+   "logo": {
+    "@type": "ImageObject",
+    "url": "https://www.evexec.co.uk/public/images/ev-exec-logo-512.jpg",
+    "width": 512,
+    "height": 512
+   },
+   "image": [
+    "https://www.evexec.co.uk/public/images/ev-exec-image-1.jpg",
+    "https://www.evexec.co.uk/public/images/ev-exec-logo-512.jpg"
+   ],
+   "description": "Premium airport transfers and private hire from Blackpool and the Fylde Coast in a fully electric fleet (Tesla Model Y and Škoda Enyaq). Fixed prices and live flight monitoring.",
    "telephone": "+447721070370",
    "email": "book@evexec.co.uk",
-   "image": "https://www.evexec.co.uk/public/images/ev-exec-image-1.jpg",
    "priceRange": "££",
    "address": {
     "@type": "PostalAddress",
@@ -62,8 +72,106 @@
     {
      "@type": "AdministrativeArea",
      "name": "Preston"
+    },
+    {
+     "@type": "Place",
+     "name": "Lytham St Annes"
+    },
+    {
+     "@type": "Place",
+     "name": "Poulton-le-Fylde"
+    },
+    {
+     "@type": "Place",
+     "name": "Fleetwood"
+    },
+    {
+     "@type": "Place",
+     "name": "Thornton-Cleveleys"
+    },
+    {
+     "@type": "Place",
+     "name": "Kirkham"
     }
-   ]
+   ],
+   "openingHoursSpecification": {
+    "@type": "OpeningHoursSpecification",
+    "dayOfWeek": [
+     "Monday",
+     "Tuesday",
+     "Wednesday",
+     "Thursday",
+     "Friday",
+     "Saturday",
+     "Sunday"
+    ],
+    "opens": "00:00",
+    "closes": "23:59"
+   },
+   "sameAs": [
+    "https://g.page/r/CVPMqDntIQ3xEAE"
+   ],
+   "hasMap": "https://g.page/r/CVPMqDntIQ3xEAE",
+   "founder": {
+    "@type": "Person",
+    "@id": "https://www.evexec.co.uk/#founder",
+    "name": "Moss",
+    "jobTitle": "Founder & Driver"
+   },
+   "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Airport transfers from Blackpool and the Fylde Coast",
+    "itemListElement": [
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "TaxiService",
+       "name": "Manchester Airport transfer from Blackpool and the Fylde Coast",
+       "url": "https://www.evexec.co.uk/manchester-airport-transfer-blackpool"
+      },
+      "price": "90",
+      "priceCurrency": "GBP"
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "TaxiService",
+       "name": "Liverpool John Lennon Airport transfer from Blackpool and the Fylde Coast",
+       "url": "https://www.evexec.co.uk/liverpool-airport-transfer-blackpool"
+      },
+      "price": "95",
+      "priceCurrency": "GBP"
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "TaxiService",
+       "name": "Leeds Bradford Airport transfer from Blackpool and the Fylde Coast",
+       "url": "https://www.evexec.co.uk/leeds-bradford-airport-transfer-blackpool"
+      },
+      "price": "135",
+      "priceCurrency": "GBP"
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "TaxiService",
+       "name": "Birmingham Airport transfer from Blackpool and the Fylde Coast"
+      },
+      "price": "215",
+      "priceCurrency": "GBP"
+     },
+     {
+      "@type": "Offer",
+      "itemOffered": {
+       "@type": "TaxiService",
+       "name": "Newcastle Airport transfer from Blackpool and the Fylde Coast"
+      },
+      "price": "250",
+      "priceCurrency": "GBP"
+     }
+    ]
+   }
   },
   {
    "@type": "BreadcrumbList",
@@ -238,7 +346,7 @@
     <div class="hero-media"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-navy-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y at an airport at night" width="1000" height="787" sizes="(min-width: 900px) 40vw, 100vw" fetchpriority="high" decoding="async"></picture></div>
   </div>
 </section>
-<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">The route</span><h2>What to expect on the way</h2></div><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><h3>Around an hour</h3><p>About 60 miles via the M55, M6, M61 and M60. Allow 60 to 75 minutes off-peak and longer on weekday mornings around the M60.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg><h3>Straight to your terminal</h3><p>Tell us your terminal when you book. We drop you outside departures, so there is no transfer bus from a car park.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h11M8 12h8M9 20c2.5-2.8 2.7-6 1.5-9.5C9.8 8.2 10.9 5 14 5c1.7 0 3 .8 4 2"/></svg><h3>Drop-off charge included</h3><p>Manchester charges vehicles to drop off and pick up. That cost is already in your price.</p></div></div></div></section>
+<section class="section"><div class="wrap"><div class="section-head"><span class="eyebrow">The route</span><h2>What to expect on the way</h2><p class="intro">The price is the same from every Fylde Coast town. For local pickup notes and journey times, see transfers from <a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a>, <a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a>, <a href="/airport-transfer-fleetwood">Fleetwood and Thornton-Cleveleys</a>, <a href="/airport-transfer-kirkham">Kirkham</a> and <a href="/airport-transfer-preston">Preston</a>.</p></div><div class="grid cols-3"><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg><h3>Around an hour</h3><p>About 60 miles via the M55, M6, M61 and M60. Allow 60 to 75 minutes off-peak and longer on weekday mornings around the M60.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s7-5.2 7-11a7 7 0 0 0-14 0c0 5.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.2"/></svg><h3>Straight to your terminal</h3><p>Tell us your terminal when you book. We drop you outside departures, so there is no transfer bus from a car park.</p></div><div class="card"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h11M8 12h8M9 20c2.5-2.8 2.7-6 1.5-9.5C9.8 8.2 10.9 5 14 5c1.7 0 3 .8 4 2"/></svg><h3>Drop-off charge included</h3><p>Manchester charges vehicles to drop off and pick up. That cost is already in your price.</p></div></div></div></section>
 <section class="section alt"><div class="wrap"><div class="section-head"><span class="eyebrow">Timing your pickup</span><h2>When should we collect you?</h2></div><div class="prose"><p>For a European flight we usually collect you around <strong>three and a half hours before departure</strong>: an hour on the road, a buffer for the M60, and the two hours most airlines ask for at check-in. For long-haul, add another half hour. We will suggest a time when we confirm your booking, and you can always ask for earlier.</p>
 <p>Early-morning departures are the most popular slot from the Fylde Coast. A 06:00 flight means a 02:30 pickup, and those dates fill up first, so book as soon as your flights are confirmed.</p></div></div></section>
 <section class="section alt"><div class="wrap"><div class="split"><div class="media"><picture><source type="image/webp" srcset="/public/images/opt/ev-exec-image-4-1100.webp"><img src="/public/images/opt/ev-exec-image-4-1100.jpg" alt="Rear passenger view inside an EV Exec Tesla Model Y with entertainment screens" width="824" height="1100" sizes="(min-width: 900px) 50vw, 100vw" loading="lazy" decoding="async"></picture></div><div><div class="section-head"><span class="eyebrow">Coming home</span><h2>Landing at Manchester</h2></div><div class="prose"><p>We follow your flight from the moment it takes off. If it lands early, we are there early; if it is delayed, we move your pickup to match at no extra charge.</p>
@@ -260,9 +368,9 @@
 <p class="evx-foot-rating"><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 on Google &middot; 18 reviews</a></p>
 <address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:+447721070370">07721 070370</a><a href="mailto:book@evexec.co.uk">book@evexec.co.uk</a><a href="https://wa.me/447721070370" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
-<div><h2>Services</h2><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
-<div><h2>Airports &amp; Prices</h2><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
-<div><h2>Areas</h2><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
+<div><p class="evx-foot-h">Services</p><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
+<div><p class="evx-foot-h">Airports &amp; Prices</p><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
+<div><p class="evx-foot-h">Areas</p><ul><li><a href="/areas#blackpool">Blackpool</a></li><li><a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a></li><li><a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a></li><li><a href="/airport-transfer-fleetwood">Fleetwood & Thornton-Cleveleys</a></li><li><a href="/airport-transfer-kirkham">Kirkham, Freckleton & Warton</a></li><li><a href="/airport-transfer-preston">Preston</a></li><li><a href="/areas">All areas</a></li></ul></div>
 </div>
 <div class="evx-foot-base"><p>&copy; 2026 EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/privacy#cookies" onclick="if(window.evxCookieSettings){evxCookieSettings();return false}">Cookie settings</a></p></div>
 </footer>
