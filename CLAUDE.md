@@ -348,3 +348,14 @@ User decision: every customer gets both reminders on every channel they have. Th
 
 - Website: `evexec/api/reminders/trigger.js` creates both independently; the cron still runs once a day (`0 8 * * *`, 09:00 UK in summer) and picks bookings by UK calendar date. No driver assigned → email only (warning logged). Tests: `npm run test:unit` (`tests/unit/reminders.test.cjs`).
 - Driver app: the job screen offers "Send Week-Ahead Reminder" (2–7 days before, once the website has handed one off, or when opened from its notification) as well as "Send 24hr Reminder"; the "Customer reminder due" push links to `/jobs/<id>?reminder=7day|24hr`. The text is generated when the driver taps ("in 6 days" / "tomorrow" / "today"), so it is never stale.
+
+## Update — 2026-10-14: one email template for every email (live)
+
+User asked for every email to be clear to drivers and customers ("say what and when"); approved from the preview artifact https://claude.ai/artifact/CQLaYQrTe98ZbscNRmexKr.
+
+- **Template**: `lib/emailTemplate.js` (layout: status label, headline, large time + "Weekday DD/MM/YYYY", numbered steps, one main button, stacked label-above-value details; text wordmark, no images; Outlook-safe buttons; `renderText()` plain-text part). **Wording**: `lib/emailContent.js`, one builder per email (customer, office, driver). Change wording there, never inline HTML in a route.
+- **Queued emails are re-rendered at send time** (`lib/emailQueueRender.js`, called from `notificationQueue.processItem`): database trigger rows (`driver_allocated`, `status_update`, phone-booking `received`) and driver-app edge-function rows (`driver_reminder_24h/1h`, `job_updated`, `job_cancelled`, `attestation_*`, `customer_sms_reminder`) are rebuilt from the booking's current details. The stored HTML is only a fallback (unknown type, lookup failure, or a website retry, which carries `meta.label`). So the SQL/edge-function HTML no longer decides what people see.
+- **Test sends**: insert a `notification_queue` row `type='email_sample'`, `channel='email'`, `booking_id`, `recipient`, `meta={"builder": "<name>", "n": "1/29"}`; builder names in `SAMPLE_BUILDERS`. Samples go to evexec@hotmail.com.
+- **Operator app** sends its accept/reject and invoice emails from `evexecoperator/src/lib/email/` (a copy of the two files above; keep in sync).
+- **Driver week-ahead reminder**: push only, no email (user decision 14/10/2026); day-before has a backup email when the push fails (`send-customer-sms-reminder-push`, source now in `evexecdriverapp/supabase/functions/`).
+- Tests: `npm run test:unit` includes `tests/unit/emails.test.cjs` (house date style, plain text, re-render and fallbacks).

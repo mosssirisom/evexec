@@ -109,3 +109,13 @@ test('queued rows that must keep their stored email are left alone', async () =>
   assert.equal(await renderQueued({ channel: 'email', booking_id: 'missing', type: 'driver_allocated', meta: {} }), null, 'booking gone');
   assert.equal(await renderQueued({ channel: 'sms', booking_id: 'b-1', type: 'driver_allocated' }), null, 'not email');
 });
+
+test('test sends: email_sample renders the named email from a real booking', async () => {
+  const { SAMPLE_BUILDERS } = require('../../lib/emailQueueRender.js');
+  assert.equal(SAMPLE_BUILDERS.length, 29);
+  for (const builder of SAMPLE_BUILDERS) {
+    const out = await renderQueued({ channel: 'email', booking_id: 'b-1', type: 'email_sample', meta: { builder, n: '1/29' } });
+    assert.ok(out, builder); assert.match(out.subject, /^\[EV Exec sample 1\/29\] /);
+  }
+  assert.equal(await renderQueued({ channel: 'email', booking_id: 'b-1', type: 'email_sample', meta: { builder: 'nope' } }), null);
+});
