@@ -345,9 +345,10 @@ async function handleInvoice(req, res, user) {
     const booking = (await br.json())[0];
     if (!ownsBooking(booking, user) || !invoiceVisible(inv, booking)) return notFound();
 
-    const tr = await fetch(`${SUPABASE_URL()}/rest/v1/tenants?id=eq.${inv.tenant_id || booking.tenant_id || '00000000-0000-0000-0000-000000000001'}&select=name,brand&limit=1`, { headers: headers() });
+    const tr = await fetch(`${SUPABASE_URL()}/rest/v1/tenants?id=eq.${inv.tenant_id || booking.tenant_id || '00000000-0000-0000-0000-000000000001'}&select=id,name,brand&limit=1`, { headers: headers() });
     const tenant = tr.ok ? (await tr.json())[0] : null;
-    const biz = (tenant && tenant.brand && tenant.brand.invoice) || {};
+    const brand = (tenant && tenant.brand) || {};
+    const biz = brand.invoice || {};
 
     return res.end(JSON.stringify({
       invoice: {
@@ -373,7 +374,13 @@ async function handleInvoice(req, res, user) {
         phone: biz.phone || '',
         email: biz.email || '',
         web: biz.web || '',
-        tagline: biz.tagline || []
+        tagline: biz.tagline || [],
+        // Branding (Operator app, Settings → Branding); the PDF falls back to
+        // EV Exec's navy, gold and badge only for EV Exec itself.
+        logoUrl: (brand.logo_url && /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/brand-assets\//.test(brand.logo_url)) ? brand.logo_url : null,
+        primary: brand.colors && brand.colors.primary || null,
+        accent: brand.colors && brand.colors.accent || null,
+        useBuiltInLogo: !tenant || tenant.id === '00000000-0000-0000-0000-000000000001'
       }
     }));
   } catch (err) {
