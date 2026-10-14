@@ -16,9 +16,28 @@
 (function () {
   'use strict';
 
-  var NAVY = '#0B132B';
-  var GOLD = '#d7a23f';
-  var LOGO = '/public/images/ev-exec-invoice-logo.png';
+  // The business's branding (Operator app, Settings → Branding) arrives with
+  // the invoice as business.logoUrl / primary / accent; these are the
+  // defaults (EV Exec navy, gold and badge). Set per sheet in applyBrand().
+  var DEFAULT_NAVY = '#0B132B';
+  var DEFAULT_GOLD = '#d7a23f';
+  var DEFAULT_LOGO = '/public/images/ev-exec-invoice-logo.png';
+  var NAVY = DEFAULT_NAVY;
+  var GOLD = DEFAULT_GOLD;
+  var LOGO = DEFAULT_LOGO;
+  function isHex(v) { return /^#[0-9A-Fa-f]{6}$/.test(String(v || '')); }
+  function applyBrand(biz) {
+    NAVY = isHex(biz.primary) ? biz.primary : DEFAULT_NAVY;
+    GOLD = isHex(biz.accent) ? biz.accent : DEFAULT_GOLD;
+    var url = String(biz.logoUrl || '');
+    LOGO = /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/brand-assets\//.test(url) ? url
+      : (biz.useBuiltInLogo === false ? null : DEFAULT_LOGO);
+  }
+  // Logo image, or the business name as a wordmark when there is none.
+  function logoHtml(biz, style) {
+    if (LOGO) return '<img src="' + esc(LOGO) + '" alt="" crossorigin="anonymous" style="' + style + '">';
+    return '<div style="font-size:24px;font-weight:600;letter-spacing:.2em;color:' + GOLD + '">' + esc(String(biz.name || '').toUpperCase()) + '</div>';
+  }
   var LIBS = [
     'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js',
     'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
@@ -81,6 +100,7 @@
 
   // Builds the sheet. A4 at 96dpi is 794 x 1123px.
   function buildSheet(inv, biz) {
+    applyBrand(biz);
     var lbl = 'font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#64748b';
     var th = 'padding:12px 14px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:' + GOLD;
     var lines = journeyLines(inv.journey);
@@ -110,7 +130,7 @@
         // Header band
         '<div style="position:relative;background:' + NAVY + ';padding:32px 40px 56px">' +
           '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">' +
-            '<div><img src="' + LOGO + '" alt="" style="height:80px;width:auto;display:block">' +
+            '<div>' + logoHtml(biz, 'height:80px;width:auto;max-width:240px;object-fit:contain;display:block') +
               '<div style="margin-top:4px;height:1px;width:144px;background:' + GOLD + ';opacity:.55"></div>' +
               (tagline ? '<div style="margin-top:6px;font-size:9px;font-weight:600;line-height:1.7;letter-spacing:.24em;color:' + GOLD + '">' + tagline + '</div>' : '') +
             '</div>' +
@@ -158,7 +178,7 @@
         '</div>' +
         // Flourish + watermark
         '<div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;padding:32px">' +
-          '<img src="' + LOGO + '" alt="" style="position:absolute;left:50%;top:50%;width:320px;max-width:70%;transform:translate(-50%,-50%);opacity:.06">' +
+          (LOGO ? '<img src="' + esc(LOGO) + '" alt="" crossorigin="anonymous" style="position:absolute;left:50%;top:50%;width:320px;max-width:70%;transform:translate(-50%,-50%);opacity:.06">' : '') +
           '<div style="position:relative;text-align:center"><div style="font-size:16px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:' + NAVY + '">Thank you for choosing ' + esc(biz.name || 'EV Exec') + '</div>' +
           '<div style="margin:10px auto 0;height:1px;width:80px;background:' + GOLD + '"></div></div>' +
         '</div>' +
