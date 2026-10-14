@@ -1,8 +1,11 @@
 'use strict';
 
 // Single source for business facts used across the generated pages and their
-// structured data. Keep in line with lib/format.js PRICES (what the booking
-// form charges), terms.html and the Google Business Profile.
+// structured data. Keep PRICES in line with EV Exec's prices in the Operator
+// app (Settings → Prices, stored in tenants.pricing), which is what the booking
+// form and the booking API charge; after a price change, update PRICES here and
+// run `npm run build:pages`. Also keep in line with terms.html and the Google
+// Business Profile.
 
 const SITE = 'https://www.evexec.co.uk';
 

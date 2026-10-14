@@ -1127,7 +1127,7 @@ main,footer{position:relative;z-index:1}
       <div class="flex items-center justify-between mb-1">
         <p class="text-sm font-bold text-white/80"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Additional Stops</p>
       </div>
-      <p class="text-xs text-white/40 mb-3">Add any extra stops along the way. Each stop is <span class="text-[#d5a538] font-semibold">+£5</span>.</p>
+      <p class="text-xs text-white/40 mb-3">Add any extra stops along the way. Each stop is <span id="bwStopPrice" class="text-[#d5a538] font-semibold">+£5</span>.</p>
       <div id="bwStopsList" style="display:flex;flex-direction:column;gap:8px"></div>
       <button class="text-xs font-semibold mt-3" id="bwAddStopBtn" type="button" style="color:#d5a538;background:none;border:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:4px">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="6.5" y1="1" x2="6.5" y2="12"/><line x1="1" y1="6.5" x2="12" y2="6.5"/></svg>
@@ -1412,6 +1412,28 @@ main,footer{position:relative;z-index:1}
     { name:'Newcastle Airport',      oneWay:250, ret:480 },
     { name:'Other UK Airport',       oneWay:null, ret:null }
   ];
+  var BW_EXTRA_STOP = 5;
+
+  // The operator's own prices (Operator app, Settings → Prices) come with the
+  // shared /api/config response; the list above is only the fallback.
+  function bwEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  (function bwLoadPricing() {
+    // Same shared loader as further down the page (that line keeps this one).
+    window.evexecConfig = window.evexecConfig || (function(){ var p; return function(){ return p || (p = fetch('/api/config').then(function(r){ return r.ok ? r.json() : {}; })); }; })();
+    window.evexecConfig().then(function (cfg) {
+      var pr = cfg && cfg.pricing;
+      if (!pr || !Array.isArray(pr.airports) || !pr.airports.length) return;
+      var list = pr.airports.filter(function (a) { return a && a.name && a.oneWay > 0 && a.ret > 0; })
+        .map(function (a) { return { name: String(a.name), oneWay: a.oneWay, ret: a.ret }; });
+      if (!list.length) return;
+      list.push({ name: 'Other UK Airport', oneWay: null, ret: null });
+      BW_AIRPORTS.splice.apply(BW_AIRPORTS, [0, BW_AIRPORTS.length].concat(list));
+      if (typeof pr.extraStop === 'number' && pr.extraStop >= 0) BW_EXTRA_STOP = pr.extraStop;
+      var stopEl = document.getElementById('bwStopPrice');
+      if (stopEl) stopEl.textContent = '+£' + BW_EXTRA_STOP;
+      if (document.getElementById('bwAirports')) bwRenderAirports();
+    }).catch(function () {});
+  })();
 
   var bw = { step:1, airport:null, direction:null, journeyType:'oneway', passengers:1, bags:0, stops:[] };
 
@@ -1467,7 +1489,7 @@ main,footer{position:relative;z-index:1}
       btn.innerHTML =
         '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
         '<div style="flex:1;min-width:0">' +
-          '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + ap.name + '</div>' +
+          '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + bwEsc(ap.name) + '</div>' +
           '<div style="font-size:11px;color:rgba(255,255,255,.45)">' + (ap.oneWay ? ('£' + ap.oneWay + ' one way · £' + ap.ret + ' return') : 'Fixed price quoted on request') + '</div>' +
         '</div>' +
         '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
@@ -1581,10 +1603,10 @@ main,footer{position:relative;z-index:1}
       var ap = BW_AIRPORTS.find(function(a) { return a.name === bw.airport; }) || {};
       var priceBase  = bw.journeyType === 'return' ? ap.ret : ap.oneWay;
       var stopCount  = (bw.stops || []).filter(function(s){ return s.trim(); }).length;
-      var priceVal   = priceBase ? priceBase + stopCount * 5 : null;
+      var priceVal   = priceBase ? priceBase + stopCount * BW_EXTRA_STOP : null;
       var priceLabel = priceVal ? '£' + priceVal + (stopCount ? ' (inc. ' + stopCount + ' stop' + (stopCount > 1 ? 's' : '') + ')' : '') : 'Price on request';
       pills.innerHTML =
-        '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + (bw.airport||'') + '</span>' +
+        '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + bwEsc(bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
         '<span class="bw-pill" style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6)">' + (bw.journeyType === 'return' ? 'Return' : 'One Way') + '</span>' +
         '<span class="bw-pill" style="background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538">' + priceLabel + '</span>';
