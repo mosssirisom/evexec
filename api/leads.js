@@ -6,6 +6,7 @@
 //          POST /api/contact        → save contact message
 //          POST /api/quote-request  → save quote request
 
+const E = require('../lib/emailContent');
 const crypto = require('crypto');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
@@ -80,27 +81,16 @@ const escHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 // acknowledges the customer by email when they gave one.
 async function notifyQuoteRequest(q) {
   const { sendEmail, sendPushToOperator } = require('../lib/notify');
-  const { emailLayout } = require('../lib/emailLayout');
-  const rows = [
-    ['Name', q.customer_name], ['Phone', q.phone], ['Email', q.email],
-    ['Pickup', q.pickup_location], ['Destination', q.destination],
-    ['Date', [q.pickup_date, q.pickup_time].filter(Boolean).join(' at ')],
-    ['Passengers', q.passengers], ['Luggage', q.luggage],
-    ['Return', q.return_required ? [q.return_date, q.return_time].filter(Boolean).join(' at ') || 'Yes' : ''],
-    ['Notes', q.notes],
-  ].filter(([, v]) => v !== '' && v != null)
-    .map(([k, v]) => `<tr><td style="padding:8px 0;color:#64748b;width:110px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;vertical-align:top;border-bottom:1px solid #eef0f3">${k}</td><td style="padding:8px 0;font-weight:700;color:#0f1b33;font-size:14px;vertical-align:top;border-bottom:1px solid #eef0f3">${escHtml(v)}</td></tr>`).join('');
   const tasks = [];
   const opEmail = (process.env.OPERATOR_EMAIL || '').trim();
   if (opEmail) {
-    const html = emailLayout({ title: 'New Quote Request', body: `<p style="margin:0 0 16px;font-size:15px;color:#0f1b33">A customer has asked for a quote on the website. Reply with a fixed price.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table><p style="margin:18px 0 0;font-size:14px;color:#475569"><a href="tel:${escHtml(q.phone)}" style="color:#8a6416">Call ${escHtml(q.phone)}</a></p>` });
-    tasks.push(sendEmail({ to: opEmail, subject: `Quote request: ${clip(q.pickup_location, 60)} to ${clip(q.destination, 60)}`.replace(/[\r\n]+/g, ' '), html }));
+    const m = E.staffNewQuote(q);
+    tasks.push(sendEmail({ to: opEmail, subject: m.subject, html: m.html, text: m.text }));
   }
   tasks.push(sendPushToOperator('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator'));
   if (q.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) {
-    const first = escHtml(q.customer_name.split(' ')[0] || 'there');
-    const html = emailLayout({ title: 'Quote Request Received', body: `<p style="margin:0 0 6px;font-size:15px;color:#0f1b33">Hi ${first},</p><p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.6">Thank you for your quote request. We will reply with a fixed price, usually the same day.</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0">${rows}</table><p style="margin:18px 0 0;font-size:13px;color:#64748b">Questions? Call or WhatsApp <a href="tel:07721070370" style="color:#8a6416;text-decoration:none">07721 070370</a></p>` });
-    tasks.push(sendEmail({ to: q.email, subject: 'Your EV Exec quote request', html }));
+    const m = E.quoteReceived(q);
+    tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text }));
   }
   const results = await Promise.allSettled(tasks);
   results.filter((r) => r.status === 'rejected').forEach((r) => console.error('quote notify failed:', r.reason && r.reason.message));

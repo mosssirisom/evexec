@@ -2,7 +2,7 @@
 
 const { sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
-const { emailLayout } = require('../../lib/emailLayout');
+const E = require('../../lib/emailContent');
 const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml, paymentLine } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
 const { sendOrQueue } = require('../../lib/notificationQueue');
@@ -189,11 +189,10 @@ async function sendReminders(due, type, driversById) {
     const pushTitle = type === '7day' ? `Transfer in ${daysAway} Days` : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
     const pushBody  = `${route} ${daysText} at ${time}.`;
 
-    const emailSubject = type === '7day'
-      ? `Reminder: Your Transfer in ${daysAway} Days`
-      : `Reminder: Your Transfer is ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
-
-    const emailHtml = emailLayout({ title: 'Upcoming Transfer', body: `<p style="margin:0 0 6px;font-family:Inter,Arial,sans-serif;font-size:15px;color:#fff">Hi ${firstName},</p><p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:15px;color:rgba(255,255,255,.65);line-height:1.6">This is a friendly reminder that your airport transfer is <strong style="color:#fff">${daysText}</strong>.${driverTxt}</p>${refBadgeHtml(booking.ref)}${emailJourneyHtml(leg)}<p style="margin:0 0 20px;font-family:Inter,Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.65)">Payment: <strong style="color:#fff">${method}</strong></p><p style="margin:0;font-family:Inter,Arial,sans-serif;font-size:13px;color:rgba(255,255,255,.5)">Questions? Call or WhatsApp: <a href="tel:07721070370" style="color:#d5a538;text-decoration:none">07721 070370</a></p>` });
+    const driver = booking.assigned_driver_id ? driversById.get(booking.assigned_driver_id) : null;
+    const mail = E.reminder(booking, { type, driver });
+    const emailSubject = mail.subject;
+    const emailHtml = mail.html;
 
     const logType = type === '7day' ? 'reminder_7d' : 'reminder_24h';
     const hasEmail = Boolean(booking.customer_email);
@@ -209,7 +208,7 @@ async function sendReminders(due, type, driversById) {
       // assigned driver to send from their own phone -- EV Exec no longer
       // sends customer reminder SMS via Twilio (see handOffSmsToDriver above).
       hasEmail
-        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml })
+        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml, text: mail.text }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml, body: mail.text, meta: { label: 'customer_reminder' } })
         : null,
       hasPhone ? handOffSmsToDriver(booking, smsBody, type) : null,
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),

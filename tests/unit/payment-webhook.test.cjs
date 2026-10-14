@@ -181,9 +181,9 @@ const operatorEmails = () => calls.emails.filter(e => e.to.includes('ops@evexec.
 function assertNotifiedOnce() {
   assert.equal(calls.bookingPaidTransitions, 1, 'one Paid transition');
   assert.equal(customerEmails().length, 1, 'one customer email');
-  assert.match(customerEmails()[0].subject, /^Payment Received/);
+  assert.match(customerEmails()[0].subject, /^Payment received \(£90\.00\): Saturday 10\/10\/2026 at 04:00/);
   assert.equal(operatorEmails().length, 1, 'one operator email');
-  assert.match(operatorEmails()[0].subject, /^EV Exec Payment Received/);
+  assert.match(operatorEmails()[0].subject, /^Paid £90\.00: EVX-UNIT0001/);
   assert.equal(calls.operatorPush.length, 1, 'one operator alert');
 }
 
@@ -314,7 +314,7 @@ test('already-paid booking, different session (paid twice): booking untouched, s
   assert.equal(calls.bookingPaidTransitions, 0);
   assert.equal(customerEmails().length, 0);
   assert.equal(operatorEmails().length, 1);
-  assert.match(operatorEmails()[0].subject, /^Possible Duplicate Payment/);
+  assert.match(operatorEmails()[0].subject, /^Check Stripe: possible double payment/);
   assert.equal(calls.operatorPush.length, 1);
   assert.equal(db.stripe_webhook_events[0].status, 'duplicate_payment');
 });
@@ -446,5 +446,5 @@ test('customer paid an older checkout; webhook and payment check race: one trans
   assert.deepEqual(JSON.parse(v.body), { paid: true });
   assertNotifiedOnce();
   assert.equal(booking().stripe_session_id, 'cs_test_paid1');
-  assert.ok(!calls.emails.some(e => /Duplicate/.test(e.subject)));
+  assert.ok(!calls.emails.some(e => /double payment/.test(e.subject)));
 });

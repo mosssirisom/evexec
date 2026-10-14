@@ -95,7 +95,7 @@ test('day before: customer with email and phone gets the email AND the driver SM
   assert.equal(out.day1, 1);
   assert.equal(emails.length, 1);
   assert.deepEqual(emails[0].to, ['jane@example.test']);
-  assert.equal(emails[0].subject, 'Reminder: Your Transfer is Tomorrow');
+  assert.match(emails[0].subject, /^Reminder: your transfer is tomorrow, \w+day \d{2}\/\d{2}\/\d{4} at 23:30$/);
   const h = handoffs('both');
   assert.equal(h.length, 1);
   assert.equal(h[0].reminder_type, '24hr');
@@ -128,7 +128,8 @@ test('week ahead: email AND driver SMS handoff, with the real number of days', a
   const out = await run();
   assert.equal(out.week7, 1);
   assert.equal(emails.length, 1);
-  assert.equal(emails[0].subject, 'Reminder: Your Transfer in 6 Days');
+  assert.match(emails[0].subject, /^Reminder: your transfer is in 6 days, \w+day \d{2}\/\d{2}\/\d{4} at 10:00$/);
+
   const h = handoffs('week');
   assert.equal(h.length, 1);
   assert.equal(h[0].reminder_type, '7day');
