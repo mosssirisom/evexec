@@ -1,5 +1,6 @@
 'use strict';
 
+const { refreshPricing } = require('../../lib/pricing');
 const { sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const E = require('../../lib/emailContent');
@@ -220,6 +221,7 @@ async function sendReminders(due, type, driversById) {
 }
 
 module.exports = async function handler(req, res) {
+  await refreshPricing(); // operator's own prices for getPrice()
   res.setHeader('Content-Type', 'application/json');
 
   const auth = req.headers['authorization'] || '';
