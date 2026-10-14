@@ -362,7 +362,7 @@ User asked for every email to be clear to drivers and customers ("say what and w
 
 ## Update — 2026-10-14: per-operator business details (SaaS quick wins)
 
-`public.update_tenant_profile(tenant, name, contact_email, contact_phone, invoice)` (migration `20261014120000_tenant_profile_settings.sql`, applied) lets an operator_admin or super_admin update their own `tenants` row: name, contact details and `brand.invoice` (whitelisted keys only, merged). Staff still have no direct UPDATE on `tenants`, so slug/status/Stripe account can't be changed this way. Used by the Operator app's Settings → Business; customer invoices in My Account already read `brand.invoice`, so edits there show up on them. The Operator app's `src/lib/prices.ts` is a copy of `lib/format.js` PRICES: change both together.
+`public.update_tenant_profile(tenant, name, contact_email, contact_phone, invoice)` (migration `20261014120000_tenant_profile_settings.sql`, applied) lets an operator_admin or super_admin update their own `tenants` row: name, contact details and `brand.invoice` (whitelisted keys only, merged). Staff still have no direct UPDATE on `tenants`, so slug/status/Stripe account can't be changed this way. Used by the Operator app's Settings → Business; customer invoices in My Account already read `brand.invoice`, so edits there show up on them. (Superseded 15/10/2026: prices now live per operator in `tenants.pricing`, see below.)
 
 ## Update — 2026-10-15: per-operator prices (tenants.pricing)
 
