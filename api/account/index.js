@@ -68,10 +68,12 @@ function isUpcoming(booking, today) {
   return !booking.travel_date || booking.travel_date >= today;
 }
 
+// Customers never get internal ids of the driver (audit H-1: a driver id was
+// enough to forge driver alerts), or the driver's private notes.
 function attachCustomerStatus(rows) {
   const today = ukToday();
   return rows.map(row => {
-    const { driver_notes, ...rest } = row;
+    const { driver_notes, assigned_driver_id, driver_id, ...rest } = row;
     return { ...rest, customer_status: customerStatus(row), upcoming: isUpcoming(row, today) };
   });
 }
@@ -764,3 +766,4 @@ module.exports = async function handler(req, res) {
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));
 };
+module.exports.attachCustomerStatus = attachCustomerStatus;
