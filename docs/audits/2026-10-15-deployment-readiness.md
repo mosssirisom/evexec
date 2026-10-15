@@ -237,6 +237,13 @@ Also, before every change:
 - **Rollback:** Vercel → promote the previous production deployment, then revert the merge.
 - **Impact:** none for staff.
 
+> **P3 review, 15/10/2026 (read-only; nothing applied or deployed).**
+> - Migration `supabase/migrations/20261015031000_driver_alert_webhook_secret.sql`, sha256 `7ac470c8bf3d57e406f02333741d753b3f92b245b471779e026f77dda62e640a` (166 lines, no DROP). Rollback `supabase/rollback/20261015031000_driver_alert_webhook_secret.rollback.sql`, sha256 `851a3c070f027882ae5831e93b2e9cc844908dff302fe884149cfb025a256170`, tested locally: restores both triggers to the live checksums and the 14 push_config grants.
+> - Live now: `notify_driver_new_booking` md5 `4630a641cf8be7834d7fef926fe36b11`, `notify_driver_job_update` md5 `6b92411ea2fe177d97cbe18ae7910589`; both triggers enabled; vault secret `driver_alert_webhook_secret` absent (the migration creates it); `driver_alert_webhook_secrets()` absent; anon/authenticated hold 7 privileges each on push_config; `extensions.gen_random_bytes` and `vault.create_secret` present; migration not applied.
+> - Migrated vs live (whitespace ignored): the only change in each trigger is the header (`Authorization` → `x-webhook-secret` from vault). Expected checksums after (local PG16, which reproduced live checksums exactly for P1 and this rollback): new_booking `a76d65788e4948096aa06c49cd4117dd`, job_update `652bbecafabd883a6b46498f89b8ed60`, `driver_alert_webhook_secrets` `c5f36d3985680832811f75ef4ab57de6`.
+> - Functions (Driver App branch `7dd83710421518cba13eb39f0a22c4b71f53cb1a`): deployed `send-push` v9 is not in any repo (it adds per-device failure detail); that detail was ported to the branch (`7dd8371`). Deployed `notify-job-update` v9 matches repo state at `3e0cadb` (03/10/2026); deploying the branch also ships `b1773d5` (queued driver emails, stops) and Fix 2.
+> - Tests: `test:db` 5/5 files, 97 checks; Fix 2 file fails on current production definitions as expected; `test:functions` 26/26; `deno check` clean.
+
 ### P3: Fix 2 database (`20261015031000_driver_alert_webhook_secret.sql`)
 
 - **Change:**
