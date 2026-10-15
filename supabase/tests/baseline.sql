@@ -7,10 +7,11 @@
 -- Supabase pieces are stubbed so the real SQL runs unchanged:
 --   auth.uid()/auth.email()/auth.role()  read request.jwt.claim.* settings
 --   net.http_post()                      records calls in net.calls
---   vault.decrypted_secrets              a plain table
+--   vault.decrypted_secrets              a plain table (+ vault.secrets view, vault.create_secret)
 -- Used by supabase/tests/run.sh against a throwaway local PostgreSQL.
 
-create extension if not exists pgcrypto;
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
 do $$ begin
   create role anon nologin;
@@ -53,6 +54,9 @@ grant select, insert on net.calls to anon, authenticated, service_role;
 grant usage on sequence net.calls_id_seq to anon, authenticated, service_role;
 
 create table vault.decrypted_secrets (name text primary key, decrypted_secret text);
+create view vault.secrets as select md5(name)::uuid as id, name, decrypted_secret as secret from vault.decrypted_secrets;
+create or replace function vault.create_secret(new_secret text, new_name text default null, new_description text default '') returns uuid
+language sql as $$ insert into vault.decrypted_secrets (name, decrypted_secret) values (new_name, new_secret) returning md5(name)::uuid $$;
 
 -- ── Tables (columns as live; constraints and foreign keys omitted) ──────────
 create table public.tenants (

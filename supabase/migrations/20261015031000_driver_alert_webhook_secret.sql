@@ -1,24 +1,73 @@
--- Fix 2 (audit H-1): driver-alert triggers send a shared secret.
+-- Fix 2 (audit H-1): driver-alert triggers send a dedicated shared secret.
 --
 -- Root cause: the send-push and notify-job-update edge functions are public
 -- (verify_jwt off), checked nothing, and trusted the booking in the request
 -- body. Anyone who knew a driver's id could send that driver a push or email
 -- such as "Job cancelled, do not travel to the collection point".
 --
--- Fix (database half): both triggers now send push_config.webhook_secret in
--- the x-webhook-secret header (the secret the Operator app's dispatch route
--- already uses). The updated functions (evexecdriverapp, same fix) refuse
--- requests without it and read the booking from the database by id.
--- notify_driver_new_booking also stops sending the anon key literal and uses
--- the same vault-held Authorization value as notify_driver_job_update.
--- The request bodies are unchanged, so the currently deployed functions keep
--- working until the new versions are deployed.
+-- Fix (database half):
+--   1. A dedicated random secret, generated inside the database and stored
+--      in Supabase Vault as 'driver_alert_webhook_secret'. Its value is never
+--      written to a file, a migration or a log, and it is separate from
+--      push_config.webhook_secret (the office-push secret also held by the
+--      website in Vercel), so a leak of one doesn't open the other.
+--   2. Both triggers send it in the x-webhook-secret header. They no longer
+--      send an Authorization header: both functions run with verify_jwt off,
+--      so it was never checked, and it carried the anon key (send-push) or a
+--      vault-held service key (notify-job-update) out of the database for
+--      nothing.
+--   3. public.driver_alert_webhook_secrets() returns the accepted values
+--      (current, plus 'driver_alert_webhook_secret_previous' while a rotation
+--      is in progress). Only service_role may execute it; the updated
+--      functions (evexecdriverapp, same fix) call it and refuse anything else.
+--   4. Hardening: anon/authenticated lose their (unused) table grants on
+--      push_config. It is RLS-locked with no policies today; this keeps the
+--      office-push secret safe even if a policy is ever added by mistake.
+--      Every reader uses the service role or a SECURITY DEFINER function.
+-- The request bodies are unchanged, so the currently deployed functions
+-- (which check nothing) keep working until the new versions are deployed.
+--
+-- Rotation (no downtime):
+--   select vault.create_secret((select decrypted_secret from vault.decrypted_secrets where name = 'driver_alert_webhook_secret'),
+--                              'driver_alert_webhook_secret_previous');
+--   select vault.update_secret((select id from vault.secrets where name = 'driver_alert_webhook_secret'),
+--                              encode(extensions.gen_random_bytes(32), 'hex'));
+--   -- functions now accept both; triggers send the new one. After a few
+--   -- minutes (no retries in flight), remove the previous one:
+--   delete from vault.secrets where name = 'driver_alert_webhook_secret_previous';
 --
 -- Order: apply this migration BEFORE deploying the new send-push and
--- notify-job-update. Rollback: re-create both trigger functions from
--- supabase/tests/baseline.sql (previous definitions; the anon key literal is
--- redacted there and must be taken from the live definition saved before
--- applying).
+-- notify-job-update. Rollback: re-create both trigger functions from the
+-- definitions saved from production before applying (the anon key literal is
+-- redacted in supabase/tests/baseline.sql) and re-grant push_config; the
+-- vault secret and the RPC can stay (unused) or be removed.
+
+do $$
+begin
+  if not exists (select 1 from vault.secrets where name = 'driver_alert_webhook_secret') then
+    perform vault.create_secret(
+      encode(extensions.gen_random_bytes(32), 'hex'),
+      'driver_alert_webhook_secret',
+      'x-webhook-secret for the send-push and notify-job-update edge functions (Fix 2)');
+  end if;
+end $$;
+
+create or replace function public.driver_alert_webhook_secrets()
+returns text[]
+language sql
+stable
+security definer
+set search_path to ''
+as $function$
+  select coalesce(array_agg(s.decrypted_secret order by s.name), '{}')
+  from vault.decrypted_secrets s
+  where s.name in ('driver_alert_webhook_secret', 'driver_alert_webhook_secret_previous')
+    and coalesce(s.decrypted_secret, '') <> '';
+$function$;
+revoke all on function public.driver_alert_webhook_secrets() from public, anon, authenticated;
+grant execute on function public.driver_alert_webhook_secrets() to service_role;
+
+revoke all on table public.push_config from anon, authenticated;
 
 create or replace function public.notify_driver_new_booking()
 returns trigger
@@ -40,10 +89,8 @@ begin
     url     := 'https://yoltkmhtxwluqxxpewbl.supabase.co/functions/v1/send-push',
     headers := jsonb_build_object(
                  'Content-Type', 'application/json',
-                 'x-webhook-secret', (select c.webhook_secret from public.push_config c where c.id = true),
-                 'Authorization', 'Bearer ' || coalesce((
-                   select s.decrypted_secret from vault.decrypted_secrets s
-                   where s.name = 'attestation_engine_service_key' limit 1), '')
+                 'x-webhook-secret', (select s.decrypted_secret from vault.decrypted_secrets s
+                                      where s.name = 'driver_alert_webhook_secret' limit 1)
                ),
     body    := jsonb_build_object('record', row_to_json(NEW))
   );
@@ -109,11 +156,8 @@ BEGIN
     body    := payload,
     headers := jsonb_build_object(
       'Content-Type',     'application/json',
-      'x-webhook-secret', (SELECT c.webhook_secret FROM public.push_config c WHERE c.id = true),
-      'Authorization',    'Bearer ' || (
-        SELECT decrypted_secret FROM vault.decrypted_secrets
-        WHERE name = 'attestation_engine_service_key' LIMIT 1
-      )
+      'x-webhook-secret', (SELECT s.decrypted_secret FROM vault.decrypted_secrets s
+                           WHERE s.name = 'driver_alert_webhook_secret' LIMIT 1)
     )
   );
 
