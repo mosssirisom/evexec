@@ -29,8 +29,11 @@
 --
 -- The trigger names start with zz_ so they run after the other BEFORE UPDATE
 -- triggers (which may adjust NEW) and check the final row.
--- Rollback: drop the two zz_ triggers (via the dashboard) and ALTER the three
--- policies back to the definitions in supabase/tests/baseline.sql.
+-- Rollback (instant, nothing deleted):
+--   alter table public.bookings disable trigger zz_guard_driver_booking_update;
+--   alter table public.drivers  disable trigger zz_guard_driver_record_update;
+-- and ALTER the three policies back to the definitions in
+-- supabase/tests/baseline.sql.
 
 create or replace function private.guard_driver_booking_update()
 returns trigger

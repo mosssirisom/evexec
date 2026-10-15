@@ -81,3 +81,15 @@ update public.driver_sms_reminders set status = 'sent', sent_at = now() where bo
 select test.as_owner();
 select test.ok((select status = 'pending' from public.driver_sms_reminders where booking_id = 'cccccccc-0000-0000-0000-0000000000b2'), 'email-only login cannot mark another driver''s reminder sent');
 select test.ok((select status = 'sent' from public.driver_sms_reminders where booking_id = 'cccccccc-0000-0000-0000-0000000000b1'), 'driver can mark their own reminder sent');
+
+-- ── Rollback works without dropping anything ────────────────────────────────
+select test.as_owner();
+alter table public.bookings disable trigger zz_guard_driver_booking_update;
+select test.login('bbbbbbbb-0000-0000-0000-000000000d02', 'dr2@example.com');
+select test.as_owner();
+update public.bookings set assigned_driver_id = 'bbbbbbbb-0000-0000-0000-000000000d02', driver_id = 'bbbbbbbb-0000-0000-0000-000000000d02' where id = 'cccccccc-0000-0000-0000-0000000000b2';
+select test.login('bbbbbbbb-0000-0000-0000-000000000d02', 'dr2@example.com');
+select test.lives($$update public.bookings set notes = 'rollback check' where id = 'cccccccc-0000-0000-0000-0000000000b2'$$,
+  'with the guard disabled (rollback), the old behaviour returns');
+select test.as_owner();
+alter table public.bookings enable trigger zz_guard_driver_booking_update;
