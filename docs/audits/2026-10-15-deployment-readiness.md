@@ -260,6 +260,13 @@ Also, before every change:
 > - Open: the next real driver assignment should return 200 with a `job_assigned` row. A 401 there would mean the function can't read the secret: roll back by redeploying the v9 archive (works with Stage A in place).
 > - `notify-job-update` not deployed (Stage C awaits approval).
 
+> **P3 Stage C deployed 15/10/2026 07:27 UTC: `notify-job-update` v10.** (Approved before a real assignment had gone through `send-push` v10; none had at 07:25 UTC.)
+> - Preflight: Stage A intact (trigger md5 `652bbeca…`, enabled); functions unchanged since reviewed `7dd8371`; live v9 unchanged (ezbr `2cc1205e…`), archived in Driver App `docs/deployed-archive/notify-job-update-v9/` (= `3e0cadb`, checked against the live code; commit `c17682a`).
+> - Deployed files: `notify-job-update/index.ts`, `notify-job-update/handler.ts`, `_shared/webhookAuth.ts`, `_shared/notify.ts`, `_shared/email.ts`, `_shared/emailLayout.ts`; entrypoint `notify-job-update/index.ts`; `verify_jwt` false. Result: version 10, ACTIVE, ezbr `f3ee5789c2d1ee51b38bd400b8f9b070424e098c766ded607f251660be21e2e8`.
+> - Post-check (07:27:35 UTC, pg_net, made-up ids, body claiming "Cancelled"): no secret → 401; wrong secret → 401; nothing queued.
+> - Now live: driver job-update/cancellation emails are queued for the website to send (re-rendered in the house template) instead of failing on the missing Resend key; stops listed; no generic fallback email when push succeeds.
+> - Open: the next real driver assignment (send-push) and the next real job change or cancellation (notify-job-update) should return 200. A 401 on either means that function can't read the secret: roll it back from its v9 archive (works with Stage A in place).
+
 ### P3: Fix 2 database (`20261015031000_driver_alert_webhook_secret.sql`)
 
 - **Change:**
