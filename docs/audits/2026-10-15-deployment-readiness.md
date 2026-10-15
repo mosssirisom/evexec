@@ -1,6 +1,13 @@
 # Deployment readiness pack: five urgent fixes
 
-**Date:** 15/10/2026 · **Status:** ready for review. **Nothing has been deployed, merged, applied or changed in production.** Every live query used for this pack was read-only.
+**Date:** 15/10/2026 · **Status:** P1 applied 15/10/2026 (see below); everything else awaiting approval. No branch merged, no app or function deployed.
+
+> **P1 applied 15/10/2026**, after the extra secret-exposure check (anon and signed-in callers get nothing from `get_push_dispatch_bundle` with a wrong, empty, null, one-character-short, padded or case-changed secret; no other callable function returns the private key or subscriptions).
+> - Migration version `20261015035414`, name `office_push_staff_only` (repo file `20261015030000_office_push_staff_only.sql`, sha256 `a74cf466…cd2da`).
+> - Checksums after: `register_operator_push` `0be19ff009c846551c78f1b648ae23db`, `get_push_dispatch_bundle` `b5d88aa0c85d582722e72b39c2edc0d9`.
+> - Grants unchanged: `register_operator_push` postgres, service_role, authenticated; `get_push_dispatch_bundle` postgres, service_role, anon, authenticated.
+> - A signed-in non-staff caller is now refused (42501); the 2 staff devices are still returned.
+> - Rollback: `supabase/rollback/20261015030000_office_push_staff_only.rollback.sql`. Not needed so far.
 
 ## 1. Branches and commits
 
