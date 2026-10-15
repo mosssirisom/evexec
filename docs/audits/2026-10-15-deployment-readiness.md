@@ -213,6 +213,11 @@ Also, before every change:
 - **Rollback:** re-run the two saved definitions.
 - **Impact:** none for staff. Customers or drivers can no longer subscribe (they had no reason to).
 
+> **P2 released 15/10/2026.** Operator `main` fast-forwarded `6501ff6` → `c9467f1` (commits `f1d8fdd`, `c9467f1` only; production diff = `src/app/api/push/subscribe/route.ts` + two test files). Vercel Production deployment `BQrFMihNW3rbyzYteNbESXCbFggR` (GitHub deployment 7085788988) reported success at 06:41:39 UTC; CI run 143 on `main` passed. Office push devices unchanged (2, both staff; same rows before and after). Previous production deployment for rollback: `5F9M44aoxmkjEyfJVTu9bDinA6T2` (from `6501ff6`).
+> - Open: the user runs the unauthenticated 401 check on `/api/push/subscribe` and holds the rollback (Vercel isn't reachable from the agent session).
+> - Open: the office confirms the next genuine website booking or payment alert reaches their phones (P1 + P2).
+> - Open, outside P2: endpoint-takeover hardening; per-business device isolation before a second operator; lint (needs a Next 16 ESLint config); production runtime verification.
+
 ### P2: Fix 1 Operator app (merge `evexecoperator` `claude/security-fixes-p0` → `main`, Vercel deploy)
 
 - **Change:** `/api/push/subscribe` requires a staff session; DELETE removes only the caller's own device.
