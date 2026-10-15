@@ -311,6 +311,14 @@ Also, before every change:
 > - Tests: `test:db` 5/5 files, 97 checks (with production schema access); against current production definitions the Fix 1–4 files fail and the workflow file passes.
 > - Remaining (not changed by P5): the driver SELECT policies (`bookings_driver_select`, `drivers_self_select`, `driver_select_own_sms_reminders`) still match by email; no email-only login exists today.
 
+> **P5 applied 15/10/2026 07:38:51 UTC**: both migrations in one `apply_migration` call (one implicit transaction, no transaction statements inside), recorded as `20261015073851 driver_write_guards`.
+> - Preflight: branch `7b2f29f` (contains `ffd0ba3`); file hashes match (`71268e7d…`, `e09b8bc1…`, rollback `a3d6c101…`); live policies `8bbf5b3b…` / `8472a4a6…` / `1151f421…`; no guard functions or triggers; not recorded; mismatches 0; email-only driver logins 0; WHEN clause present on both triggers; no other references to `private.staff_for_tenant` in the function bodies.
+> - Post-checks, all equal to the expected values: policies `bookings_driver_update` `ca975fe8c21b8a215d232d7ff842a469`, `driver_update_own_sms_reminders` `b0bc70afd34a5b5c173c4bbbc3f87036`, `drivers_self_update` `7e8f0ccaf39b6f8f4b693541ab982da6` (all three now login id only); `guard_driver_booking_update()` `b61bc40b546500e9424174f67f90b196`, `guard_driver_record_update()` `c4942d8c2ea8a64bde8dc34a22920dfb` (SECURITY INVOKER); triggers enabled, `a4cc97eeaefae28e484fe9fc5f5210a7` / `a45efc59d3d17fe5e36fdce985c3b8be`, both with the staff-check WHEN clause.
+> - Data unchanged by the migration: bookings 71 rows, fingerprint `9adf1cf7…` before and after; drivers 3 rows, `c1c8eabf…` before and after.
+> - Behaviour probes in production, each inside a sub-transaction that was always rolled back (simulated non-staff driver = a partner id with no login; office admin = the business's operator_admin): driver changes driver_notes → allowed; driver changes quoted_price → refused ("Drivers can't change quoted_price on a booking."); driver sends a payment_status change → update goes through, payment_status and payment_method unchanged; driver updates own location_updated_at → allowed; driver changes own phone → refused; office admin changes quoted_price → allowed; office admin changes a driver's phone → allowed. Afterwards: fingerprints unchanged, 0 audit rows, 0 queue rows, 0 pending pg_net requests.
+> - Note: the only real driver login is also the business's operator_admin, so the guard's staff check exempts it by design; today the guard restricts no real login. It protects against future non-staff driver logins and direct API use.
+> - Still to see in normal use: the next real driver status change and the next office edit succeeding. Rollback (not run): the tested rollback file.
+
 ### P5: Fixes 3 and 4 database (`20261015032000` + `20261015033000`, **one transaction**)
 
 - **Change:**
