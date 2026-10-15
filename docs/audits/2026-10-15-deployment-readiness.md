@@ -302,6 +302,15 @@ Also, before every change:
   - Fallback emails now actually arrive, in the house design.
   - Forged alerts are no longer possible.
 
+> **P5 review, 15/10/2026 (read-only; nothing applied).**
+> - **Blocking issue found and fixed on the branch (`ffd0ba3`).** Production gives anon/authenticated/service_role no USAGE on schema private. The guard functions called `private.staff_for_tenant()` by name, so every signed-in update (drivers and office staff) would have failed with "permission denied for schema private". The local baseline had granted that usage, which hid it. The staff check is now in the triggers' WHEN clause (stored by OID, needs only EXECUTE, as the RLS policies do). The baseline now matches production and reproduces the failure without the fix.
+> - Files: `20261015032000_driver_write_guard.sql` sha256 `71268e7d63a9e8a3023b5f90a47da09eb25eaaf3915b10d3698f119535e953d8`; `20261015033000_driver_payment_guard.sql` sha256 `e09b8bc12f84d3927b877a2b6ff528424bb3edb3682c781e2de5b292b95055c9`; rollback `supabase/rollback/20261015032000_033000_driver_guards.rollback.sql` sha256 `a3d6c1014931fa8d15a62cb791f0e964691ab7660fdb6a86bce3ebe1e6dd75eb` (disables both triggers, restores the three policies to the live checksums; tested).
+> - Live now: no guard functions or zz_ triggers; policies `bookings_driver_update` `8bbf5b3b…`, `drivers_self_update` `8472a4a6…`, `driver_update_own_sms_reminders` `1151f421…` (baseline matches exactly); `staff_for_tenant` same logic as baseline (formatting differs); no generated columns; assignment mismatches 0; email-only driver logins 0; 1 driver login (by id); 2 partners, no logins; job-offer columns never used (0 offers, no code writes them).
+> - Driver App writes (main and branch) are all within the allowed columns; the old app's `payment_status` write is reset, not refused.
+> - Expected after P5 (local PG16): policies `ca975fe8…` / `7e8f0cca…` / `b0bc70af…`; guard functions `b61bc40b…` (booking) / `c4942d8c…` (record); triggers enabled, with WHEN clause.
+> - Tests: `test:db` 5/5 files, 97 checks (with production schema access); against current production definitions the Fix 1–4 files fail and the workflow file passes.
+> - Remaining (not changed by P5): the driver SELECT policies (`bookings_driver_select`, `drivers_self_select`, `driver_select_own_sms_reminders`) still match by email; no email-only login exists today.
+
 ### P5: Fixes 3 and 4 database (`20261015032000` + `20261015033000`, **one transaction**)
 
 - **Change:**
