@@ -16,7 +16,10 @@ select test.lives($$update public.drivers set current_lat = 53.8, current_lng = 
 
 -- ── Unauthorised column changes on the driver's own job ─────────────────────
 select test.throws($$update public.bookings set quoted_price = 1 where id = 'cccccccc-0000-0000-0000-0000000000b1'$$, 'driver cannot change the price');
-select test.throws($$update public.bookings set payment_status = 'Paid' where id = 'cccccccc-0000-0000-0000-0000000000b1'$$, 'driver cannot mark a booking Paid');
+-- payment_status is reset to the stored value rather than refused (Fix 4,
+-- applied together with this fix), so the old Driver App keeps working.
+update public.bookings set payment_status = 'Paid' where id = 'cccccccc-0000-0000-0000-0000000000b1';
+select test.ok((select payment_status from public.bookings where id = 'cccccccc-0000-0000-0000-0000000000b1') = 'Unpaid', 'driver cannot mark a booking Paid');
 select test.throws($$update public.bookings set tenant_id = '00000000-0000-0000-0000-000000000002' where id = 'cccccccc-0000-0000-0000-0000000000b1'$$, 'driver cannot move a booking to another business');
 select test.throws($$update public.bookings set customer_phone = '07000000000' where id = 'cccccccc-0000-0000-0000-0000000000b1'$$, 'driver cannot change customer details');
 select test.throws($$update public.bookings set operator_response = 'accepted' where id = 'cccccccc-0000-0000-0000-0000000000b1'$$, 'driver cannot accept/decline for the office');

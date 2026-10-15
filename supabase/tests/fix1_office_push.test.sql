@@ -48,3 +48,25 @@ select public.unregister_operator_push('https://push.example/admin');
 select test.as_owner();
 select test.ok(exists (select 1 from public.operator_push_subscriptions where endpoint = 'https://push.example/admin'),
   'someone else cannot unregister the admin device');
+
+-- Direct table access (REST /operator_push_subscriptions) is also closed to
+-- non-staff (RLS policy staff_manage_own_push_subscription, unchanged).
+select test.login('dddddddd-0000-0000-0000-000000000c01', 'customer@example.com');
+select test.throws($$insert into public.operator_push_subscriptions (endpoint, p256dh, auth, user_id) values ('https://push.example/c2', 'k', 'a', 'dddddddd-0000-0000-0000-000000000c01')$$,
+  'customer cannot insert a subscription directly');
+delete from public.operator_push_subscriptions where endpoint in ('https://push.example/admin', 'https://push.example/super');
+select test.ok((select count(*) from public.operator_push_subscriptions) = 0, 'customer cannot even see office subscriptions');
+select test.login('bbbbbbbb-0000-0000-0000-000000000d01', 'dr1@example.com');
+select test.throws($$insert into public.operator_push_subscriptions (endpoint, p256dh, auth, user_id) values ('https://push.example/d2', 'k', 'a', 'bbbbbbbb-0000-0000-0000-000000000d01')$$,
+  'driver cannot insert a subscription directly');
+select test.as_owner();
+select test.ok((select count(*) from public.operator_push_subscriptions where endpoint in ('https://push.example/admin', 'https://push.example/super')) = 2,
+  'customer delete removed no office device');
+
+-- Staff can remove their own device; not a colleague's.
+select test.login('aaaaaaaa-0000-0000-0000-00000000005a', 'super@example.com');
+select public.unregister_operator_push('https://push.example/admin');
+select public.unregister_operator_push('https://push.example/super');
+select test.as_owner();
+select test.ok((select array_agg(endpoint order by endpoint) from public.operator_push_subscriptions where endpoint in ('https://push.example/admin', 'https://push.example/super'))
+  = array['https://push.example/admin'], 'super_admin removed own device only');
