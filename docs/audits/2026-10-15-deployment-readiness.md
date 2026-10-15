@@ -253,6 +253,13 @@ Also, before every change:
 > - Both triggers enabled. The deployed v9 functions ignore the new header, so driver alerts continue unchanged; confirmation awaits the next real driver assignment or job change.
 > - Rollback (not run): `supabase/rollback/20261015031000_driver_alert_webhook_secret.rollback.sql`. If Stage B/C are deployed first, restore the v9 functions before running it.
 
+> **P3 Stage B deployed 15/10/2026 07:20 UTC: `send-push` v10.**
+> - Preflight: Stage A in place (recorded, secret present, trigger md5 `a76d6578…`, RPC md5 `c5f36d39…`, trigger enabled); Driver App functions unchanged since reviewed `7dd8371`; live `send-push` still v9 (ezbr `6cb8881a…`), archived verbatim in Driver App `docs/deployed-archive/send-push-v9/` (commit `7cb7079`).
+> - Deployed files: `send-push/index.ts`, `send-push/handler.ts`, `_shared/webhookAuth.ts`, `_shared/notify.ts`, `_shared/emailLayout.ts`; entrypoint `send-push/index.ts`; `verify_jwt` false. Result: version 10, ACTIVE, ezbr `e2ba41ed72f1f41ebbcacfed9c2e224d888b80580500a5b3a9613c3d606025b9`. Read back: contents match the repo files.
+> - Post-check (07:21:02 UTC, sent from the database with pg_net, made-up booking id): no secret → 401 `{"error":"Unauthorized"}`; wrong secret → 401. No notification row created.
+> - Open: the next real driver assignment should return 200 with a `job_assigned` row. A 401 there would mean the function can't read the secret: roll back by redeploying the v9 archive (works with Stage A in place).
+> - `notify-job-update` not deployed (Stage C awaits approval).
+
 ### P3: Fix 2 database (`20261015031000_driver_alert_webhook_secret.sql`)
 
 - **Change:**
