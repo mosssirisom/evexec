@@ -216,6 +216,11 @@ Also, before every change:
 > **P2 released 15/10/2026.** Operator `main` fast-forwarded `6501ff6` → `c9467f1` (commits `f1d8fdd`, `c9467f1` only; production diff = `src/app/api/push/subscribe/route.ts` + two test files). Vercel Production deployment `BQrFMihNW3rbyzYteNbESXCbFggR` (GitHub deployment 7085788988) reported success at 06:41:39 UTC; CI run 143 on `main` passed. Office push devices unchanged (2, both staff; same rows before and after). Previous production deployment for rollback: `5F9M44aoxmkjEyfJVTu9bDinA6T2` (from `6501ff6`).
 > - **Route check passed, 15/10/2026 06:53:57 UTC** (sent from the production database with pg_net, user-approved, because the agent session can't reach Vercel): unauthenticated POST with no body → **401** `{"error":"Not authorised."}`; unauthenticated DELETE with a made-up endpoint → **401** `{"error":"Not authorised."}`; GET → **405** (empty body). The user's Safari visit at 07:51 BST showed a blank page, consistent with the 405. Office devices unchanged afterwards (2, both staff, same rows; no test rows). The user holds the Vercel rollback.
 > - Open: the office confirms the next genuine website booking or payment alert reaches their phones (P1 + P2).
+> - **Monitoring, 15/10/2026 06:58 UTC (read-only).** Window checked: 03:54:14 UTC (P1 applied) to 06:58:24 UTC. The request log held 00:59 to 06:58 UTC, so the whole window was within its ~6-hour retention.
+>   - New bookings: 0. Bookings marked Paid: 0. Stripe webhook events: 0. Booking audit rows: 0.
+>   - Alert route (`/api/push/dispatch`) replies in the log: 0. The 555 log entries in the window are the per-minute cron sweeps and the three route-check requests of 06:53:57.
+>   - Office push devices: 2, both staff, same rows as before (fingerprint unchanged).
+>   - **No end-to-end test was possible: no booking or payment occurred.** This is neither a pass nor a failure. A scheduled check (first at 09:56 UTC, then every 3 hours) keeps watching.
 > - Open, outside P2: endpoint-takeover hardening; per-business device isolation before a second operator; lint (needs a Next 16 ESLint config); production runtime verification.
 
 ### P2: Fix 1 Operator app (merge `evexecoperator` `claude/security-fixes-p0` → `main`, Vercel deploy)
