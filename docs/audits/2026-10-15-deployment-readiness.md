@@ -244,6 +244,15 @@ Also, before every change:
 > - Functions (Driver App branch `7dd83710421518cba13eb39f0a22c4b71f53cb1a`): deployed `send-push` v9 is not in any repo (it adds per-device failure detail); that detail was ported to the branch (`7dd8371`). Deployed `notify-job-update` v9 matches repo state at `3e0cadb` (03/10/2026); deploying the branch also ships `b1773d5` (queued driver emails, stops) and Fix 2.
 > - Tests: `test:db` 5/5 files, 97 checks; Fix 2 file fails on current production definitions as expected; `test:functions` 26/26; `deno check` clean.
 
+> **P3 Stage A applied 15/10/2026** (migration only; no function deployed).
+> - Preflight: branch at `df135be`; migration sha256 `7ac470c8…640a`, unchanged; live trigger md5s `4630a641…` / `6b92411e…` as reviewed; not recorded; secret and RPC absent; both triggers enabled; 14 push_config grants present; statements = secret creation (DO block), RPC + grants, push_config revoke, two trigger functions; no DROP.
+> - Recorded as `20261015071626 driver_alert_webhook_secret`.
+> - Post-checks: secret exists (1 row), 64 lowercase hex characters, differs from the office-push secret; no `_previous` entry; `driver_alert_webhook_secrets()` returns 1 value, SECURITY DEFINER, executable by postgres and service_role only (anon/authenticated false).
+> - Definitions match the reviewed expectations exactly: `notify_driver_new_booking` `a76d65788e4948096aa06c49cd4117dd`, `notify_driver_job_update` `652bbecafabd883a6b46498f89b8ed60`, `driver_alert_webhook_secrets` `c5f36d3985680832811f75ef4ab57de6`. Both send `x-webhook-secret` from vault and no `Authorization`. Function grants unchanged (postgres, service_role).
+> - push_config: anon/authenticated grants 0; postgres and service_role grants intact. Office dispatch bundle still refuses a wrong secret; office devices still 2.
+> - Both triggers enabled. The deployed v9 functions ignore the new header, so driver alerts continue unchanged; confirmation awaits the next real driver assignment or job change.
+> - Rollback (not run): `supabase/rollback/20261015031000_driver_alert_webhook_secret.rollback.sql`. If Stage B/C are deployed first, restore the v9 functions before running it.
+
 ### P3: Fix 2 database (`20261015031000_driver_alert_webhook_secret.sql`)
 
 - **Change:**
