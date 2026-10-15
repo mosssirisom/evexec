@@ -221,6 +221,7 @@ Also, before every change:
 >   - Alert route (`/api/push/dispatch`) replies in the log: 0. The 555 log entries in the window are the per-minute cron sweeps and the three route-check requests of 06:53:57.
 >   - Office push devices: 2, both staff, same rows as before (fingerprint unchanged).
 >   - **No end-to-end test was possible: no booking or payment occurred.** This is neither a pass nor a failure. A scheduled check (first at 09:56 UTC, then every 3 hours) keeps watching.
+>   - **Device readiness, 15/10/2026 08:03 UK (user screenshots):** both registered office devices belong to the `evexec` admin account (iPhones, registered 31/08/2026 and 12/10/2026). On the user's iPhone the Operator app (Home Screen web app) shows "This device is set up for push alerts"; iOS Settings → Notifications → "EV Exec Operator" has Allow Notifications on, Lock Screen, Notification Centre and Banners ticked, Sounds on. "Recent notifications" is empty, consistent with no bookings since the fix. Delivery itself is still unconfirmed until the next genuine booking.
 > - Open, outside P2: endpoint-takeover hardening; per-business device isolation before a second operator; lint (needs a Next 16 ESLint config); production runtime verification.
 
 ### P2: Fix 1 Operator app (merge `evexecoperator` `claude/security-fixes-p0` → `main`, Vercel deploy)
