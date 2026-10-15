@@ -29,6 +29,13 @@
 --
 -- The trigger names start with zz_ so they run after the other BEFORE UPDATE
 -- triggers (which may adjust NEW) and check the final row.
+--
+-- The "app user who is not office staff" test is the triggers' WHEN clause,
+-- not code inside the functions. In production anon/authenticated have no
+-- USAGE on schema private, so plpgsql running as them cannot call
+-- private.staff_for_tenant() by name ("permission denied for schema
+-- private"); a WHEN clause, like an RLS policy, is stored by OID and needs
+-- only EXECUTE, which they have.
 -- Rollback (instant, nothing deleted):
 --   alter table public.bookings disable trigger zz_guard_driver_booking_update;
 --   alter table public.drivers  disable trigger zz_guard_driver_record_update;
@@ -51,13 +58,10 @@ declare
   ];
   changed text[];
 begin
-  -- Only requests made with an app user's token are restricted. current_user
-  -- is the invoking role here (SECURITY INVOKER), so the service role and
-  -- SECURITY DEFINER functions pass straight through.
+  -- Runs only for app users (anon/authenticated) who are not office staff
+  -- for this booking's business: see the trigger's WHEN clause. The service
+  -- role, office staff and SECURITY DEFINER functions never reach this.
   if current_user not in ('authenticated', 'anon') then
-    return new;
-  end if;
-  if private.staff_for_tenant(old.tenant_id) then
     return new;
   end if;
 
@@ -90,10 +94,8 @@ declare
   ];
   changed text[];
 begin
+  -- See the trigger's WHEN clause (app users who are not office staff only).
   if current_user not in ('authenticated', 'anon') then
-    return new;
-  end if;
-  if private.staff_for_tenant(old.tenant_id) then
     return new;
   end if;
 
@@ -117,12 +119,16 @@ begin
   if not exists (select 1 from pg_trigger where tgname = 'zz_guard_driver_booking_update' and tgrelid = 'public.bookings'::regclass) then
     create trigger zz_guard_driver_booking_update
       before update on public.bookings
-      for each row execute function private.guard_driver_booking_update();
+      for each row
+      when (current_user in ('authenticated', 'anon') and not private.staff_for_tenant(old.tenant_id))
+      execute function private.guard_driver_booking_update();
   end if;
   if not exists (select 1 from pg_trigger where tgname = 'zz_guard_driver_record_update' and tgrelid = 'public.drivers'::regclass) then
     create trigger zz_guard_driver_record_update
       before update on public.drivers
-      for each row execute function private.guard_driver_record_update();
+      for each row
+      when (current_user in ('authenticated', 'anon') and not private.staff_for_tenant(old.tenant_id))
+      execute function private.guard_driver_record_update();
   end if;
 end $$;
 

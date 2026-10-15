@@ -28,7 +28,10 @@ create schema if not exists private;
 create schema if not exists net;
 create schema if not exists vault;
 grant usage on schema auth, public, net to anon, authenticated, service_role;
-grant usage on schema private to authenticated, service_role;
+-- Live (checked 15/10/2026): anon, authenticated and service_role have NO usage
+-- on schema private. RLS policies still work (they store function OIDs and need
+-- only EXECUTE), but plpgsql/SQL code running as those roles cannot resolve
+-- private.* by name. Keep this matching production.
 
 create or replace function auth.uid() returns uuid language sql stable as
 $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;

@@ -38,13 +38,10 @@ declare
   ];
   changed text[];
 begin
-  -- Only requests made with an app user's token are restricted. current_user
-  -- is the invoking role here (SECURITY INVOKER), so the service role and
-  -- SECURITY DEFINER functions pass straight through.
+  -- Runs only for app users who are not office staff for this booking's
+  -- business: see the trigger's WHEN clause in 20261015032000 (staff check
+  -- there, because app roles have no USAGE on schema private).
   if current_user not in ('authenticated', 'anon') then
-    return new;
-  end if;
-  if private.staff_for_tenant(old.tenant_id) then
     return new;
   end if;
 
