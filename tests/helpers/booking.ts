@@ -31,6 +31,7 @@ export interface BookingPayload {
   customer_email: string;
   contact_method: string;
   return_journey?: boolean;
+  terms_accepted?: boolean;
 }
 
 /** Minimal valid booking payload for API-level tests. */
@@ -50,6 +51,7 @@ export function sampleBooking(overrides: Partial<BookingPayload> = {}): BookingP
     customer_phone: '07700900123',
     customer_email: 'qa@evexec-test.invalid',
     contact_method: 'WhatsApp',
+    terms_accepted: true,
     ...overrides,
   };
 }
@@ -117,6 +119,7 @@ export async function fillAndSubmitBookingWizard(
     await page.locator('#bwEmail').fill(opts.email);
   }
 
+  await page.locator('#bwTerms').check();
   await page.locator('#bwSubmit').click();
 }
 

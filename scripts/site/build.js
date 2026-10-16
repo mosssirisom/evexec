@@ -477,6 +477,7 @@ function syncVercel(pages) {
 const CHROME_PAGES = {
   'index.html': { book: '#quote', cta: true },
   'terms.html': {},
+  'terms-v1.html': {},
   'privacy.html': {},
   'booking.html': {},
   'blog.html': {},
@@ -485,7 +486,7 @@ const CHROME_PAGES = {
 
 // Hand-maintained pages also share the icon/font block. Old Google Fonts links,
 // their preconnects and the old non-square icon are replaced by headCommon().
-const HEAD_PAGES = { 'index.html': 'home', 'terms.html': 'doc', 'privacy.html': 'doc', 'booking.html': 'doc', 'manchester-airport-parking-vs-private-transfer.html': 'doc', 'blog.html': 'blog', 'account.html': 'account' };
+const HEAD_PAGES = { 'index.html': 'home', 'terms.html': 'doc', 'terms-v1.html': 'doc', 'privacy.html': 'doc', 'booking.html': 'doc', 'manchester-airport-parking-vs-private-transfer.html': 'doc', 'blog.html': 'blog', 'account.html': 'account' };
 
 function normalizeHead(file, html) {
   const block = headCommon(HEAD_PAGES[file]);

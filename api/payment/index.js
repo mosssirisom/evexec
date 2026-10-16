@@ -9,6 +9,7 @@ const { getPrice, journeyLine } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES } = require('../../lib/payments');
 const stripeEvents = require('../../lib/stripeEvents');
+const policy = require('../../lib/cancellation');
 
 function isUnpaid(status) {
   return status !== 'Paid' && status !== 'Invoiced';
@@ -77,6 +78,17 @@ async function createStripeSession({ price, description, bookingId, customerEmai
   return stripeRes.json();
 }
 
+// A booking made by phone or WhatsApp after the current policy went live has
+// not accepted it yet: the payment page asks, and nothing is paid until it is
+// ticked. Returns an error message, or null once accepted (recorded here).
+async function ensurePolicyAccepted(booking, body) {
+  if (!policy.needsAcceptance(booking)) return null;
+  if (body.terms_accepted !== true) return 'Please tick the box to accept the cancellation policy.';
+  await policy.recordAcceptance(booking, dbUpdate);
+  booking.terms_version = policy.TERMS_VERSION;
+  return null;
+}
+
 async function handleCreateCheckoutSession(req, res) {
   if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' });
 
@@ -86,6 +98,8 @@ async function handleCreateCheckoutSession(req, res) {
 
   const booking = await dbGet('bookings', bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found' });
+  const notAccepted = await ensurePolicyAccepted(booking, body);
+  if (notAccepted) return json(res, 400, { error: notAccepted });
 
   const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
   const successUrl = `${siteUrl}/booking?id=${bookingId}&payment=success`;
@@ -158,6 +172,8 @@ async function handleConfirmCash(req, res) {
   if (!booking) return json(res, 404, { error: 'Booking not found' });
 
   if (!readyForPayment(booking)) return json(res, 400, { error: 'Booking cannot be confirmed in its current state' });
+  const notAccepted = await ensurePolicyAccepted(booking, body);
+  if (notAccepted) return json(res, 400, { error: notAccepted });
   // Already chose cash: nothing to change, don't send the notices again.
   if (String(booking.payment_method || '').toLowerCase() === 'cash') return json(res, 200, { success: true });
 

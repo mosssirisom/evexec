@@ -5,6 +5,7 @@
 // tracking on inbound airport pickups, driver messages on En Route / Arrived).
 
 module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
+  const fare = (n) => (Number.isInteger(n) ? gbp(n) : `£${n.toFixed(2)}`);
   const groups = [
     {
       title: 'Booking',
@@ -23,7 +24,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
         { q: 'How much are your airport transfers?', a: `From anywhere on the Fylde Coast, one way: Manchester ${gbp(PRICES.manchester.oneWay)}, Liverpool ${gbp(PRICES.liverpool.oneWay)}, Leeds Bradford ${gbp(PRICES.leeds.oneWay)}, Birmingham ${gbp(PRICES.birmingham.oneWay)}, Newcastle ${gbp(PRICES.newcastle.oneWay)}. Prices cover up to four passengers and include airport drop-off and pickup charges.` },
         { q: 'Can I pay online?', a: 'Yes. Once your booking is confirmed you can pay securely online by card. You can also pay by bank transfer or in cash on the day.' },
         { q: 'Are there any extra charges?', a: 'Not for standard bookings. Extra charges only apply to things agreed with you in advance, such as pickups outside our area, excess luggage or long waiting beyond a reasonable flight delay.' },
-        { q: 'What is your cancellation policy?', a: 'Cancel more than 24 hours before travel for a full refund or free rebooking. Between 2 and 24 hours, up to 50% of the fare may be charged. Under 2 hours or a no-show, the full fare is payable. Full details are in our <a href="/terms">terms</a>.' },
+        { q: 'What is your cancellation policy?', a: 'Cancelling is free more than 48 hours before pickup. Between 24 and 48 hours the charge is 25% of the fare, between 2 and 24 hours 50%, and under 2 hours or a no-show the full fare. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger name is free, and if we cancel you get a full refund. See the <a href="/prices#cancellations">cancellation table</a> and our <a href="/terms#cancellation">terms</a>.' },
       ],
     },
     {
@@ -181,8 +182,20 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
             { icon: 'plane', title: 'Flight monitoring and airport charges', text: 'We track your flight home and wait for delays at no extra cost. Airport drop-off and pickup charges are included.' },
             { icon: 'route', title: 'Return journeys', text: 'Book both legs together and the return price is lower than two single journeys.' },
             { icon: 'card', title: 'Paying', text: 'Securely online by card once your booking is confirmed, by bank transfer, or on the day.' },
-            { icon: 'calendar', title: 'Changes and cancellations', text: 'Free more than 24 hours before travel. Full details are in our <a class="gold" href="/terms">terms</a>.' },
+            { icon: 'calendar', title: 'Changes and cancellations', text: 'Free more than 48 hours before pickup, then a charge that rises as pickup gets closer. <a class="gold" href="#cancellations">See the cancellation table</a>.' },
           ],
+        },
+        {
+          // Same bands as terms.html section 5 and lib/cancellation.js; keep in step.
+          type: 'prose', id: 'cancellations', eyebrow: 'Changes and cancellations', title: 'Cancelling or changing your transfer',
+          html: `<div class="price-card"><table class="price-table"><thead><tr><th scope="col">If you cancel</th><th scope="col">You pay</th><th scope="col">On a ${gbp(PRICES.manchester.oneWay)} fare</th></tr></thead><tbody>
+<tr><td>More than 48 hours before pickup</td><td>Nothing. Full refund.</td><td class="num">£0</td></tr>
+<tr><td>24 to 48 hours before</td><td>25% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.25)}</td></tr>
+<tr><td>2 to 24 hours before</td><td>50% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.5)}</td></tr>
+<tr><td>Under 2 hours before, or a no-show</td><td>The full fare</td><td class="num">${gbp(PRICES.manchester.oneWay)}</td></tr>
+</tbody></table></div>
+<ul class="checklist"><li>Times count back from your pickup time (for airport pickups, your flight's scheduled landing time), in UK time.</li><li>If we re-book your car and driver for the same slot, we reduce your charge.</li><li>Moving your date or time is free more than 48 hours before pickup. Changing flight details or the passenger's name is always free.</li><li>If we have to cancel, or your route is closed by a red weather warning or the police, you get a full refund.</li><li>If someone you booked for cancels, it counts as your cancellation.</li><li>We never take card fees off a refund for personal bookings.</li><li>Long-distance, event and other quoted journeys over £300 have their own schedule, shown on your quote.</li></ul>
+<p><a class="gold" href="/terms#cancellation">Read the full policy</a></p>`,
         },
         {
           type: 'prose', id: 'quote', eyebrow: 'Other journeys', title: 'When we quote instead',

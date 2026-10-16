@@ -219,6 +219,15 @@ body{
   <!-- Accepted: payment options -->
   <div id="panelPayment" class="hidden">
     <p class="text-white/65 mb-5 leading-relaxed">Your transfer has been accepted. Please choose how you'd like to pay:</p>
+    <div class="glass rounded-xl p-5 mb-5" style="border-color:rgba(213,165,56,.35)">
+      <p class="font-bold text-sm mb-1" style="color:#d5a538">Before you pay: cancellations</p>
+      <p class="text-white/70 text-sm leading-relaxed" id="policySummary">Free more than 48 hours before pickup. 25% of the fare 24&ndash;48 hours before, 50% 2&ndash;24 hours before, and the full fare under 2 hours or if no one is there to be picked up. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger's name is free. If we cancel, you get a full refund. <a class="gold" id="policyLink" href="/terms#cancellation">Full policy</a></p>
+      <label id="policyAcceptRow" class="hidden flex items-start gap-3 mt-4 text-sm text-white/80" style="cursor:pointer">
+        <input type="checkbox" id="policyAccept" style="width:18px;height:18px;margin-top:2px;accent-color:#d5a538;flex-shrink:0">
+        <span>I have read and accept the <a class="gold" href="/terms#cancellation" target="_blank" rel="noopener">Booking, Payment, Changes and Cancellation Policy</a> and the <a class="gold" href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including the cancellation charges above.</span>
+      </label>
+      <p id="policyError" class="text-red-400 text-xs mt-2 hidden">Please confirm you accept the cancellation policy to continue.</p>
+    </div>
     <div class="grid gap-4 payment-grid" style="grid-template-columns:1fr 1fr">
 
       <div class="glass rounded-xl p-6 flex flex-col gap-4">
@@ -498,6 +507,7 @@ body{
           } catch (_) {}
         }, 3000);
       } else {
+        setupPolicy(b);
         show('panelPayment');
         if (payment === 'cancelled') show('panelCancelled');
       }
@@ -627,9 +637,33 @@ body{
     }
   };
 
+  // The cancellation policy this booking is held to (version 1 for bookings
+  // made before 16/10/2026), and the tick box for bookings made by phone or
+  // WhatsApp that haven't accepted it yet. Wording matches /terms.
+  var needsTerms = false;
+  function setupPolicy(b) {
+    if (b.policy_version === '1') {
+      document.getElementById('policySummary').innerHTML = 'Free more than 24 hours before pickup. 50% of the fare 2&ndash;24 hours before, and the full fare under 2 hours or a no-show. If we cancel, you get a full refund. <a class="gold" href="/terms-v1#cancellation">Full policy</a>';
+    }
+    needsTerms = !!b.needs_terms;
+    if (needsTerms) document.getElementById('policyAcceptRow').classList.remove('hidden');
+  }
+  // Returns the request body, or null (and shows the message) when the box
+  // must be ticked first.
+  function payBody() {
+    var body = { bookingId: bookingId };
+    if (!needsTerms) return body;
+    var ok = document.getElementById('policyAccept').checked;
+    document.getElementById('policyError').classList.toggle('hidden', ok);
+    if (!ok) { document.getElementById('policyAccept').focus(); return null; }
+    body.terms_accepted = true;
+    return body;
+  }
+
   window.payByCard = async function () {
     var btn = document.getElementById('btnCard');
     var err = document.getElementById('cardError');
+    var body = payBody(); if (!body) return;
     btn.disabled = true;
     btn.textContent = 'Redirecting to payment…';
     err.classList.add('hidden');
@@ -637,7 +671,7 @@ body{
       var res  = await fetch('/api/payment/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId: bookingId })
+        body: JSON.stringify(body)
       });
       var data; try { data = await res.json(); } catch (_) { throw new Error('Payment service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Payment setup failed.');
@@ -654,6 +688,7 @@ body{
   window.payByCash = async function () {
     var btn = document.getElementById('btnCash');
     var err = document.getElementById('cashError');
+    var body = payBody(); if (!body) return;
     if (!confirm('Confirm cash payment on the day of travel?')) return;
     btn.disabled = true;
     btn.textContent = 'Confirming…';
@@ -662,7 +697,7 @@ body{
       var res  = await fetch('/api/payment/confirm-cash', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId: bookingId })
+        body: JSON.stringify(body)
       });
       var data; try { data = await res.json(); } catch (_) { throw new Error('Service unavailable. Please try again.'); }
       if (!res.ok) throw new Error(data.error || 'Failed to confirm. Please try again.');

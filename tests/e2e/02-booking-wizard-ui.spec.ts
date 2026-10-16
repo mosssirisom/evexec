@@ -257,6 +257,7 @@ test('Complete booking submission returns bookingId and shows success', async ({
   await page.locator('#bwName').fill('E2E Test User');
   await page.locator('#bwPhone').fill('07700900999');
   await page.locator('#bwEmail').fill('e2e@evexec-test.invalid');
+  await page.locator('#bwTerms').check();
 
   await page.locator('#bwSubmit').click();
 
