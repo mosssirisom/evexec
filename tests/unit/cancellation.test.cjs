@@ -41,6 +41,15 @@ test('version 2 bands: free over 48h, 25%, 50%, 100% under 2h', () => {
   }
 });
 
+test('version 3: same bands, and 100% once the driver has set off', () => {
+  const b = booking({ terms_version: '3' });
+  assert.equal(P.cancellationQuote(b, hoursBefore(30)).pct, 25);
+  assert.equal(P.cancellationQuote({ ...b, status: 'En Route' }, hoursBefore(30)).pct, 100);
+  // Version 2 had no set-off rule.
+  assert.equal(P.cancellationQuote({ ...b, terms_version: '2', status: 'En Route' }, hoursBefore(30)).pct, 25);
+  assert.equal(P.policyPath('3'), '/terms'); assert.equal(P.policyPath('2'), '/terms-v2'); assert.equal(P.policyPath('1'), '/terms-v1');
+});
+
 test('version 1 (no acceptance recorded): free over 24h, 50%, 100%', () => {
   const b = booking({ terms_version: null });
   assert.equal(P.cancellationQuote(b, hoursBefore(30)).pct, 0);
@@ -80,7 +89,7 @@ test('recordAcceptance falls back to notes when the columns are missing', async 
   const dbUpdate = async (t, id, data) => { writes.push(data); if ('terms_version' in data) throw new Error('column does not exist'); };
   const how = await P.recordAcceptance({ id: ID, notes: 'Stop 1: X' }, dbUpdate, new Date('2026-10-17T09:05:00Z'));
   assert.equal(how, 'notes');
-  assert.equal(writes[1].notes, 'Stop 1: X\nAccepted cancellation policy v2 at 10:05 on 17/10/2026.');
+  assert.equal(writes[1].notes, 'Stop 1: X\nAccepted cancellation policy v3 at 10:05 on 17/10/2026.');
 });
 
 // ── /api/booking/cancel ────────────────────────────────────────────────────

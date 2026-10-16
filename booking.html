@@ -221,7 +221,7 @@ body{
     <p class="text-white/65 mb-5 leading-relaxed">Your transfer has been accepted. Please choose how you'd like to pay:</p>
     <div class="glass rounded-xl p-5 mb-5" style="border-color:rgba(213,165,56,.35)">
       <p class="font-bold text-sm mb-1" style="color:#d5a538">Before you pay: cancellations</p>
-      <p class="text-white/70 text-sm leading-relaxed" id="policySummary">Free more than 48 hours before pickup. 25% of the fare 24&ndash;48 hours before, 50% 2&ndash;24 hours before, and the full fare under 2 hours or if no one is there to be picked up. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger's name is free. If we cancel, you get a full refund. <a class="gold" id="policyLink" href="/terms#cancellation">Full policy</a></p>
+      <p class="text-white/70 text-sm leading-relaxed" id="policySummary">Free more than 48 hours before pickup. 25% of the fare from 48 hours before, 50% from 24 hours before, and the full fare from 2 hours before, once the driver has set off, or if no one is there to be picked up. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger's name is free. If we cancel, you get a full refund. <a class="gold" id="policyLink" href="/terms#cancellation">Full policy</a></p>
       <label id="policyAcceptRow" class="hidden flex items-start gap-3 mt-4 text-sm text-white/80" style="cursor:pointer">
         <input type="checkbox" id="policyAccept" style="width:18px;height:18px;margin-top:2px;accent-color:#d5a538;flex-shrink:0">
         <span>I have read and accept the <a class="gold" href="/terms#cancellation" target="_blank" rel="noopener">Booking, Payment, Changes and Cancellation Policy</a> and the <a class="gold" href="/terms" target="_blank" rel="noopener">Terms &amp; Conditions</a>, including the cancellation charges above.</span>
@@ -642,6 +642,9 @@ body{
   // WhatsApp that haven't accepted it yet. Wording matches /terms.
   var needsTerms = false;
   function setupPolicy(b) {
+    if (b.policy_version === '2') {
+      document.getElementById('policySummary').innerHTML = 'Free more than 48 hours before pickup. 25% of the fare 24&ndash;48 hours before, 50% 2&ndash;24 hours before, and the full fare under 2 hours or if no one is there to be picked up. If we cancel, you get a full refund. <a class="gold" href="/terms-v2#cancellation">Full policy</a>';
+    }
     if (b.policy_version === '1') {
       document.getElementById('policySummary').innerHTML = 'Free more than 24 hours before pickup. 50% of the fare 2&ndash;24 hours before, and the full fare under 2 hours or a no-show. If we cancel, you get a full refund. <a class="gold" href="/terms-v1#cancellation">Full policy</a>';
     }

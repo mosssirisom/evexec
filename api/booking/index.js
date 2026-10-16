@@ -48,7 +48,7 @@ async function handleCancel(req,res){
     if(inProgress.includes(booking.status))return res.end(cancelPage('Driver En Route','Your driver is already on the way. Please call us immediately on <a href="tel:07721070370">07721 070370</a>.'));
     const q=P.cancellationQuote(booking);
     const leg=booking.return_journey?' This cancels your outward journey. To cancel your return journey as well, please contact us.':'';
-    const policy=`<a href="/${q.version==='1'?'terms-v1':'terms'}#cancellation">cancellation policy</a>`;
+    const policy=`<a href="${P.policyPath(q.version)}#cancellation">cancellation policy</a>`;
     if(req.method!=='POST'){
       const url=`/api/booking/cancel?id=${encodeURIComponent(id)}&token=${encodeURIComponent(token)}`;
       return res.end(cancelPage('Cancel Your Booking',

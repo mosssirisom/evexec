@@ -15,7 +15,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
         { q: 'When is my booking confirmed?', a: 'Once we have checked availability and confirmed by email, phone or WhatsApp. If you have not heard from us within a few hours, please call to check.' },
         { q: 'Can I book for someone else?', a: 'Yes. Put the passenger’s name and mobile number on the booking so the driver can contact them on the day. You can add your own details in the notes.' },
         { q: 'Can I book a return transfer?', a: 'Yes. Choose Return in the booking form and add the return date, time and flight number. A return costs less than two single journeys.' },
-        { q: 'How do I check or change my booking?', a: 'Go to <a href="/booking">My Booking</a> with your reference and phone number, or contact us. Changes more than 24 hours before travel are free.' },
+        { q: 'How do I check or change my booking?', a: 'Go to <a href="/booking">My Booking</a> with your reference and phone number, or contact us. Changing the date or time is free more than 48 hours before pickup; see our <a href="/terms#cancellation">changes and cancellation policy</a>.' },
       ],
     },
     {
@@ -24,7 +24,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
         { q: 'How much are your airport transfers?', a: `From anywhere on the Fylde Coast, one way: Manchester ${gbp(PRICES.manchester.oneWay)}, Liverpool ${gbp(PRICES.liverpool.oneWay)}, Leeds Bradford ${gbp(PRICES.leeds.oneWay)}, Birmingham ${gbp(PRICES.birmingham.oneWay)}, Newcastle ${gbp(PRICES.newcastle.oneWay)}. Prices cover up to four passengers and include airport drop-off and pickup charges.` },
         { q: 'Can I pay online?', a: 'Yes. Once your booking is confirmed you can pay securely online by card. You can also pay by bank transfer or in cash on the day.' },
         { q: 'Are there any extra charges?', a: 'Not for standard bookings. Extra charges only apply to things agreed with you in advance, such as pickups outside our area, excess luggage or long waiting beyond a reasonable flight delay.' },
-        { q: 'What is your cancellation policy?', a: 'Cancelling is free more than 48 hours before pickup. Between 24 and 48 hours the charge is 25% of the fare, between 2 and 24 hours 50%, and under 2 hours or a no-show the full fare. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger name is free, and if we cancel you get a full refund. See the <a href="/prices#cancellations">cancellation table</a> and our <a href="/terms#cancellation">terms</a>.' },
+        { q: 'What is your cancellation policy?', a: 'Cancelling is free more than 48 hours before pickup. From 48 hours before, the charge is 25% of the fare, from 24 hours 50%, and from 2 hours before (or once the driver has set off), or for a no-show, the full fare. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger name is free, and if we cancel you get a full refund. See the <a href="/prices#cancellations">cancellation table</a> and our <a href="/terms#cancellation">terms</a>.' },
       ],
     },
     {
@@ -190,11 +190,11 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
           type: 'prose', id: 'cancellations', eyebrow: 'Changes and cancellations', title: 'Cancelling or changing your transfer',
           html: `<div class="price-card"><table class="price-table"><thead><tr><th scope="col">If you cancel</th><th scope="col">You pay</th><th scope="col">On a ${gbp(PRICES.manchester.oneWay)} fare</th></tr></thead><tbody>
 <tr><td>More than 48 hours before pickup</td><td>Nothing. Full refund.</td><td class="num">£0</td></tr>
-<tr><td>24 to 48 hours before</td><td>25% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.25)}</td></tr>
-<tr><td>2 to 24 hours before</td><td>50% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.5)}</td></tr>
-<tr><td>Under 2 hours before, or a no-show</td><td>The full fare</td><td class="num">${gbp(PRICES.manchester.oneWay)}</td></tr>
+<tr><td>More than 24, up to 48 hours before</td><td>25% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.25)}</td></tr>
+<tr><td>More than 2, up to 24 hours before</td><td>50% of the fare</td><td class="num">${fare(PRICES.manchester.oneWay * 0.5)}</td></tr>
+<tr><td>2 hours or less before, once the driver has set off, or a no-show</td><td>The full fare</td><td class="num">${gbp(PRICES.manchester.oneWay)}</td></tr>
 </tbody></table></div>
-<ul class="checklist"><li>Times count back from your pickup time (for airport pickups, your flight's scheduled landing time), in UK time.</li><li>If we re-book your car and driver for the same slot, we reduce your charge.</li><li>Moving your date or time is free more than 48 hours before pickup. Changing flight details or the passenger's name is always free.</li><li>If we have to cancel, or your route is closed by a red weather warning or the police, you get a full refund.</li><li>If someone you booked for cancels, it counts as your cancellation.</li><li>We never take card fees off a refund for personal bookings.</li><li>Long-distance, event and other quoted journeys over £300 have their own schedule, shown on your quote.</li></ul>
+<ul class="checklist"><li>Times count back from your pickup time (for airport pickups, your flight's scheduled landing time), in UK time.</li><li>If we re-book your car and driver for the same slot, we reduce your charge.</li><li>Moving your date or time is free more than 48 hours before pickup. Changing flight details or the passenger's name is always free.</li><li>If we have to cancel, or your route is closed by a red weather warning or the police, you get a full refund.</li><li>If someone you booked for cancels, it counts as your cancellation.</li><li>We never take card fees off a refund for personal bookings.</li><li>Quoted journeys over £300, bookings of more than one car, and bookings that hold a car for 4 hours or more have their own schedule, shown on your quote.</li></ul>
 <p><a class="gold" href="/terms#cancellation">Read the full policy</a></p>`,
         },
         {
