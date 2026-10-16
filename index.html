@@ -239,17 +239,16 @@ img{max-width:100%}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .serif{font-family:'Cormorant Garamond',serif}
 .gold{color:var(--gold)}
+/* Flat panels and buttons: no glass blur, glow or gradient. */
 .glass{
-  background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
+  background:rgba(255,255,255,.045);
   border:1px solid var(--line);
-  box-shadow:0 22px 70px rgba(0,0,0,.35);
-  backdrop-filter:blur(18px);
 }
 .btn-gold{
-  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
+  background:#d5a538;
   color:#06101c;
-  box-shadow:0 16px 38px rgba(213,165,56,.18);
 }
+.btn-gold:hover{background:#e3b54c}
 .btn-dark:hover{
   border-color:rgba(213,165,56,.72);
   color:#d5a538;
@@ -321,13 +320,6 @@ img{max-width:100%}
 
 
 
-.hc-badge{
-  position:absolute;top:12px;left:12px;z-index:4;
-  background:rgba(213,165,56,.95);color:#06101c;
-  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 11px;border-radius:999px;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
-}
 .hc-slide-info{padding:16px 6px 0;text-align:center}
 .hc-slide-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff}
 .hc-slide-specs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
@@ -415,53 +407,17 @@ img{max-width:100%}
 }
 .review-stars .clean-icon{fill:var(--gold);stroke:var(--gold)}
 
-.reveal{
-  opacity:0;
-  transform:translateY(26px);
-  transition:opacity .85s cubic-bezier(.2,.8,.2,1), transform .85s cubic-bezier(.2,.8,.2,1);
-  will-change:opacity,transform;
-}
-.reveal.in-view{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:.08s}
-.reveal-delay-2{transition-delay:.16s}
-.image-reveal{
-  opacity:0;
-  transform:translateY(24px) scale(.985);
-  filter:blur(6px);
-  transition:opacity .95s cubic-bezier(.2,.8,.2,1), transform .95s cubic-bezier(.2,.8,.2,1), filter .95s ease;
-}
-.image-reveal.in-view{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
 .glass{
   transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease, background .35s ease;
 }
 .glass:hover{border-color:rgba(213,165,56,.26)}
-.btn-gold,.btn-dark,.navlink{transition:all .28s ease}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.btn-gold,.btn-dark,.navlink{transition:background-color .2s ease,border-color .2s ease,color .2s ease}
 .clean-icon,.clean-icon-lg{transition:transform .3s ease, opacity .3s ease}
 .glass:hover .clean-icon,.glass:hover .clean-icon-lg{transform:translateY(-2px)}
-/* Only the hero buttons ease in; the heading and photos paint straight away (faster LCP). */
-.hx-after-cars{animation:heroRise .5s cubic-bezier(.2,.8,.2,1) both}
-@keyframes heroRise{
-  from{opacity:0;transform:translateY(22px)}
-  to{opacity:1;transform:translateY(0)}
-}
-.cursor-glow{
-  position:fixed;
-  width:420px;height:420px;border-radius:999px;
-  pointer-events:none;
-  background:radial-gradient(circle,rgba(213,165,56,.07),transparent 62%);
-  transform:translate(-50%,-50%);
-  z-index:0;opacity:.75;
-  transition:opacity .25s ease;
-}
 main,footer{position:relative;z-index:1}
 #siteHeader{position:fixed;top:0;left:0;right:0;z-index:50}
 .review-card{min-height:190px}
-.review-card:hover{
-  transform:translateY(-6px);
-  border-color:rgba(213,165,56,.38);
-  box-shadow:0 24px 70px rgba(0,0,0,.32);
-}
+
 
 
 
@@ -527,8 +483,6 @@ main,footer{position:relative;z-index:1}
 @media(max-width:900px){.hero{min-height:auto}}
 .hero{min-height:0}
 @media(max-width:768px){
-  .cursor-glow{display:none}
-  .reveal,.image-reveal{transition-duration:.55s}
   
   
   
@@ -548,7 +502,6 @@ main,footer{position:relative;z-index:1}
 }
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-  .reveal,.image-reveal{opacity:1!important;transform:none!important;filter:none!important}
 }
 ::selection{background:rgba(213,165,56,.4);color:#06101c}
 /* Metrics strip */
@@ -560,6 +513,15 @@ main,footer{position:relative;z-index:1}
 /* Map embed */
 
 
+/* Booking form: visible labels, required markers, inline errors */
+.bw-label{display:block;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:6px}
+.bw-req{color:#f2c66d;margin-left:2px}
+.bw-opt{font-weight:400;color:rgba(255,255,255,.6)}
+.bw-hint{font-size:12.5px;color:rgba(255,255,255,.62);margin:6px 0 0}
+.bw-note{font-size:13px;color:rgba(255,255,255,.72);line-height:1.5}
+.bw-err{font-size:13px;color:#fca5a5;margin:6px 0 0;font-weight:600}
+.input[aria-invalid="true"]{border-color:#f87171;background:rgba(248,113,113,.08)}
+#bwStep1Title:focus,#bwStep2Heading:focus,#bwStep3Title:focus,#bwConfirmTitle:focus{outline:none}
 /* ── Booking Wizard ── */
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;transition:border-color .2s}
 .bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Inter,Arial,sans-serif;color:#fff}
@@ -596,20 +558,22 @@ main,footer{position:relative;z-index:1}
 
 /* Homepage additions (2026-10): hero trust row, services, fleet, FAQ */
 .hx-hero-copy{max-width:900px}
-/* Hero: mobile shows intro, cars, then buttons. Desktop puts intro and
-   buttons side by side with the cars so Book / Quote sit above the fold. */
+/* Hero: phones show intro, buttons, then cars, so Book is on the first
+   screen. Desktop puts intro and buttons beside the cars. */
 .hx-cars{margin-top:22px}
 @media(max-width:1023px){.hx-intro{padding-top:14px}}
-/* Phones: keep intro -> cars -> buttons, but tighter so Book and Quote land on the first screen */
 @media(max-width:1023px){
+  .hx-top{display:flex;flex-direction:column}
+  .hx-intro{order:1}
+  .hx-after-cars{order:2}
+  .hx-cars{order:3;margin-top:22px!important}
   .hx-top .hx-title{font-size:clamp(2rem,8.4vw,2.5rem)}
   .hx-sub{margin-top:14px}
-  .hx-cars{margin-top:12px}
   .hx-top .hc-slide-media{aspect-ratio:16/10.5}
   .hx-top .hc-slide-info{padding-top:6px}
   .hx-top .hc-slide-traits{display:none}
   .hx-top .hc-dots{margin-top:4px}
-  .hx-after-cars .hx-cta{margin-top:14px}
+  .hx-after-cars .hx-cta{margin-top:18px}
 }
 /* Hero heading: lighter serif, gold italic second line, hairline location label */
 .hx-l1{display:block}
@@ -641,6 +605,11 @@ main,footer{position:relative;z-index:1}
 .hx-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
 .hx-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:10px;font-weight:800;font-size:15px;letter-spacing:.02em;text-decoration:none}
 .hx-btn-ghost{border:1px solid rgba(213,165,56,.7);color:#fff}
+.hx-alt{margin:12px 0 0;font-size:14.5px;color:rgba(255,255,255,.72)}
+.hx-alt a{color:#f2c66d;font-weight:600;text-underline-offset:3px}
+.hx-alt a[href^="tel:"]{white-space:nowrap}
+#quote{max-width:760px;margin-left:auto;margin-right:auto}
+@media(max-width:640px){#quote{padding:22px 18px}}
 .hx-trust{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:rgba(255,255,255,.8)}
 .hx-trust li{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.82)}
 .hx-trust a{text-decoration:none;display:inline-block;padding:9px 0;margin:-9px 0}.hx-trust a:hover{text-decoration:underline}
@@ -673,7 +642,40 @@ main,footer{position:relative;z-index:1}
 
 
 
-.hx-faq .hx-a a,.hx-link{color:#d5a538}
+/* Homepage sections (2026-10-16): benefits, popular journeys, fleet, steps, FAQ */
+.hx-intro-p{margin:12px auto 0;color:rgba(255,255,255,.7);font-size:16px;line-height:1.6}
+.hx-benefits{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+@media(min-width:700px){.hx-benefits{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.hx-benefits{grid-template-columns:repeat(4,1fr)}}
+.hx-benefits li{display:flex;gap:14px;align-items:flex-start;padding:20px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.03)}
+.hx-benefits h3{font-size:1.02rem;font-weight:700;margin:0 0 6px}
+.hx-benefits p{margin:0;color:rgba(255,255,255,.7);font-size:14.5px;line-height:1.55}
+.hx-bic{width:26px;height:26px;flex:none;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
+.hx-jr,.hx-fl{padding:24px;border-radius:14px}
+.hx-jr h3,.hx-fl h3{font-size:1.2rem;font-weight:700;margin:0}
+.hx-jr-prices{display:flex;gap:28px;margin:14px 0 18px}
+.hx-jr-prices dt{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,.6)}
+.hx-jr-prices dd{margin:4px 0 0;font-family:'Cormorant Garamond',serif;font-size:2.1rem;line-height:1;color:#f2c66d;font-weight:600}
+.hx-jr-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.hx-btn-sm{min-height:46px;padding:0 20px;font-size:14.5px}
+@media(max-width:640px){.hx-jr-actions .hx-btn{flex:0 0 auto}}
+.hx-link{text-underline-offset:3px}
+.hx-fl-cap{margin:6px 0 10px;color:#f2c66d;font-size:14px;font-weight:600}
+.hx-fl p:last-child{margin:0;color:rgba(255,255,255,.7);font-size:15px;line-height:1.55}
+.hx-steps{list-style:none;margin:32px 0 0;padding:0;display:grid;gap:16px}
+@media(min-width:900px){.hx-steps{grid-template-columns:repeat(3,1fr)}}
+.hx-steps li{padding:24px;border-radius:14px}
+.hx-step-n{display:inline-grid;place-items:center;width:36px;height:36px;border-radius:50%;border:1px solid #d5a538;color:#f2c66d;font-weight:700}
+.hx-steps h3{font-size:1.1rem;font-weight:700;margin:14px 0 6px}
+.hx-steps p{margin:0;color:rgba(255,255,255,.7);font-size:15px;line-height:1.6}
+.hx-faq{margin-top:28px;border-top:1px solid rgba(255,255,255,.12)}
+.hx-faq details{border-bottom:1px solid rgba(255,255,255,.12)}
+.hx-faq summary{cursor:pointer;list-style:none;padding:18px 36px 18px 0;font-weight:600;font-size:16px;position:relative}
+.hx-faq summary::-webkit-details-marker{display:none}
+.hx-faq summary::after{content:"+";position:absolute;right:6px;top:14px;font-size:22px;color:#d5a538;font-weight:400}
+.hx-faq details[open] summary::after{content:"−"}
+.hx-faq .hx-a p{margin:0 0 18px;color:rgba(255,255,255,.75);line-height:1.65}
+.hx-faq .hx-a a,.hx-link{color:#f2c66d}
 /* The about card's 3-column grid is wider than a tablet screen; stack it until desktop. */
 @media(max-width:1023px){#about>div{grid-template-columns:1fr !important}}
 
@@ -682,7 +684,6 @@ main,footer{position:relative;z-index:1}
 </head>
 
 <body class="evx-has-cta">
-<div aria-hidden="true" class="cursor-glow"></div>
 
 <svg height="0" style="position:absolute" width="0">
 <defs>
@@ -720,6 +721,7 @@ main,footer{position:relative;z-index:1}
 </svg>
 
 <!-- evx:header -->
+<a class="evx-skip" href="#main">Skip to main content</a>
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>
@@ -796,13 +798,13 @@ main,footer{position:relative;z-index:1}
 </div>
 </div>
 
-<main>
+<main id="main">
 <section class="hero px-6 pt-24 lg:pt-32 pb-8 lg:pb-12">
 <div class="max-w-7xl mx-auto">
 <div class="hx-top">
 <div class="hx-hero-copy hx-intro">
 <h1 class="serif hx-title"><span class="hx-l1">Premium Airport Transfers</span> <em class="hx-l2">&amp; Private Hire</em> <span class="hx-loc">Blackpool &amp; Fylde Coast</span></h1>
-<p class="hx-sub">Fixed-price <em>executive</em> transfers to Manchester, Liverpool, Leeds Bradford and every UK airport, in quiet <em>electric vehicles</em>.</p>
+<p class="hx-sub">Fixed-price executive transfers to Manchester, Liverpool, Leeds Bradford and every UK airport, in quiet electric cars.</p>
 
 </div>
 
@@ -812,7 +814,6 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <span class="hc-badge">Most Popular</span>
           <picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-navy-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1000" height="787" decoding="async"/></picture>
         </div>
         <div class="hc-slide-info">
@@ -1005,9 +1006,10 @@ main,footer{position:relative;z-index:1}
 
 <div class="hx-hero-copy hx-after-cars">
 <div class="hx-cta" data-evx-cta-zone>
-<a class="btn-gold hx-btn" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
-<a class="btn-dark hx-btn hx-btn-ghost" href="/quote">Get a Quote</a>
+<a class="btn-gold hx-btn" href="#quote">Book Your Journey</a>
+<a class="btn-dark hx-btn hx-btn-ghost" href="/fleet">Explore Our Fleet</a>
 </div>
+<p class="hx-alt">Not going to an airport? <a href="/quote">Get a quote</a> or call <a href="tel:+447721070370">07721 070370</a>.</p>
 <ul class="hx-trust">
 <li><a href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><span class="hx-stars" aria-hidden="true">★★★★★</span> <strong>5.0</strong> on Google &middot; 18 reviews</a></li>
 <li><svg class="hx-ic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-plane"></use></svg>Flight monitoring</li>
@@ -1028,11 +1030,11 @@ main,footer{position:relative;z-index:1}
   <!-- ── STEP 1: Journey Intent ── -->
   <div id="bwStep1" class="bw-slide">
     <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-1">Step 1 of 3</p>
-    <h3 class="serif text-3xl font-bold mb-1">Your Journey</h3>
+    <h3 class="serif text-3xl font-bold mb-1" id="bwStep1Title" tabindex="-1">Your Journey</h3>
     <p class="text-sm text-white/45 mb-5">Tell us the direction and type of your trip</p>
 
     <div class="flex flex-col gap-3 mb-6">
-      <button class="bw-dir-card" id="bwDirTo" type="button">
+      <button class="bw-dir-card" id="bwDirTo" type="button" aria-pressed="false">
         <div class="bw-dir-icon"><svg width="28" height="28" fill="url(#goldPlaneGrad)"><use href="#i-plane-gold"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">To the Airport</p>
@@ -1040,7 +1042,7 @@ main,footer{position:relative;z-index:1}
         </div>
         <div class="bw-radio" id="bwDirToRadio"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></div>
       </button>
-      <button class="bw-dir-card" id="bwDirFrom" type="button">
+      <button class="bw-dir-card" id="bwDirFrom" type="button" aria-pressed="false">
         <div class="bw-dir-icon"><svg width="28" height="28" fill="url(#goldPlaneGrad)" style="transform:rotate(180deg)"><use href="#i-plane-gold"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">From the Airport</p>
@@ -1050,10 +1052,10 @@ main,footer{position:relative;z-index:1}
       </button>
     </div>
 
-    <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3">Journey Type</p>
-    <div class="bw-seg mb-6">
-      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg> One Way</button>
-      <button class="bw-seg-btn" id="bwTypeReturn" type="button"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repeat"/></svg> Return</button>
+    <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40 mb-3" id="bwTypeLabel">Journey Type</p>
+    <div class="bw-seg mb-6" role="group" aria-labelledby="bwTypeLabel">
+      <button class="bw-seg-btn bw-active" id="bwTypeOneway" type="button" aria-pressed="true"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-swap"/></svg> One Way</button>
+      <button class="bw-seg-btn" id="bwTypeReturn" type="button" aria-pressed="false"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-repeat"/></svg> Return</button>
     </div>
 
     <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwContinue1" type="button" disabled style="opacity:.45;cursor:not-allowed;border:none">
@@ -1067,16 +1069,16 @@ main,footer{position:relative;z-index:1}
       <button class="bw-back-btn" id="bwBack2" type="button" aria-label="Go back">&#8592;</button>
       <div>
         <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 2 of 3</p>
-        <p class="font-bold text-base" id="bwStep2Heading">Where are you going?</p>
+        <h3 class="font-bold text-base" id="bwStep2Heading" tabindex="-1">Where are you going?</h3>
       </div>
     </div>
     <div id="bwStep2Content">
       <div id="bwStep2AddrSection">
         <div class="bw-card mb-4">
-          <p class="text-sm font-bold text-white/80 mb-3" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</p>
-          <input class="input" id="bwAddress" placeholder="Enter your address…" autocomplete="street-address" aria-labelledby="bwAddressLabel"/>
+          <label for="bwAddress" class="text-sm font-bold text-white/80 mb-3 block" id="bwAddressLabel"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"/></svg>Pick Up Address</label>
+          <input class="input" id="bwAddress" placeholder="House number, street and town" autocomplete="street-address" required aria-describedby="bwAddressError" enterkeyhint="next"/>
           <div id="bwSavedAddresses" class="hidden" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px"></div>
-          <p class="text-xs mt-2 hidden" id="bwAddressError" style="color:#f87171">Please enter your address to continue.</p>
+          <p class="bw-err hidden" id="bwAddressError">Enter your address, then choose your airport.</p>
         </div>
       </div>
       <div id="bwStep2AirportSection">
@@ -1092,24 +1094,28 @@ main,footer{position:relative;z-index:1}
       <button class="bw-back-btn" id="bwBack3" type="button" aria-label="Go back">&#8592;</button>
       <div>
         <p class="text-xs uppercase tracking-[.18em] font-bold text-white/40">Step 3 of 3</p>
-        <p class="font-bold text-base">Trip Details</p>
+        <h3 class="font-bold text-base" id="bwStep3Title" tabindex="-1">Trip Details</h3>
       </div>
     </div>
 
     <!-- Journey summary pills -->
-    <div class="flex flex-wrap gap-2 mb-5" id="bwSummaryPills"></div>
+    <div class="flex flex-wrap gap-2 mb-2" id="bwSummaryPills"></div>
+    <p class="bw-note mb-5">Nothing to pay now. We confirm availability first, then you can pay by card online or in cash on the day.</p>
+    <p class="bw-note mb-4">Fields marked <span class="bw-req">*</span> are required.</p>
 
     <!-- Date & Time -->
     <div class="bw-card mb-4">
       <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-clock"/></svg>Date &amp; Time</p>
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label for="bwDate" class="text-xs text-white/45 mb-2 block">Travel Date</label>
-          <input class="input bw-date-input" type="date" id="bwDate"/>
+          <label for="bwDate" class="bw-label">Travel Date <span class="bw-req" aria-hidden="true">*</span></label>
+          <input class="input bw-date-input" type="date" id="bwDate" required aria-describedby="bwDateError"/>
+          <p class="bw-err hidden" id="bwDateError"></p>
         </div>
         <div>
-          <label for="bwTime" class="text-xs text-white/45 mb-2 block">Travel Time</label>
-          <input class="input bw-time-input" type="time" id="bwTime"/>
+          <label for="bwTime" class="bw-label">Travel Time <span class="bw-req" aria-hidden="true">*</span></label>
+          <input class="input bw-time-input" type="time" id="bwTime" required aria-describedby="bwTimeError"/>
+          <p class="bw-err hidden" id="bwTimeError"></p>
         </div>
       </div>
     </div>
@@ -1117,9 +1123,10 @@ main,footer{position:relative;z-index:1}
     <!-- Flight number — From Airport only (mandatory) -->
     <div class="bw-card mb-4 hidden" id="bwFlightSection">
       <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-plane"/></svg>Flight Number</p>
-      <label for="bwFlight" class="sr-only">Flight number</label>
-      <input class="input" id="bwFlight" placeholder="e.g. EZY2145" autocomplete="off" inputmode="text"/>
-      <p class="text-xs text-white/35 mt-2">Required so we can monitor your flight for delays</p>
+      <label for="bwFlight" class="bw-label">Flight number <span class="bw-req" aria-hidden="true">*</span></label>
+      <input class="input" id="bwFlight" placeholder="e.g. EZY2145" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="bwFlightHint bwFlightError"/>
+      <p class="bw-hint" id="bwFlightHint">So we can follow your flight and adjust for delays.</p>
+      <p class="bw-err hidden" id="bwFlightError"></p>
     </div>
 
     <!-- Additional Stops -->
@@ -1141,18 +1148,21 @@ main,footer{position:relative;z-index:1}
         <p class="text-xs uppercase tracking-[.18em] font-bold text-[#d5a538] mb-4">Return Journey</p>
         <div class="grid grid-cols-2 gap-4 mb-3">
           <div>
-            <label for="bwRetDate" class="text-xs text-white/45 mb-2 block">Return Date</label>
-            <input class="input bw-date-input" type="date" id="bwRetDate"/>
+            <label for="bwRetDate" class="bw-label">Return Date <span class="bw-req" aria-hidden="true">*</span></label>
+            <input class="input bw-date-input" type="date" id="bwRetDate" aria-describedby="bwRetDateError"/>
+            <p class="bw-err hidden" id="bwRetDateError"></p>
           </div>
           <div>
-            <label for="bwRetTime" class="text-xs text-white/45 mb-2 block">Return Time</label>
-            <input class="input bw-time-input" type="time" id="bwRetTime"/>
+            <label for="bwRetTime" class="bw-label">Return Time <span class="bw-req" aria-hidden="true">*</span></label>
+            <input class="input bw-time-input" type="time" id="bwRetTime" aria-describedby="bwRetTimeError"/>
+            <p class="bw-err hidden" id="bwRetTimeError"></p>
           </div>
         </div>
         <div id="bwRetFlightSection" class="hidden">
-          <label for="bwRetFlight" class="text-xs text-white/45 mb-2 block">Return Flight Number</label>
-          <input class="input" id="bwRetFlight" placeholder="e.g. EZY2145" autocomplete="off"/>
-          <p class="text-xs text-white/35 mt-2">Required so we can monitor your return flight</p>
+          <label for="bwRetFlight" class="bw-label">Return flight number <span class="bw-req" aria-hidden="true">*</span></label>
+          <input class="input" id="bwRetFlight" placeholder="e.g. EZY2145" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="bwRetFlightHint bwRetFlightError"/>
+          <p class="bw-hint" id="bwRetFlightHint">So we can follow your return flight.</p>
+          <p class="bw-err hidden" id="bwRetFlightError"></p>
         </div>
       </div>
     </div>
@@ -1163,20 +1173,20 @@ main,footer{position:relative;z-index:1}
         <div>
           <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Passengers</p>
           <div class="flex items-center gap-3">
-            <button class="bw-counter-btn" id="bwPaxDec" type="button">−</button>
+            <button class="bw-counter-btn" id="bwPaxDec" type="button" aria-label="One fewer passenger">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwPaxCount" aria-live="polite" aria-atomic="true">1</span>
-            <button class="bw-counter-btn" id="bwPaxInc" type="button">+</button>
+            <button class="bw-counter-btn" id="bwPaxInc" type="button" aria-label="One more passenger">+</button>
           </div>
-          <p class="text-xs text-white/35 mt-2">max 4 passengers</p>
+          <p class="bw-hint">Up to 4</p>
         </div>
         <div>
           <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-briefcase"/></svg>Luggage</p>
           <div class="flex items-center gap-3">
-            <button class="bw-counter-btn" id="bwBagsDec" type="button">−</button>
+            <button class="bw-counter-btn" id="bwBagsDec" type="button" aria-label="One fewer piece of luggage">−</button>
             <span class="font-bold text-xl" style="min-width:24px;text-align:center" id="bwBagsCount" aria-live="polite" aria-atomic="true">0</span>
-            <button class="bw-counter-btn" id="bwBagsInc" type="button">+</button>
+            <button class="bw-counter-btn" id="bwBagsInc" type="button" aria-label="One more piece of luggage">+</button>
           </div>
-          <p class="text-xs text-white/35 mt-2">pieces of luggage</p>
+          <p class="bw-hint">Suitcases and bags</p>
         </div>
       </div>
     </div>
@@ -1185,12 +1195,17 @@ main,footer{position:relative;z-index:1}
     <div class="bw-card mb-4">
       <p class="text-sm font-bold text-white/80 mb-3"><svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-user"/></svg>Your Details</p>
       <div class="flex flex-col gap-3">
-        <label for="bwName" class="sr-only">Full name</label>
-        <input class="input" id="bwName" placeholder="Full name *" required autocomplete="name"/>
-        <label for="bwPhone" class="sr-only">Phone number</label>
-        <input class="input" id="bwPhone" placeholder="Phone number * (e.g. 07700 000000)" required type="tel" inputmode="tel" autocomplete="tel"/>
-        <label for="bwEmail" class="sr-only">Email address</label>
-        <input class="input" id="bwEmail" placeholder="Email address (optional)" type="email" autocomplete="email"/>
+        <div><label for="bwName" class="bw-label">Full name <span class="bw-req" aria-hidden="true">*</span></label>
+        <input class="input" id="bwName" required autocomplete="name" enterkeyhint="next" aria-describedby="bwNameError"/>
+        <p class="bw-err hidden" id="bwNameError"></p></div>
+        <div><label for="bwPhone" class="bw-label">Mobile number <span class="bw-req" aria-hidden="true">*</span></label>
+        <input class="input" id="bwPhone" placeholder="07700 900000" required type="tel" inputmode="tel" autocomplete="tel" enterkeyhint="next" aria-describedby="bwPhoneHint bwPhoneError"/>
+        <p class="bw-hint" id="bwPhoneHint">Your driver uses this on the day.</p>
+        <p class="bw-err hidden" id="bwPhoneError"></p></div>
+        <div><label for="bwEmail" class="bw-label">Email address <span class="bw-opt">(optional, recommended)</span></label>
+        <input class="input" id="bwEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-describedby="bwEmailHint bwEmailError"/>
+        <p class="bw-hint" id="bwEmailHint">We send your confirmation and payment link here.</p>
+        <p class="bw-err hidden" id="bwEmailError"></p></div>
         <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave this empty<input id="bwCompanyWebsite" tabindex="-1" autocomplete="off"/></label></div>
       </div>
     </div>
@@ -1200,15 +1215,14 @@ main,footer{position:relative;z-index:1}
       <p class="text-sm font-bold mb-2" style="color:#d5a538">Before you book: cancellations</p>
       <p class="text-xs text-white/70 leading-relaxed">Free more than 48 hours before pickup. 25% of the fare from 48 hours before, 50% from 24 hours before, and the full fare from 2 hours before, once the driver has set off, or if no one is there to be picked up. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger's name is free. If we cancel, you get a full refund.</p>
       <label class="flex items-start gap-3 mt-3 text-sm text-white/80" style="cursor:pointer">
-        <input type="checkbox" id="bwTerms" style="width:18px;height:18px;margin-top:2px;accent-color:#d5a538;flex-shrink:0">
-        <span>I have read and accept the <a href="/terms#cancellation" target="_blank" rel="noopener" style="color:#d5a538">Booking, Payment, Changes and Cancellation Policy</a> and the <a href="/terms" target="_blank" rel="noopener" style="color:#d5a538">Terms &amp; Conditions</a>, including the cancellation charges above.</span>
+        <input type="checkbox" id="bwTerms" required aria-describedby="bwTermsError" style="width:22px;height:22px;margin-top:1px;accent-color:#d5a538;flex-shrink:0">
+        <span>I have read and accept the <a href="/terms#cancellation" target="_blank" rel="noopener" style="color:#d5a538">Booking, Payment, Changes and Cancellation Policy</a> and the <a href="/terms" target="_blank" rel="noopener" style="color:#d5a538">Terms &amp; Conditions</a>, including the cancellation charges above. <span class="bw-req" aria-hidden="true">*</span></span>
       </label>
+      <p class="bw-err hidden" id="bwTermsError"></p>
     </div>
 
-    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwSubmit" type="button" style="border:none">
-      Request My Transfer
-    </button>
-    <p id="formMsg" class="text-xs text-center mt-3 min-h-[18px]"></p>
+    <button class="btn-gold w-full rounded-xl py-4 font-bold text-base" id="bwSubmit" type="button" style="border:none">Send Booking Request</button>
+    <p id="formMsg" role="alert" class="text-xs text-center mt-3 min-h-[18px]"></p>
   </div>
 
   <!-- ── CONFIRMATION PANEL (shown after successful submission) ── -->
@@ -1222,15 +1236,14 @@ main,footer{position:relative;z-index:1}
     </div>
 
     <!-- Heading -->
-    <h3 class="serif text-2xl font-bold text-center leading-snug mb-3">Booking Request<br>Received</h3>
-    <p class="text-white/58 text-sm leading-relaxed text-center mb-7 max-w-[420px] mx-auto">
-      Thank you for choosing EV Exec. Your request has been logged. A member of our team will review availability shortly. You will receive an automated SMS and email confirmation as soon as your journey is officially secured.
-    </p>
+    <h3 class="serif text-2xl font-bold text-center leading-snug mb-3" id="bwConfirmTitle" tabindex="-1">Booking Request<br>Received</h3>
+    <p class="text-white/75 text-sm leading-relaxed text-center mb-2 max-w-[440px] mx-auto">Thank you. Your journey is <strong>not confirmed yet</strong>: we will check a car and driver are free and confirm by email, phone or WhatsApp.</p>
+    <p class="text-white/75 text-sm leading-relaxed text-center mb-7 max-w-[440px] mx-auto" id="bwConfirmRef"></p>
 
     <!-- Divider -->
     <div style="border-top:1px solid rgba(255,255,255,.09);margin-bottom:24px"></div>
 
-    <p class="text-sm text-white/60 mb-7 leading-relaxed">Once your booking is confirmed, you'll be able to choose how to pay (by card online or cash on the day) from your booking status page.</p>
+    <p class="text-sm text-white/75 mb-7 leading-relaxed">Once it is confirmed, you can choose how to pay (by card online or cash on the day) from your booking page. If you have not heard from us within a few hours, please call.</p>
 
     <!-- CTA -->
     <a id="bwViewBookingBtn" href="/booking"
@@ -1242,7 +1255,7 @@ main,footer{position:relative;z-index:1}
       </svg>
     </a>
 
-    <p class="text-center text-white/30 text-xs mt-5 leading-relaxed">
+    <p class="text-center text-white/60 text-sm mt-5 leading-relaxed">
       Questions? &nbsp;
       <a href="https://wa.me/447721070370" target="_blank" rel="noopener" class="text-[#d5a538] underline underline-offset-2">WhatsApp</a>
       &nbsp;·&nbsp;
@@ -1258,12 +1271,54 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
+<!-- Benefits -->
+<section class="px-6 py-8 lg:py-12" id="why" aria-labelledby="whyTitle">
+<div class="max-w-7xl mx-auto">
+<h2 class="sr-only" id="whyTitle">Why book EV Exec</h2>
+<ul class="hx-benefits">
+<li><svg class="hx-bic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-pound"></use></svg><div><h3>Fixed prices</h3><p>A set price per car for standard airport transfers, for up to four passengers, with airport drop-off and pickup charges included.</p></div></li>
+<li><svg class="hx-bic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-plane"></use></svg><div><h3>Your flight tracked</h3><p>Add your flight number and we follow it. If you land late, we move your pickup at no extra charge.</p></div></li>
+<li><svg class="hx-bic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-check"></use></svg><div><h3>Licensed and insured</h3><p>A licensed private hire operator with hire and reward insurance. Every driver is enhanced DBS checked.</p></div></li>
+<li><svg class="hx-bic" viewBox="0 0 24 24" aria-hidden="true"><use href="#i-leaf"></use></svg><div><h3>Fully electric</h3><p>Quiet, smooth Tesla and Škoda cars with phone charging on board.</p></div></li>
+</ul>
+</div>
+</section>
+
+<!-- Popular journeys -->
+<section class="px-6 py-8 lg:py-12" id="journeys">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Airport Transfers</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Popular Journeys</h2>
+<p class="hx-intro-p">Prices per car from anywhere on the Fylde Coast, up to four passengers.</p>
+</div>
+<div class="hx-grid">
+<article class="hx-jr glass">
+<h3>Manchester Airport</h3>
+<dl class="hx-jr-prices"><div><dt>One way</dt><dd data-price="Manchester Airport" data-kind="oneWay">£90</dd></div><div><dt>Return</dt><dd data-price="Manchester Airport" data-kind="ret">£160</dd></div></dl>
+<div class="hx-jr-actions"><a class="btn-gold hx-btn hx-btn-sm" href="#quote" data-book-airport="Manchester Airport">Book Manchester</a><a class="hx-link" href="/manchester-airport-transfer-blackpool" aria-label="Manchester Airport transfer details">Route details →</a></div>
+</article>
+<article class="hx-jr glass">
+<h3>Liverpool Airport</h3>
+<dl class="hx-jr-prices"><div><dt>One way</dt><dd data-price="Liverpool Airport" data-kind="oneWay">£95</dd></div><div><dt>Return</dt><dd data-price="Liverpool Airport" data-kind="ret">£170</dd></div></dl>
+<div class="hx-jr-actions"><a class="btn-gold hx-btn hx-btn-sm" href="#quote" data-book-airport="Liverpool Airport">Book Liverpool</a><a class="hx-link" href="/liverpool-airport-transfer-blackpool" aria-label="Liverpool Airport transfer details">Route details →</a></div>
+</article>
+<article class="hx-jr glass">
+<h3>Leeds Bradford Airport</h3>
+<dl class="hx-jr-prices"><div><dt>One way</dt><dd data-price="Leeds Bradford Airport" data-kind="oneWay">£135</dd></div><div><dt>Return</dt><dd data-price="Leeds Bradford Airport" data-kind="ret">£250</dd></div></dl>
+<div class="hx-jr-actions"><a class="btn-gold hx-btn hx-btn-sm" href="#quote" data-book-airport="Leeds Bradford Airport">Book Leeds Bradford</a><a class="hx-link" href="/leeds-bradford-airport-transfer-blackpool" aria-label="Leeds Bradford Airport transfer details">Route details →</a></div>
+</article>
+</div>
+<p class="text-center mt-6 text-white/62">Birmingham and Newcastle also have set prices; other airports are quoted. <a class="hx-link font-semibold" href="/prices">All prices →</a></p>
+</div>
+</section>
+
 <!-- Services -->
-<section class="px-6 py-8 lg:py-12 reveal" id="services">
+<section class="px-6 py-8 lg:py-12" id="services">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Services</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Every Pre-Booked <span class="gold">Journey</span></h2>
+<h2 class="serif text-4xl md:text-5xl mt-3">More Than Airport Runs</h2>
 </div>
 <div class="hx-grid hx-grid-4">
 <a class="hx-svc glass" href="/airport-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-plane"></use></svg><h3>Airport Transfers</h3><p>Door to terminal, with your flight home tracked and any delay covered at no extra cost.</p><span class="hx-more" aria-hidden="true">→</span></a>
@@ -1275,25 +1330,39 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
-<!-- Areas -->
-<section class="px-6 py-8 lg:py-12 reveal" id="areas">
-<div class="max-w-7xl mx-auto text-center">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Areas</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Where We <span class="gold">Pick Up</span></h2>
-<div class="hx-chips">
-<a href="/areas#blackpool">Blackpool</a>
-<a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a>
-<a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a>
-<a href="/airport-transfer-fleetwood">Fleetwood &amp; Thornton-Cleveleys</a>
-<a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a>
-<a href="/airport-transfer-preston">Preston</a>
+<!-- Fleet overview -->
+<section class="px-6 py-8 lg:py-12" id="fleet-overview">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Fleet</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Three Electric Cars</h2>
 </div>
-<p class="mt-6"><a class="hx-link font-semibold" href="/areas">All areas we cover →</a></p>
+<div class="hx-grid">
+<article class="hx-fl glass"><h3>Tesla Model Y</h3><p class="hx-fl-cap">4 passengers · 4 suitcases</p><p>Panoramic glass roof and wireless phone charging.</p></article>
+<article class="hx-fl glass"><h3>Tesla Model Y Juniper</h3><p class="hx-fl-cap">4 passengers · 4 suitcases</p><p>The refreshed Model Y, with a rear-seat touchscreen for passengers.</p></article>
+<article class="hx-fl glass"><h3>Škoda Enyaq</h3><p class="hx-fl-cap">4 passengers · 5 suitcases</p><p>Our roomiest boot, for families and longer trips.</p></article>
+</div>
+<p class="text-center mt-6"><a class="hx-link font-semibold" href="/fleet">See the fleet →</a></p>
+</div>
+</section>
+
+<!-- How it works -->
+<section class="px-6 py-8 lg:py-12" id="how-it-works">
+<div class="max-w-7xl mx-auto">
+<div class="text-center max-w-3xl mx-auto">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">How It Works</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Three Steps to Your Journey</h2>
+</div>
+<ol class="hx-steps">
+<li class="glass"><span class="hx-step-n" aria-hidden="true">1</span><h3>Send your request</h3><p>Choose your airport, date and time. It takes about two minutes and you get a booking reference straight away. Nothing to pay yet.</p></li>
+<li class="glass"><span class="hx-step-n" aria-hidden="true">2</span><h3>We confirm</h3><p>We check a car and driver are free and confirm by email, phone or WhatsApp. Your journey is booked once you hear from us.</p></li>
+<li class="glass"><span class="hx-step-n" aria-hidden="true">3</span><h3>Pay and travel</h3><p>Pay by card online once confirmed, or in cash on the day. Your driver tracks your flight and meets you at the agreed point.</p></li>
+</ol>
 </div>
 </section>
 
 <!-- Reviews -->
-<section class="px-6 py-8 lg:py-12 reveal" id="reviews">
+<section class="px-6 py-8 lg:py-12" id="reviews">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
 <p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Reviews</p>
@@ -1351,15 +1420,50 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
+<!-- Areas -->
+<section class="px-6 py-8 lg:py-12" id="areas">
+<div class="max-w-7xl mx-auto text-center">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Areas</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Where We <span class="gold">Pick Up</span></h2>
+<div class="hx-chips">
+<a href="/areas#blackpool">Blackpool</a>
+<a href="/airport-transfer-lytham-st-annes">Lytham St Annes</a>
+<a href="/airport-transfer-poulton-le-fylde">Poulton-le-Fylde</a>
+<a href="/airport-transfer-fleetwood">Fleetwood &amp; Thornton-Cleveleys</a>
+<a href="/airport-transfer-kirkham">Kirkham, Freckleton &amp; Warton</a>
+<a href="/airport-transfer-preston">Preston</a>
+</div>
+<p class="mt-6"><a class="hx-link font-semibold" href="/areas">All areas we cover →</a></p>
+</div>
+</section>
+
+<!-- FAQ -->
+<section class="px-6 py-8 lg:py-12" id="faq">
+<div class="max-w-3xl mx-auto">
+<div class="text-center max-w-3xl mx-auto">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">FAQ</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Common Questions</h2>
+</div>
+<div class="hx-faq">
+<details><summary>Is my journey confirmed when I send the form?</summary><div class="hx-a"><p>No. The form sends a booking request. We check availability and confirm by email, phone or WhatsApp. If you have not heard from us within a few hours, please call <a href="tel:+447721070370">07721 070370</a>.</p></div></details>
+<details><summary>When do I pay?</summary><div class="hx-a"><p>After we confirm. You can then pay by card online from your booking page, by bank transfer, or in cash on the day.</p></div></details>
+<details><summary>What if my flight is delayed?</summary><div class="hx-a"><p>We track your flight and move your pickup to the new landing time at no extra charge. If a delay runs into many hours, we will contact you to rearrange.</p></div></details>
+<details><summary>Can I cancel?</summary><div class="hx-a"><p>Yes. Cancelling is free more than 48 hours before pickup. After that the charge is 25% of the fare from 48 hours, 50% from 24 hours, and the full fare from 2 hours before or once the driver has set off. See our <a href="/terms#cancellation">cancellation policy</a>.</p></div></details>
+<details><summary>How many passengers and bags?</summary><div class="hx-a"><p>Up to four passengers per car. The Teslas take four large suitcases plus cabin bags, and the Škoda Enyaq takes five.</p></div></details>
+</div>
+<p class="text-center mt-6"><a class="hx-link font-semibold" href="/faq">All questions →</a></p>
+</div>
+</section>
+
 <!-- Final CTA -->
-<section class="px-6 py-8 lg:py-12 reveal">
+<section class="px-6 py-8 lg:py-12">
 <div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 evx-lazy-bg">
 <div>
 <h2 class="serif text-4xl">Ready When You Are</h2>
 <p class="text-white/75 mt-1">Collected from your door, with your flight tracked on the way home.</p>
 </div>
 <div class="flex flex-col sm:flex-row gap-4" data-evx-cta-zone>
-<a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Your Transfer</a>
+<a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Your Journey</a>
 <a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="/quote">Get a Quote</a>
 </div>
 </div>
@@ -1388,31 +1492,6 @@ main,footer{position:relative;z-index:1}
 
 <script>
 (function(){
-  // Scroll reveal
-  var items = document.querySelectorAll('.reveal, .image-reveal');
-  var observer = new IntersectionObserver(function(entries){
-    entries.forEach(function(entry){
-      if(entry.isIntersecting){
-        entry.target.classList.add('in-view');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, {threshold:0.14, rootMargin:'0px 0px -60px 0px'});
-  items.forEach(function(item, index){
-    if(index % 3 === 1) item.classList.add('reveal-delay-1');
-    if(index % 3 === 2) item.classList.add('reveal-delay-2');
-    observer.observe(item);
-  });
-
-  // Cursor glow
-  var glow = document.querySelector('.cursor-glow');
-  if(glow && window.matchMedia('(pointer:fine)').matches){
-    window.addEventListener('mousemove', function(e){
-      glow.style.left = e.clientX + 'px';
-      glow.style.top = e.clientY + 'px';
-    }, {passive:true});
-  }
-
   // ── BOOKING WIZARD ──────────────────────────────────────────
   var BW_AIRPORTS = [
     { name:'Manchester Airport',     oneWay:90,  ret:160 },
@@ -1442,6 +1521,7 @@ main,footer{position:relative;z-index:1}
       var stopEl = document.getElementById('bwStopPrice');
       if (stopEl) stopEl.textContent = '+£' + BW_EXTRA_STOP;
       if (document.getElementById('bwAirports')) bwRenderAirports();
+      bwRenderJourneyPrices();
     }).catch(function () {});
   })();
 
@@ -1466,6 +1546,43 @@ main,footer{position:relative;z-index:1}
     el.textContent = text;
     el.className = cls;
   }
+
+  // Inline field errors: message under the field, aria-invalid on the input.
+  function bwSetErr(id, msg) {
+    var inp = document.getElementById(id), e = document.getElementById(id + 'Error');
+    if (inp) inp.setAttribute('aria-invalid', 'true');
+    if (e) { if (msg) e.textContent = msg; e.classList.remove('hidden'); }
+  }
+  function bwClearErr(id) {
+    var inp = document.getElementById(id), e = document.getElementById(id + 'Error');
+    if (inp) inp.removeAttribute('aria-invalid');
+    if (e) e.classList.add('hidden');
+  }
+  // Today in the UK as YYYY-MM-DD (the booking API checks against UK time).
+  function bwUkToday() {
+    try {
+      var p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())
+        .reduce(function (a, x) { a[x.type] = x.value; return a; }, {});
+      return p.year + '-' + p.month + '-' + p.day;
+    } catch (e) { return new Date().toISOString().split('T')[0]; }
+  }
+
+  // Popular journeys: show the operator's current prices and pre-select the
+  // airport when a card's Book button is used.
+  function bwRenderJourneyPrices() {
+    document.querySelectorAll('[data-price]').forEach(function (el) {
+      var ap = BW_AIRPORTS.find(function (a) { return a.name === el.getAttribute('data-price'); });
+      var v = ap && ap[el.getAttribute('data-kind')];
+      if (v) el.textContent = '£' + v;
+    });
+  }
+  document.querySelectorAll('[data-book-airport]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      var name = a.getAttribute('data-book-airport');
+      if (BW_AIRPORTS.some(function (x) { return x.name === name; })) bw.airport = name;
+      if (bw.step !== 1) bwGoToStep(1);
+    });
+  });
 
   function bwRenderProgress() {
     var el = document.getElementById('bwProgress');
@@ -1496,6 +1613,7 @@ main,footer{position:relative;z-index:1}
       var btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'bw-airport-card' + (bw.airport === ap.name ? ' bw-selected' : '');
+      if (bw.airport === ap.name) btn.setAttribute('aria-current', 'true');
       btn.innerHTML =
         '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
         '<div style="flex:1;min-width:0">' +
@@ -1507,8 +1625,8 @@ main,footer{position:relative;z-index:1}
         var addrInput = document.getElementById('bwAddress');
         var addrErr   = document.getElementById('bwAddressError');
         if (!addrInput || !addrInput.value.trim()) {
-          if (addrInput) addrInput.style.borderColor = '#f87171';
-          if (addrErr)   addrErr.classList.remove('hidden');
+          bwSetErr('bwAddress');
+          if (addrInput) addrInput.focus();
           return;
         }
         bw.airport = ap.name;
@@ -1518,8 +1636,14 @@ main,footer{position:relative;z-index:1}
     });
   }
 
-  function bwGoToStep(n) {
+  // Each step gets a browser history entry, so the phone's Back button goes
+  // to the previous step instead of leaving the page.
+  function bwGoToStep(n, fromHistory) {
+    var prev = bw.step;
     bw.step = n;
+    if (!fromHistory && n !== prev) {
+      try { history.pushState({ bwStep: n }, '', '#quote'); } catch (e) {}
+    }
     var confEl = document.getElementById('bwConfirm');
     if (confEl) confEl.classList.add('hidden');
     var wizHeader = document.getElementById('bwWizardHeader');
@@ -1542,8 +1666,19 @@ main,footer{position:relative;z-index:1}
     if (n === 2) bwRenderStep2();
     if (n === 3) bwRenderStep3();
     var quoteEl = document.getElementById('quote');
-    if (quoteEl) quoteEl.scrollIntoView({ behavior:'smooth', block:'start' });
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (quoteEl) quoteEl.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block:'start' });
+    var title = document.getElementById(['bwStep1Title','bwStep2Heading','bwStep3Title'][n - 1]);
+    if (title) title.focus({ preventScroll: true });
   }
+  window.addEventListener('popstate', function (e) {
+    var conf = document.getElementById('bwConfirm');
+    if (conf && !conf.classList.contains('hidden')) return;
+    var want = e.state && e.state.bwStep ? e.state.bwStep : 1;
+    if (want === 2 && !bw.direction) want = 1;
+    if (want === 3 && !bw.airport) want = bw.direction ? 2 : 1;
+    if (want !== bw.step) bwGoToStep(want, true);
+  });
 
   function bwRenderStep1() {
     var dirTo   = document.getElementById('bwDirTo');
@@ -1554,10 +1689,14 @@ main,footer{position:relative;z-index:1}
     if (dirFrom)   dirFrom.classList.toggle('bw-selected', bw.direction === 'from');
     if (toRadio)   toRadio.classList.toggle('bw-active', bw.direction === 'to');
     if (fromRadio) fromRadio.classList.toggle('bw-active', bw.direction === 'from');
+    if (dirTo)     dirTo.setAttribute('aria-pressed', String(bw.direction === 'to'));
+    if (dirFrom)   dirFrom.setAttribute('aria-pressed', String(bw.direction === 'from'));
     var onewayBtn = document.getElementById('bwTypeOneway');
     var returnBtn = document.getElementById('bwTypeReturn');
     if (onewayBtn) onewayBtn.classList.toggle('bw-active', bw.journeyType === 'oneway');
     if (returnBtn) returnBtn.classList.toggle('bw-active', bw.journeyType === 'return');
+    if (onewayBtn) onewayBtn.setAttribute('aria-pressed', String(bw.journeyType === 'oneway'));
+    if (returnBtn) returnBtn.setAttribute('aria-pressed', String(bw.journeyType === 'return'));
     bwUpdateContinue1();
   }
 
@@ -1585,10 +1724,7 @@ main,footer{position:relative;z-index:1}
     if (addrLabel) addrLabel.innerHTML = '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:middle;margin-right:5px;margin-top:-2px"><use href="#i-map"></use></svg>' + (isFrom ? 'Drop Off Address' : 'Pick Up Address');
     var airportLabel = document.getElementById('bwAirportSectionLabel');
     if (airportLabel) airportLabel.textContent = isFrom ? 'Flying from which airport?' : 'Select Your Airport';
-    var addrInput = document.getElementById('bwAddress');
-    var addrErr   = document.getElementById('bwAddressError');
-    if (addrInput) addrInput.style.borderColor = '';
-    if (addrErr)   addrErr.classList.add('hidden');
+    bwClearErr('bwAddress');
     var content  = document.getElementById('bwStep2Content');
     var addrSec  = document.getElementById('bwStep2AddrSection');
     var airptSec = document.getElementById('bwStep2AirportSection');
@@ -1627,7 +1763,10 @@ main,footer{position:relative;z-index:1}
     if (retSec) retSec.classList.toggle('hidden', bw.journeyType !== 'return');
     var retFlightSec = document.getElementById('bwRetFlightSection');
     if (retFlightSec) retFlightSec.classList.toggle('hidden', bw.direction !== 'to');
-    var today = new Date().toISOString().split('T')[0];
+    var today = bwUkToday();
+    var rd = document.getElementById('bwRetDate'), rt = document.getElementById('bwRetTime');
+    if (rd) rd.required = bw.journeyType === 'return';
+    if (rt) rt.required = bw.journeyType === 'return';
     ['bwDate','bwRetDate'].forEach(function(id) {
       var el = document.getElementById(id);
       if (el) el.min = today;
@@ -1737,49 +1876,36 @@ main,footer{position:relative;z-index:1}
   async function bwSubmit() {
     var name  = bwGetVal('bwName');
     var phone = bwGetVal('bwPhone');
+    var email = bwGetVal('bwEmail');
     bwShowMsg('', '');
     var isFrom = bw.direction === 'from';
     var isRet  = bw.journeyType === 'return';
-    if (!name || !phone) {
-      bwShowMsg('Please enter your name and phone number to continue.', 'error');
-      var focus = !name ? 'bwName' : 'bwPhone';
-      var el = document.getElementById(focus);
-      if (el) el.focus();
-      return;
-    }
-    if (!bwGetVal('bwDate')) {
-      bwShowMsg('Please select a travel date to continue.', 'error');
-      var dateEl = document.getElementById('bwDate');
-      if (dateEl) dateEl.focus();
-      return;
-    }
-    if (!bwGetVal('bwTime')) {
-      bwShowMsg('Please enter a travel time to continue.', 'error');
-      var timeEl = document.getElementById('bwTime');
-      if (timeEl) timeEl.focus();
-      return;
-    }
-    if (isFrom && !bwGetVal('bwFlight')) {
-      bwShowMsg('Flight number is required for airport pick-ups.', 'error');
-      var flEl = document.getElementById('bwFlight');
-      if (flEl) flEl.focus();
-      return;
-    }
-    if (isRet && !isFrom && !bwGetVal('bwRetFlight')) {
-      bwShowMsg('Return flight number is required for your return airport pick-up.', 'error');
-      var rfEl = document.getElementById('bwRetFlight');
-      if (rfEl) rfEl.focus();
-      return;
-    }
+    var today = bwUkToday();
+    var date = bwGetVal('bwDate'), retDate = bwGetVal('bwRetDate');
+    var errors = [];
+    function check(id, bad, msg) { if (bad) { bwSetErr(id, msg); errors.push(id); } else bwClearErr(id); }
+    check('bwDate', !date || date < today, !date ? 'Choose your travel date.' : 'This date has passed. Choose today or a later date.');
+    check('bwTime', !bwGetVal('bwTime'), 'Enter your pickup time.');
+    check('bwFlight', isFrom && !bwGetVal('bwFlight'), 'Enter your flight number so we can track your landing.');
+    check('bwRetDate', isRet && (!retDate || (date && retDate < date)), !retDate ? 'Choose your return date.' : 'The return date must be on or after the travel date.');
+    check('bwRetTime', isRet && !bwGetVal('bwRetTime'), 'Enter your return pickup time.');
+    check('bwRetFlight', isRet && !isFrom && !bwGetVal('bwRetFlight'), 'Enter your return flight number.');
+    check('bwName', !name, 'Enter the passenger\'s full name.');
+    var digits = phone.replace(/\D/g, '');
+    check('bwPhone', digits.length < 10 || digits.length > 15, !phone ? 'Enter a mobile number for the driver.' : 'Enter a full phone number, for example 07700 900000.');
+    check('bwEmail', email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'Enter a valid email address, or leave it blank.');
     var termsEl = document.getElementById('bwTerms');
-    if (termsEl && !termsEl.checked) {
-      bwShowMsg('Please confirm you accept the cancellation policy to continue.', 'error');
-      termsEl.focus();
+    check('bwTerms', termsEl && !termsEl.checked, 'Tick the box to accept the cancellation policy.');
+    if (errors.length) {
+      bwShowMsg(errors.length === 1 ? 'Please fix the highlighted field.' : 'Please fix the ' + errors.length + ' highlighted fields.', 'error');
+      var first = document.getElementById(errors[0]);
+      if (first) first.focus();
       return;
     }
     var btn = document.getElementById('bwSubmit');
     btn.disabled = true;
-    btn.textContent = 'Sending…';
+    btn.setAttribute('aria-busy', 'true');
+    btn.textContent = 'Sending your request…';
     var address = bwGetVal('bwAddress');
     // pickup_location and dropoff_address always hold the literal address or
     // airport name for whichever end it actually is -- never left blank in
@@ -1805,7 +1931,7 @@ main,footer{position:relative;z-index:1}
       return_destination: isRet ? (isFrom ? (bw.airport || null) : address) : null,
       customer_name:      name,
       customer_phone:     phone,
-      customer_email:     bwGetVal('bwEmail') || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
+      customer_email:     email || (window._evexecSession && window._evexecSession.user ? window._evexecSession.user.email : null) || null,
       additional_stops:   (bw.stops || []).filter(function(s){ return s.trim(); }),
       company_website:    bwGetVal('bwCompanyWebsite') || '',
       terms_accepted:     true
@@ -1831,6 +1957,8 @@ main,footer{position:relative;z-index:1}
         var bookingId = data.bookingId;
         var viewBtn = document.getElementById('bwViewBookingBtn');
         if (viewBtn && bookingId) viewBtn.href = '/booking?id=' + bookingId;
+        var refEl = document.getElementById('bwConfirmRef');
+        if (refEl) refEl.textContent = 'Your booking page shows your reference and status. Bookmark it or keep the link.';
         ['bwStep1','bwStep2','bwStep3'].forEach(function(id) {
           var el = document.getElementById(id); if (el) el.classList.add('hidden');
         });
@@ -1846,6 +1974,8 @@ main,footer{position:relative;z-index:1}
           void conf.offsetWidth;
           conf.classList.add('bw-slide');
         }
+        var confTitle = document.getElementById('bwConfirmTitle');
+        if (confTitle) confTitle.focus({ preventScroll: true });
         var quoteEl2 = document.getElementById('quote');
         if (quoteEl2) quoteEl2.scrollIntoView({ behavior:'smooth', block:'start' });
         sessionStorage.setItem('evexec_submitted', Date.now().toString());
@@ -1853,10 +1983,13 @@ main,footer{position:relative;z-index:1}
         throw new Error(data.error || 'Something went wrong. Please try again.');
       }
     } catch(err) {
-      bwShowMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
+      // A TypeError here means the request never reached us (offline, blocked).
+      var msg = err instanceof TypeError ? 'We could not send your request. Check your connection and try again, or call 07721 070370.' : (err.message || 'We could not send your request. Please try again or call 07721 070370.');
+      bwShowMsg(msg, 'error');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Request My Transfer';
+      btn.removeAttribute('aria-busy');
+      btn.textContent = 'Send Booking Request';
     }
   }
 
@@ -1883,15 +2016,14 @@ main,footer{position:relative;z-index:1}
 
     on('bwAddress', 'input', function() {
       var inp = document.getElementById('bwAddress');
-      var err = document.getElementById('bwAddressError');
-      if (inp && inp.value.trim()) {
-        inp.style.borderColor = '';
-        if (err) err.classList.add('hidden');
-      }
+      if (inp && inp.value.trim()) bwClearErr('bwAddress');
     });
-
-    on('bwFlight',    'input', function() { bwShowMsg('', ''); });
-    on('bwRetFlight', 'input', function() { bwShowMsg('', ''); });
+    // Clear a field's error as soon as the customer changes it.
+    ['bwDate','bwTime','bwFlight','bwRetDate','bwRetTime','bwRetFlight','bwName','bwPhone','bwEmail','bwTerms'].forEach(function (id) {
+      on(id, id === 'bwTerms' || /Date|Time/.test(id) ? 'change' : 'input', function () { bwClearErr(id); bwShowMsg('', ''); });
+    });
+    try { history.replaceState({ bwStep: 1 }, ''); } catch (e) {}
+    bwRenderJourneyPrices();
 
     on('bwPaxDec', 'click', function() { if (bw.passengers > 1) { bw.passengers--; bwUpdateCounters(); } });
     on('bwPaxInc', 'click', function() { if (bw.passengers < 4) { bw.passengers++; bwUpdateCounters(); } });

@@ -29,8 +29,8 @@ h3{font-size:1.06rem;font-weight:800}
 /* Buttons: same as the homepage section buttons (rounded-md, px-7 py-4) */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 28px;border-radius:7px;font:700 15px/1 Inter,Arial,sans-serif;text-decoration:none;cursor:pointer;border:0;transition:all .28s ease}
 .btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.btn-gold{background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);color:#06101c;box-shadow:0 16px 38px rgba(213,165,56,.18)}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.btn-gold{background:#d5a538;color:#06101c;}
+.btn-gold:hover{background:#e3b54c}
 .btn-dark{border:1px solid rgba(213,165,56,.7);color:#fff;background:rgba(255,255,255,.02)}
 .btn-dark:hover{border-color:rgba(213,165,56,.72);color:#d5a538;background:rgba(213,165,56,.06)}
 .btn-row{display:flex;flex-wrap:wrap;gap:14px}

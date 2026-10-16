@@ -38,8 +38,8 @@
 
 .evx-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .evx-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 22px;border-radius:999px;font:700 14px Inter,Arial,sans-serif;text-decoration:none;white-space:nowrap;transition:all .28s ease;cursor:pointer}
-.evx-btn-gold{background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);color:#06101c;border:0;box-shadow:0 16px 38px rgba(213,165,56,.18)}
-.evx-btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.evx-btn-gold{background:#d5a538;color:#06101c;border:0;}
+.evx-btn-gold:hover{background:#e3b54c}
 .evx-btn-dark{border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85);background:rgba(255,255,255,.03)}
 .evx-btn-dark:hover{border-color:rgba(213,165,56,.72);color:#d5a538;background:rgba(213,165,56,.06)}
 .evx-icon-btn{width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.03);color:rgba(255,255,255,.8);cursor:pointer;transition:all .28s ease}
@@ -111,3 +111,7 @@
    the banner is about to scroll into view. */
 .evx-lazy-bg.is-loaded{background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),url('/public/images/opt/ev-exec-image-6-1100.jpg');background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),image-set(url('/public/images/opt/ev-exec-image-6-1100.webp') type('image/webp'),url('/public/images/opt/ev-exec-image-6-1100.jpg') type('image/jpeg'));background-size:cover;background-position:center}
 @media(prefers-reduced-motion:reduce){.evx-dd,.evx-mmenu,.evx-nav,.evx-btn{transition:none}}
+/* Accessibility: skip link and a visible keyboard focus ring on every page */
+.evx-skip{position:fixed;top:-60px;left:16px;z-index:100;padding:12px 18px;border-radius:8px;background:#d5a538;color:#06101c;font:700 15px/1 Inter,Arial,sans-serif;text-decoration:none;transition:top .15s}
+.evx-skip:focus{top:12px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible,[tabindex]:focus-visible{outline:2px solid #f2c66d;outline-offset:3px}
