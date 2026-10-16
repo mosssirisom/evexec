@@ -50,11 +50,35 @@ test('version 3: same bands, and 100% once the driver has set off', () => {
   assert.equal(P.policyPath('3'), '/terms'); assert.equal(P.policyPath('2'), '/terms-v2'); assert.equal(P.policyPath('1'), '/terms-v1');
 });
 
-test('version 1 (no acceptance recorded): free over 24h, 50%, 100%', () => {
-  const b = booking({ terms_version: null });
+test('version 1 (made before version 2, no acceptance recorded): free over 24h, 50%, 100%', () => {
+  const b = booking({ terms_version: null, created_at: '2026-10-01T09:00:00Z' });
   assert.equal(P.cancellationQuote(b, hoursBefore(30)).pct, 0);
   assert.equal(P.cancellationQuote(b, hoursBefore(10)).pct, 50);
   assert.equal(P.cancellationQuote(b, hoursBefore(1)).pct, 100);
+});
+
+test('a booking made after version 2 went live without the tick box is held to the current version', () => {
+  assert.equal(P.policyVersion(booking({ terms_version: null })), P.TERMS_VERSION);
+});
+
+test('confirmation email lists the booking\'s own cancellation deadlines', () => {
+  const E = require('../../lib/emailContent');
+  const early = E.bookingConfirmed(booking({ terms_version: '3' }), { now: new Date('2026-10-20T10:00:00Z') }).text;
+  assert.match(early, /Free cancellation until: 06:00 on 18\/11\/2026/);
+  assert.match(early, /50% of the fare from: 06:00 on 19\/11\/2026/);
+  assert.match(early, /Full fare from: 04:00 on 20\/11\/2026, or once your driver sets off/);
+  assert.match(early, /Terms: Version 3: https:\/\/www\.evexec\.test\/terms#cancellation/);
+  const late = E.bookingConfirmed(booking({ terms_version: '3' }), { now: hoursBefore(10) }).text;
+  assert.match(late, /If you cancel now: 50% of the fare/);
+  assert.doesNotMatch(late, /Free cancellation until/);
+  const quoted = E.bookingConfirmed(booking({ airport: null, quoted_price: 650 })).text;
+  assert.match(quoted, /As set out in your quote/);
+});
+
+test('one-line deadline for texts', () => {
+  assert.equal(P.freeCancellationLine(booking(), new Date('2026-10-20T10:00:00Z')), 'Free cancellation until 06:00 on 18/11/2026.');
+  assert.equal(P.freeCancellationLine(booking(), hoursBefore(10)), 'Cancellation charges now apply.');
+  assert.equal(P.freeCancellationLine({}), '');
 });
 
 test('acceptance recorded in notes counts as version 2', () => {
