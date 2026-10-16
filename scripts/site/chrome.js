@@ -54,7 +54,6 @@ function header({ current = '', book = '/#quote' } = {}) {
     return `<li class="evx-has-dd"><button class="evx-navlink${cur}" type="button" aria-expanded="false" aria-controls="evx-dd-${m.key}">${m.label}${chevron}</button><div class="evx-dd" id="evx-dd-${m.key}">${links}${more}</div></li>`;
   }).join('');
   return `<!-- evx:header -->
-<a class="evx-skip" href="#main">Skip to main content</a>
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>

@@ -44,13 +44,13 @@ body{
   backdrop-filter:blur(18px);
 }
 .btn-gold{
-  background:#d5a538;
+  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
   color:#06101c;
-  
+  box-shadow:0 16px 38px rgba(213,165,56,.18);
   transition:all .28s ease;
   border:none;cursor:pointer;
 }
-.btn-gold:hover:not(:disabled){background:#e3b54c}
+.btn-gold:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
 .btn-gold:disabled{opacity:.5;cursor:not-allowed}
 .btn-outline{
   background:transparent;
@@ -101,7 +101,6 @@ body{
 <body>
 
 <!-- evx:header -->
-<a class="evx-skip" href="#main">Skip to main content</a>
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>
@@ -133,7 +132,7 @@ body{
 <!-- /evx:header -->
 <div class="evx-header-space"></div>
 
-<main id="main" class="max-w-3xl mx-auto px-4 md:px-6 py-10">
+<main class="max-w-3xl mx-auto px-4 md:px-6 py-10">
 
 <!-- Loading state -->
 <div id="stateLoading">
@@ -151,28 +150,25 @@ body{
 <div id="stateError" class="hidden">
   <h1 class="serif text-4xl font-bold mb-3">Booking <span class="gold">Not Found</span></h1>
   <p class="text-white/65 mb-6" id="errorMsg">We couldn't load your booking details.</p>
-  <div class="flex flex-wrap gap-3">
-    <a class="btn-gold rounded-md px-7 py-3.5 font-bold inline-block" href="/booking">Find My Booking</a>
-    <a class="rounded-md px-7 py-3.5 font-bold inline-block border border-white/25" href="/">Back to Home</a>
-  </div>
+  <a class="btn-gold rounded-md px-7 py-3.5 font-bold inline-block" href="/">← Back to Home</a>
 </div>
 
 <!-- Lookup state: no ?id in the link, let the customer find their booking themselves -->
 <div id="stateLookup" class="hidden">
   <h1 class="serif text-4xl md:text-5xl font-bold leading-tight mb-2">Check Your <span class="gold">Booking</span></h1>
-  <p class="text-white/70 mb-7 text-sm">Enter your booking reference and the phone number you booked with to see its status and, if accepted, choose how to pay.</p>
+  <p class="text-white/55 mb-7 text-sm">Enter your booking reference and the phone number you booked with to see its status and, if accepted, choose how to pay.</p>
   <div class="glass rounded-xl p-6 md:p-7">
     <div class="flex flex-col gap-4">
       <div>
         <label for="lkRef" class="block text-xs uppercase tracking-[.12em] text-white/45 font-bold mb-2">Booking Reference</label>
-        <input id="lkRef" placeholder="EVX-XXXXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="next" style="letter-spacing:.06em;text-transform:uppercase" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
+        <input id="lkRef" placeholder="EVX-XXXXXXXX" autocomplete="off" style="letter-spacing:.06em;text-transform:uppercase" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
       </div>
       <div>
         <label for="lkPhone" class="block text-xs uppercase tracking-[.12em] text-white/45 font-bold mb-2">Phone Number</label>
-        <input id="lkPhone" placeholder="07700 000000" type="tel" enterkeyhint="search" inputmode="tel" autocomplete="tel" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
+        <input id="lkPhone" placeholder="07700 000000" type="tel" inputmode="tel" autocomplete="tel" class="w-full rounded-md px-4 py-3 text-white placeholder-white/30 bg-white/5 border border-white/15 focus:outline-none focus:border-[#d5a538]"/>
       </div>
       <button class="btn-gold rounded-md py-4 font-bold text-sm w-full mt-1" id="btnLookup" onclick="lookupBooking()">Find My Booking</button>
-      <p id="lookupError" role="alert" class="text-red-300 text-sm hidden"></p>
+      <p id="lookupError" class="text-red-400 text-xs hidden"></p>
     </div>
   </div>
   <p class="text-white/45 text-sm mt-5">Can't find your reference? <a class="gold" href="https://wa.me/447721070370">WhatsApp us</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>

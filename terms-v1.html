@@ -54,12 +54,12 @@ body{
   backdrop-filter:blur(18px);
 }
 .btn-gold{
-  background:#d5a538;
+  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
   color:#06101c;
-  
+  box-shadow:0 16px 38px rgba(213,165,56,.18);
   transition:all .28s ease;
 }
-.btn-gold:hover{background:#e3b54c}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
 .content-card{
   background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));
   border:1px solid rgba(255,255,255,.10);
@@ -125,7 +125,6 @@ body{
 <body>
 
 <!-- evx:header -->
-<a class="evx-skip" href="#main">Skip to main content</a>
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>
@@ -158,7 +157,7 @@ body{
 <div class="evx-header-space"></div>
 
 <!-- Page Intro -->
-<main id="main" class="max-w-4xl mx-auto px-4 md:px-6 py-12">
+<main class="max-w-4xl mx-auto px-4 md:px-6 py-12">
 
 <div class="mb-10">
   <p class="section-label">Legal</p>
