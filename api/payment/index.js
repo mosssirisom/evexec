@@ -5,7 +5,7 @@ const { refreshPricing } = require('../../lib/pricing');
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
-const { getPrice, journeyLine } = require('../../lib/format');
+const { getPrice, journeyLine, isReturnLeg } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
 const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES } = require('../../lib/payments');
 const stripeEvents = require('../../lib/stripeEvents');
@@ -16,15 +16,18 @@ function isUnpaid(status) {
 }
 
 // Confirmed = the operator accepted it (in the Operator app, which records
-// operator_response, or from the email link, which also sets Dispatched) and
-// it hasn't been cancelled or completed.
+// operator_response, or from the email link, which also sets Dispatched), or
+// the operator made it, and it hasn't been cancelled or completed.
 function isConfirmed(b) {
   if (!b) return false;
   if (['Cancelled', 'Completed', 'No Show'].includes(b.status)) return false;
   if (b.operator_response === 'rejected') return false;
-  return b.operator_response === 'accepted' || ['Dispatched', 'En Route', 'Arrived', 'Passenger On Board'].includes(b.status);
+  // A booking the operator made in the Operator app needs no approval.
+  return b.operator_response === 'accepted' || b.source === 'operator' || ['Dispatched', 'En Route', 'Arrived', 'Passenger On Board'].includes(b.status);
 }
-function readyForPayment(b) { return isConfirmed(b) && isUnpaid(b.payment_status); }
+// The return leg of a return booking (£0) is paid with its outbound booking,
+// never on its own.
+function readyForPayment(b) { return isConfirmed(b) && isUnpaid(b.payment_status) && !isReturnLeg(b); }
 
 function json(res, statusCode, payload) {
   res.statusCode = statusCode;
@@ -107,13 +110,21 @@ async function handleCreateCheckoutSession(req, res) {
   // The checkout already started for this booking: reuse it while it is open
   // (so the customer can't end up with two payable checkouts and pay twice),
   // and if it was already paid, send them to the success page, which records it.
+  // A checkout the operator sent as a payment link (metadata booking_ref) is
+  // this booking's too: if it is still open it is closed before a new one is
+  // made here, so the booking never has two payable checkouts.
   if (booking.stripe_session_id) {
     const existing = await getStripeSession(booking.stripe_session_id);
-    if (existing && existing.metadata?.bookingId === bookingId) {
+    const ours = existing && existing.metadata?.bookingId === bookingId;
+    const operatorLink = existing && booking.ref && (existing.metadata?.booking_ref === booking.ref || existing.client_reference_id === booking.ref);
+    if (ours) {
       if (existing.payment_status === 'paid') return json(res, 200, { url: `${successUrl}&session_id=${encodeURIComponent(existing.id)}` });
       if (existing.status === 'open' && readyForPayment(booking) && existing.amount_total === expectedPence(booking) && existing.url) {
         return json(res, 200, { url: existing.url });
       }
+      if (existing.status === 'open') await expireStripeSession(existing.id);
+    } else if (operatorLink) {
+      if (existing.payment_status === 'paid') return json(res, 400, { error: 'This booking has already been paid. The payment is being recorded.' });
       if (existing.status === 'open') await expireStripeSession(existing.id);
     }
   }

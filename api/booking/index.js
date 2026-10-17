@@ -6,12 +6,12 @@ const {logMany}=require('../../lib/notifyLog');
 const {enqueueNotification,sendOrQueue}=require('../../lib/notificationQueue');
 const {generateToken,verifyToken}=require('../../lib/token');
 const {refreshPricing,currentPricing}=require('../../lib/pricing');
-const {journeyLine,fmtDate,fmtTime,lookupPrice,getPrice,buildOperatorJobOfferSms,emailJourneyHtml,refBadgeHtml,singleLineSubject}=require('../../lib/format');
+const {journeyLine,fmtDate,fmtTime,lookupPrice,getPrice,buildOperatorJobOfferSms,emailJourneyHtml,refBadgeHtml,singleLineSubject,isReturnLeg}=require('../../lib/format');
 const {parseBody}=require('../../lib/parse');
 const P=require('../../lib/cancellation');
 const {emailLayout}=require('../../lib/emailLayout');
 const {verifyAuth}=require('../../lib/auth');
-const SAFE=new Set(['id','ref','status','journey_type','pickup_location','airport','flight_number','dropoff_address','travel_date','travel_time','passengers','luggage','return_journey','return_airport','return_date','return_time','quoted_price','payment_method','payment_status','customer_name','operator_response']);
+const SAFE=new Set(['id','ref','status','journey_type','pickup_location','airport','flight_number','dropoff_address','travel_date','travel_time','passengers','luggage','return_journey','return_airport','return_date','return_time','quoted_price','payment_method','payment_status','customer_name','operator_response','source']);
 // Fire-and-forget initial flight verification (Requirement 7). Runs
 // server-to-server against the evexecoperator Supabase Edge Function
 // (verify-flight), which does the actual AeroDataBox lookup and persists
@@ -114,7 +114,7 @@ await Promise.all([booking,returnBooking].filter(Boolean).map(b=>P.recordAccepta
 triggerInitialFlightVerification(booking);
 if(returnBooking)triggerInitialFlightVerification(returnBooking);
 const notifications=await notify({...booking,additional_stops:stops}).catch(err=>[{label:'notification_batch',ok:false,queued:false,error:err.message||String(err)}]);return j(res,200,{success:true,bookingId:booking.id,returnBookingId:returnBooking?returnBooking.id:null,notifications});}
-async function get(req,res){const id=req.query&&req.query.id;if(!id||!isValidUUID(id))return j(res,400,{error:'Invalid booking ID'});const b=await dbGet('bookings',id);if(!b)return j(res,404,{error:'Booking not found'});const safe={};for(const k of SAFE)if(k in b)safe[k]=b[k];safe.needs_terms=P.needsAcceptance(b);safe.policy_version=P.policyVersion(b);return j(res,200,safe);}
+async function get(req,res){const id=req.query&&req.query.id;if(!id||!isValidUUID(id))return j(res,400,{error:'Invalid booking ID'});const b=await dbGet('bookings',id);if(!b)return j(res,404,{error:'Booking not found'});const safe={};for(const k of SAFE)if(k in b)safe[k]=b[k];safe.return_leg=isReturnLeg(b);if(safe.return_leg){const m=String(b.notes||'').match(/Outbound ref: (EVX-[A-Z0-9]+)/);safe.outbound_ref=m?m[1]:null;}safe.needs_terms=P.needsAcceptance(b);safe.policy_version=P.policyVersion(b);return j(res,200,safe);}
 async function lookup(req,res){if(req.method!=='POST')return j(res,405,{error:'Method not allowed'});let body;try{body=await parseBody(req);}catch{return j(res,400,{error:'Invalid request body'});}const ref=String(body.ref||'').trim().toUpperCase();const phone=normaliseUkPhone(body.phone||'');const genericError={error:'No booking found. Check your reference and phone number and try again.'};if(!ref.startsWith('EVX-')||ref.length<7||!phone)return j(res,400,genericError);try{const b=await dbFindOne('bookings',{ref},'id,customer_phone');if(!b||normaliseUkPhone(b.customer_phone)!==phone)return j(res,404,genericError);return j(res,200,{id:b.id});}catch(err){console.error('Booking lookup error:',err);return j(res,500,genericError);}}
 // notifyStatus() (formerly the /notify-status route, En Route / No Show
 // customer notices via direct Twilio SMS fallback) was removed: nothing in

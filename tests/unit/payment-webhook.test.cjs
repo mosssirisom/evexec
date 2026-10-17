@@ -448,3 +448,66 @@ test('customer paid an older checkout; webhook and payment check race: one trans
   assert.equal(booking().stripe_session_id, 'cs_test_paid1');
   assert.ok(!calls.emails.some(e => /double payment/.test(e.subject)));
 });
+
+// ── operator-made bookings, return bookings, approval ─────────────────────
+const checkout = (extra = {}) => request('/api/payment/create-checkout-session', { body: JSON.stringify({ bookingId: BOOKING_ID, terms_accepted: true, ...extra }) });
+const cash = () => request('/api/payment/confirm-cash', { body: JSON.stringify({ bookingId: BOOKING_ID, terms_accepted: true }) });
+function operatorReturnBooking(o = {}) {
+  Object.assign(booking(), {
+    source: 'operator', operator_response: 'accepted', status: 'Unassigned', stripe_session_id: null,
+    quoted_price: 160, return_journey: true, return_date: '2026-10-17', return_time: '18:30', ...o
+  });
+}
+
+test('operator-made return booking: one checkout for the whole £160, no approval needed', async () => {
+  operatorReturnBooking();
+  const res = await checkout();
+  assert.equal(res.status, 200);
+  assert.equal(stripe.created, 1);
+  assert.equal(stripe.sessions.cs_test_new1.amount_total, 16000);
+});
+
+test('operator-made booking from before the fix (no operator_response, no driver) can still pay', async () => {
+  operatorReturnBooking({ operator_response: null });
+  assert.equal((await checkout()).status, 200);
+  booking().stripe_session_id = null;
+  assert.equal((await cash()).status, 200);
+  assert.equal(booking().payment_method, 'Cash');
+});
+
+test('website request the operator has not accepted is still refused', async () => {
+  Object.assign(booking(), { source: 'website', operator_response: null, status: 'Unassigned', stripe_session_id: null });
+  assert.equal((await checkout()).status, 400);
+  assert.equal((await cash()).status, 400);
+  assert.equal(stripe.created, 0);
+});
+
+test('website request rejected by the operator is refused', async () => {
+  Object.assign(booking(), { source: 'website', operator_response: 'rejected', status: 'Cancelled', stripe_session_id: null });
+  assert.equal((await checkout()).status, 400);
+});
+
+test('the £0 return leg is never charged on its own', async () => {
+  operatorReturnBooking({ quoted_price: 0, return_journey: false, notes: 'Return leg created automatically from return booking. Original return fare: £160. Outbound ref: EVX-UNIT0000' });
+  assert.equal((await checkout()).status, 400);
+  assert.equal((await cash()).status, 400);
+  assert.equal(stripe.created, 0);
+});
+
+test('an open operator payment link is closed before the booking page makes its own checkout', async () => {
+  operatorReturnBooking({ stripe_session_id: 'cs_test_link' });
+  stripe.sessions.cs_test_link = session('cs_test_link', 'unpaid', 'open', { amount_total: 16000, metadata: { booking_ref: 'EVX-UNIT0001' }, client_reference_id: 'EVX-UNIT0001' });
+  const res = await checkout();
+  assert.equal(res.status, 200);
+  assert.deepEqual(stripe.expired, ['cs_test_link']);
+  assert.equal(stripe.created, 1);
+});
+
+test('a paid operator payment link stops a second payment on the booking page', async () => {
+  operatorReturnBooking({ stripe_session_id: 'cs_test_linkpaid' });
+  stripe.sessions.cs_test_linkpaid = session('cs_test_linkpaid', 'paid', 'complete', { amount_total: 16000, metadata: { booking_ref: 'EVX-UNIT0001' } });
+  const res = await checkout();
+  assert.equal(res.status, 400);
+  assert.match(JSON.parse(res.body).error, /already been paid/);
+  assert.equal(stripe.created, 0);
+});

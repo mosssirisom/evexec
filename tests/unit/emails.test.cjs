@@ -119,3 +119,25 @@ test('test sends: email_sample renders the named email from a real booking', asy
   }
   assert.equal(await renderQueued({ channel: 'email', booking_id: 'b-1', type: 'email_sample', meta: { builder: 'nope' } }), null);
 });
+
+test('operator-made return booking: one confirmation with both journeys, one £160 price and a pay button', () => {
+  const out = { ...B, source: 'operator', operator_response: 'accepted', payment_method: null, quoted_price: 160, return_journey: true, return_date: '2026-10-22', return_time: '18:30', return_pickup: 'Manchester Airport, Terminal 2', return_destination: '12 Clifton Drive, Lytham St Annes, FY8 5RE' };
+  const e = C.bookingConfirmed(out, { now: NOW });
+  assert.match(e.text, /£160\.00/);
+  assert.doesNotMatch(e.text, /£80\.00/);
+  assert.match(e.text, /Return journey/);
+  assert.match(e.html, /Pay now or choose cash/);
+  // The £0 return leg's own confirmation has no price and nothing to pay.
+  const leg = C.bookingConfirmed({ ...B, source: 'operator', payment_method: null, quoted_price: 0, travel_date: '2026-10-22', notes: 'Return leg created automatically from return booking. Original return fare: £160. Outbound ref: EVX-TEST0001' }, { now: NOW });
+  assert.doesNotMatch(leg.html, /Pay now/);
+  assert.doesNotMatch(leg.text, /£\d/);
+});
+
+test('My Account: operator-made and accepted bookings are confirmed, unaccepted website requests await approval', () => {
+  const { customerStatus } = require('../../api/account/index.js');
+  assert.equal(customerStatus({ status: 'Unassigned', source: 'operator', operator_response: 'accepted' }), 'Trip Confirmed');
+  assert.equal(customerStatus({ status: 'Unassigned', source: 'operator', operator_response: null }), 'Trip Confirmed');
+  assert.equal(customerStatus({ status: 'Unassigned', source: 'website', operator_response: 'accepted' }), 'Trip Confirmed');
+  assert.equal(customerStatus({ status: 'Unassigned', source: 'website', operator_response: null }), 'Awaiting Approval');
+  assert.equal(customerStatus({ status: 'Cancelled', source: 'website', operator_response: 'rejected' }), 'Cancelled');
+});

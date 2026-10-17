@@ -52,6 +52,9 @@ function customerStatus(booking) {
   if (/^arrived$/i.test(status)) return 'Driver Arrived';
   if (status === 'En Route' || status === 'en_route') return 'Driver En Route';
   if (['Dispatched', 'accepted', 'confirmed'].includes(status)) return driverId ? 'Driver Confirmed' : 'Trip Confirmed';
+  // Accepted in the Operator app (no driver yet), or made there by the
+  // operator: confirmed, not waiting for approval.
+  if (booking.operator_response === 'accepted' || booking.source === 'operator') return driverId ? 'Driver Confirmed' : 'Trip Confirmed';
   return 'Awaiting Approval';
 }
 
@@ -154,7 +157,7 @@ async function handleProfile(req, res, user, token) {
 // has no account and its email is exactly their (confirmed) account email.
 // Every journey, receipt and invoice lookup goes through this rule.
 
-const BOOKING_FIELDS = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email,user_id,driver_notes,notes';
+const BOOKING_FIELDS = 'id,ref,journey_type,pickup_location,airport,dropoff_address,travel_date,travel_time,passengers,luggage,return_journey,return_date,return_time,status,quoted_price,payment_status,payment_method,created_at,flight_number,assigned_driver_id,driver_id,customer_email,user_id,driver_notes,notes,operator_response,source';
 
 function ownsBooking(row, user) {
   const email = normaliseEmail(user.email);
@@ -763,4 +766,4 @@ module.exports = async function handler(req, res) {
 
   res.statusCode = 404;
   res.end(JSON.stringify({ error: 'Not found' }));
-};
+};module.exports.customerStatus = customerStatus;

@@ -351,10 +351,12 @@ body{
   }
 
   // Confirmed = accepted by the operator (Operator app records
-  // operator_response; the email link also sets Dispatched).
+  // operator_response; the email link also sets Dispatched), or made by the
+  // operator in the Operator app (source 'operator'), which needs no approval.
+  // Same rule as isConfirmed() in api/payment/index.js.
   function isConfirmed(b) {
     if (['Cancelled', 'Completed', 'No Show'].includes(b.status) || b.operator_response === 'rejected') return false;
-    return b.operator_response === 'accepted' || b.status === 'Dispatched';
+    return b.operator_response === 'accepted' || b.source === 'operator' || ['Dispatched', 'En Route', 'Arrived', 'Passenger On Board'].includes(b.status);
   }
   function isCashChosen(b) { return String(b.payment_method || '').toLowerCase() === 'cash'; }
 
@@ -371,7 +373,7 @@ body{
       pill.textContent = status; pill.className = 'status-pill status-confirmed'; return;
     }
     if (b && isConfirmed(b)) {
-      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced' || isCashChosen(b)) {
+      if (paymentStatus === 'Paid' || paymentStatus === 'Invoiced' || isCashChosen(b) || b.return_leg) {
         pill.textContent = 'Confirmed'; pill.className = 'status-pill status-confirmed'; return;
       }
       pill.textContent = 'Accepted'; pill.className = 'status-pill status-accepted'; return;
@@ -457,12 +459,21 @@ body{
     if (b.flight_number) addDetailRow('Flight', b.flight_number);
     if (b.return_journey) addDetailRow('Return', fmtDate(b.return_date) + (b.return_time ? ' at ' + String(b.return_time).slice(0, 5) : ''));
 
-    if (b.quoted_price) {
+    if (b.quoted_price && !b.return_leg) {
       show('priceDisplay');
       document.getElementById('priceAmount').textContent = '£' + Number(b.quoted_price).toFixed(0);
     }
 
     // Status-specific panels — mapped to actual DB status values
+    // The return leg of a return booking is paid once, with its outbound
+    // booking: never offer a second payment here.
+    if (b.return_leg && isConfirmed(b)) {
+      show('panelConfirmed');
+      document.getElementById('confirmedMsg').textContent =
+        'Your return journey is confirmed. It is paid with your outbound booking' +
+        (b.outbound_ref ? ' (Ref ' + b.outbound_ref + ')' : '') + ', so there is nothing to pay here.';
+      return;
+    }
     if (isConfirmed(b)) {
       var paid = b.payment_status === 'Paid';
       if (paid || b.payment_status === 'Invoiced' || isCashChosen(b)) {
