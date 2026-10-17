@@ -34,7 +34,7 @@ h3{font-size:1.06rem;font-weight:800}
 .btn-dark{border:1px solid rgba(213,165,56,.7);color:#fff;background:rgba(255,255,255,.02)}
 .btn-dark:hover{border-color:rgba(213,165,56,.72);color:#d5a538;background:rgba(213,165,56,.06)}
 .btn-row{display:flex;flex-wrap:wrap;gap:14px}
-@media(max-width:640px){.hero .btn-row .btn,.cta-band .btn{flex:1 1 100%}}
+@media(max-width:640px){.hero .btn-row .btn{flex:1 1 100%}}
 
 /* Hero: same eyebrow pill, serif heading and spacing as the homepage hero */
 .hero{padding:118px 0 44px;background:radial-gradient(circle at 85% 8%,rgba(213,165,56,.10),transparent 32%),radial-gradient(circle at 10% 85%,rgba(48,99,160,.14),transparent 34%)}
@@ -179,10 +179,6 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .link-list a span{color:var(--gold);font-size:14px;white-space:nowrap}
 
 /* CTA band: homepage "Book Your Transfer" banner */
-.cta-band{display:grid;gap:18px;align-items:center;padding:30px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.7)) center/cover}
-.cta-band h2{font-size:clamp(1.9rem,3.8vw,2.5rem);margin:0 0 6px}
-.cta-band p{margin:0;color:rgba(255,255,255,.75)}
-@media(min-width:860px){.cta-band{grid-template-columns:1fr auto;padding:34px 40px}}
 
 /* Map */
 .map-frame{border-radius:18px;overflow:hidden;border:1px solid rgba(213,165,56,.15);height:300px}

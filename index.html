@@ -626,7 +626,6 @@ main,footer{position:relative;z-index:1}
 .hx-rv{display:grid;gap:22px}
 @media(min-width:768px){.hx-rv{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:767px){.hx-rv{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:6px;scrollbar-width:none}.hx-rv::-webkit-scrollbar{display:none}.hx-rv>article{flex:0 0 86%;scroll-snap-align:center}}
-@media(max-width:699px){.hx-grid-4{grid-template-columns:1fr 1fr;gap:12px}.hx-grid-4 .hx-svc{padding:18px 16px}.hx-grid-4 .hx-svc h3{font-size:1rem;margin-top:10px}.hx-grid-4 .hx-svc p{font-size:13.5px}.hx-grid-4 .hx-more{display:none}}
 .hx-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
 .hx-chips a{padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .2s,color .2s}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
@@ -645,14 +644,19 @@ main,footer{position:relative;z-index:1}
 .hx-stars{color:#d5a538;letter-spacing:1px}
 .hx-ic{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @media(max-width:640px){.hx-btn{flex:1 1 100%}}
-.hx-grid{display:grid;gap:16px;margin-top:32px}
-@media(min-width:700px){.hx-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1024px){.hx-grid{grid-template-columns:repeat(3,1fr)}.hx-grid-4{grid-template-columns:repeat(4,1fr)}}
-.hx-svc{display:block;padding:26px;border-radius:14px;text-decoration:none;transition:border-color .2s,transform .2s;text-align:left}
-.hx-svc:hover{border-color:rgba(213,165,56,.55);transform:translateY(-2px)}
-.hx-svc h3{font-size:1.1rem;font-weight:700;margin:14px 0 8px}
-.hx-svc p{color:rgba(255,255,255,.62);font-size:15px;line-height:1.6;margin:0}
-.hx-svc .hx-more{display:inline-block;margin-top:14px;color:#d5a538;font-size:14px;font-weight:600}
+/* Services: one compact list, a row per service */
+.hx-svcs{list-style:none;padding:0;margin:22px auto 0;max-width:760px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.03);overflow:hidden;text-align:left}
+.hx-svcs li+li{border-top:1px solid rgba(255,255,255,.08)}
+.hx-svcs a{display:flex;align-items:center;gap:14px;padding:14px 18px;text-decoration:none;transition:background .2s}
+.hx-svcs a:hover{background:rgba(213,165,56,.07)}
+.hx-svcs svg{width:22px;height:22px;flex:none;stroke:#d5a538;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.hx-svcs span{flex:1;min-width:0}
+.hx-svcs b{display:block;font-size:16px;font-weight:700;color:#fff}
+.hx-svcs small{display:block;margin-top:2px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.6)}
+.hx-svcs i{font-style:normal;color:#d5a538;font-size:18px;transition:transform .2s}
+.hx-svcs a:hover i{transform:translateX(3px)}
+@media(min-width:768px){.hx-svcs a{padding:16px 22px}}
+@media(min-width:1024px){.hx-svcs{max-width:none;display:grid;grid-template-columns:repeat(5,1fr)}.hx-svcs li+li{border-top:0;border-left:1px solid rgba(255,255,255,.08)}.hx-svcs a{height:100%;flex-direction:column;align-items:flex-start;gap:10px;padding:22px}.hx-svcs i{display:none}}
 
 
 
@@ -1260,16 +1264,15 @@ main,footer{position:relative;z-index:1}
 <section class="px-6 py-8 lg:py-12 reveal" id="services">
 <div class="max-w-7xl mx-auto">
 <div class="text-center max-w-3xl mx-auto">
-<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Services</p>
-<h2 class="serif text-4xl md:text-5xl mt-3">Every Pre-Booked <span class="gold">Journey</span></h2>
+<h2 class="serif text-4xl md:text-5xl">Our <span class="gold">Services</span></h2>
 </div>
-<div class="hx-grid hx-grid-4">
-<a class="hx-svc glass" href="/airport-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-plane"></use></svg><h3>Airport Transfers</h3><p>Door to terminal, with your flight home tracked and any delay covered at no extra cost.</p><span class="hx-more" aria-hidden="true">→</span></a>
-<a class="hx-svc glass" href="/corporate-travel"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-briefcase"></use></svg><h3>Corporate Travel</h3><p>Staff, clients and meetings across the North West, invoiced to your company.</p><span class="hx-more" aria-hidden="true">→</span></a>
-<a class="hx-svc glass" href="/private-hire"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-car"></use></svg><h3>Private Hire</h3><p>Stations, hospitals, city centres and appointments, at a price agreed up front.</p><span class="hx-more" aria-hidden="true">→</span></a>
-<a class="hx-svc glass" href="/event-transfers"><svg class="clean-icon-lg" aria-hidden="true"><use href="#i-star"></use></svg><h3>Event &amp; Concert Transfers</h3><p>Gigs, matches and weddings, with your journey home already booked.</p><span class="hx-more" aria-hidden="true">→</span></a>
-</div>
-<p class="text-center mt-6 text-white/62">Going further? <a class="hx-link font-semibold" href="/long-distance-transfers">Long-distance transfers anywhere in the UK →</a></p>
+<ul class="hx-svcs">
+<li><a href="/airport-transfers"><svg aria-hidden="true"><use href="#i-plane"></use></svg><span><b>Airport Transfers</b><small>Fixed prices, flights tracked</small></span><i aria-hidden="true">→</i></a></li>
+<li><a href="/corporate-travel"><svg aria-hidden="true"><use href="#i-briefcase"></use></svg><span><b>Corporate Travel</b><small>Invoiced to your company</small></span><i aria-hidden="true">→</i></a></li>
+<li><a href="/private-hire"><svg aria-hidden="true"><use href="#i-car"></use></svg><span><b>Private Hire</b><small>Stations, hospitals, appointments</small></span><i aria-hidden="true">→</i></a></li>
+<li><a href="/event-transfers"><svg aria-hidden="true"><use href="#i-star"></use></svg><span><b>Events &amp; Concerts</b><small>Your ride home already booked</small></span><i aria-hidden="true">→</i></a></li>
+<li><a href="/long-distance-transfers"><svg aria-hidden="true"><use href="#i-map"></use></svg><span><b>Long-Distance</b><small>Anywhere in the UK</small></span><i aria-hidden="true">→</i></a></li>
+</ul>
 </div>
 </section>
 
@@ -1351,14 +1354,16 @@ main,footer{position:relative;z-index:1}
 
 <!-- Final CTA -->
 <section class="px-6 py-8 lg:py-12 reveal">
-<div class="max-w-7xl mx-auto glass rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 evx-lazy-bg">
-<div>
-<h2 class="serif text-4xl">Ready When You Are</h2>
-<p class="text-white/75 mt-1">Collected from your door, with your flight tracked on the way home.</p>
+<div class="max-w-7xl mx-auto evx-cta" data-evx-cta-zone>
+<div class="evx-cta-photo evx-lazy-bg" role="img" aria-label="EV Exec Tesla Model Y outside Blackpool Tower at night"></div>
+<div class="evx-cta-body">
+<p class="evx-cta-loc">Blackpool &amp; Fylde Coast</p>
+<h2>Ready When You Are</h2>
+<p>Collected from your door, with your flight tracked on the way home.</p>
+<div class="evx-cta-btns">
+<a class="evx-btn evx-btn-gold" href="#quote">Book Your Transfer</a>
+<a class="evx-btn evx-btn-dark" href="/quote">Get a Quote</a>
 </div>
-<div class="flex flex-col sm:flex-row gap-4" data-evx-cta-zone>
-<a class="btn-gold rounded-md px-8 py-4 font-bold text-center" href="#quote">Book Your Transfer</a>
-<a class="rounded-md border border-[#d5a538] px-8 py-4 font-bold text-center btn-dark" href="/quote">Get a Quote</a>
 </div>
 </div>
 </section>

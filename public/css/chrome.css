@@ -107,7 +107,25 @@
 .evx-mobile-cta.is-away{transform:translateY(110%)}
 @media(min-width:760px){.evx-mobile-cta{display:none}}
 @media(max-width:759px){body.evx-has-cta{padding-bottom:calc(70px + env(safe-area-inset-bottom))}}
-/* Decorative background photo for CTA banners, loaded by site.js only when
-   the banner is about to scroll into view. */
-.evx-lazy-bg.is-loaded{background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),url('/public/images/opt/ev-exec-image-6-1100.jpg');background-image:linear-gradient(90deg,rgba(5,9,18,.95),rgba(5,9,18,.62)),image-set(url('/public/images/opt/ev-exec-image-6-1100.webp') type('image/webp'),url('/public/images/opt/ev-exec-image-6-1100.jpg') type('image/jpeg'));background-size:cover;background-position:center}
+/* Closing Book / Quote banner: the Blackpool Tower photo in its own panel
+   (top on phones, left on wider screens), loaded by site.js just before it
+   scrolls into view. */
+.evx-cta{display:grid;overflow:hidden;border-radius:18px;border:1px solid rgba(213,165,56,.3);background:#060c18;text-align:left}
+.evx-cta-photo{position:relative;aspect-ratio:4/3;background:#0b1322 50% 86%/cover no-repeat}
+.evx-cta-photo.is-loaded{background-image:url('/public/images/opt/ev-exec-image-6-1100.jpg');background-image:image-set(url('/public/images/opt/ev-exec-image-6-1100.webp') type('image/webp'),url('/public/images/opt/ev-exec-image-6-1100.jpg') type('image/jpeg'))}
+.evx-cta-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,12,24,0) 62%,#060c18)}
+.evx-cta-body{padding:6px 24px 26px}
+.evx-cta-body .evx-cta-loc{display:flex;align-items:center;gap:12px;margin:0 0 12px;font:700 11px/1 Manrope,Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:#d5a538}
+.evx-cta-body .evx-cta-loc::before{content:"";flex:none;width:30px;height:1px;background:linear-gradient(90deg,#d5a538,rgba(213,165,56,.15))}
+.evx-cta-body h2{margin:0;font:700 clamp(1.9rem,6vw,2.5rem)/1.08 Manrope,Arial,sans-serif;letter-spacing:-.02em;color:#fff}
+.evx-cta-body p{margin:10px 0 0;font-size:16px;line-height:1.5;color:rgba(255,255,255,.72)}
+.evx-cta-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.evx-cta-btns .evx-btn{flex:1 1 180px;min-height:50px;border-radius:12px;font-size:15px}
+@media(min-width:760px){
+  .evx-cta{grid-template-columns:minmax(0,4fr) minmax(0,7fr)}
+  .evx-cta-photo{aspect-ratio:auto;min-height:340px}
+  .evx-cta-photo::after{background:linear-gradient(90deg,rgba(6,12,24,0) 65%,#060c18)}
+  .evx-cta-body{align-self:center;padding:40px 48px}
+  .evx-cta-btns .evx-btn{flex:0 0 auto;padding:0 28px}
+}
 @media(prefers-reduced-motion:reduce){.evx-dd,.evx-mmenu,.evx-nav,.evx-btn{transition:none}}

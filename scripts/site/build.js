@@ -107,6 +107,13 @@ function sectionHead(s) {
   return inner ? `<div class="section-head">${inner}</div>` : '';
 }
 
+// Second banner button: Get a Quote, or Call when the main button is already the quote.
+function ctaSecondary(s, page) {
+  if (s.secondary) return `<a class="evx-btn evx-btn-dark" href="${s.secondary.href}">${esc(s.secondary.label)}</a>`;
+  if (s.primary && /quote/i.test(s.primary.label)) return `<a class="evx-btn evx-btn-dark" href="tel:${BUSINESS.phoneIntl}">Call ${BUSINESS.phone}</a>`;
+  return `<a class="evx-btn evx-btn-dark" href="${quoteHref(page.quoteService)}">Get a Quote</a>`;
+}
+
 const SECTIONS = {
   prose: (s) => `${sectionHead(s)}<div class="prose">${s.html}</div>`,
 
@@ -178,9 +185,9 @@ const SECTIONS = {
   links: (s) => `${sectionHead(s)}<ul class="link-list${s.cols === false ? '' : ' cols'}">${s.items.map((it) =>
     `<li><a href="${it.href}">${esc(it.label)}${it.tag ? `<span>${esc(it.tag)}</span>` : '<span>→</span>'}</a></li>`).join('')}</ul>`,
 
-  cta: (s, page) => `<div class="cta-band evx-lazy-bg" data-evx-cta-zone><div><h2>${s.title}</h2><p>${s.text}</p></div><div class="btn-row">
-  <a class="btn btn-gold" href="${(s.primary && s.primary.href) || page.bookHref || '/#quote'}">${esc((s.primary && s.primary.label) || 'Book Your Transfer')}</a>
-  <a class="btn btn-dark" href="${(s.secondary && s.secondary.href) || quoteHref(page.quoteService)}">${esc((s.secondary && s.secondary.label) || 'Get a Quote')}</a></div></div>`,
+  cta: (s, page) => `<div class="evx-cta" data-evx-cta-zone><div class="evx-cta-photo evx-lazy-bg" role="img" aria-label="EV Exec Tesla Model Y outside Blackpool Tower at night"></div><div class="evx-cta-body"><p class="evx-cta-loc">Blackpool &amp; Fylde Coast</p><h2>${s.title}</h2><p>${s.text}</p><div class="evx-cta-btns">
+  <a class="evx-btn evx-btn-gold" href="${(s.primary && s.primary.href) || page.bookHref || '/#quote'}">${esc((s.primary && s.primary.label) || 'Book Your Transfer')}</a>
+  ${ctaSecondary(s, page)}</div></div></div>`,
 
   quoteForm: (s) => `${sectionHead(s)}<form class="card form" id="quoteForm" novalidate data-evx-cta-zone>
   <div class="row two">
