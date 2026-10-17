@@ -644,19 +644,23 @@ main,footer{position:relative;z-index:1}
 .hx-stars{color:#d5a538;letter-spacing:1px}
 .hx-ic{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @media(max-width:640px){.hx-btn{flex:1 1 100%}}
-/* Services: one compact list, a row per service */
-.hx-svcs{list-style:none;padding:0;margin:22px auto 0;max-width:760px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:rgba(255,255,255,.03);overflow:hidden;text-align:left}
-.hx-svcs li+li{border-top:1px solid rgba(255,255,255,.08)}
-.hx-svcs a{display:flex;align-items:center;gap:14px;padding:14px 18px;text-decoration:none;transition:background .2s}
-.hx-svcs a:hover{background:rgba(213,165,56,.07)}
-.hx-svcs svg{width:22px;height:22px;flex:none;stroke:#d5a538;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.hx-svcs span{flex:1;min-width:0}
-.hx-svcs b{display:block;font-size:16px;font-weight:700;color:#fff}
-.hx-svcs small{display:block;margin-top:2px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.6)}
-.hx-svcs i{font-style:normal;color:#d5a538;font-size:18px;transition:transform .2s}
-.hx-svcs a:hover i{transform:translateX(3px)}
-@media(min-width:768px){.hx-svcs a{padding:16px 22px}}
-@media(min-width:1024px){.hx-svcs{max-width:none;display:grid;grid-template-columns:repeat(5,1fr)}.hx-svcs li+li{border-top:0;border-left:1px solid rgba(255,255,255,.08)}.hx-svcs a{height:100%;flex-direction:column;align-items:flex-start;gap:10px;padding:22px}.hx-svcs i{display:none}}
+/* Services: photo cards, swiped sideways on phones, five across on desktop */
+.hx-svcs{list-style:none;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:24px -24px 0;padding:0 24px;text-align:left}
+.hx-svcs::-webkit-scrollbar{display:none}
+.hx-svcs li{flex:0 0 72%;scroll-snap-align:start}
+.hx-svcs a{position:relative;display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:4/5;padding:18px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);text-decoration:none;background:#0b1322}
+.hx-svcs img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.hx-svcs a::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,7,18,0) 35%,rgba(3,7,18,.92))}
+.hx-svcs a:hover img{transform:scale(1.04)}
+.hx-svcs a:hover{border-color:rgba(213,165,56,.55)}
+.hx-svcs b,.hx-svcs small{position:relative;z-index:1}
+.hx-svcs b{font-size:20px;font-weight:700;color:#fff}
+.hx-svcs small{display:block;margin-top:4px;font-size:14px;line-height:1.4;color:rgba(255,255,255,.78)}
+.hx-svc-dots{display:flex;gap:6px;justify-content:center;margin-top:14px}
+.hx-svc-dots i{width:6px;height:6px;border-radius:9px;background:rgba(255,255,255,.25);transition:all .25s}
+.hx-svc-dots i.on{width:18px;background:#d5a538}
+@media(min-width:640px){.hx-svcs li{flex-basis:42%}}
+@media(min-width:1024px){.hx-svcs{display:grid;grid-template-columns:repeat(5,1fr);overflow:visible;margin:28px 0 0;padding:0}.hx-svcs a{aspect-ratio:3/4}.hx-svc-dots{display:none}}
 
 
 
@@ -1267,13 +1271,14 @@ main,footer{position:relative;z-index:1}
 <div class="text-center max-w-3xl mx-auto">
 <h2 class="serif text-4xl md:text-5xl">Our <span class="gold">Services</span></h2>
 </div>
-<ul class="hx-svcs">
-<li><a href="/airport-transfers"><svg aria-hidden="true"><use href="#i-plane"></use></svg><span><b>Airport Transfers</b><small>Fixed prices, flights tracked</small></span><i aria-hidden="true">→</i></a></li>
-<li><a href="/corporate-travel"><svg aria-hidden="true"><use href="#i-briefcase"></use></svg><span><b>Corporate Travel</b><small>Invoiced to your company</small></span><i aria-hidden="true">→</i></a></li>
-<li><a href="/private-hire"><svg aria-hidden="true"><use href="#i-car"></use></svg><span><b>Private Hire</b><small>Stations, hospitals, appointments</small></span><i aria-hidden="true">→</i></a></li>
-<li><a href="/event-transfers"><svg aria-hidden="true"><use href="#i-star"></use></svg><span><b>Events &amp; Concerts</b><small>Your ride home already booked</small></span><i aria-hidden="true">→</i></a></li>
-<li><a href="/long-distance-transfers"><svg aria-hidden="true"><use href="#i-map"></use></svg><span><b>Long-Distance</b><small>Anywhere in the UK</small></span><i aria-hidden="true">→</i></a></li>
+<ul class="hx-svcs" id="hxSvcs">
+<li><a href="/airport-transfers"><picture><source srcset="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.webp" type="image/webp"><img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec Tesla at an airport at night" loading="lazy" decoding="async"></picture><b>Airport Transfers</b><small>Fixed prices, flights tracked</small></a></li>
+<li><a href="/corporate-travel"><picture><source srcset="/public/images/opt/ev-exec-image-4-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-4-1100.jpg" alt="Inside an EV Exec Tesla, Blackpool Tower ahead" loading="lazy" decoding="async"></picture><b>Corporate Travel</b><small>Invoiced to your company</small></a></li>
+<li><a href="/private-hire"><picture><source srcset="/public/images/opt/ev-exec-image-1-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-1-1100.jpg" alt="EV Exec Tesla on Blackpool promenade at sunset" loading="lazy" decoding="async"></picture><b>Private Hire</b><small>Stations and appointments</small></a></li>
+<li><a href="/event-transfers"><picture><source srcset="/public/images/opt/ev-exec-image-2-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-2-1100.jpg" alt="EV Exec Tesla outside Blackpool Tower at night" loading="lazy" decoding="async"></picture><b>Events &amp; Concerts</b><small>Your ride home already booked</small></a></li>
+<li><a href="/long-distance-transfers"><picture><source srcset="/public/images/opt/ev-exec-skoda-enyaq-1000.webp" type="image/webp"><img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec Škoda Enyaq at night" loading="lazy" decoding="async"></picture><b>Long-Distance</b><small>Anywhere in the UK</small></a></li>
 </ul>
+<div class="hx-svc-dots" id="hxSvcDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 </div>
 </section>
 
@@ -2333,5 +2338,20 @@ window.evexecConfig = window.evexecConfig || (function(){ var p; return function
 </script>
 <script defer src="/public/js/google-places-autocomplete.js?v=evexec-20261004"></script>
 <script defer src="/public/js/site.js"></script>
+<script>
+// Services cards: gold dot follows the card swiped into view (phones).
+(function () {
+  var row = document.getElementById('hxSvcs'), dots = document.querySelectorAll('#hxSvcDots i');
+  if (!row || !dots.length) return;
+  function update() {
+    var cards = row.children, best = 0, left = row.getBoundingClientRect().left, min = Infinity;
+    for (var i = 0; i < cards.length; i++) { var d = Math.abs(cards[i].getBoundingClientRect().left - left - 24); if (d < min) { min = d; best = i; } }
+    if (row.scrollLeft + row.clientWidth >= row.scrollWidth - 4) best = cards.length - 1;
+    for (var j = 0; j < dots.length; j++) dots[j].classList.toggle('on', j === best);
+  }
+  row.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
 </body>
 </html>
