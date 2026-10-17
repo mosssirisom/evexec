@@ -74,10 +74,10 @@
   css.textContent =
     '.evx-consent{position:fixed;left:12px;right:12px;bottom:12px;z-index:2147483000;max-width:560px;margin:0 auto;' +
     'background:#07111f;color:rgba(255,255,255,.85);border:1px solid rgba(213,165,56,.45);border-radius:16px;' +
-    'padding:16px 18px;box-shadow:0 18px 50px rgba(0,0,0,.5);font:14px/1.5 Inter,system-ui,sans-serif}' +
+    'padding:16px 18px;box-shadow:0 18px 50px rgba(0,0,0,.5);font:14px/1.5 Manrope,system-ui,sans-serif}' +
     '.evx-consent p{margin:0 0 12px}.evx-consent a{color:#d5a538}' +
     '.evx-consent-btns{display:flex;gap:10px;justify-content:flex-end}' +
-    '.evx-consent button{min-height:44px;padding:0 20px;border-radius:10px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;' +
+    '.evx-consent button{min-height:44px;padding:0 20px;border-radius:10px;font:600 14px Manrope,system-ui,sans-serif;cursor:pointer;' +
     'background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3)}' +
     '.evx-consent .evx-consent-ok{background:#d5a538;color:#020813;border-color:#d5a538}';
   document.head.appendChild(css);

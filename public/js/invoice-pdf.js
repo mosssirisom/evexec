@@ -124,7 +124,7 @@
 
     var el = document.createElement('div');
     el.setAttribute('aria-hidden', 'true');
-    el.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;min-height:1123px;background:#fff;color:#0f172a;font-family:Inter,Arial,Helvetica,sans-serif;display:flex;flex-direction:column;-webkit-print-color-adjust:exact;print-color-adjust:exact';
+    el.style.cssText = 'position:fixed;left:-10000px;top:0;width:794px;min-height:1123px;background:#fff;color:#0f172a;font-family:Manrope,Arial,Helvetica,sans-serif;display:flex;flex-direction:column;-webkit-print-color-adjust:exact;print-color-adjust:exact';
     el.innerHTML =
       '<div style="flex:1;display:flex;flex-direction:column">' +
         // Header band

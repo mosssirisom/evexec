@@ -322,19 +322,16 @@ function jsonLd(page) {
 
 // ── page shell ───────────────────────────────────────────────────────────
 // Icons and fonts shared by every page. Square icons (Google's search-result
-// favicon must be square, a multiple of 48px). Fonts are the same Inter and
-// Cormorant Garamond files Google Fonts serves, hosted here so the first paint
-// does not wait on two third-party connections.
-// Each page keeps exactly the font faces it requested from Google Fonts before
-// (public/css/fonts-<set>.css), so nothing renders differently. The heading and
-// body faces are preloaded so text paints in its final font (no layout shift).
-const headCommon = (fontSet) => `<!-- evx:head -->
+// favicon must be square, a multiple of 48px). One font for every page and
+// every element: Manrope (user decision 17/10/2026), the files Google Fonts
+// serves, hosted here (public/css/fonts.css) so the first paint does not wait
+// on a third-party connection. Preloaded so text paints in its final font.
+const headCommon = () => `<!-- evx:head -->
 <link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
 <link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
-${['inter-normal-latin', 'cormorant-garamond-normal-latin', ...(fontSet === 'home' ? ['cormorant-garamond-italic-latin'] : [])]
-    .map((f) => `<link rel="preload" href="/public/fonts/${f}.woff2" as="font" type="font/woff2" crossorigin>`).join('\n')}
-<link rel="stylesheet" href="/public/css/fonts-${fontSet}.css">
+<link rel="preload" href="/public/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/public/css/fonts.css">
 <!-- /evx:head -->`;
 
 const SCRIPT = `<script>
@@ -397,7 +394,7 @@ ${page.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonica
 <meta name="twitter:title" content="${esc(page.title)}">
 <meta name="twitter:description" content="${esc(page.description)}">
 <meta name="twitter:image" content="${ogImage}">
-${headCommon('site')}
+${headCommon()}
 ${chrome.HEAD}
 <link rel="stylesheet" href="/public/css/site.css">
 <script type="application/ld+json">${jsonLd(page)}</script>
@@ -487,10 +484,10 @@ const CHROME_PAGES = {
 
 // Hand-maintained pages also share the icon/font block. Old Google Fonts links,
 // their preconnects and the old non-square icon are replaced by headCommon().
-const HEAD_PAGES = { 'index.html': 'home', 'terms.html': 'doc', 'terms-v1.html': 'doc', 'terms-v2.html': 'doc', 'privacy.html': 'doc', 'booking.html': 'doc', 'manchester-airport-parking-vs-private-transfer.html': 'doc', 'blog.html': 'blog', 'account.html': 'account' };
+const HEAD_PAGES = ['index.html', 'terms.html', 'terms-v1.html', 'terms-v2.html', 'privacy.html', 'booking.html', 'manchester-airport-parking-vs-private-transfer.html', 'blog.html', 'account.html'];
 
 function normalizeHead(file, html) {
-  const block = headCommon(HEAD_PAGES[file]);
+  const block = headCommon();
   if (/<!-- evx:head -->[\s\S]*?<!-- \/evx:head -->/.test(html)) {
     return html.replace(/<!-- evx:head -->[\s\S]*?<!-- \/evx:head -->/, () => block);
   }
@@ -505,7 +502,7 @@ function normalizeHead(file, html) {
 }
 
 function injectChrome() {
-  for (const file of Object.keys(HEAD_PAGES)) {
+  for (const file of HEAD_PAGES) {
     const f = path.join(ROOT, file);
     const html = fs.readFileSync(f, 'utf8');
     let out = normalizeHead(file, html);

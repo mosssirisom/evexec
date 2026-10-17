@@ -430,3 +430,12 @@ Booking creation paths (checked across all three repos and the database; no DB f
 - **Create Return Journey** (booking drawer) is hidden on a booking that already includes its return and on a return leg (it pre-filled a second paid return).
 - **Known difference, left as is**: the emailed Accept link sets the outbound to Dispatched (no driver); the Operator app Accept keeps it Unassigned. Both count as confirmed everywhere.
 - Tests: website `tests/unit/operator-accept.test.cjs`; Operator app `useBookings.test.js` (respondToBooking).
+
+## Update — 2026-10-17: one font, Manrope (website)
+
+User decision: every font on the website is Manrope; sizes, weights and everything else unchanged. Supersedes the Inter + Cormorant Garamond conventions in the 2026-10-07 SEO entry.
+- **Files**: `public/fonts/manrope-latin.woff2` and `manrope-latin-ext.woff2` (variable, weights 200–800, from `@fontsource-variable/manrope` 5.2.5, SIL OFL in `OFL-Manrope.txt`), one stylesheet `public/css/fonts.css` for every page (the five `fonts-<set>.css` files and the Inter/Cormorant files were removed). `npm run build:pages` writes it and the preload into every page (`headCommon()`, `HEAD_PAGES` in build.js). Still self-hosted: never add a fonts.googleapis.com link.
+- **Rules**: every `font-family` in the pages, `chrome.css`, `site.css`, the cookie banner (`consent.js`), the customer invoice PDF (`invoice-pdf.js`), the self-cancel page (`api/booking`) and the operator accept/reject page (`lib/pages.js`) names Manrope. Headings that were Cormorant Garamond keep their own size and weight.
+- **Limits**: Manrope's heaviest weight is 800 (CSS asking for 900 renders at 800) and it has no italic (italic text is the browser's slanted Manrope). Manrope is a little wider than the old fonts at the same size, so some lines wrap sooner.
+- **Not changed**: emails (`lib/emailTemplate.js` etc.) keep their email-safe fonts; email clients don't load web fonts reliably.
+- **Checked**: 11,230 text elements on all 29 pages at 1366px and 390px: every visible one renders in Manrope (the font file loads on every page) and none changed size, weight, style, letter-spacing or line-height compared with before.

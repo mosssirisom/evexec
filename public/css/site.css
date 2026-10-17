@@ -8,14 +8,14 @@
 :root{--bg:#020813;--gold:#d5a538;--line:rgba(255,255,255,.12)}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{margin:0;overflow-x:hidden;color:#fff;font:400 16px/1.65 Inter,Arial,sans-serif;
+body{margin:0;overflow-x:hidden;color:#fff;font:400 16px/1.65 Manrope,Arial,sans-serif;
   background:radial-gradient(circle at 65% 5%,rgba(48,99,160,.22),transparent 30%),radial-gradient(circle at 25% 20%,rgba(213,165,56,.08),transparent 28%),#020813}
 ::selection{background:rgba(213,165,56,.4);color:#06101c}
 img{max-width:100%;height:auto;display:block}
 a{color:inherit}
 p{margin:0 0 1em}
 h1,h2,h3{margin:0;line-height:1.1}
-h1,h2,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:700}
+h1,h2,.serif{font-family:Manrope,Arial,sans-serif;font-weight:700}
 /* Section headings match the homepage's lighter serif. */
 h2{font-weight:500}
 h3{font-size:1.06rem;font-weight:800}
@@ -27,7 +27,7 @@ h3{font-size:1.06rem;font-weight:800}
 .hidden{display:none!important}
 
 /* Buttons: same as the homepage section buttons (rounded-md, px-7 py-4) */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 28px;border-radius:7px;font:700 15px/1 Inter,Arial,sans-serif;text-decoration:none;cursor:pointer;border:0;transition:all .28s ease}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 28px;border-radius:7px;font:700 15px/1 Manrope,Arial,sans-serif;text-decoration:none;cursor:pointer;border:0;transition:all .28s ease}
 .btn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .btn-gold{background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);color:#06101c;box-shadow:0 16px 38px rgba(213,165,56,.18)}
 .btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
@@ -128,7 +128,7 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .fleet-card .pic{aspect-ratio:1000/789;background:#050c18}
 .fleet-card .pic img{width:100%;height:100%;object-fit:cover}
 .fleet-card .body{padding:20px 24px 26px}
-.fleet-card h3{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;margin:0}
+.fleet-card h3{font-family:Manrope,Arial,sans-serif;font-size:1.7rem;font-weight:700;margin:0}
 .specs{display:flex;gap:18px;margin:10px 0 12px;font-size:14px;font-weight:600;color:rgba(255,255,255,.8)}
 .specs span{display:inline-flex;align-items:center;gap:6px}
 .specs svg{width:16px;height:16px;fill:none;stroke:var(--gold);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -137,14 +137,14 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 /* CO2 calculator (moved from the homepage) */
 .calc{max-width:520px;margin:0 auto;text-align:center}
 .calc label{display:block;font-size:12px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.16em;margin-bottom:12px}
-.calc select{width:100%;max-width:320px;min-height:50px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;font:16px Inter,Arial,sans-serif;padding:0 14px;text-align:center}
+.calc select{width:100%;max-width:320px;min-height:50px;border-radius:7px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.08);color:#fff;font:16px Manrope,Arial,sans-serif;padding:0 14px;text-align:center}
 .calc select option{color:#06101c}
-.calc-number{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:700;color:var(--gold);line-height:1;margin-top:22px;transition:opacity .18s,transform .18s}
+.calc-number{font-family:Manrope,Arial,sans-serif;font-size:4rem;font-weight:700;color:var(--gold);line-height:1;margin-top:22px;transition:opacity .18s,transform .18s}
 .calc small{display:block;color:rgba(255,255,255,.6);margin-top:6px}
 
 /* Reviews: homepage review cards + rating box */
 .rating-box{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 26px;margin:0 auto 22px;padding:18px 24px;max-width:760px;border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));border:1px solid var(--line)}
-.rating-box .score{font-family:'Cormorant Garamond',serif;font-size:3rem;line-height:1;color:var(--gold);font-weight:700}
+.rating-box .score{font-family:Manrope,Arial,sans-serif;font-size:3rem;line-height:1;color:var(--gold);font-weight:700}
 .rating-box .stars{font-size:20px;letter-spacing:2px}
 .rating-box p{margin:2px 0 0;color:rgba(255,255,255,.65);font-size:14px}
 .review{margin:0}
@@ -193,7 +193,7 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .form .row{display:grid;gap:14px}
 @media(min-width:640px){.form .row.two{grid-template-columns:1fr 1fr}.form .row.three{grid-template-columns:1fr 1fr 1fr}}
 .form label{display:grid;gap:6px;font-size:13.5px;font-weight:600;color:rgba(255,255,255,.8)}
-.form input,.form select,.form textarea{width:100%;min-height:48px;border-radius:7px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.08);color:#fff;padding:12px 14px;font:400 16px Inter,Arial,sans-serif;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
+.form input,.form select,.form textarea{width:100%;min-height:48px;border-radius:7px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.08);color:#fff;padding:12px 14px;font:400 16px Manrope,Arial,sans-serif;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
 .form textarea{min-height:110px;resize:vertical}
 .form select option{color:#06101c}
 .form input::placeholder,.form textarea::placeholder{color:rgba(255,255,255,.4)}

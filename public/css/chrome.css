@@ -5,21 +5,21 @@
    overlay mobile menu. Class names are prefixed evx- so they cannot clash
    with Tailwind utilities on the hand-built pages. */
 
-.evx-header{position:fixed;top:0;left:0;right:0;z-index:50;padding:14px 16px;font-family:Inter,Arial,sans-serif}
+.evx-header{position:fixed;top:0;left:0;right:0;z-index:50;padding:14px 16px;font-family:Manrope,Arial,sans-serif}
 .evx-nav{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 12px;border:1px solid transparent;border-radius:18px;transition:background .45s ease,border-color .45s ease,box-shadow .45s ease}
 .evx-header.scrolled .evx-nav,.evx-header.solid .evx-nav{background:rgba(2,8,19,.78);border-color:rgba(255,255,255,.12);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);box-shadow:0 18px 55px rgba(0,0,0,.38)}
 .evx-brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#fff;flex-shrink:0}
 .evx-brand img{width:56px;height:56px;border-radius:50%;object-fit:cover}
 .evx-brand-name{display:block;font-size:22px;font-weight:900;letter-spacing:.025em;line-height:1.1}
 .evx-brand-text{display:flex;flex-direction:column}
-.evx-brand-motto{display:flex;align-items:center;gap:7px;margin-top:6px;font:600 8.5px/1 Inter,Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(213,165,56,.92);white-space:nowrap}
+.evx-brand-motto{display:flex;align-items:center;gap:7px;margin-top:6px;font:600 8.5px/1 Manrope,Arial,sans-serif;letter-spacing:.26em;text-transform:uppercase;color:rgba(213,165,56,.92);white-space:nowrap}
 .evx-brand-motto i{flex:none;width:3px;height:3px;transform:rotate(45deg);background:#d5a538;opacity:.85}
 .evx-brand-tag{display:block;font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-top:3px}
 .evx-gold{color:#d5a538}
 
 .evx-menu{display:none;list-style:none;margin:0;padding:0;align-items:center;gap:26px}
 .evx-menu>li{position:relative}
-.evx-navlink{position:relative;display:inline-flex;align-items:center;gap:5px;padding:8px 0;background:none;border:0;font:500 14.5px Inter,Arial,sans-serif;color:rgba(255,255,255,.85);text-decoration:none;cursor:pointer}
+.evx-navlink{position:relative;display:inline-flex;align-items:center;gap:5px;padding:8px 0;background:none;border:0;font:500 14.5px Manrope,Arial,sans-serif;color:rgba(255,255,255,.85);text-decoration:none;cursor:pointer}
 .evx-navlink:after{content:"";position:absolute;left:0;right:100%;bottom:0;height:2px;background:#d5a538;transition:right .25s ease}
 .evx-navlink:hover,.evx-navlink.is-current,.evx-has-dd.open>.evx-navlink{color:#fff}
 .evx-navlink:hover:after,.evx-navlink.is-current:after,.evx-has-dd.open>.evx-navlink:after{right:0}
@@ -37,7 +37,7 @@
 .evx-dd-right{left:auto;right:0}
 
 .evx-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.evx-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 22px;border-radius:999px;font:700 14px Inter,Arial,sans-serif;text-decoration:none;white-space:nowrap;transition:all .28s ease;cursor:pointer}
+.evx-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 22px;border-radius:999px;font:700 14px Manrope,Arial,sans-serif;text-decoration:none;white-space:nowrap;transition:all .28s ease;cursor:pointer}
 .evx-btn-gold{background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);color:#06101c;border:0;box-shadow:0 16px 38px rgba(213,165,56,.18)}
 .evx-btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
 .evx-btn-dark{border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85);background:rgba(255,255,255,.03)}
@@ -46,11 +46,11 @@
 .evx-icon-btn:hover,.evx-account.open .evx-icon-btn{border-color:rgba(213,165,56,.72);color:#d5a538}
 .evx-icon-btn svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .evx-account{position:relative}
-.evx-phone{display:none;align-items:center;gap:7px;margin-right:6px;font:600 14px Inter,Arial,sans-serif;color:rgba(255,255,255,.85);text-decoration:none;white-space:nowrap}
+.evx-phone{display:none;align-items:center;gap:7px;margin-right:6px;font:600 14px Manrope,Arial,sans-serif;color:rgba(255,255,255,.85);text-decoration:none;white-space:nowrap}
 .evx-phone svg{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .evx-phone:hover{color:#d5a538}
 @media(min-width:1360px){.evx-phone{display:inline-flex}}
-.evx-menu-btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(213,165,56,.55);background:rgba(255,255,255,.04);color:#d5a538;font:600 15px Inter,Arial,sans-serif;cursor:pointer}
+.evx-menu-btn{min-height:44px;padding:0 14px;border-radius:10px;border:1px solid rgba(213,165,56,.55);background:rgba(255,255,255,.04);color:#d5a538;font:600 15px Manrope,Arial,sans-serif;cursor:pointer}
 .evx-hide-xs,.evx-hide-sm{display:none}
 @media(min-width:560px){.evx-hide-xs{display:inline-flex}}
 @media(min-width:800px){.evx-hide-sm{display:inline-flex}}
@@ -62,7 +62,7 @@
 @media(max-width:560px){.evx-header-space{height:82px}}
 
 /* Full-screen mobile menu (same look as the original homepage menu) */
-.evx-mmenu{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;background:rgba(2,8,19,.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);opacity:0;transform:translateY(-12px);transition:opacity .28s cubic-bezier(.2,.8,.2,1),transform .28s cubic-bezier(.2,.8,.2,1);font-family:Inter,Arial,sans-serif}
+.evx-mmenu{display:none;position:fixed;inset:0;z-index:9999;flex-direction:column;background:rgba(2,8,19,.97);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);opacity:0;transform:translateY(-12px);transition:opacity .28s cubic-bezier(.2,.8,.2,1),transform .28s cubic-bezier(.2,.8,.2,1);font-family:Manrope,Arial,sans-serif}
 .evx-mmenu.open{opacity:1;transform:translateY(0)}
 .evx-mmenu-top{display:flex;justify-content:flex-end;padding:18px 20px 0}
 .evx-mmenu-top button{width:44px;height:44px;display:grid;place-items:center;border:1px solid rgba(213,165,56,.4);border-radius:12px;background:rgba(213,165,56,.08);cursor:pointer}
@@ -84,11 +84,11 @@
 .evx-mmenu-contact a:hover{color:#d5a538}
 
 /* Footer (original homepage footer layout) */
-.evx-footer{position:relative;z-index:1;padding:44px 24px 28px;border-top:1px solid rgba(255,255,255,.08);font-family:Inter,Arial,sans-serif;color:rgba(255,255,255,.6);font-size:14.5px}
+.evx-footer{position:relative;z-index:1;padding:44px 24px 28px;border-top:1px solid rgba(255,255,255,.08);font-family:Manrope,Arial,sans-serif;color:rgba(255,255,255,.6);font-size:14.5px}
 .evx-foot-grid{max-width:1280px;margin:0 auto;display:grid;gap:34px}
 @media(max-width:759px){.evx-foot-grid{grid-template-columns:1fr 1fr;gap:28px 18px}.evx-foot-brand{grid-column:1/-1}.evx-foot-grid>div:last-child{grid-column:1/-1}.evx-foot-grid>div:last-child ul{grid-template-columns:1fr 1fr;column-gap:18px}}
 @media(min-width:760px){.evx-foot-grid{grid-template-columns:1.3fr 1fr 1fr 1fr}}
-.evx-footer h2,.evx-footer .evx-foot-h{font:700 15px Inter,Arial,sans-serif;color:#fff;margin:0 0 14px}
+.evx-footer h2,.evx-footer .evx-foot-h{font:700 15px Manrope,Arial,sans-serif;color:#fff;margin:0 0 14px}
 .evx-footer ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
 .evx-footer a{color:inherit;text-decoration:none}
 .evx-footer a:hover{color:#d5a538}

@@ -6,10 +6,8 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
 <link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
-<link rel="preload" href="/public/fonts/inter-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/public/fonts/cormorant-garamond-normal-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/public/fonts/cormorant-garamond-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/public/css/fonts-home.css">
+<link rel="preload" href="/public/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/public/css/fonts.css">
 <!-- /evx:head -->
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Blackpool Airport Transfers &amp; Private Hire | EV Exec</title>
@@ -233,11 +231,11 @@ body{
     radial-gradient(circle at 25% 20%, rgba(213,165,56,.08), transparent 28%),
     #020813;
   color:#fff;
-  font-family:Inter,Arial,sans-serif;
+  font-family:Manrope,Arial,sans-serif;
 }
 img{max-width:100%}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.serif{font-family:'Cormorant Garamond',serif}
+.serif{font-family:Manrope,Arial,sans-serif}
 .gold{color:var(--gold)}
 .glass{
   background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
@@ -329,7 +327,7 @@ img{max-width:100%}
   box-shadow:0 6px 18px rgba(0,0,0,.35);
 }
 .hc-slide-info{padding:16px 6px 0;text-align:center}
-.hc-slide-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#fff}
+.hc-slide-name{font-family:Manrope,Arial,sans-serif;font-size:22px;font-weight:700;color:#fff}
 .hc-slide-specs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
 .hc-slide-spec{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:rgba(255,255,255,.72);font-weight:600}
 .hc-slide-spec svg{width:15px;height:15px;stroke:#d5a538;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
@@ -377,7 +375,7 @@ img{max-width:100%}
   padding:0 14px;
   outline:none;
   font-size:16px;
-  font-family:Inter,Arial,sans-serif;
+  font-family:Manrope,Arial,sans-serif;
   transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 .input:focus{
@@ -562,10 +560,10 @@ main,footer{position:relative;z-index:1}
 
 /* ── Booking Wizard ── */
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:20px;transition:border-color .2s}
-.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Inter,Arial,sans-serif;color:#fff}
+.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:14px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Manrope,Arial,sans-serif;color:#fff}
 .bw-airport-card:hover{border-color:rgba(213,165,56,.45);background:rgba(213,165,56,.06)}
 .bw-airport-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
-.bw-dir-card{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Inter,Arial,sans-serif;color:#fff}
+.bw-dir-card{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:16px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Manrope,Arial,sans-serif;color:#fff}
 .bw-dir-card:hover{border-color:rgba(213,165,56,.55);background:rgba(213,165,56,.06)}
 .bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
 .bw-dir-icon{width:52px;height:52px;border-radius:14px;flex-shrink:0;background:rgba(6,16,28,.55);border:1px solid rgba(213,165,56,.15);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .2s}
@@ -578,7 +576,7 @@ main,footer{position:relative;z-index:1}
 .bw-counter-btn:hover:not(:disabled){background:rgba(213,165,56,.12)}
 .bw-counter-btn:disabled{opacity:.3;cursor:not-allowed}
 .bw-seg{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:4px;gap:4px}
-.bw-seg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Inter,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
+.bw-seg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:none;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Manrope,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
 .bw-seg-btn.bw-active{background:var(--gold);color:#06101c}
 .bw-back-btn{width:44px;height:44px;border-radius:12px;flex-shrink:0;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:18px;transition:background .15s;display:flex;align-items:center;justify-content:center;line-height:1}
 .bw-back-btn:hover{background:rgba(255,255,255,.12)}
@@ -614,7 +612,7 @@ main,footer{position:relative;z-index:1}
 /* Hero heading: lighter serif, gold italic second line, hairline location label */
 .hx-l1{display:block}
 .hx-l2{display:block;font-style:italic;font-weight:500;color:#d5a538;margin-top:2px}
-.hx-loc{display:flex;align-items:center;gap:14px;margin-top:22px;font:600 11.5px/1 Inter,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:rgba(213,165,56,.92)}
+.hx-loc{display:flex;align-items:center;gap:14px;margin-top:22px;font:600 11.5px/1 Manrope,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:rgba(213,165,56,.92)}
 .hx-loc::before{content:"";flex:none;width:36px;height:1px;background:linear-gradient(90deg,#d5a538,rgba(213,165,56,.15))}
 @media(min-width:1024px){
   .hx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro cars" "cta cars";column-gap:44px;align-items:center}
@@ -634,7 +632,7 @@ main,footer{position:relative;z-index:1}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
 .hx-after-cars{margin-top:8px}
 .hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.02;font-weight:500;letter-spacing:-.01em;margin:0}
-.hx-sub{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;color:#e9e0cc;font-size:1.3rem;line-height:1.5;margin:18px 0 0;max-width:31em;padding-left:18px;border-left:1px solid rgba(213,165,56,.55)}
+.hx-sub{font-family:Manrope,Arial,sans-serif;font-weight:500;color:#e9e0cc;font-size:1.3rem;line-height:1.5;margin:18px 0 0;max-width:31em;padding-left:18px;border-left:1px solid rgba(213,165,56,.55)}
 .hx-sub em{color:#d5a538}
 @media(max-width:1023px){.hx-sub{font-size:1.16rem;line-height:1.42;padding-left:14px}}
 @media(max-width:380px){.hx-sub{font-size:1.06rem;line-height:1.34}}
@@ -663,7 +661,7 @@ main,footer{position:relative;z-index:1}
 
 
 .hx-rating{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 26px;margin:28px auto 0;padding:18px 24px;border-radius:14px;max-width:760px}
-.hx-rating .hx-score{font-family:'Cormorant Garamond',serif;font-size:3rem;line-height:1;color:#d5a538;font-weight:700}
+.hx-rating .hx-score{font-family:Manrope,Arial,sans-serif;font-size:3rem;line-height:1;color:#d5a538;font-weight:700}
 .hx-rating .hx-stars{font-size:20px;letter-spacing:2px}
 .hx-rating p{margin:2px 0 0;color:rgba(255,255,255,.65);font-size:14px}
 
@@ -2008,7 +2006,7 @@ main,footer{position:relative;z-index:1}
 
 <!-- ── TAB STYLES (shared with auth modal) ── -->
 <style>
-.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;font-family:Inter,sans-serif}
+.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;font-family:Manrope,sans-serif}
 .tab-btn.active{background:rgba(213,165,56,.12);border-color:rgba(213,165,56,.3);color:#d5a538}
 .tab-btn:hover:not(.active){color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
 /* Chat widget */
@@ -2020,10 +2018,10 @@ main,footer{position:relative;z-index:1}
 .chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
 .chat-msg.user{background:linear-gradient(135deg,#d5a538,#b8891f);color:#06101c;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
 .chat-quick{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 8px}
-.chat-quick-btn{padding:5px 10px;border-radius:99px;font-size:11.5px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538;cursor:pointer;transition:background .2s;font-family:Inter,sans-serif}
+.chat-quick-btn{padding:5px 10px;border-radius:99px;font-size:11.5px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538;cursor:pointer;transition:background .2s;font-family:Manrope,sans-serif}
 .chat-quick-btn:hover{background:rgba(213,165,56,.2)}
 .chat-input-row{display:flex;gap:7px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)}
-.chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:16px;outline:none;font-family:Inter,sans-serif}
+.chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:16px;outline:none;font-family:Manrope,sans-serif}
 .chat-input:focus{border-color:rgba(213,165,56,.4)}
 .chat-send{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#d5a538,#b8891f);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 /* Push prompt banner */
