@@ -8,7 +8,7 @@
 // all of this now).
 
 const { refreshPricing } = require('../../lib/pricing');
-const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
+const { dbGet, dbUpdate, dbUpdateMatching, isValidUUID } = require('../../lib/supabase');
 const { sendRejectionNotice, sendBookingConfirmed } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
 const { journeyLine, fmtDate, fmtTime, getPrice, emailJourneyHtml, refBadgeHtml, singleLineSubject } = require('../../lib/format');
@@ -26,6 +26,18 @@ function esc(str) {
 }
 
 // ── Accept / Reject ────────────────────────────────────────────────────────
+
+// A website return booking is one request: its £0 return leg (notes "Return
+// leg created automatically … Outbound ref: <ref>") takes the outbound's
+// decision, without a second customer email. The leg stays Unassigned until a
+// driver is given (only the outbound gets Dispatched from this link).
+async function applyToReturnLeg(booking, decision, at) {
+  if (!booking.return_journey || !booking.ref) return;
+  const filter = `notes=like.${encodeURIComponent(`Return leg created automatically*Outbound ref: ${booking.ref}*`)}&operator_response=is.null` +
+    (decision === 'rejected' ? '&status=not.in.(Cancelled,Completed)' : '');
+  const patch = { operator_response: decision, operator_responded_at: at, ...(decision === 'rejected' ? { status: 'Cancelled' } : {}) };
+  await dbUpdateMatching('bookings', filter, patch).catch((err) => console.error('Return leg not updated:', err.message || err));
+}
 
 async function handleAction(req, res) {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
@@ -58,7 +70,9 @@ async function handleAction(req, res) {
 
     // POST: perform the action
     if (isReject) {
-      await dbUpdate('bookings', id, { status: 'Cancelled', operator_response: 'rejected', operator_responded_at: new Date().toISOString() });
+      const at = new Date().toISOString();
+      await dbUpdate('bookings', id, { status: 'Cancelled', operator_response: 'rejected', operator_responded_at: at });
+      await applyToReturnLeg(booking, 'rejected', at);
       await sendRejectionNotice(booking);
       return res.end(operatorPage('Booking Rejected', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> has been rejected.</p><p>${esc(route)}<br>${esc(date)}</p><p>The customer has been notified. No payment has been taken.</p>`, false));
     }
@@ -67,6 +81,7 @@ async function handleAction(req, res) {
     // booking-confirmed email with the Payment section (card or cash).
     const patch = { status: 'Dispatched', operator_response: 'accepted', operator_responded_at: new Date().toISOString() };
     await dbUpdate('bookings', id, patch);
+    await applyToReturnLeg(booking, 'accepted', patch.operator_responded_at);
     await sendBookingConfirmed({ ...booking, ...patch });
     const price = getPrice(booking);
     return res.end(operatorPage('Booking Confirmed ✓', `<p>Booking for <strong>${esc(booking.customer_name)}</strong> accepted.</p><p>${esc(route)}<br>${esc(date)} at ${esc(booking.travel_time || 'TBC')}</p>${price ? `<p class="price">£${price}</p>` : ''}<p>The customer has been emailed their booking confirmation with the payment link.</p>`));
