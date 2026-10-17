@@ -353,10 +353,10 @@ body{
   // Confirmed = accepted by the operator (Operator app records
   // operator_response; the email link also sets Dispatched), or made by the
   // operator in the Operator app (source 'operator'), which needs no approval.
-  // Same rule as isConfirmed() in api/payment/index.js.
+  // (Jobs already on the road keep their own "driver on the way" panel below.)
   function isConfirmed(b) {
     if (['Cancelled', 'Completed', 'No Show'].includes(b.status) || b.operator_response === 'rejected') return false;
-    return b.operator_response === 'accepted' || b.source === 'operator' || ['Dispatched', 'En Route', 'Arrived', 'Passenger On Board'].includes(b.status);
+    return b.operator_response === 'accepted' || b.source === 'operator' || b.status === 'Dispatched';
   }
   function isCashChosen(b) { return String(b.payment_method || '').toLowerCase() === 'cash'; }
 
@@ -467,11 +467,13 @@ body{
     // Status-specific panels — mapped to actual DB status values
     // The return leg of a return booking is paid once, with its outbound
     // booking: never offer a second payment here.
-    if (b.return_leg && isConfirmed(b)) {
+    if (b.return_leg && (isConfirmed(b) || ['En Route', 'Arrived', 'Passenger On Board'].includes(b.status))) {
       show('panelConfirmed');
       document.getElementById('confirmedMsg').textContent =
-        'Your return journey is confirmed. It is paid with your outbound booking' +
-        (b.outbound_ref ? ' (Ref ' + b.outbound_ref + ')' : '') + ', so there is nothing to pay here.';
+        (['En Route', 'Arrived', 'Passenger On Board'].includes(b.status)
+          ? 'Your return journey is confirmed. Your driver is on the way. '
+          : 'Your return journey is confirmed. ') +
+        'It is paid with your outbound booking' + (b.outbound_ref ? ' (Ref ' + b.outbound_ref + ')' : '') + ', so there is nothing to pay here.';
       return;
     }
     if (isConfirmed(b)) {

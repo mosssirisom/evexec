@@ -511,3 +511,74 @@ test('a paid operator payment link stops a second payment on the booking page', 
   assert.match(JSON.parse(res.body).error, /already been paid/);
   assert.equal(stripe.created, 0);
 });
+
+// ── end-to-end: an operator-made return (Manchester, £160) ─────────────────
+// The two rows exactly as the Operator app's createBooking() writes them
+// (evexecoperator src/hooks/operator/useBookings.js), then the customer's
+// journey: booking page, confirmation email, card payment, receipt.
+const RETURN_ID = '7d1c2f6a-5b4e-4c3d-9a8b-0f1e2d3c4b5a';
+function seedOperatorReturn() {
+  const shared = { customer_name: 'Thomas Smith', customer_phone: '07700900000', customer_email: 'tom@example.test', payment_status: 'Unpaid', payment_method: null, source: 'operator', operator_response: 'accepted', operator_responded_at: '2026-10-17T10:00:00Z', airport: 'Manchester Airport (MAN)', driver_id: null, assigned_driver_id: null, status: 'Unassigned', stripe_session_id: null };
+  db.bookings = [
+    { ...shared, id: BOOKING_ID, ref: 'EVX-UNIT0001', quoted_price: 160, return_journey: true, return_pickup: 'Manchester Airport (MAN)', return_destination: 'Kirkham', return_airport: 'Manchester Airport (MAN)', return_flight: 'EK017', return_date: '2026-10-17', return_time: '18:30', pickup_location: 'Kirkham', dropoff_address: 'Manchester Airport (MAN)', travel_date: '2026-10-10', travel_time: '04:00', notes: null },
+    { ...shared, id: RETURN_ID, ref: 'EVX-UNIT0002', quoted_price: 0, return_journey: false, flight_number: 'EK017', pickup_location: 'Manchester Airport (MAN)', dropoff_address: 'Kirkham', travel_date: '2026-10-17', travel_time: '18:30', notes: 'Return leg created automatically from return booking. Original return fare: £160. Outbound ref: EVX-UNIT0001' },
+  ];
+}
+function bookingPageData(id) {
+  const bookingHandler = require(path.join(__dirname, '../../api/booking/index.js'));
+  return new Promise((resolve) => {
+    const res = { statusCode: 200, setHeader() {}, end: (b) => resolve({ status: res.statusCode, body: JSON.parse(b) }) };
+    bookingHandler({ method: 'GET', url: `/api/booking/get?id=${id}`, query: { id }, headers: {} }, res);
+  });
+}
+
+test('flow: operator-made return is confirmed, charged once at £160, return leg never charged', async () => {
+  seedOperatorReturn();
+  const { renderQueued } = require('../../lib/emailQueueRender.js');
+
+  // 1. Booking pages: outbound payable (no approval needed), return leg flagged.
+  const out = await bookingPageData(BOOKING_ID);
+  assert.equal(out.status, 200);
+  assert.equal(out.body.source, 'operator');
+  assert.equal(out.body.operator_response, 'accepted');
+  assert.equal(out.body.return_leg, false);
+  const leg = await bookingPageData(RETURN_ID);
+  assert.equal(leg.body.return_leg, true);
+  assert.equal(leg.body.outbound_ref, 'EVX-UNIT0001');
+
+  // 2. The queued "is booked" email (from the DB trigger) is re-rendered as
+  //    Booking Confirmed: both journeys, one £160 price, a pay button.
+  const mail = await renderQueued({ type: 'received', channel: 'email', booking_id: BOOKING_ID });
+  assert.match(mail.subject, /^Booking confirmed/);
+  assert.match(mail.text, /£160\.00/);
+  assert.doesNotMatch(mail.text, /£80\.00/);
+  assert.match(mail.html, /Return journey/);
+  assert.match(mail.html, new RegExp(`booking\\?id=${BOOKING_ID}`));
+
+  // 3. Card checkout for the outbound: one session, £160.
+  const c = await checkout();
+  assert.equal(c.status, 200);
+  assert.equal(stripe.created, 1);
+  assert.equal(stripe.sessions.cs_test_new1.amount_total, 16000);
+
+  // 4. Return leg: no checkout, no cash, no second payment.
+  const legCheckout = await request('/api/payment/create-checkout-session', { body: JSON.stringify({ bookingId: RETURN_ID, terms_accepted: true }) });
+  assert.equal(legCheckout.status, 400);
+  const legCash = await request('/api/payment/confirm-cash', { body: JSON.stringify({ bookingId: RETURN_ID, terms_accepted: true }) });
+  assert.equal(legCash.status, 400);
+  assert.equal(stripe.created, 1);
+
+  // 5. Customer pays; Stripe's signed webhook records it once, for £160.
+  stripe.sessions.cs_test_new1 = { ...stripe.sessions.cs_test_new1, payment_status: 'paid', status: 'complete' };
+  assert.equal((await sendWebhook(stripeEvent(stripe.sessions.cs_test_new1))).status, 200);
+  assert.equal(booking().payment_status, 'Paid');
+  assert.equal(calls.bookingPaidTransitions, 1);
+  assert.equal(customerEmails().length, 1);
+  assert.match(customerEmails()[0].subject, /^Payment received \(£160\.00\)/);
+  assert.equal(db.bookings[1].payment_status, 'Unpaid'); // the leg is untouched; it was never charged
+
+  // 6. Paying again from the booking page is impossible.
+  const again = await checkout();
+  assert.match(JSON.parse(again.body).url, /payment=success&session_id=cs_test_new1$/);
+  assert.equal(stripe.created, 1);
+});
