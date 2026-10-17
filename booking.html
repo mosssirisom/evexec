@@ -267,6 +267,7 @@ body{
       <div>
         <h2 class="font-bold text-lg mb-1">Booking Confirmed</h2>
         <p class="text-white/65 leading-relaxed" id="confirmedMsg">Your transfer is confirmed. We'll see you on the day!</p>
+        <button class="btn-outline rounded-md px-5 py-3 font-bold text-sm mt-3 hidden" id="btnCardInstead" type="button">Pay by card instead</button>
         <p class="text-white/45 text-sm mt-2 hidden" id="receiptNote">A payment confirmation has been sent to your phone and email. Need a receipt? <a class="gold" href="https://wa.me/447721070370">WhatsApp us</a> and we'll send one over.</p>
         <p class="text-white/45 text-sm mt-3">Any questions? <a class="gold" href="https://wa.me/447721070370">WhatsApp</a> or <a class="gold" href="tel:07721070370">call 07721 070370</a></p>
       </div>
@@ -362,8 +363,9 @@ body{
   function setStatusPill(status, paymentStatus, b) {
     var pill = document.getElementById('statusPill');
     // Map DB status values to display labels + CSS class
-    if (status === 'Cancelled') {
-      pill.textContent = 'Unavailable'; pill.className = 'status-pill status-rejected'; return;
+    if (status === 'Cancelled' || status === 'No Show') {
+      pill.textContent = b && b.operator_response === 'rejected' ? 'Unavailable' : status === 'No Show' ? 'No Show' : 'Cancelled';
+      pill.className = 'status-pill status-rejected'; return;
     }
     if (status === 'Completed') {
       pill.textContent = 'Completed'; pill.className = 'status-pill status-confirmed'; return;
@@ -460,7 +462,8 @@ body{
 
     if (b.quoted_price && !b.return_leg) {
       show('priceDisplay');
-      document.getElementById('priceAmount').textContent = '£' + Number(b.quoted_price).toFixed(0);
+      var qp = Number(b.quoted_price);
+      document.getElementById('priceAmount').textContent = '£' + qp.toFixed(Number.isInteger(qp) ? 0 : 2);
     }
 
     // Status-specific panels — mapped to actual DB status values
@@ -487,6 +490,13 @@ body{
           'Your transfer is confirmed. ' + method + ' We\'ll see you on the day!';
         if (paid && String(b.payment_method || '').toLowerCase() === 'card') {
           document.getElementById('receiptNote').classList.remove('hidden');
+        }
+        // Cash chosen but not paid yet: card stays available (the cash email says so).
+        if (!paid && isCashChosen(b) && b.payment_status !== 'Invoiced') {
+          setupPolicy(b);
+          var instead = document.getElementById('btnCardInstead');
+          instead.classList.remove('hidden');
+          instead.onclick = function () { instead.classList.add('hidden'); show('panelPayment'); };
         }
         return;
       }
@@ -531,15 +541,31 @@ body{
       return;
     }
 
-    if (['En Route', 'Passenger On Board', 'Completed'].includes(b.status)) {
+    if (b.status === 'Completed') {
+      show('panelConfirmed');
+      document.querySelector('#panelConfirmed h2').textContent = 'Journey Complete';
+      document.getElementById('confirmedMsg').textContent = 'Thank you for travelling with EV Exec.';
+      return;
+    }
+
+    if (['En Route', 'Arrived', 'Passenger On Board'].includes(b.status)) {
       show('panelConfirmed');
       document.getElementById('confirmedMsg').textContent =
         'Your transfer is confirmed. Your driver is on the way. See you soon!';
       return;
     }
 
-    if (b.status === 'Cancelled') {
+    if (b.status === 'Cancelled' || b.status === 'No Show') {
       show('panelRejected');
+      // "Unavailable" is only for a request we declined.
+      if (b.operator_response !== 'rejected') {
+        document.querySelector('#panelRejected h2').textContent = b.status === 'No Show' ? 'Marked as No Show' : 'Booking Cancelled';
+        document.querySelector('#panelRejected p').textContent =
+          (b.status === 'No Show' ? 'Your driver could not find you at the pickup. ' : 'This booking has been cancelled. ') +
+          (b.payment_status === 'Paid'
+            ? 'We will confirm any refund or cancellation charge by email. Please get in touch if you have any questions.'
+            : 'Please get in touch if you have any questions.');
+      }
       return;
     }
   }
@@ -568,19 +594,27 @@ body{
         msgEl.style.color = 'rgba(255,255,255,.65)';
         msgEl.textContent = 'Linking to your account…';
         try {
-          var r = await fetch('/api/account/claim-booking', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-            body: JSON.stringify({ ref: b.ref })
-          });
+          var claim = function (extra) {
+            return fetch('/api/account/claim-booking', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify(Object.assign({ ref: b.ref }, extra))
+            });
+          };
+          var r = await claim({});
           var d = await r.json();
-          if (!r.ok) throw new Error(d.error || 'Failed to claim booking.');
+          // Phone bookings with no email: prove it's yours with the phone number.
+          if (!r.ok && d.error === 'phone_required') {
+            var ph = window.prompt(d.message || 'Enter the phone number used when booking.');
+            if (ph) { r = await claim({ phone: ph }); d = await r.json(); }
+          }
+          if (!r.ok) throw new Error(d.message || (d.error === 'phone_required' ? 'Please add the phone number used for this booking to your account, then try again.' : d.error) || 'Failed to claim booking.');
           if (d.already_claimed) {
             msgEl.style.color = '#4ade80';
             msgEl.textContent = '✓ This booking is already in your account.';
           } else {
             msgEl.style.color = '#4ade80';
-            msgEl.textContent = '✓ Booking linked! +' + d.points_awarded + ' Privilege Point' + (d.points_awarded === 1 ? '' : 's') + ' earned.';
+            msgEl.textContent = '✓ Booking linked to your account. Privilege Points are added when the journey is completed.';
           }
           btn.textContent = 'Added ✓';
         } catch (e) {

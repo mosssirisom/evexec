@@ -97,6 +97,8 @@ function validateBooking(body){
   const isDate=d=>/^\d{4}-\d{2}-\d{2}$/.test(String(d));
   if(!body.travel_date||!isDate(body.travel_date))return 'Please choose a travel date.';
   if(body.travel_date<ukToday())return 'The travel date is in the past. Please choose another date.';
+  // A return trip needs its own date and time: without them no return job is created.
+  if(body.return_journey&&(!body.return_date||!/^\d{1,2}:\d{2}/.test(String(body.return_time||''))))return 'Please choose a return date and time, or untick Return.';
   if(body.return_journey&&body.return_date&&(!isDate(body.return_date)||body.return_date<body.travel_date))return 'The return date must be on or after the travel date.';
   const pax=parseInt(body.passengers,10);if(body.passengers!=null&&(!(pax>=1)||pax>16))return 'Please enter the number of passengers.';
   if(Array.isArray(body.additional_stops)&&(body.additional_stops.length>5||body.additional_stops.some(x=>String(x).length>300)))return 'Please contact us for journeys with more than five stops.';

@@ -1763,6 +1763,12 @@ main,footer{position:relative;z-index:1}
       if (flEl) flEl.focus();
       return;
     }
+    if (isRet && (!bwGetVal('bwRetDate') || !bwGetVal('bwRetTime'))) {
+      bwShowMsg('Please enter your return date and time, or untick Return.', 'error');
+      var rdEl = document.getElementById(bwGetVal('bwRetDate') ? 'bwRetTime' : 'bwRetDate');
+      if (rdEl) rdEl.focus();
+      return;
+    }
     if (isRet && !isFrom && !bwGetVal('bwRetFlight')) {
       bwShowMsg('Return flight number is required for your return airport pick-up.', 'error');
       var rfEl = document.getElementById('bwRetFlight');

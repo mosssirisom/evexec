@@ -63,7 +63,9 @@ function travelDateTimeUtc(dateStr, timeStr) {
 
 async function getBookingsInRange(fromDateStr, toDateStr) {
   const res = await fetch(
-    `${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${fromDateStr}&travel_date=lte.${toDateStr}&status=eq.Dispatched&select=*`,
+    // Every confirmed booking still to happen, with or without a driver: accepted,
+    // made by the operator, or Dispatched (the emailed Accept link).
+    `${SUPABASE_URL}/rest/v1/bookings?travel_date=gte.${fromDateStr}&travel_date=lte.${toDateStr}&status=in.(Unassigned,Dispatched)&or=(operator_response.eq.accepted,source.eq.operator,status.eq.Dispatched)&select=*`,
     { headers: dbHeaders() }
   );
   if (!res.ok) return [];

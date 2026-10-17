@@ -57,7 +57,10 @@ global.fetch = async (url, opts = {}) => {
   const q = u.searchParams;
   if (method === 'GET' && table === 'bookings') {
     const [from, to] = q.getAll('travel_date').map(v => v.slice(4));
-    return json(db.bookings.filter(b => b.travel_date >= from && b.travel_date <= to && b.status === q.get('status').slice(3)));
+    // status=in.(…) and or=(operator_response.eq.accepted,source.eq.operator,status.eq.Dispatched)
+    const statuses = inList(q.get('status'));
+    const confirmed = (b) => b.operator_response === 'accepted' || b.source === 'operator' || b.status === 'Dispatched';
+    return json(db.bookings.filter(b => b.travel_date >= from && b.travel_date <= to && statuses.includes(b.status) && confirmed(b)));
   }
   if (method === 'GET' && table === 'drivers') return json(db.drivers.filter(d => inList(q.get('id')).includes(d.id)));
   if (method === 'GET' && table === 'notification_log') {
@@ -165,4 +168,16 @@ test('no reminders for bookings that are not dispatched, already past, or out of
   assert.deepEqual([out.week7, out.day1], [0, 0]);
   assert.equal(emails.length, 0);
   assert.equal(db.driver_sms_reminders.length, 0);
+});
+
+test('day before: accepted booking with no driver yet (Unassigned) still gets the email', async () => {
+  reset([booking('acc1', { status: 'Unassigned', operator_response: 'accepted', assigned_driver_id: null })]);
+  await run();
+  assert.equal(emails.length, 1);
+});
+
+test('day before: a website request not yet accepted gets no reminder', async () => {
+  reset([booking('req1', { status: 'Unassigned', operator_response: null, source: 'website', assigned_driver_id: null })]);
+  await run();
+  assert.equal(emails.length, 0);
 });
