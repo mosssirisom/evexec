@@ -561,12 +561,12 @@ main,footer{position:relative;z-index:1}
 /* ── Booking Wizard ── */
 .bw-panel{border-radius:10px}
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:20px;transition:border-color .2s}
-.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:7px;border:1.5px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Manrope,Arial,sans-serif;color:#fff}
-.bw-airport-card:hover{border-color:rgba(213,165,56,.45);background:rgba(213,165,56,.06)}
-.bw-airport-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
-.bw-dir-card{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:8px;border:2px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Manrope,Arial,sans-serif;color:#fff}
-.bw-dir-card:hover{border-color:rgba(213,165,56,.55);background:rgba(213,165,56,.06)}
-.bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.10)}
+.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:7px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Manrope,Arial,sans-serif;color:#fff}
+.bw-airport-card:hover{border-color:#4a5463}
+.bw-airport-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.05)}
+.bw-dir-card{display:flex;align-items:center;gap:16px;padding:19px 21px;border-radius:8px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Manrope,Arial,sans-serif;color:#fff}
+.bw-dir-card:hover{border-color:#4a5463}
+.bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.05)}
 .bw-dir-icon{width:52px;height:52px;border-radius:6px;flex-shrink:0;background:rgba(6,16,28,.55);border:1px solid rgba(213,165,56,.15);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .2s}
 .bw-dir-card.bw-selected .bw-dir-icon{background:rgba(6,16,28,.75);border-color:rgba(213,165,56,.4)}
 .bw-radio{width:22px;height:22px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.25);transition:all .2s;display:flex;align-items:center;justify-content:center;color:transparent}
@@ -1047,7 +1047,7 @@ main,footer{position:relative;z-index:1}
         <div class="bw-dir-icon"><svg width="28" height="28" fill="url(#goldPlaneGrad)"><use href="#i-plane-gold"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">To the Airport</p>
-          <p class="text-sm text-white/45 mt-1">I'm departing · drop-off</p>
+          <p class="text-sm text-white/60 mt-1">I'm departing · drop-off</p>
         </div>
         <div class="bw-radio" id="bwDirToRadio"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></div>
       </button>
@@ -1055,7 +1055,7 @@ main,footer{position:relative;z-index:1}
         <div class="bw-dir-icon"><svg width="28" height="28" fill="url(#goldPlaneGrad)" style="transform:rotate(180deg)"><use href="#i-plane-gold"/></svg></div>
         <div style="flex:1">
           <p class="font-bold text-base">From the Airport</p>
-          <p class="text-sm text-white/45 mt-1">I've landed · pick-up</p>
+          <p class="text-sm text-white/60 mt-1">I've landed · pick-up</p>
         </div>
         <div class="bw-radio" id="bwDirFromRadio"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-check"/></svg></div>
       </button>
@@ -1513,9 +1513,9 @@ main,footer{position:relative;z-index:1}
         '<div style="width:3px;height:32px;border-radius:2px;background:var(--gold);flex-shrink:0;opacity:' + (bw.airport === ap.name ? '1' : '0.5') + '"></div>' +
         '<div style="flex:1;min-width:0">' +
           '<div style="font-weight:700;font-size:15px;color:#fff;margin-bottom:2px">' + bwEsc(ap.name) + '</div>' +
-          '<div style="font-size:11px;color:rgba(255,255,255,.45)">' + (ap.oneWay ? ('£' + ap.oneWay + ' one way · £' + ap.ret + ' return') : 'Fixed price quoted on request') + '</div>' +
+          '<div style="font-size:11px;color:rgba(255,255,255,.62)">' + (ap.oneWay ? ('£' + ap.oneWay + ' one way · £' + ap.ret + ' return') : 'Fixed price quoted on request') + '</div>' +
         '</div>' +
-        '<span style="font-size:18px;color:rgba(255,255,255,.2);margin-left:8px;font-weight:300">›</span>';
+        '<span style="font-size:18px;color:rgba(255,255,255,.4);margin-left:8px;font-weight:300">›</span>';
       btn.addEventListener('click', function() {
         var addrInput = document.getElementById('bwAddress');
         var addrErr   = document.getElementById('bwAddressError');
