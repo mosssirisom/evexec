@@ -68,8 +68,10 @@ html.evx-mega-open .evx-scrim{opacity:1;visibility:visible}
 
 .evx-actions{display:flex;align-items:center;gap:10px;flex-shrink:0}
 .evx-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 22px;border-radius:999px;font:600 14px Jost,Arial,sans-serif;text-decoration:none;white-space:nowrap;transition:all .28s ease;cursor:pointer}
-.evx-btn-gold{background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);color:#06101c;border:0;box-shadow:0 16px 38px rgba(213,165,56,.18)}
-.evx-btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.evx-btn-gold{background:linear-gradient(180deg,#dcb354,#c99a35);color:#06101c;border:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
+.evx-btn-gold:hover{transform:none;background:linear-gradient(180deg,#e2bb5f,#d0a23d)}
+.evx-btn-gold:active,.btn-gold:active:not(:disabled){background:#c4962f}
+.evx-btn-gold:focus-visible,.btn-gold:focus-visible{outline:2px solid #f0d58f;outline-offset:3px}
 .evx-btn-dark{border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.85);background:rgba(255,255,255,.03)}
 .evx-btn-dark:hover{border-color:rgba(213,165,56,.72);color:#d5a538;background:rgba(213,165,56,.06)}
 .evx-icon-btn{width:42px;height:42px;border-radius:50%;display:inline-grid;place-items:center;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.03);color:rgba(255,255,255,.8);cursor:pointer;transition:all .28s ease}
