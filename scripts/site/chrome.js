@@ -14,6 +14,9 @@ const { BUSINESS, RATING, AREAS } = require('./data');
 
 const chevron = '<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 const userIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg>';
+// Google's "G" mark, used wherever the site mentions Google reviews.
+const GOOGLE_G_PATHS = '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>';
+const googleG = (cls) => `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true">${GOOGLE_G_PATHS}</svg>`;
 const bolt = '<svg class="evx-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>';
 
 // Navigation structure (user-specified, 2026-10-03).
@@ -91,7 +94,7 @@ function footer() {
 <div class="evx-foot-brand">
 <a class="evx-brand" href="/"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="56" height="56" loading="lazy"><span class="evx-brand-name evx-gold">EV EXEC</span></a>
 <p>Premium airport transfers and private hire from Blackpool &amp; the Fylde Coast, in a fully electric fleet.</p>
-<p class="evx-foot-rating"><a href="${BUSINESS.googleProfile}" target="_blank" rel="noopener"><span class="evx-stars" aria-hidden="true">★★★★★</span> ${RATING.value} on Google &middot; ${RATING.count} reviews</a></p>
+<p class="evx-foot-rating"><a href="${BUSINESS.googleProfile}" target="_blank" rel="noopener">${googleG('evx-g')}<span class="evx-stars" aria-hidden="true">★★★★★</span> ${RATING.value} on Google &middot; ${RATING.count} reviews</a></p>
 <address class="evx-nap"><strong>EV Exec</strong><span>Serving Blackpool, Fylde &amp; Wyre</span><a href="tel:${BUSINESS.phoneIntl}">${BUSINESS.phone}</a><a href="mailto:${BUSINESS.email}">${BUSINESS.email}</a><a href="${BUSINESS.whatsapp}" target="_blank" rel="noopener">WhatsApp us</a></address>
 </div>
 <div><p class="evx-foot-h">Services</p><ul><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li><li><a href="/fleet">Our Fleet</a></li></ul></div>
@@ -112,4 +115,4 @@ function mobileCta({ book = '/#quote', bookLabel = 'Book Now', quote = '/quote',
 const HEAD = '<link rel="stylesheet" href="/public/css/chrome.css">';
 const SCRIPT = '<script defer src="/public/js/site.js"></script>';
 
-module.exports = { header, footer, mobileCta, HEAD, SCRIPT, MENU, bolt };
+module.exports = { header, footer, mobileCta, HEAD, SCRIPT, MENU, bolt, googleG };

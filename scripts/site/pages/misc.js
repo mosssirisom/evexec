@@ -4,6 +4,8 @@
 // booking system actually works (online card payment via Stripe, flight
 // tracking on inbound airport pickups, driver messages on En Route / Arrived).
 
+const { googleG } = require('../chrome');
+
 module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
   const fare = (n) => (Number.isInteger(n) ? gbp(n) : `£${n.toFixed(2)}`);
   const groups = [
@@ -223,9 +225,9 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
       title: `Reviews | ${RATING.value} on Google | EV Exec Blackpool`,
       description: `EV Exec is rated ${RATING.value} out of 5 from ${RATING.count} Google reviews. Read what customers say about our airport transfers from Blackpool and the Fylde Coast.`,
       eyebrow: 'Reviews',
-      h1: `Rated ${RATING.value} <span>on Google</span>`,
+      h1: `Rated ${RATING.value} <span>on ${googleG('evx-gi')}Google</span>`,
       crumb: 'Reviews',
-      lead: `Rated ${RATING.value} out of 5 from ${RATING.count} reviews on our Google Business Profile. Here is what customers say, in their own words.`,
+      lead: `Rated ${RATING.value} out of 5 from ${RATING.count} reviews on our ${googleG('evx-gi')}Google Business Profile. Here is what customers say, in their own words.`,
       hero: { trust: false },
       sections: [
         { type: 'reviews', eyebrow: 'What customers say', title: 'Recent reviews', leave: true },

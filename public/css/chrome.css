@@ -95,6 +95,8 @@
 .evx-foot-brand p{margin:14px 0 0;max-width:320px;line-height:1.6}
 .evx-foot-rating a{color:rgba(255,255,255,.85)}
 .evx-stars{color:#d5a538;letter-spacing:1px}
+.evx-gi{display:inline-block;flex-shrink:0;width:.72em;height:.72em;padding:.16em;margin:0 .28em 0 .06em;vertical-align:-.18em;border-radius:50%;background:#fff;box-sizing:content-box}
+.evx-g{display:inline-block;width:12px;height:12px;padding:3px;margin-right:7px;vertical-align:-5px;border-radius:50%;background:#fff;box-sizing:content-box}
 .evx-nap{font-style:normal;display:grid;gap:5px;margin-top:14px}
 .evx-nap strong{color:#fff}
 .evx-foot-base{max-width:1280px;margin:34px auto 0;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 20px;font-size:12.5px;color:rgba(255,255,255,.45)}

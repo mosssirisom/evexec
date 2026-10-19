@@ -439,3 +439,12 @@ User decision: every font on the website is Manrope; sizes, weights and everythi
 - **Limits**: Manrope's heaviest weight is 800 (CSS asking for 900 renders at 800) and it has no italic (italic text is the browser's slanted Manrope). Manrope is a little wider than the old fonts at the same size, so some lines wrap sooner.
 - **Not changed**: emails (`lib/emailTemplate.js` etc.) keep their email-safe fonts; email clients don't load web fonts reliably.
 - **Checked**: 11,230 text elements on all 29 pages at 1366px and 390px: every visible one renders in Manrope (the font file loads on every page) and none changed size, weight, style, letter-spacing or line-height compared with before.
+
+## Update — 2026-10-19: booking-form design refinements and Google logo (approved, merged to main)
+
+User-approved Steps 1–4, previewed one at a time on `claude/ev-exec-corner-radius-ps5h9o`:
+- **Corners (homepage booking form only):** panel 10px, journey/airport cards 7–8px, buttons and fields 6px, summary tags 4px, step dots 5px. Tick circles and − / + buttons stay round.
+- **Card states:** 1px graphite `#2F3742` border unselected, 1px gold plus 5% gold tint selected, graphite hover (never gold, so hover can't look selected).
+- **Buttons and fields** (scoped to `#quote`): quieter two-stop gold, no glow or lift, graphite disabled state, 52px gold buttons, 1px `#3A4350` field borders, crisp gold focus edge, keyboard-only focus rings.
+- **Spacing:** booking panel 720px and centred; on phones 20px panel padding with step dots under the title; services carousel snaps to the 24px margin. `site.css`: `.wrap` 1328px (content edge matches homepage/footer), `.section` 48px (32px on phones), eyebrow gap 12px, `.card` padding 24px.
+- **Google logo beside every visible "Google"** (user decision, for trust): `googleG(cls)` in `scripts/site/chrome.js` is the single source of the mark. `evx-g` (footer rating), `g-logo` / `g-logo g-sm` (site.css), `evx-gi` (text-sized, inline in sentences and headings, chrome.css); the homepage uses the `#i-google` sprite symbol. The cookie banner (`public/js/consent.js`) and `privacy.html` carry the SVG inline. New Google mentions should get the same mark.
