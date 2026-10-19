@@ -54,7 +54,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
         { q: 'Do you operate outside Blackpool?', a: 'Yes. Our fixed prices cover all of Blackpool, Lytham St Annes, Poulton-le-Fylde, Fleetwood, Thornton-Cleveleys, Kirkham and Preston. Pickups further afield are quoted individually. See <a href="/areas">areas we cover</a>.' },
         { q: 'Do you provide corporate transfers?', a: 'Yes, including invoiced bookings for companies. See <a href="/corporate-travel">corporate and executive travel</a>.' },
         { q: 'Do you do journeys that are not to an airport?', a: 'Yes: <a href="/private-hire">private hire</a> around the North West, <a href="/long-distance-transfers">long-distance transfers</a> anywhere in the UK, and <a href="/event-transfers">event and concert transfers</a>.' },
-        { q: 'Are your drivers licensed?', a: 'Yes. EV Exec is a licensed private hire operator with full hire and reward insurance, and every driver is enhanced DBS checked.' },
+        { q: 'Are your drivers licensed?', a: `Yes. EV Exec is a licensed private hire operator (licence ${BUSINESS.licence}) with full hire and reward insurance, and every driver is enhanced DBS checked.` },
       ],
     },
   ];
@@ -235,7 +235,7 @@ module.exports = ({ bookHref, quoteHref, BUSINESS, PRICES, RATING, gbp }) => {
           type: 'cards', cols: 3, eyebrow: 'About EV Exec', title: 'An owner-run Fylde Coast business',
           intro: 'When you call, you speak to us, not a call centre or a ride-hailing app.',
           items: [
-            { icon: 'shield', title: 'Licensed and insured', text: 'A licensed private hire operator with full hire and reward insurance.' },
+            { icon: 'shield', title: 'Licensed and insured', text: `A licensed private hire operator (licence ${BUSINESS.licence}) with full hire and reward insurance.` },
             { icon: 'user', title: 'Enhanced DBS-checked drivers', text: 'Every driver is enhanced DBS checked, polite, punctual and professional.' },
             { icon: 'star', title: 'Founder with 12+ years’ experience', text: 'Founded and run locally, with more than twelve years’ experience behind it.' },
           ],
