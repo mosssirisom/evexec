@@ -244,9 +244,9 @@ img{max-width:100%}
   backdrop-filter:blur(18px);
 }
 .btn-gold{
-  background:linear-gradient(135deg,#f1c56a,#d5a538 55%,#a97918);
+  background:linear-gradient(180deg,#dcb354,#c99a35);
   color:#06101c;
-  box-shadow:0 16px 38px rgba(213,165,56,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
 }
 .btn-dark:hover{
   border-color:rgba(213,165,56,.72);
@@ -399,7 +399,7 @@ img{max-width:100%}
   stroke-linecap:round;
   stroke-linejoin:round;
 }
-.review-stars .clean-icon{fill:var(--gold);stroke:var(--gold)}
+.review-stars .clean-icon{width:16px;height:16px;fill:var(--gold);stroke:var(--gold)}
 
 .reveal{
   opacity:0;
@@ -422,7 +422,7 @@ img{max-width:100%}
 }
 .glass:hover{border-color:rgba(213,165,56,.26)}
 .btn-gold,.btn-dark,.navlink{transition:all .28s ease}
-.btn-gold:hover{transform:translateY(-2px);box-shadow:0 22px 55px rgba(213,165,56,.24)}
+.btn-gold:hover{transform:none;background:linear-gradient(180deg,#e2bb5f,#d0a23d)}
 .clean-icon,.clean-icon-lg{transition:transform .3s ease, opacity .3s ease}
 .glass:hover .clean-icon,.glass:hover .clean-icon-lg{transform:translateY(-2px)}
 /* Only the hero buttons ease in; the heading and photos paint straight away (faster LCP). */
@@ -651,9 +651,6 @@ main,footer{position:relative;z-index:1}
 .hx-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:6px;font-weight:600;font-size:15px;letter-spacing:.03em;text-decoration:none}
 .hx-btn-ghost{border:1px solid rgba(213,165,56,.7);color:#fff}
 /* Hero gold button matches the booking form's: controlled gold, no glow or lift. */
-.hx-cta .btn-gold{background:linear-gradient(180deg,#dcb354,#c99a35);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
-.hx-cta .btn-gold:hover{transform:none;background:linear-gradient(180deg,#e2bb5f,#d0a23d);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
-.hx-cta .btn-gold:active{background:#c4962f}
 .hx-cta .hx-btn:focus-visible{outline:2px solid #f0d58f;outline-offset:3px}
 .hx-trust{list-style:none;padding:0;margin:20px 0 0;display:flex;flex-wrap:wrap;gap:8px 20px;font-size:14px;color:rgba(255,255,255,.8)}
 .hx-trust li{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.82)}
@@ -1290,11 +1287,11 @@ main,footer{position:relative;z-index:1}
 <h2 class="serif text-4xl md:text-5xl">Our <span class="gold">Services</span></h2>
 </div>
 <ul class="hx-svcs" id="hxSvcs">
-<li><a href="/airport-transfers"><picture><source srcset="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.webp" type="image/webp"><img src="/public/images/opt/ev-exec-tesla-model-y-juniper-1000.jpg" alt="EV Exec Tesla at an airport at night" loading="lazy" decoding="async"></picture><b>Airport Transfers</b><small>Fixed prices, flights tracked</small></a></li>
-<li><a href="/corporate-travel"><picture><source srcset="/public/images/opt/ev-exec-image-4-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-4-1100.jpg" alt="Inside an EV Exec Tesla, Blackpool Tower ahead" loading="lazy" decoding="async"></picture><b>Corporate Travel</b><small>Invoiced to your company</small></a></li>
+<li><a href="/airport-transfers"><picture><source srcset="/public/images/opt/ev-exec-service-airport-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-service-airport-1100.jpg" alt="Airport terminal and control tower at dusk" style="object-position:66% 50%" loading="lazy" decoding="async"></picture><b>Airport Transfers</b><small>Fixed prices, flights tracked</small></a></li>
+<li><a href="/corporate-travel"><picture><source srcset="/public/images/opt/ev-exec-service-corporate-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-service-corporate-1100.jpg" alt="Business traveller with a briefcase walking from a chauffeur car to an office" style="object-position:36% 50%" loading="lazy" decoding="async"></picture><b>Corporate Travel</b><small>Invoiced to your company</small></a></li>
 <li><a href="/private-hire"><picture><source srcset="/public/images/opt/ev-exec-image-1-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-1-1100.jpg" alt="EV Exec Tesla on Blackpool promenade at sunset" loading="lazy" decoding="async"></picture><b>Private Hire</b><small>Stations and appointments</small></a></li>
-<li><a href="/event-transfers"><picture><source srcset="/public/images/opt/ev-exec-image-2-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-image-2-1100.jpg" alt="EV Exec Tesla outside Blackpool Tower at night" loading="lazy" decoding="async"></picture><b>Events &amp; Concerts</b><small>Your ride home already booked</small></a></li>
-<li><a href="/long-distance-transfers"><picture><source srcset="/public/images/opt/ev-exec-skoda-enyaq-1000.webp" type="image/webp"><img src="/public/images/opt/ev-exec-skoda-enyaq-1000.jpg" alt="EV Exec Škoda Enyaq at night" loading="lazy" decoding="async"></picture><b>Long-Distance</b><small>Anywhere in the UK</small></a></li>
+<li><a href="/event-transfers"><picture><source srcset="/public/images/opt/ev-exec-service-events-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-service-events-1100.jpg" alt="Crowd arriving at a concert arena at dusk" style="object-position:62% 50%" loading="lazy" decoding="async"></picture><b>Events &amp; Concerts</b><small>Your ride home already booked</small></a></li>
+<li><a href="/long-distance-transfers"><picture><source srcset="/public/images/opt/ev-exec-service-long-distance-1100.webp" type="image/webp"><img src="/public/images/opt/ev-exec-service-long-distance-1100.jpg" alt="Navy EV Exec Tesla Model Y on an open road at sunset" style="object-position:26% 50%" loading="lazy" decoding="async"></picture><b>Long-Distance</b><small>Anywhere in the UK</small></a></li>
 </ul>
 <div class="hx-svc-dots" id="hxSvcDots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
 </div>
