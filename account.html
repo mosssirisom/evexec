@@ -204,7 +204,7 @@ label.field .field-label{display:block;margin-bottom:6px;font-size:11px;letter-s
         <label class="field"><span class="field-label">Full name</span><input class="input" id="suName" autocomplete="name"></label>
         <label class="field"><span class="field-label">Phone number</span><input class="input" id="suPhone" type="tel" autocomplete="tel"></label>
         <label class="field"><span class="field-label">Email address</span><input class="input" id="suEmail" type="email" autocomplete="email"></label>
-        <label class="field"><span class="field-label">Password (min 8 characters)</span><input class="input" id="suPassword" type="password" autocomplete="new-password"></label>
+        <label class="field"><span class="field-label">Password (8+ characters, a letter and a number)</span><input class="input" id="suPassword" type="password" autocomplete="new-password"></label>
         <button class="btn btn-gold btn-block" id="suBtn">Create Account</button>
         <p id="suMsg" style="text-align:center;font-size:12.5px;min-height:16px;margin:10px 0 0"></p>
       </div>
@@ -849,7 +849,7 @@ function wireSecurity() {
   $('changePwdBtn').onclick = async () => {
     const p1 = $('newPwd').value, p2 = $('newPwd2').value, m = $('pwdMsg');
     m.style.color = '';
-    if (p1.length < 8) { m.style.color = 'var(--danger)'; m.textContent = 'Password must be at least 8 characters.'; return; }
+    if (p1.length < 8 || !/[A-Za-z]/.test(p1) || !/[0-9]/.test(p1)) { m.style.color = 'var(--danger)'; m.textContent = 'Password must be at least 8 characters, with a letter and a number.'; return; }
     if (p1 !== p2) { m.style.color = 'var(--danger)'; m.textContent = 'Passwords do not match.'; return; }
     const { error } = await sb.auth.updateUser({ password: p1 });
     if (error) { m.style.color = 'var(--danger)'; m.textContent = error.message; }
@@ -1066,7 +1066,10 @@ $('siBtn').onclick = async () => {
   if (error) msg(m, error.message);
 };
 $('suBtn').onclick = async () => {
-  const m = $('suMsg'); m.style.color = ''; m.textContent = 'Creating account…';
+  const m = $('suMsg'); m.style.color = '';
+  const pw = $('suPassword').value;
+  if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) return msg(m, 'Password must be at least 8 characters, with a letter and a number.');
+  m.textContent = 'Creating account…';
   const { error } = await sb.auth.signUp({ email: $('suEmail').value.trim(), password: $('suPassword').value, options: { data: { full_name: $('suName').value.trim(), phone: $('suPhone').value.trim() } } });
   error ? msg(m, error.message) : msg(m, 'Account created. Check your email if confirmation is required.', true);
 };
