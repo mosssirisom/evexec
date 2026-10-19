@@ -452,7 +452,7 @@ User-approved Steps 1–4, previewed one at a time on `claude/ev-exec-corner-rad
 ## Update — 2026-10-19: hero and fleet carousel refinements (approved, merged to main)
 
 - **Hero (Step 5):** "& Private Hire" upright gold (Manrope has no true italic); supporting line 18.4px desktop / 17px phone in soft white with "executive" / "electric vehicles" emphasised by weight, not gold italic; hero gold button matches the booking form's controlled gold (no glow or lift, 6px corners). Hero rating line reads "★★★★★ 5.0 on Google · [G] 18 reviews".
-- **Fleet carousel (Step 6):** each vehicle in a dark card (1px `#2F3742` border, 10px corners); photos shown whole (no oval mask, gold glow or drop shadows); "Most Popular" a 4px tag; arrows white on graphite, gold on hover, no scaling. Same images, names, features, order and behaviour.
+- **Fleet carousel (Step 6):** each vehicle in a dark card (1px `#2F3742` border, 10px corners); photos shown whole (no oval mask, gold glow or drop shadows); ("Most Popular" tag later removed, user 19/10/2026); arrows white on graphite, gold on hover, no scaling. Same images, names, features, order and behaviour.
 
 ## Update — 2026-10-19: Jost font, Apple-style header menus, no lightning icon (preview, awaiting approval)
 
