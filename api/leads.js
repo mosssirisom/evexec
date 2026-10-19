@@ -80,14 +80,15 @@ const escHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 // emails and push-notifies the operator so a request is never missed, and
 // acknowledges the customer by email when they gave one.
 async function notifyQuoteRequest(q) {
-  const { sendEmail, sendPushToOperator } = require('../lib/notify');
+  const { sendEmail } = require('../lib/notify');
+  const { sendPushToOperatorDevices } = require('../lib/push');
   const tasks = [];
   const opEmail = (process.env.OPERATOR_EMAIL || '').trim();
   if (opEmail) {
     const m = E.staffNewQuote(q);
     tasks.push(sendEmail({ to: opEmail, subject: m.subject, html: m.html, text: m.text }));
   }
-  tasks.push(sendPushToOperator('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator'));
+  tasks.push(sendPushToOperatorDevices('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator/inbox', 'quote-request'));
   if (q.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) {
     const m = E.quoteReceived(q);
     tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text }));
