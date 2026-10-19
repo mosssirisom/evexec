@@ -20,7 +20,7 @@ h1,h2,.serif{font-family:Manrope,Arial,sans-serif;font-weight:700}
 h2{font-weight:500}
 h3{font-size:1.06rem;font-weight:800}
 .gold{color:var(--gold)}
-.wrap{max-width:1280px;margin:0 auto;padding:0 24px}
+.wrap{max-width:1328px;margin:0 auto;padding:0 24px}
 .skip{position:absolute;left:-999px;top:8px;z-index:100;background:var(--gold);color:#06101c;padding:8px 14px;border-radius:8px;font-weight:700}
 .skip:focus{left:8px}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
@@ -66,10 +66,11 @@ h3{font-size:1.06rem;font-weight:800}
 .stars{color:var(--gold);letter-spacing:1px}
 
 /* Sections: centred eyebrow + serif heading, like the homepage */
-.section{padding:52px 0}
+.section{padding:48px 0}
+@media(max-width:640px){.section{padding:32px 0}}
 .section-head{text-align:center;max-width:780px;margin:0 auto 32px}
 .eyebrow{display:block;color:var(--gold);font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:700}
-.section h2{font-size:clamp(2.1rem,4.4vw,3rem);margin-top:10px}
+.section h2{font-size:clamp(2.1rem,4.4vw,3rem);margin-top:12px}
 .intro{color:rgba(255,255,255,.62);margin:14px 0 0;line-height:1.65}
 .intro a,.prose a,.note a{color:var(--gold)}
 .prose{max-width:780px;margin:0 auto;color:rgba(255,255,255,.68);line-height:1.75}
@@ -81,7 +82,7 @@ h3{font-size:1.06rem;font-weight:800}
 @media(min-width:1000px){.grid.cols-3{grid-template-columns:repeat(3,1fr)}.grid.cols-4{grid-template-columns:repeat(4,1fr)}}
 
 /* Cards: homepage comfort-card */
-.card{border-radius:18px;padding:26px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.105);transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
+.card{border-radius:18px;padding:24px;background:linear-gradient(180deg,rgba(255,255,255,.065),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.105);transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease}
 .card h3{margin:16px 0 8px}
 .card p{color:rgba(255,255,255,.62);font-size:15px;line-height:1.6;margin:0}
 .card .icon{width:34px;height:34px;fill:none;stroke:var(--gold);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}

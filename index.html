@@ -559,6 +559,10 @@ main,footer{position:relative;z-index:1}
 
 
 /* ── Booking Wizard ── */
+/* Panel sized to the 560px form and centred like the section headings;
+   on phones the step dots sit under the title and the padding is 20px. */
+#quote{max-width:720px;margin-left:auto;margin-right:auto}
+@media(max-width:639px){#quote{padding:20px}#bwWizardHeader{flex-wrap:wrap;gap:12px}}
 .bw-panel{border-radius:10px}
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:20px;transition:border-color .2s}
 .bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:7px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Manrope,Arial,sans-serif;color:#fff}
@@ -667,7 +671,7 @@ main,footer{position:relative;z-index:1}
 .hx-ic{width:16px;height:16px;fill:none;stroke:#d5a538;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 @media(max-width:640px){.hx-btn{flex:1 1 100%}}
 /* Services: photo cards, swiped sideways on phones, five across on desktop */
-.hx-svcs{list-style:none;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:24px -24px 0;padding:0 24px;text-align:left}
+.hx-svcs{list-style:none;display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:24px;scrollbar-width:none;margin:24px -24px 0;padding:0 24px;text-align:left}
 .hx-svcs::-webkit-scrollbar{display:none}
 .hx-svcs li{flex:0 0 72%;scroll-snap-align:start}
 .hx-svcs a{position:relative;display:flex;flex-direction:column;justify-content:flex-end;aspect-ratio:4/5;padding:18px;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.08);text-decoration:none;background:#0b1322}
@@ -1046,7 +1050,7 @@ main,footer{position:relative;z-index:1}
 </div>
 </div>
 
-<section class="glass bw-panel p-7 mt-9 max-w-[1210px]" id="quote" data-evx-cta-zone>
+<section class="glass bw-panel p-7 mt-9" id="quote" data-evx-cta-zone>
 <div style="max-width:560px;margin:0 auto">
 
   <!-- Title + Step Progress -->
