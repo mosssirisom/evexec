@@ -11,6 +11,18 @@
 
   // Dropdowns: click to toggle (keyboard and touch), hover on desktop pointers.
   var dds = [].slice.call(document.querySelectorAll('.evx-has-dd'));
+  // Menu panels dim and blur the page behind them while open.
+  var scrim = null;
+  if (document.querySelector('.evx-mega')) {
+    scrim = document.createElement('div');
+    scrim.className = 'evx-scrim';
+    scrim.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(scrim);
+  }
+  function syncMega() {
+    if (!scrim) return;
+    document.documentElement.classList.toggle('evx-mega-open', !!document.querySelector('.evx-mega-li.open'));
+  }
   function closeAll(except) {
     dds.forEach(function (li) {
       if (li === except) return;
@@ -18,6 +30,7 @@
       var b = li.querySelector('button');
       if (b) b.setAttribute('aria-expanded', 'false');
     });
+    syncMega();
   }
   var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   dds.forEach(function (li) {
@@ -30,15 +43,27 @@
       closeAll(li);
       li.classList.toggle('open', open);
       btn.setAttribute('aria-expanded', String(open));
+      syncMega();
     });
     if (finePointer) {
-      var t;
-      li.addEventListener('mouseenter', function () { clearTimeout(t); if (!li.classList.contains('open')) li._hoverAt = Date.now(); closeAll(li); li.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); });
-      li.addEventListener('mouseleave', function () { t = setTimeout(function () { li.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); }, 160); });
+      var t, intent;
+      var show = function () { if (!li.classList.contains('open')) li._hoverAt = Date.now(); closeAll(li); li.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); syncMega(); };
+      li.addEventListener('mouseenter', function () {
+        clearTimeout(t); clearTimeout(intent);
+        // Open at once when another panel is already showing; otherwise wait a
+        // moment so passing the pointer across the header does not open one.
+        if (document.querySelector('.evx-has-dd.open')) show(); else intent = setTimeout(show, 90);
+      });
+      li.addEventListener('mouseleave', function () { clearTimeout(intent); t = setTimeout(function () { li.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); syncMega(); }, 180); });
     }
   });
   document.addEventListener('click', function (e) { if (!e.target.closest || !e.target.closest('.evx-has-dd')) closeAll(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeAll(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var openLi = document.activeElement && document.activeElement.closest && document.activeElement.closest('.evx-has-dd.open');
+    closeAll();
+    if (openLi) { var b = openLi.querySelector('button'); if (b) b.focus(); }
+  });
 
   // Mobile menu (same behaviour as the original homepage menu)
   var toggle = document.getElementById('menuToggle');
