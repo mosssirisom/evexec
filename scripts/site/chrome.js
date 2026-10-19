@@ -136,7 +136,7 @@ function footer() {
 <div><p class="evx-foot-h">Airports &amp; Prices</p><ul><li><a href="/manchester-airport-transfer-blackpool">Manchester Airport</a></li><li><a href="/liverpool-airport-transfer-blackpool">Liverpool Airport</a></li><li><a href="/leeds-bradford-airport-transfer-blackpool">Leeds Bradford Airport</a></li><li><a href="/prices">All prices</a></li><li><a href="/quote">Get a quote</a></li></ul></div>
 <div><p class="evx-foot-h">Areas</p><ul><li><a href="/areas#blackpool">Blackpool</a></li>${areas}<li><a href="/areas">All areas</a></li></ul></div>
 </div>
-<div class="evx-foot-base"><p>&copy; ${new Date().getFullYear()} EV Exec. Licensed private hire.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/privacy#cookies" onclick="if(window.evxCookieSettings){evxCookieSettings();return false}">Cookie settings</a></p></div>
+<div class="evx-foot-base"><p>&copy; ${new Date().getFullYear()} EV Exec. Licensed private hire operator, licence ${BUSINESS.licence}.</p><p><a href="/booking">My booking</a> &middot; <a href="/reviews">Reviews</a> &middot; <a href="/faq">FAQ</a> &middot; <a href="/blog">Travel guides</a> &middot; <a href="/terms">Terms</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/privacy#cookies" onclick="if(window.evxCookieSettings){evxCookieSettings();return false}">Cookie settings</a></p></div>
 </footer>
 <!-- /evx:footer -->`;
 }

@@ -16,6 +16,8 @@ const BUSINESS = {
   phone: '07721 070370',
   phoneIntl: '+447721070370',
   email: 'book@evexec.co.uk',
+  // Private hire operator licence (user, 19/10/2026).
+  licence: 'PHO0079',
   whatsapp: 'https://wa.me/447721070370',
   googleProfile: 'https://g.page/r/CVPMqDntIQ3xEAE',
   googleReview: 'https://g.page/r/CVPMqDntIQ3xEAE/review',
