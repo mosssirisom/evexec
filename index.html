@@ -6,7 +6,7 @@
 <link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
 <link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
-<link rel="preload" href="/public/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/public/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/public/css/fonts.css">
 <!-- /evx:head -->
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -231,11 +231,11 @@ body{
     radial-gradient(circle at 25% 20%, rgba(213,165,56,.08), transparent 28%),
     #020813;
   color:#fff;
-  font-family:Manrope,Arial,sans-serif;
+  font-family:Jost,Arial,sans-serif;
 }
 img{max-width:100%}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.serif{font-family:Manrope,Arial,sans-serif}
+.serif{font-family:Jost,Arial,sans-serif}
 .gold{color:var(--gold)}
 .glass{
   background:linear-gradient(180deg,rgba(255,255,255,.075),rgba(255,255,255,.035));
@@ -321,14 +321,8 @@ img{max-width:100%}
 
 
 
-.hc-badge{
-  position:absolute;top:12px;left:12px;z-index:4;
-  background:rgba(213,165,56,.95);color:#06101c;
-  font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  padding:5px 10px;border-radius:4px;
-}
 .hc-slide-info{padding:16px 16px 0;text-align:center}
-.hc-slide-name{font-family:Manrope,Arial,sans-serif;font-size:22px;font-weight:700;color:#fff}
+.hc-slide-name{font-family:Jost,Arial,sans-serif;font-size:22px;font-weight:700;color:#fff}
 .hc-slide-specs{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-top:8px}
 .hc-slide-spec{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:rgba(255,255,255,.72);font-weight:600}
 .hc-slide-spec svg{width:15px;height:15px;stroke:#d5a538;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
@@ -376,7 +370,7 @@ img{max-width:100%}
   padding:0 14px;
   outline:none;
   font-size:16px;
-  font-family:Manrope,Arial,sans-serif;
+  font-family:Jost,Arial,sans-serif;
   transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
 }
 .input:focus{
@@ -395,13 +389,6 @@ img{max-width:100%}
   stroke-width:1.7;
   stroke-linecap:round;
   stroke-linejoin:round;
-}
-.btn-icon{
-  display:inline-block;width:16px;height:16px;
-  stroke:currentColor;fill:none;
-  stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
-  vertical-align:middle;position:relative;top:-1px;margin-right:7px;
-  flex-shrink:0;
 }
 .clean-icon-lg{
   width:54px;height:54px;
@@ -566,10 +553,10 @@ main,footer{position:relative;z-index:1}
 @media(max-width:639px){#quote{padding:20px}#bwWizardHeader{flex-wrap:wrap;gap:12px}}
 .bw-panel{border-radius:10px}
 .bw-card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.09);border-radius:8px;padding:20px;transition:border-color .2s}
-.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:7px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Manrope,Arial,sans-serif;color:#fff}
+.bw-airport-card{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:7px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;margin-bottom:8px;font-family:Jost,Arial,sans-serif;color:#fff}
 .bw-airport-card:hover{border-color:#4a5463}
 .bw-airport-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.05)}
-.bw-dir-card{display:flex;align-items:center;gap:16px;padding:19px 21px;border-radius:8px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Manrope,Arial,sans-serif;color:#fff}
+.bw-dir-card{display:flex;align-items:center;gap:16px;padding:19px 21px;border-radius:8px;border:1px solid #2f3742;background:rgba(255,255,255,.04);cursor:pointer;transition:all .2s;width:100%;text-align:left;font-family:Jost,Arial,sans-serif;color:#fff}
 .bw-dir-card:hover{border-color:#4a5463}
 .bw-dir-card.bw-selected{border-color:var(--gold);background:rgba(213,165,56,.05)}
 .bw-dir-icon{width:52px;height:52px;border-radius:6px;flex-shrink:0;background:rgba(6,16,28,.55);border:1px solid rgba(213,165,56,.15);display:flex;align-items:center;justify-content:center;font-size:26px;transition:all .2s}
@@ -582,7 +569,7 @@ main,footer{position:relative;z-index:1}
 .bw-counter-btn:hover:not(:disabled){background:rgba(213,165,56,.12)}
 .bw-counter-btn:disabled{opacity:.3;cursor:not-allowed}
 .bw-seg{display:flex;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:4px;gap:4px}
-.bw-seg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Manrope,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
+.bw-seg-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 8px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:14px;line-height:1.45;transition:all .2s;font-family:Jost,Arial,sans-serif;background:transparent;color:rgba(255,255,255,.55)}
 .bw-seg-btn.bw-active{background:var(--gold);color:#06101c}
 .bw-back-btn{width:44px;height:44px;border-radius:6px;flex-shrink:0;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:18px;transition:background .15s;display:flex;align-items:center;justify-content:center;line-height:1}
 .bw-back-btn:hover{background:rgba(255,255,255,.12)}
@@ -594,7 +581,7 @@ main,footer{position:relative;z-index:1}
 .bw-slide{animation:bwSlideIn .3s cubic-bezier(.2,.8,.2,1) both}
 /* Booking wizard buttons and fields: one height, radius and border weight
    each; controlled gold; graphite field edges; keyboard focus rings only. */
-#quote .btn-gold{padding:14px 20px;border-radius:6px;background:linear-gradient(180deg,#dcb354,#c99a35);box-shadow:inset 0 1px 0 rgba(255,255,255,.22);transition:background .15s ease}
+#quote .btn-gold{padding:14px 20px;border-radius:6px;font-weight:600;letter-spacing:.02em;background:linear-gradient(180deg,#dcb354,#c99a35);box-shadow:inset 0 1px 0 rgba(255,255,255,.22);transition:background .15s ease}
 #quote .btn-gold:hover{transform:none;background:linear-gradient(180deg,#e2bb5f,#d0a23d);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
 #quote .btn-gold:active{background:#c4962f}
 #quote .btn-gold:disabled{opacity:1!important;background:#262d37;color:rgba(255,255,255,.6);box-shadow:none}
@@ -637,7 +624,7 @@ main,footer{position:relative;z-index:1}
 /* Hero heading: bold, gold italic second line, hairline location label */
 .hx-l1{display:block}
 .hx-l2{display:block;font-style:normal;font-weight:700;color:#d5a538;margin-top:2px}
-.hx-loc{display:flex;align-items:center;gap:14px;margin-top:22px;font:600 11.5px/1 Manrope,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:rgba(213,165,56,.92)}
+.hx-loc{display:flex;align-items:center;gap:14px;margin-top:22px;font:600 11.5px/1 Jost,Arial,sans-serif;letter-spacing:.34em;text-transform:uppercase;color:rgba(213,165,56,.92)}
 .hx-loc::before{content:"";flex:none;width:36px;height:1px;background:linear-gradient(90deg,#d5a538,rgba(213,165,56,.15))}
 @media(min-width:1024px){
   .hx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);grid-template-areas:"intro cars" "cta cars";column-gap:44px;align-items:center}
@@ -656,12 +643,12 @@ main,footer{position:relative;z-index:1}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
 .hx-after-cars{margin-top:8px}
 .hx-title{text-wrap:balance;font-size:clamp(2.35rem,5.4vw,3.7rem);line-height:1.04;font-weight:700;letter-spacing:-.02em;margin:0}
-.hx-sub{font-family:Manrope,Arial,sans-serif;font-weight:500;color:rgba(255,255,255,.74);font-size:1.15rem;line-height:1.55;margin:18px 0 0;max-width:34em;padding-left:18px;border-left:1px solid rgba(213,165,56,.55)}
+.hx-sub{font-family:Jost,Arial,sans-serif;font-weight:500;color:rgba(255,255,255,.74);font-size:1.15rem;line-height:1.55;margin:18px 0 0;max-width:34em;padding-left:18px;border-left:1px solid rgba(213,165,56,.55)}
 .hx-sub em{font-style:normal;font-weight:600;color:#fff}
 @media(max-width:1023px){.hx-sub{font-size:1.06rem;line-height:1.5;padding-left:14px}}
 @media(max-width:380px){.hx-sub{font-size:1rem;line-height:1.45}}
 .hx-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
-.hx-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:6px;font-weight:800;font-size:15px;letter-spacing:.02em;text-decoration:none}
+.hx-btn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;border-radius:6px;font-weight:600;font-size:15px;letter-spacing:.03em;text-decoration:none}
 .hx-btn-ghost{border:1px solid rgba(213,165,56,.7);color:#fff}
 /* Hero gold button matches the booking form's: controlled gold, no glow or lift. */
 .hx-cta .btn-gold{background:linear-gradient(180deg,#dcb354,#c99a35);box-shadow:inset 0 1px 0 rgba(255,255,255,.22)}
@@ -701,7 +688,7 @@ main,footer{position:relative;z-index:1}
 
 
 .hx-rating{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px 26px;margin:28px auto 0;padding:18px 24px;border-radius:14px;max-width:760px}
-.hx-rating .hx-score{font-family:Manrope,Arial,sans-serif;font-size:3rem;line-height:1;color:#d5a538;font-weight:700}
+.hx-rating .hx-score{font-family:Jost,Arial,sans-serif;font-size:3rem;line-height:1;color:#d5a538;font-weight:700}
 .hx-rating .hx-stars{font-size:20px;letter-spacing:2px}
 .hx-rating p{margin:6px 0 0;color:rgba(255,255,255,.65);font-size:14px}
 .g-line{display:flex;align-items:center;gap:8px}.g-logo{width:22px;height:22px;flex:none;padding:4px;border-radius:50%;background:#fff;box-sizing:content-box}
@@ -750,7 +737,6 @@ main,footer{position:relative;z-index:1}
 <symbol id="i-briefcase" viewBox="0 0 24 24"><path d="M8 7V5h8v2M4 8h16v11H4zM4 13h16"></path></symbol>
 <symbol id="i-screen" viewBox="0 0 24 24"><path d="M4 5h16v11H4zM9 20h6M12 16v4"></path></symbol>
 <symbol id="i-temp" viewBox="0 0 24 24"><path d="M10 14.5V5a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"></path></symbol>
-<symbol id="i-bolt" viewBox="0 0 24 24"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path></symbol>
 <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></symbol>
 <symbol id="i-charging" viewBox="0 0 24 24"><rect x="5" y="16" width="14" height="4" rx="1"></rect><path d="M8 12c1.2-1 2.5-1.5 4-1.5s2.8.5 4 1.5M9.5 9c1-.8 1.8-1.1 2.5-1.1s1.5.3 2.5 1.1"></path></symbol>
 <symbol id="i-sunroof" viewBox="0 0 24 24"><path d="M3 15c0-5 4-9 9-9s9 4 9 9"></path><circle cx="12" cy="13" r="2.3"></circle><path d="M12 8.3v1M12 16.7v1M7.3 13h1M15.7 13h1"></path></symbol>
@@ -763,7 +749,7 @@ main,footer{position:relative;z-index:1}
 <header class="evx-header" id="siteHeader">
 <nav class="evx-nav" aria-label="Main">
 <a class="evx-brand" href="/" aria-label="EV Exec home"><img src="/public/images/opt/ev-exec-logo-160.jpg" alt="EV Exec logo" width="64" height="64" decoding="async"><span class="evx-brand-text"><span class="evx-brand-name">EV EXEC</span><span class="evx-brand-motto">Exclusive<i aria-hidden="true"></i>Executive<i aria-hidden="true"></i>Electric</span></span></a>
-<ul class="evx-menu"><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-services"><a href="/airport-transfers"><b>Airport Transfers</b><span>Fixed prices to every UK airport</span></a><a href="/corporate-travel"><b>Corporate Travel</b><span>Business and executive travel, invoiced</span></a><a href="/private-hire"><b>Private Hire</b><span>Pre-booked journeys across the North West</span></a><a href="/event-transfers"><b>Event & Concert Transfers</b><span>There and back, with the ride home booked</span></a><a class="evx-dd-more" href="/long-distance-transfers">Long-distance transfers →</a></div></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-prices"><a href="/prices"><b>Prices</b><span>Fixed airport prices from the Fylde Coast</span></a><a href="/prices#how-pricing-works"><b>How Pricing Works</b><span>What is included, returns and payment</span></a><a href="/quote"><b>Get a Quote</b><span>For any journey not on the price list</span></a></div></li><li><a class="evx-navlink" href="/fleet">Fleet</a></li><li class="evx-has-dd"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd" id="evx-dd-areas"><a href="/areas#blackpool"><b>Blackpool</b><span>Bispham, North Shore, South Shore, Marton</span></a><a href="/areas"><b>Fylde Coast</b><span>Every area we cover</span></a><a href="/airport-transfer-lytham-st-annes"><b>Lytham St Annes</b></a><a href="/airport-transfer-poulton-le-fylde"><b>Poulton-le-Fylde</b></a><a href="/airport-transfer-fleetwood"><b>Fleetwood & Thornton-Cleveleys</b></a><a href="/airport-transfer-kirkham"><b>Kirkham, Freckleton & Warton</b></a><a href="/airport-transfer-preston"><b>Preston</b></a></div></li><li><a class="evx-navlink" href="/reviews">Reviews</a></li></ul>
+<ul class="evx-menu"><li class="evx-has-dd evx-mega-li"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-services">Services<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd evx-mega" id="evx-dd-services" role="region" aria-label="Services"><div class="evx-mega-col"><p class="evx-mega-h">Services</p><ul class="evx-mega-big"><li><a href="/airport-transfers">Airport Transfers</a></li><li><a href="/corporate-travel">Corporate Travel</a></li><li><a href="/private-hire">Private Hire</a></li><li><a href="/event-transfers">Event &amp; Concert Transfers</a></li><li><a href="/long-distance-transfers">Long-Distance Transfers</a></li></ul></div><div class="evx-mega-col"><p class="evx-mega-h">Airports</p><ul class="evx-mega-list"><li><a href="/manchester-airport-transfer-blackpool"><span>Manchester Airport</span><em>£90</em></a></li><li><a href="/liverpool-airport-transfer-blackpool"><span>Liverpool Airport</span><em>£95</em></a></li><li><a href="/leeds-bradford-airport-transfer-blackpool"><span>Leeds Bradford Airport</span><em>£135</em></a></li><li><a href="/airport-transfers"><span>All airports</span></a></li></ul></div><div class="evx-mega-col evx-mega-next"><p class="evx-mega-h">Next step</p><ul class="evx-mega-list"><li><a href="#quote"><span>Book a transfer</span></a></li><li><a href="/quote"><span>Get a quote</span></a></li><li><a href="tel:+447721070370"><span>Call 07721 070370</span></a></li><li><a href="https://wa.me/447721070370" target="_blank" rel="noopener"><span>WhatsApp us</span></a></li></ul></div></div></li><li class="evx-has-dd evx-mega-li"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-prices">Prices<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd evx-mega" id="evx-dd-prices" role="region" aria-label="Prices"><div class="evx-mega-col"><p class="evx-mega-h">Prices</p><ul class="evx-mega-big"><li><a href="/prices">All Prices</a></li><li><a href="/prices#how-pricing-works">How Pricing Works</a></li><li><a href="/prices#cancellations">Cancellations</a></li><li><a href="/quote">Get a Quote</a></li></ul></div><div class="evx-mega-col"><p class="evx-mega-h">Fixed prices, one way</p><ul class="evx-mega-list"><li><a href="/manchester-airport-transfer-blackpool"><span>Manchester Airport</span><em>£90</em></a></li><li><a href="/liverpool-airport-transfer-blackpool"><span>Liverpool Airport</span><em>£95</em></a></li><li><a href="/leeds-bradford-airport-transfer-blackpool"><span>Leeds Bradford Airport</span><em>£135</em></a></li><li><a href="/prices"><span>Birmingham Airport</span><em>£215</em></a></li><li><a href="/prices"><span>Newcastle Airport</span><em>£250</em></a></li></ul></div><div class="evx-mega-col evx-mega-next"><p class="evx-mega-h">Next step</p><ul class="evx-mega-list"><li><a href="#quote"><span>Book a transfer</span></a></li><li><a href="/quote"><span>Get a quote</span></a></li><li><a href="tel:+447721070370"><span>Call 07721 070370</span></a></li><li><a href="https://wa.me/447721070370" target="_blank" rel="noopener"><span>WhatsApp us</span></a></li></ul></div></div></li><li class="evx-has-dd evx-mega-li"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-fleet">Fleet<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd evx-mega" id="evx-dd-fleet" role="region" aria-label="Fleet"><div class="evx-mega-col"><p class="evx-mega-h">Fleet</p><ul class="evx-mega-big"><li><a href="/fleet">Explore the Fleet</a></li><li><a href="/prices">Prices</a></li></ul></div><div class="evx-mega-col"><p class="evx-mega-h">The cars</p><ul class="evx-mega-list"><li><a href="/fleet"><span>Tesla Model Y</span><em>4 passengers &middot; 4 cases</em></a></li><li><a href="/fleet"><span>Tesla Model Y Juniper</span><em>4 passengers &middot; 4 cases</em></a></li><li><a href="/fleet"><span>Škoda Enyaq</span><em>4 passengers &middot; 5 cases</em></a></li></ul></div><div class="evx-mega-col evx-mega-next"><p class="evx-mega-h">Next step</p><ul class="evx-mega-list"><li><a href="#quote"><span>Book a transfer</span></a></li><li><a href="/quote"><span>Get a quote</span></a></li><li><a href="tel:+447721070370"><span>Call 07721 070370</span></a></li><li><a href="https://wa.me/447721070370" target="_blank" rel="noopener"><span>WhatsApp us</span></a></li></ul></div></div></li><li class="evx-has-dd evx-mega-li"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-areas">Areas<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd evx-mega" id="evx-dd-areas" role="region" aria-label="Areas"><div class="evx-mega-col"><p class="evx-mega-h">Areas</p><ul class="evx-mega-big"><li><a href="/areas">All Areas</a></li><li><a href="/areas#blackpool">Blackpool</a></li></ul></div><div class="evx-mega-col"><p class="evx-mega-h">Towns</p><ul class="evx-mega-list"><li><a href="/airport-transfer-lytham-st-annes"><span>Lytham St Annes</span></a></li><li><a href="/airport-transfer-poulton-le-fylde"><span>Poulton-le-Fylde</span></a></li><li><a href="/airport-transfer-fleetwood"><span>Fleetwood & Thornton-Cleveleys</span></a></li><li><a href="/airport-transfer-kirkham"><span>Kirkham, Freckleton & Warton</span></a></li><li><a href="/airport-transfer-preston"><span>Preston</span></a></li></ul></div><div class="evx-mega-col evx-mega-next"><p class="evx-mega-h">Next step</p><ul class="evx-mega-list"><li><a href="#quote"><span>Book a transfer</span></a></li><li><a href="/quote"><span>Get a quote</span></a></li><li><a href="tel:+447721070370"><span>Call 07721 070370</span></a></li><li><a href="https://wa.me/447721070370" target="_blank" rel="noopener"><span>WhatsApp us</span></a></li></ul></div></div></li><li class="evx-has-dd evx-mega-li"><button class="evx-navlink" type="button" aria-expanded="false" aria-controls="evx-dd-reviews">Reviews<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button><div class="evx-dd evx-mega" id="evx-dd-reviews" role="region" aria-label="Reviews"><div class="evx-mega-col"><p class="evx-mega-h">Reviews</p><ul class="evx-mega-big"><li><a href="/reviews">Read Reviews</a></li><li><a href="https://g.page/r/CVPMqDntIQ3xEAE/review" target="_blank" rel="noopener">Leave a Review</a></li></ul></div><div class="evx-mega-col"><p class="evx-mega-h">Rated on Google</p><a class="evx-mega-rating" href="https://g.page/r/CVPMqDntIQ3xEAE" target="_blank" rel="noopener"><svg class="evx-g" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span class="evx-stars" aria-hidden="true">★★★★★</span> 5.0 &middot; 18 reviews</a><blockquote class="evx-mega-quote">&ldquo;Used Moss last week on a trip to Liverpool. Clean car, on time, everything went smoothly. Would recommend.&rdquo;<cite>David S., Google review</cite></blockquote></div><div class="evx-mega-col evx-mega-next"><p class="evx-mega-h">Next step</p><ul class="evx-mega-list"><li><a href="#quote"><span>Book a transfer</span></a></li><li><a href="/quote"><span>Get a quote</span></a></li><li><a href="tel:+447721070370"><span>Call 07721 070370</span></a></li><li><a href="https://wa.me/447721070370" target="_blank" rel="noopener"><span>WhatsApp us</span></a></li></ul></div></div></li></ul>
 <div class="evx-actions">
 <a class="evx-phone" href="tel:+447721070370" aria-label="Call EV Exec on 07721 070370"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>07721 070370</a>
 <a class="evx-btn evx-btn-dark evx-hide-sm" href="/quote">Get a Quote</a>
@@ -852,7 +838,6 @@ main,footer{position:relative;z-index:1}
 
       <div class="hc-slide">
         <div class="hc-slide-media">
-          <span class="hc-badge">Most Popular</span>
           <picture><source type="image/webp" srcset="/public/images/opt/ev-exec-tesla-model-y-navy-1000.webp"><img src="/public/images/opt/ev-exec-tesla-model-y-navy-1000.jpg" alt="EV Exec navy Tesla Model Y parked at night with airport control tower in the background" loading="eager" fetchpriority="high" width="1000" height="787" decoding="async"/></picture>
         </div>
         <div class="hc-slide-info">
@@ -1045,7 +1030,7 @@ main,footer{position:relative;z-index:1}
 
 <div class="hx-hero-copy hx-after-cars">
 <div class="hx-cta" data-evx-cta-zone>
-<a class="btn-gold hx-btn" href="#quote"><svg class="btn-icon" aria-hidden="true"><use href="#i-bolt"></use></svg>Book Your Transfer</a>
+<a class="btn-gold hx-btn" href="#quote">Book Your Transfer</a>
 <a class="btn-dark hx-btn hx-btn-ghost" href="/quote">Get a Quote</a>
 </div>
 <ul class="hx-trust">
@@ -2056,7 +2041,7 @@ main,footer{position:relative;z-index:1}
 
 <!-- ── TAB STYLES (shared with auth modal) ── -->
 <style>
-.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;font-family:Manrope,sans-serif}
+.tab-btn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,.45);background:transparent;border:1px solid transparent;cursor:pointer;transition:all .2s;font-family:Jost,sans-serif}
 .tab-btn.active{background:rgba(213,165,56,.12);border-color:rgba(213,165,56,.3);color:#d5a538}
 .tab-btn:hover:not(.active){color:rgba(255,255,255,.75);background:rgba(255,255,255,.05)}
 /* Chat widget */
@@ -2068,10 +2053,10 @@ main,footer{position:relative;z-index:1}
 .chat-msg.bot{background:rgba(255,255,255,.08);color:rgba(255,255,255,.9);align-self:flex-start;border-bottom-left-radius:4px}
 .chat-msg.user{background:linear-gradient(135deg,#d5a538,#b8891f);color:#06101c;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
 .chat-quick{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 8px}
-.chat-quick-btn{padding:5px 10px;border-radius:99px;font-size:11.5px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538;cursor:pointer;transition:background .2s;font-family:Manrope,sans-serif}
+.chat-quick-btn{padding:5px 10px;border-radius:99px;font-size:11.5px;background:rgba(213,165,56,.1);border:1px solid rgba(213,165,56,.25);color:#d5a538;cursor:pointer;transition:background .2s;font-family:Jost,sans-serif}
 .chat-quick-btn:hover{background:rgba(213,165,56,.2)}
 .chat-input-row{display:flex;gap:7px;padding:10px 14px;border-top:1px solid rgba(255,255,255,.06)}
-.chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:16px;outline:none;font-family:Manrope,sans-serif}
+.chat-input{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 12px;color:#fff;font-size:16px;outline:none;font-family:Jost,sans-serif}
 .chat-input:focus{border-color:rgba(213,165,56,.4)}
 .chat-send{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#d5a538,#b8891f);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 /* Push prompt banner */

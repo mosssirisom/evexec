@@ -10,14 +10,13 @@
 // pages (homepage, terms, privacy, blog, articles, my booking). Styles live in
 // public/css/chrome.css, behaviour in public/js/site.js.
 
-const { BUSINESS, RATING, AREAS } = require('./data');
+const { BUSINESS, RATING, AREAS, PRICES, FLEET, REVIEWS } = require('./data');
 
 const chevron = '<svg class="evx-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 const userIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21c1.6-4 4.2-6 8-6s6.4 2 8 6"/></svg>';
 // Google's "G" mark, used wherever the site mentions Google reviews.
 const GOOGLE_G_PATHS = '<path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>';
 const googleG = (cls) => `<svg class="${cls}" viewBox="0 0 48 48" aria-hidden="true">${GOOGLE_G_PATHS}</svg>`;
-const bolt = '<svg class="evx-btn-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>';
 
 // Navigation structure (user-specified, 2026-10-03).
 const MENU = [
@@ -48,13 +47,49 @@ const MENU = [
   { key: 'reviews', label: 'Reviews', href: '/reviews' },
 ];
 
+// Desktop menus open as wide panels under the header (Apple-style): large
+// primary links on the left, related links and real facts (prices, fleet,
+// rating) beside them, and the next step on the right. Phones keep the
+// full-screen menu built from MENU below.
+const megaCol = (title, body, cls = '') => `<div class="evx-mega-col${cls}"><p class="evx-mega-h">${title}</p>${body}</div>`;
+const ext = (href) => (/^https?:/.test(href) ? ' target="_blank" rel="noopener"' : '');
+const megaBig = (links) => `<ul class="evx-mega-big">${links.map(([label, href]) => `<li><a href="${href}"${ext(href)}>${label}</a></li>`).join('')}</ul>`;
+const megaList = (rows) => `<ul class="evx-mega-list">${rows.map(([label, href, note]) => `<li><a href="${href}"${ext(href)}><span>${label}</span>${note ? `<em>${note}</em>` : ''}</a></li>`).join('')}</ul>`;
+const airportRows = Object.values(PRICES).map((p) => [p.short || p.name, p.slug ? `/${p.slug}` : '/prices', `£${p.oneWay}`]);
+function megaNext(book) {
+  return megaCol('Next step', megaList([
+    ['Book a transfer', book],
+    ['Get a quote', '/quote'],
+    [`Call ${BUSINESS.phone}`, `tel:${BUSINESS.phoneIntl}`],
+    ['WhatsApp us', BUSINESS.whatsapp],
+  ]), ' evx-mega-next');
+}
+const MEGA = {
+  services: (book) => megaCol('Services', megaBig([
+    ['Airport Transfers', '/airport-transfers'],
+    ['Corporate Travel', '/corporate-travel'],
+    ['Private Hire', '/private-hire'],
+    ['Event &amp; Concert Transfers', '/event-transfers'],
+    ['Long-Distance Transfers', '/long-distance-transfers'],
+  ])) + megaCol('Airports', megaList([...airportRows.slice(0, 3), ['All airports', '/airport-transfers']])) + megaNext(book),
+  prices: (book) => megaCol('Prices', megaBig([
+    ['All Prices', '/prices'],
+    ['How Pricing Works', '/prices#how-pricing-works'],
+    ['Cancellations', '/prices#cancellations'],
+    ['Get a Quote', '/quote'],
+  ])) + megaCol('Fixed prices, one way', megaList(airportRows)) + megaNext(book),
+  fleet: (book) => megaCol('Fleet', megaBig([['Explore the Fleet', '/fleet'], ['Prices', '/prices']])) +
+    megaCol('The cars', megaList(FLEET.map((v) => [v.name, '/fleet', `${v.pax} passengers &middot; ${v.cases} cases`]))) + megaNext(book),
+  areas: (book) => megaCol('Areas', megaBig([['All Areas', '/areas'], ['Blackpool', '/areas#blackpool']])) +
+    megaCol('Towns', megaList(AREAS.filter((a) => a.slug).map((a) => [a.name, `/${a.slug}`]))) + megaNext(book),
+  reviews: (book) => megaCol('Reviews', megaBig([['Read Reviews', '/reviews'], ['Leave a Review', BUSINESS.googleReview]])) +
+    megaCol('Rated on Google', `<a class="evx-mega-rating" href="${BUSINESS.googleProfile}" target="_blank" rel="noopener">${googleG('evx-g')}<span class="evx-stars" aria-hidden="true">★★★★★</span> ${RATING.value} &middot; ${RATING.count} reviews</a><blockquote class="evx-mega-quote">&ldquo;${REVIEWS[0].text}&rdquo;<cite>${REVIEWS[0].name}, Google review</cite></blockquote>`) + megaNext(book),
+};
+
 function header({ current = '', book = '/#quote' } = {}) {
   const items = MENU.map((m) => {
     const cur = m.key === current ? ' is-current' : '';
-    if (m.href) return `<li><a class="evx-navlink${cur}" href="${m.href}"${cur ? ' aria-current="page"' : ''}>${m.label}</a></li>`;
-    const links = m.items.map((i) => `<a href="${i.href}"><b>${i.label}</b>${i.sub ? `<span>${i.sub}</span>` : ''}</a>`).join('');
-    const more = m.more ? `<a class="evx-dd-more" href="${m.more.href}">${m.more.label} →</a>` : '';
-    return `<li class="evx-has-dd"><button class="evx-navlink${cur}" type="button" aria-expanded="false" aria-controls="evx-dd-${m.key}">${m.label}${chevron}</button><div class="evx-dd" id="evx-dd-${m.key}">${links}${more}</div></li>`;
+    return `<li class="evx-has-dd evx-mega-li"><button class="evx-navlink${cur}" type="button" aria-expanded="false" aria-controls="evx-dd-${m.key}"${cur ? ' aria-current="page"' : ''}>${m.label}${chevron}</button><div class="evx-dd evx-mega" id="evx-dd-${m.key}" role="region" aria-label="${m.label}">${MEGA[m.key](book)}</div></li>`;
   }).join('');
   return `<!-- evx:header -->
 <header class="evx-header" id="siteHeader">
@@ -115,4 +150,4 @@ function mobileCta({ book = '/#quote', bookLabel = 'Book Now', quote = '/quote',
 const HEAD = '<link rel="stylesheet" href="/public/css/chrome.css">';
 const SCRIPT = '<script defer src="/public/js/site.js"></script>';
 
-module.exports = { header, footer, mobileCta, HEAD, SCRIPT, MENU, bolt, googleG };
+module.exports = { header, footer, mobileCta, HEAD, SCRIPT, MENU, googleG };

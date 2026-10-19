@@ -45,7 +45,6 @@ const ICONS = {
   shield: '<path d="M12 3 5 6v6c0 4.4 3 7.6 7 9 4-1.4 7-4.6 7-9V6l-7-3z"/><path d="m9 12 2 2 4-4"/>',
   card: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>',
   bell: '<path d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16zM10 20a2 2 0 0 0 4 0"/>',
-  bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/>',
   route: '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/>',
   calendar: '<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',
   music: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
@@ -92,7 +91,7 @@ function heroBlock(page) {
       <p class="lead">${page.lead}</p>
       ${chips ? `<div class="price-chips">${chips}</div>` : ''}
       <div class="btn-row" data-evx-cta-zone>
-        <a class="btn btn-gold" href="${primary.href}">${icon('bolt', '')}${esc(primary.label)}</a>
+        <a class="btn btn-gold" href="${primary.href}">${esc(primary.label)}</a>
         <a class="btn btn-dark" href="${secondary.href}">${esc(secondary.label)}</a>
       </div>
       ${h.trust === false ? '' : trustRow()}
@@ -330,14 +329,14 @@ function jsonLd(page) {
 // ── page shell ───────────────────────────────────────────────────────────
 // Icons and fonts shared by every page. Square icons (Google's search-result
 // favicon must be square, a multiple of 48px). One font for every page and
-// every element: Manrope (user decision 17/10/2026), the files Google Fonts
+// every element: Jost (user decision 19/10/2026; was Jost), the files Google Fonts
 // serves, hosted here (public/css/fonts.css) so the first paint does not wait
 // on a third-party connection. Preloaded so text paints in its final font.
 const headCommon = () => `<!-- evx:head -->
 <link rel="icon" href="/favicon.ico" sizes="32x32 48x48">
 <link rel="icon" href="/public/images/ev-exec-icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/public/images/ev-exec-icon-180.png">
-<link rel="preload" href="/public/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/public/fonts/jost-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/public/css/fonts.css">
 <!-- /evx:head -->`;
 
