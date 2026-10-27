@@ -638,6 +638,19 @@ main,footer{position:relative;z-index:1}
 .hx-rv{display:grid;gap:22px}
 @media(min-width:768px){.hx-rv{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:767px){.hx-rv{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;padding-bottom:6px;scrollbar-width:none}.hx-rv::-webkit-scrollbar{display:none}.hx-rv>article{flex:0 0 86%;scroll-snap-align:center}}
+.hx-psub{margin-top:12px;color:rgba(255,255,255,.62)}
+.hx-prices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:28px;text-align:left}
+.hx-prices .hx-pc:last-child{grid-column:span 2}
+.hx-pc{display:flex;flex-direction:column;gap:2px;padding:20px 18px;border-radius:14px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.045);text-decoration:none;color:#fff;min-width:0;transition:border-color .2s}
+.hx-pc[hidden]{display:none}
+.hx-pc:hover{border-color:rgba(213,165,56,.6)}
+.hx-pc small{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45)}
+.hx-pc b{font-size:19px;font-weight:600;line-height:1.2}
+.hx-pp{display:block;margin-top:10px;font-size:34px;line-height:1.1;font-weight:500;color:#d5a538;font-variant-numeric:tabular-nums}
+.hx-pp em{display:block;font-style:normal;font-size:13px;color:rgba(255,255,255,.45);font-weight:400;margin-top:2px}
+.hx-pr{font-size:14.5px;color:rgba(255,255,255,.65);font-variant-numeric:tabular-nums}
+.hx-pnote{margin-top:22px;font-size:14.5px;color:rgba(255,255,255,.55)}
+@media(min-width:900px){.hx-prices{grid-template-columns:repeat(5,1fr);gap:14px}.hx-prices .hx-pc:last-child{grid-column:auto}}
 .hx-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:26px}
 .hx-chips a{padding:11px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);font-size:14.5px;font-weight:600;text-decoration:none;transition:border-color .2s,color .2s}
 .hx-chips a:hover{border-color:rgba(213,165,56,.6);color:#d5a538}
@@ -1280,6 +1293,23 @@ main,footer{position:relative;z-index:1}
 </div>
 </section>
 
+<!-- Prices -->
+<section class="px-6 py-8 lg:py-12 reveal" id="prices">
+<div class="max-w-7xl mx-auto text-center">
+<p class="text-[#d5a538] text-xs uppercase tracking-[.24em] font-bold">Fixed Prices</p>
+<h2 class="serif text-4xl md:text-5xl mt-3">Know the Fare <span class="gold">Before You Book</span></h2>
+<p class="hx-psub">Per car, from any Blackpool &amp; Fylde Coast pickup. No meter, no surge.</p>
+<div class="hx-prices" id="hxPrices">
+<a class="hx-pc" href="/?airport=Manchester%20Airport#quote" data-airport="Manchester Airport"><small>Airport</small><b>Manchester</b><span class="hx-pp"><span data-p="oneWay">£90</span><em>one way</em></span><span class="hx-pr">Return <span data-p="ret">£160</span></span></a>
+<a class="hx-pc" href="/?airport=Liverpool%20Airport#quote" data-airport="Liverpool Airport"><small>Airport</small><b>Liverpool</b><span class="hx-pp"><span data-p="oneWay">£95</span><em>one way</em></span><span class="hx-pr">Return <span data-p="ret">£170</span></span></a>
+<a class="hx-pc" href="/?airport=Leeds%20Bradford%20Airport#quote" data-airport="Leeds Bradford Airport"><small>Airport</small><b>Leeds Bradford</b><span class="hx-pp"><span data-p="oneWay">£135</span><em>one way</em></span><span class="hx-pr">Return <span data-p="ret">£250</span></span></a>
+<a class="hx-pc" href="/?airport=Birmingham%20Airport#quote" data-airport="Birmingham Airport"><small>Airport</small><b>Birmingham</b><span class="hx-pp"><span data-p="oneWay">£215</span><em>one way</em></span><span class="hx-pr">Return <span data-p="ret">£410</span></span></a>
+<a class="hx-pc" href="/?airport=Newcastle%20Airport#quote" data-airport="Newcastle Airport"><small>Airport</small><b>Newcastle</b><span class="hx-pp"><span data-p="oneWay">£250</span><em>one way</em></span><span class="hx-pr">Return <span data-p="ret">£480</span></span></a>
+</div>
+<p class="hx-pnote">Other airport or journey? <a class="hx-link font-semibold" href="/quote">Get a Quote →</a> &nbsp;·&nbsp; <a class="hx-link font-semibold" href="/prices">Full price list →</a></p>
+</div>
+</section>
+
 <!-- Services -->
 <section class="px-6 py-8 lg:py-12 reveal" id="services">
 <div class="max-w-7xl mx-auto">
@@ -1460,6 +1490,14 @@ main,footer{position:relative;z-index:1}
       var list = pr.airports.filter(function (a) { return a && a.name && a.oneWay > 0 && a.ret > 0; })
         .map(function (a) { return { name: String(a.name), oneWay: a.oneWay, ret: a.ret }; });
       if (!list.length) return;
+      var pm = {};
+      list.forEach(function (a) { pm[a.name] = a; });
+      Array.prototype.forEach.call(document.querySelectorAll('#hxPrices [data-airport]'), function (el) {
+        var a = pm[el.getAttribute('data-airport')];
+        if (!a) { el.hidden = true; return; }
+        el.querySelector('[data-p="oneWay"]').textContent = '£' + a.oneWay;
+        el.querySelector('[data-p="ret"]').textContent = '£' + a.ret;
+      });
       list.push({ name: 'Other UK Airport', oneWay: null, ret: null });
       BW_AIRPORTS.splice.apply(BW_AIRPORTS, [0, BW_AIRPORTS.length].concat(list));
       if (typeof pr.extraStop === 'number' && pr.extraStop >= 0) BW_EXTRA_STOP = pr.extraStop;
