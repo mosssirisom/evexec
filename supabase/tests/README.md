@@ -5,9 +5,13 @@ database (website, Operator app, Driver App). It checks who can read and change
 bookings, drivers and the other staff tables, per role and per operator
 business, and that the guard triggers hold.
 
-- 70 assertions. On 09/11/2026 against the live project: 67 pass, 3 are known
-  gaps inside TODO blocks (app-role TRUNCATE/REFERENCES/TRIGGER grants, drivers
-  seeing open requests, no-show as its own status).
+- 99 assertions. The first 70 were run on 09/11/2026 against the live project:
+  67 pass, 3 are known gaps inside TODO blocks (app-role
+  TRUNCATE/REFERENCES/TRIGGER grants, drivers seeing open requests, no-show as
+  its own status).
+- The 29 added on 10/11/2026 (service role, super admin, more driver workflows,
+  grants that must stay, and TODO blocks for the proposed changes) have not
+  been run yet. See `docs/security/2026-11-10-database-hardening-plan.md`.
 - It runs in one transaction and rolls back. It creates its own two test
   businesses and does not read or change real rows.
 - Do not complete a priced booking in a test: that uses up an invoice number

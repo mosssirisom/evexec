@@ -3,8 +3,11 @@
 --
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
--- per operator business (tenant). Written against the live behaviour on
--- 09/11/2026; every assertion outside a TODO block passed there.
+-- per operator business (tenant). The first version (70 assertions) was run
+-- against the live project on 09/11/2026: every assertion outside a TODO block
+-- passed. The assertions added on 10/11/2026 (service role, super admin, extra
+-- driver workflows, grants that must stay, and the new TODO blocks) have NOT
+-- been run yet: running needs the owner's approval.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
 -- two test businesses and never reads or changes real rows.
@@ -34,11 +37,16 @@ insert into auth.users (id, instance_id, aud, role, email, raw_app_meta_data, ra
   ('aaaaaaaa-0000-4000-8000-0000000000a1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'staff.one@rls-test.invalid', '{}', '{}', now(), now()),
   ('aaaaaaaa-0000-4000-8000-0000000000b1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'staff.two@rls-test.invalid', '{}', '{}', now(), now()),
   ('aaaaaaaa-0000-4000-8000-0000000000c1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'customer.one@rls-test.invalid', '{}', '{}', now(), now()),
-  ('aaaaaaaa-0000-4000-8000-0000000000c2', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'customer.two@rls-test.invalid', '{}', '{}', now(), now());
+  ('aaaaaaaa-0000-4000-8000-0000000000c2', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'customer.two@rls-test.invalid', '{}', '{}', now(), now()),
+  -- e1: a login that only shares driver two's email address (driver two has no login of their own, like a partner)
+  ('aaaaaaaa-0000-4000-8000-0000000000e1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'driver.two@rls-test.invalid', '{}', '{}', now(), now()),
+  -- f1: platform super admin
+  ('aaaaaaaa-0000-4000-8000-0000000000f1', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'super@rls-test.invalid', '{}', '{}', now(), now());
 
 insert into public.tenant_users (user_id, tenant_id, role) values
   ('aaaaaaaa-0000-4000-8000-0000000000a1', 'aaaaaaaa-0000-4000-8000-000000000001', 'operator_admin'),
-  ('aaaaaaaa-0000-4000-8000-0000000000b1', 'aaaaaaaa-0000-4000-8000-000000000002', 'dispatcher');
+  ('aaaaaaaa-0000-4000-8000-0000000000b1', 'aaaaaaaa-0000-4000-8000-000000000002', 'dispatcher'),
+  ('aaaaaaaa-0000-4000-8000-0000000000f1', null, 'super_admin');
 
 insert into public.drivers (id, tenant_id, name, full_name, email) values
   ('aaaaaaaa-0000-4000-8000-0000000000d1', 'aaaaaaaa-0000-4000-8000-000000000001', 'Driver One',   'Driver One',   'driver.one@rls-test.invalid'),
@@ -52,6 +60,8 @@ insert into public.drivers (id, tenant_id, name, full_name, email) values
 -- b5: t1, no driver, pending                      (open request)
 -- b6: t1, driver d1, Completed, no price
 -- b7: t1, driver d1, Arrived                      (for the no-show case)
+-- b8: t2, driver d1 (of t1!), Dispatched          (assigned across businesses by mistake)
+-- b9: t1, driver d1, Dispatched                   (a second job that has not started)
 insert into public.bookings
   (id, tenant_id, ref, customer_name, customer_phone, travel_date, travel_time, status, payment_status, quoted_price, assigned_driver_id, user_id)
 values
@@ -61,7 +71,9 @@ values
   ('aaaaaaaa-0000-4000-8000-00000000b004', 'aaaaaaaa-0000-4000-8000-000000000002', 'EVX-RLSTEST4', 'Test Four',  '07000000004', '2099-01-04', '10:00', 'Dispatched', 'Unpaid', 90,   'aaaaaaaa-0000-4000-8000-0000000000d3', null),
   ('aaaaaaaa-0000-4000-8000-00000000b005', 'aaaaaaaa-0000-4000-8000-000000000001', 'EVX-RLSTEST5', 'Test Five',  '07000000005', '2099-01-05', '10:00', 'pending',    'Unpaid', 90,   null, null),
   ('aaaaaaaa-0000-4000-8000-00000000b006', 'aaaaaaaa-0000-4000-8000-000000000001', 'EVX-RLSTEST6', 'Test Six',   '07000000006', '2099-01-06', '10:00', 'Completed',  'Unpaid', null, 'aaaaaaaa-0000-4000-8000-0000000000d1', null),
-  ('aaaaaaaa-0000-4000-8000-00000000b007', 'aaaaaaaa-0000-4000-8000-000000000001', 'EVX-RLSTEST7', 'Test Seven', '07000000007', '2099-01-07', '10:00', 'Arrived',    'Unpaid', null, 'aaaaaaaa-0000-4000-8000-0000000000d1', null);
+  ('aaaaaaaa-0000-4000-8000-00000000b007', 'aaaaaaaa-0000-4000-8000-000000000001', 'EVX-RLSTEST7', 'Test Seven', '07000000007', '2099-01-07', '10:00', 'Arrived',    'Unpaid', null, 'aaaaaaaa-0000-4000-8000-0000000000d1', null),
+  ('aaaaaaaa-0000-4000-8000-00000000b008', 'aaaaaaaa-0000-4000-8000-000000000002', 'EVX-RLSTEST8', 'Test Eight', '07000000008', '2099-01-08', '10:00', 'Dispatched', 'Unpaid', null, 'aaaaaaaa-0000-4000-8000-0000000000d1', null),
+  ('aaaaaaaa-0000-4000-8000-00000000b009', 'aaaaaaaa-0000-4000-8000-000000000001', 'EVX-RLSTEST9', 'Test Nine',  '07000000009', '2099-01-09', '10:00', 'Dispatched', 'Unpaid', null, 'aaaaaaaa-0000-4000-8000-0000000000d1', null);
 
 -- ─── 1. Structure ────────────────────────────────────────────────────────────
 
@@ -84,12 +96,66 @@ select has_trigger('public', 'bookings', 'zz_guard_driver_booking_update', 'book
 select has_trigger('public', 'bookings', 'booking_status_transition',      'bookings has the status transition trigger');
 select has_trigger('public', 'drivers',  'zz_guard_driver_record_update',  'drivers has the driver record guard trigger');
 
+-- Permissions the apps rely on. These must keep passing after any revoke.
+select is_empty(
+  $$ select t || ' ' || p
+     from unnest(array['bookings','drivers','invoices','quote_requests','contact_messages','missed_calls',
+                       'operator_sms_tasks','driver_sms_reminders','driver_unavailable_dates','booking_photos',
+                       'booking_expenses','push_subscriptions']) t,
+          unnest(array['SELECT','INSERT','UPDATE','DELETE']) p
+     where not has_table_privilege('authenticated', 'public.' || t, p) $$,
+  'signed-in users keep read and write rights on the tables the apps use (row-level security decides which rows)'
+);
+select ok(has_table_privilege('authenticated', 'public.error_log', 'INSERT'), 'signed-in users can still write to the error log');
+select ok(has_table_privilege('authenticated', 'public.notification_queue_dashboard', 'SELECT')
+      and has_table_privilege('authenticated', 'public.notification_log_dashboard', 'SELECT'), 'signed-in users can still read the two notification status views');
+select ok(has_sequence_privilege('authenticated', 'public.invoice_seq', 'USAGE'), 'signed-in users can still draw an invoice number (staff create invoices)');
+select ok(has_function_privilege('anon', 'public.get_push_dispatch_bundle(text)', 'EXECUTE'), 'the Operator app push sender can still call get_push_dispatch_bundle without a login (it is gated by its secret)');
+select is_empty(
+  $$ select c.relname || ' ' || p
+     from pg_class c join pg_namespace n on n.oid = c.relnamespace,
+          unnest(array['SELECT','INSERT','UPDATE','DELETE']) p
+     where n.nspname = 'public' and c.relkind = 'r' and not has_table_privilege('service_role', c.oid, p) $$,
+  'the service role keeps full read and write rights on every table'
+);
+select ok((select rolbypassrls from pg_roles where rolname = 'service_role'), 'the service role still bypasses row-level security');
+
 select todo_start('Audit item 1: revoke TRUNCATE, REFERENCES and TRIGGER from anon and authenticated');
 select is_empty(
   $$ select table_name || ' ' || grantee || ' ' || privilege_type from information_schema.role_table_grants
      where table_schema = 'public' and grantee in ('anon', 'authenticated')
        and privilege_type in ('TRUNCATE', 'REFERENCES', 'TRIGGER') $$,
   'app roles hold no TRUNCATE, REFERENCES or TRIGGER rights on public tables'
+);
+select is_empty(
+  $$ select pg_get_userbyid(a.grantee) || ' ' || a.privilege_type
+     from pg_default_acl d, aclexplode(d.defaclacl) a
+     where d.defaclnamespace = 'public'::regnamespace and d.defaclobjtype = 'r'
+       and pg_get_userbyid(d.defaclrole) = 'postgres'
+       and pg_get_userbyid(a.grantee) in ('anon', 'authenticated')
+       and a.privilege_type in ('TRUNCATE', 'REFERENCES', 'TRIGGER') $$,
+  'new tables created by postgres do not hand TRUNCATE, REFERENCES or TRIGGER to app roles'
+);
+select todo_end();
+
+select todo_start('Stage 2 (proposed): sequence rights only where needed');
+select is_empty(
+  $$ select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
+     where n.nspname = 'public' and c.relkind = 'S'
+       and (has_sequence_privilege('anon', c.oid, 'USAGE')
+            or (c.relname <> 'invoice_seq' and has_sequence_privilege('authenticated', c.oid, 'USAGE'))) $$,
+  'visitors hold no sequence rights; signed-in users only on invoice_seq'
+);
+select todo_end();
+
+select todo_start('Stage 3 (proposed, needs app check first): visitors hold only the table rights their three policies use');
+select is_empty(
+  $$ select c.relname || ' ' || p
+     from pg_class c join pg_namespace n on n.oid = c.relnamespace,
+          unnest(array['SELECT','INSERT','UPDATE','DELETE']) p
+     where n.nspname = 'public' and c.relkind in ('r','v') and has_table_privilege('anon', c.oid, p)
+       and (c.relname, p) not in (('contact_messages','INSERT'), ('quote_requests','INSERT'), ('reviews','SELECT')) $$,
+  'visitors who are not signed in hold no table rights beyond the contact form, the quote form and reading reviews'
 );
 select todo_end();
 
@@ -128,8 +194,8 @@ set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000a1"
 set local role authenticated;
 
 select is(
-  (select count(*)::int from public.bookings where ref like 'EVX-RLSTEST%'), 6,
-  'staff: see all six bookings of their own business'
+  (select count(*)::int from public.bookings where ref like 'EVX-RLSTEST%'), 7,
+  'staff: see all seven bookings of their own business'
 );
 select is(
   (select count(*)::int from public.bookings where tenant_id = 'aaaaaaaa-0000-4000-8000-000000000002'), 0,
@@ -198,8 +264,8 @@ set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000b1"
 set local role authenticated;
 
 select is(
-  (select array_agg(ref order by ref) from public.bookings where ref like 'EVX-RLSTEST%'), array['EVX-RLSTEST4'],
-  'staff of business two: see only their own booking'
+  (select array_agg(ref order by ref) from public.bookings where ref like 'EVX-RLSTEST%'), array['EVX-RLSTEST4', 'EVX-RLSTEST8'],
+  'staff of business two: see only their own bookings'
 );
 select is(
   (select array_agg(name order by name) from public.drivers where email like '%@rls-test.invalid'), array['Driver Three'],
@@ -240,9 +306,14 @@ set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000d1"
 set local role authenticated;
 
 select is(
-  (select array_agg(ref order by ref) from public.bookings where assigned_driver_id is not null),
-  array['EVX-RLSTEST1', 'EVX-RLSTEST6', 'EVX-RLSTEST7'],
-  'driver: of the assigned jobs, sees only their own'
+  (select array_agg(ref order by ref) from public.bookings
+   where assigned_driver_id is not null and tenant_id = 'aaaaaaaa-0000-4000-8000-000000000001'),
+  array['EVX-RLSTEST1', 'EVX-RLSTEST6', 'EVX-RLSTEST7', 'EVX-RLSTEST9'],
+  'driver: of the assigned jobs in their business, sees only their own'
+);
+select is(
+  (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b004'), 0,
+  'driver: does not see another business''s job'
 );
 select is(
   (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b003'), 0,
@@ -257,6 +328,10 @@ select todo_start('Decision 09/11/2026: drivers see only their own assigned jobs
 select is(
   (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b005'), 0,
   'driver: does not see an open request with no driver (customer name and phone)'
+);
+select is(
+  (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b008'), 0,
+  'driver: does not see a job in another business, even if it was assigned to them there by mistake'
 );
 select todo_end();
 
@@ -310,7 +385,39 @@ select lives_ok(
   'driver: a payment write does not raise an error'
 );
 
+-- The rest of a normal job: arrive, passenger on board. (Not completed here:
+-- completing a priced booking draws an invoice number.)
+select lives_ok(
+  $$ update public.bookings set status = 'Arrived', arrived_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b001' $$,
+  'driver: can mark their own job Arrived'
+);
+select lives_ok(
+  $$ update public.bookings set status = 'Passenger On Board', passenger_onboard_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b001' $$,
+  'driver: can mark the passenger on board'
+);
+select lives_ok(
+  $$ update public.bookings set driver_confirmed_at = now(), attestation_status = 'confirmed' where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  'driver: can confirm an upcoming job'
+);
+select lives_ok(
+  $$ insert into public.driver_sms_reminders (tenant_id, booking_id, driver_id, reminder_type, customer_phone, message, status)
+     values ('aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-00000000b001', 'aaaaaaaa-0000-4000-8000-0000000000d1', '24hr', '07000000001', 'Reminder', 'sent') $$,
+  'driver: can record a customer reminder for their own job'
+);
+select throws_ok(
+  $$ insert into public.driver_sms_reminders (tenant_id, booking_id, driver_id, reminder_type, customer_phone, message, status)
+     values ('aaaaaaaa-0000-4000-8000-000000000001', 'aaaaaaaa-0000-4000-8000-00000000b002', 'aaaaaaaa-0000-4000-8000-0000000000d1', '24hr', '07000000002', 'Reminder', 'sent') $$,
+  '42501', null, 'driver: cannot record a reminder against another driver''s job'
+);
+
 update public.bookings set driver_notes = 'not mine' where id = 'aaaaaaaa-0000-4000-8000-00000000b002';
+
+select todo_start('Proposed, needs a decision: a driver cannot cancel a job that has not started');
+select throws_ok(
+  $$ update public.bookings set status = 'Cancelled' where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  '42501', null, 'driver: cannot cancel a Dispatched job (cancelling tells the customer)'
+);
+select todo_end();
 
 select todo_start('Audit item 4: a driver records a no-show as the No Show status');
 select lives_ok(
@@ -321,7 +428,7 @@ select todo_end();
 
 reset role;
 
-select is((select status from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 'En Route', 'driver: the status change was saved');
+select is((select status from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 'Passenger On Board', 'driver: the status changes were saved');
 select is((select payment_status from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 'Unpaid', 'driver: payment_status stays as the office left it');
 select is((select payment_method from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 'Card', 'driver: the payment method is recorded while the booking is unpaid');
 select is((select quoted_price from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 90::numeric, 'driver: the price is unchanged');
@@ -366,6 +473,47 @@ reset role;
 select is((select is_online from public.drivers where id = 'aaaaaaaa-0000-4000-8000-0000000000d1'), true, 'driver: the location update was saved');
 select is((select rating from public.drivers where id = 'aaaaaaaa-0000-4000-8000-0000000000d1'), 4.5::numeric, 'driver: the rating is as the office set it');
 select is((select current_lat from public.drivers where id = 'aaaaaaaa-0000-4000-8000-0000000000d2'), null, 'driver: an update to another driver''s record changes nothing');
+
+-- ─── 8. A login that only shares a driver's email address ───────────────────
+-- Driver two has no login (like a partner). Some policies also match drivers
+-- by email, so a separate account with the same address is treated as them.
+
+select todo_start('Stage 2 (proposed): drivers are matched by login id only, never by email');
+set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000e1","role":"authenticated","email":"driver.two@rls-test.invalid"}';
+set local role authenticated;
+select is((select count(*)::int from public.bookings), 0, 'same-email login: sees no jobs');
+select is((select count(*)::int from public.drivers),  0, 'same-email login: sees no driver record');
+reset role;
+select todo_end();
+
+-- ─── 9. Platform super admin ─────────────────────────────────────────────────
+
+set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000f1","role":"authenticated","email":"super@rls-test.invalid"}';
+set local role authenticated;
+
+select is((select count(*)::int from public.bookings where ref like 'EVX-RLSTEST%'), 9, 'super admin: sees the bookings of every business');
+select is((select count(*)::int from public.drivers where email like '%@rls-test.invalid'), 3, 'super admin: sees the drivers of every business');
+select is((select count(*)::int from public.tenants where slug like 'rls-test-%'), 2, 'super admin: sees every business record');
+
+reset role;
+
+-- ─── 10. Service role (the servers) ──────────────────────────────────────────
+
+set local "request.jwt.claims" to '{"role":"service_role"}';
+set local role service_role;
+
+select is((select count(*)::int from public.bookings where ref like 'EVX-RLSTEST%'), 9, 'service role: reads the bookings of every business');
+select lives_ok(
+  $$ update public.bookings set payment_status = 'Paid', payment_method = 'Card', quoted_price = 120 where id = 'aaaaaaaa-0000-4000-8000-00000000b004' $$,
+  'service role: can record a payment and change a price (the website payment flow)'
+);
+select lives_ok($$ select count(*) from public.notification_queue $$,    'service role: can read the notification queue');
+select lives_ok($$ select count(*) from public.push_config $$,           'service role: can read the push settings');
+select lives_ok($$ select count(*) from public.stripe_webhook_events $$, 'service role: can read the payment event log');
+
+reset role;
+
+select is((select payment_status from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b004'), 'Paid', 'service role: the payment was saved (the driver guard does not apply to servers)');
 
 select * from finish();
 rollback;
