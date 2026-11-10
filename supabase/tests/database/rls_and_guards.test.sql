@@ -3,11 +3,9 @@
 --
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
--- per operator business (tenant). The first version (70 assertions) was run
--- against the live project on 09/11/2026: every assertion outside a TODO block
--- passed. The assertions added on 10/11/2026 (service role, super admin, extra
--- driver workflows, grants that must stay, and the new TODO blocks) have NOT
--- been run yet: running needs the owner's approval.
+-- per operator business (tenant). Last run against the live project on
+-- 10/11/2026, after hardening stage 1: every assertion outside a TODO block
+-- passed.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
 -- two test businesses and never reads or changes real rows.
@@ -120,7 +118,7 @@ select is_empty(
 );
 select ok((select rolbypassrls from pg_roles where rolname = 'service_role'), 'the service role still bypasses row-level security');
 
-select todo_start('Audit item 1: revoke TRUNCATE, REFERENCES and TRIGGER from anon and authenticated');
+-- Stage 1, applied 10/11/2026 (migration 20261110064237).
 select is_empty(
   $$ select table_name || ' ' || grantee || ' ' || privilege_type from information_schema.role_table_grants
      where table_schema = 'public' and grantee in ('anon', 'authenticated')
@@ -136,7 +134,6 @@ select is_empty(
        and a.privilege_type in ('TRUNCATE', 'REFERENCES', 'TRIGGER') $$,
   'new tables created by postgres do not hand TRUNCATE, REFERENCES or TRIGGER to app roles'
 );
-select todo_end();
 
 select todo_start('Stage 2 (proposed): sequence rights only where needed');
 select is_empty(
@@ -324,7 +321,7 @@ select is(
   'driver: sees only their own driver record'
 );
 
-select todo_start('Decision 09/11/2026: drivers see only their own assigned jobs');
+-- Stage 1, applied 10/11/2026: own assigned jobs only, same business only.
 select is(
   (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b005'), 0,
   'driver: does not see an open request with no driver (customer name and phone)'
@@ -333,7 +330,6 @@ select is(
   (select count(*)::int from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b008'), 0,
   'driver: does not see a job in another business, even if it was assigned to them there by mistake'
 );
-select todo_end();
 
 select lives_ok(
   $$ update public.bookings set status = 'En Route', tracking_started_at = now(), driver_notes = 'On my way'
@@ -478,13 +474,13 @@ select is((select current_lat from public.drivers where id = 'aaaaaaaa-0000-4000
 -- Driver two has no login (like a partner). Some policies also match drivers
 -- by email, so a separate account with the same address is treated as them.
 
-select todo_start('Stage 2 (proposed): drivers are matched by login id only, never by email');
 set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000e1","role":"authenticated","email":"driver.two@rls-test.invalid"}';
 set local role authenticated;
 select is((select count(*)::int from public.bookings), 0, 'same-email login: sees no jobs');
+select todo_start('Stage 2 (proposed): drivers are matched by login id only, never by email');
 select is((select count(*)::int from public.drivers),  0, 'same-email login: sees no driver record');
-reset role;
 select todo_end();
+reset role;
 
 -- ─── 9. Platform super admin ─────────────────────────────────────────────────
 

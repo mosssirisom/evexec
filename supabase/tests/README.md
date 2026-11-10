@@ -5,13 +5,11 @@ database (website, Operator app, Driver App). It checks who can read and change
 bookings, drivers and the other staff tables, per role and per operator
 business, and that the guard triggers hold.
 
-- 99 assertions. The first 70 were run on 09/11/2026 against the live project:
-  67 pass, 3 are known gaps inside TODO blocks (app-role
-  TRUNCATE/REFERENCES/TRIGGER grants, drivers seeing open requests, no-show as
-  its own status).
-- The 29 added on 10/11/2026 (service role, super admin, more driver workflows,
-  grants that must stay, and TODO blocks for the proposed changes) have not
-  been run yet. See `docs/security/2026-11-10-database-hardening-plan.md`.
+- 99 assertions. Last run against the live project on 10/11/2026, after
+  hardening stage 1: 94 pass, 5 are known gaps inside TODO blocks (sequence
+  rights, visitor table rights, driver record matched by email, a driver
+  cancelling a job that has not started, no-show as its own status).
+  See `docs/security/2026-11-10-database-hardening-plan.md`.
 - It runs in one transaction and rolls back. It creates its own two test
   businesses and does not read or change real rows.
 - Do not complete a priced booking in a test: that uses up an invoice number
@@ -24,10 +22,10 @@ built from migrations, which is not possible yet: the migration history is
 split across the three repos and has drifted from the live schema. It becomes
 possible once a baseline migration is generated from the live schema.
 
-**Against the live project (how it was run on 09/11/2026):** run the file as a
+**Against the live project (how it was run on 09/11/2026 and 10/11/2026):** run the file as a
 single query through the Supabase SQL tools. pgTAP 1.3.3 returns one row per
 assertion, and a multi-statement query only returns the last result, so for
-that run each `select is(...)`, `lives_ok`, `throws_ok`, `is_empty`, `set_eq`
+that run each `select is(...)`, `ok`, `lives_ok`, `throws_ok`, `is_empty`, `set_eq`
 and `has_trigger` was prefixed with `insert into _out` (a temp table created
 after `no_plan()`, with `grant all on _out to public`), and
 `select * from finish();` was replaced by a select from `_out`. The trailing

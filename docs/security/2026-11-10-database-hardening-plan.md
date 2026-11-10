@@ -1,10 +1,12 @@
 # Database hardening plan: grants and driver access
 
-Date: 10/11/2026. Status: **proposed, nothing applied**. Project: `yoltkmhtxwluqxxpewbl`.
+Date: 10/11/2026. Project: `yoltkmhtxwluqxxpewbl`.
+
+**Status: stage 1 applied 10/11/2026** (migration `20261110064237_hardening_stage1_grants_and_driver_booking_policies`, approved by the owner). Stages 2 and 3 and the decision items are still proposals. See section 6 for the results.
 
 The audit was read-only (SELECT queries on the catalogue, policies, grants,
-usage statistics, plus the three repos' `main` branches). No statement in this
-document has been run against the live database.
+usage statistics, plus the three repos' `main` branches). Sections 1 to 5 are
+the plan as approved; only the stage 1 statements have been run.
 
 ## 1. What was checked
 
@@ -170,3 +172,18 @@ Order of work, each step needing approval:
 6. Only then propose stage 2.
 
 A failed assertion is never worked around: either the change is wrong or the test is, and which one is reported.
+
+## 6. Stage 1 results (10/11/2026)
+
+1. **Baseline, before any change.** Extended suite run against live in a rolled-back transaction: 99 assertions, 89 pass, 10 fail, all 10 inside TODO blocks. This confirmed F6 (a driver can cancel a Dispatched job) and F3 (a login sharing a partner's email reads that partner's job and driver record).
+2. **Dry run.** The four statements plus targeted checks in a rolled-back transaction: all as expected.
+3. **Applied** as one migration, no DROP statements.
+4. **After.** Suite re-run: 99 assertions, 94 pass. The four stage 1 checks now pass and are enforced (moved out of their TODO blocks), and the bookings half of the same-email check passes too. The 5 remaining failures are the open items: sequence rights (stage 2), visitor table rights (stage 3), driver record matched by email (stage 2), driver cancelling an unstarted job, and No Show as a status.
+5. **Left behind:** nothing (no test rows, no pgTAP extension).
+
+Found along the way:
+
+- The one app driver's login also holds the `operator_admin` role, so that account reads every booking through the staff policy and is not subject to the driver guard. No real account uses the driver-only path today; the test fixtures are what exercise it. The "driver's Paid write is silently put back" behaviour therefore applies to driver-only logins, not to this account.
+- `anon` and `authenticated` also hold MAINTAIN (PostgreSQL 17: VACUUM, ANALYZE, REINDEX, LOCK TABLE) on tables, and default privileges still grant it. Not reachable through the API. Candidate for stage 2.
+
+Still to do for stage 1: a sign-in check in the Driver App and Operator app by a person, and a look at the logs for "permission denied" (42501) after a day of normal use.

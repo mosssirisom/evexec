@@ -476,3 +476,13 @@ User decisions (19/10/2026): no paid services for any of these. Keep the once-a-
 - **Licence number (user, 19/10/2026):** private hire operator licence **PHO0079**. `BUSINESS.licence` in `scripts/site/data.js` feeds the footer on every page ("Licensed private hire operator, licence PHO0079."), the FAQ answer and the `/reviews` trust card; `terms.html` section 1 states it. Archived `/terms-v1`, `/terms-v2` body text unchanged. Every email footer also says "Private hire operator licence PHO0079" (`LICENCE` in `lib/emailTemplate.js` and the Operator app copy `src/lib/email/template.js`, plus `lib/emailLayout.js`). Not on invoices (add it in the Operator app, Settings → Business).
 
 - **Password rule (19/10/2026):** Supabase Auth requires 8+ characters with a letter and a number (set by the user). Every password form checks the same rule first and says so.
+
+## Update — 2026-11-10: database hardening stage 1 (live)
+
+Plan, findings, rollback SQL and results: `docs/security/2026-11-10-database-hardening-plan.md`. Tests: `supabase/tests/database/rls_and_guards.test.sql` (pgTAP, 99 assertions; run against live in one rolled-back transaction, see `supabase/tests/README.md`).
+
+- **Applied (migration `20261110064237`)**: `anon` and `authenticated` no longer hold TRUNCATE, REFERENCES or TRIGGER on `public` tables, and new tables created by `postgres` no longer grant them. `bookings_driver_select` / `bookings_driver_update` now mean: signed-in, own assigned jobs only, same business only (no "open request" clause, no match by email).
+- **Must stay**: `anon` EXECUTE on `get_push_dispatch_bundle` (the Operator app's push sender calls it without a login), `authenticated` USAGE on `invoice_seq` (`set_invoice_number()` runs as the caller), all `service_role` rights. The suite fails if any of these is removed.
+- **Not applied yet** (need approval): stage 2 (drivers matched by login id only in five more policies, sequence rights, two totals functions), stage 3 (visitor table rights, needs an app check first), a driver cancelling a job that has not started, No Show as a status.
+- **The app driver's login is also an `operator_admin`**, so it reads all bookings and the driver guard does not apply to it.
+- **Drift**: three live migrations are in no repo (`office_push_staff_only`, `driver_alert_webhook_secret`, `driver_write_guards`). The Operator app's real code is on its `main` branch (Next.js); older branches hold a Vite app.
