@@ -4,15 +4,14 @@
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
 -- per operator business (tenant). Last run against the live project on
--- 10/11/2026, after hardening stages 1 to 3: every assertion outside a TODO
--- block passed.
+-- 10/11/2026, after hardening stages 1 to 3 and the no-show change: all 112
+-- assertions passed. There are no TODO blocks at present.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
 -- two test businesses and never reads or changes real rows.
 --
--- TODO blocks are known gaps with an agreed fix. They are expected to fail
--- today and will report "TODO passed" once fixed; then move them out of the
--- TODO block.
+-- A known gap with an agreed fix goes in a TODO block (todo_start / todo_end):
+-- it is expected to fail until fixed, then reports "TODO passed" and is moved out.
 --
 -- Do not complete a priced booking in here: that draws an invoice number
 -- from invoice_seq, and a rollback does not give it back.
@@ -429,19 +428,35 @@ select throws_ok(
 
 update public.bookings set driver_notes = 'not mine' where id = 'aaaaaaaa-0000-4000-8000-00000000b002';
 
-select todo_start('Proposed, needs a decision: a driver cannot cancel a job that has not started');
+-- Ending a job (applied 10/11/2026): a driver may set Cancelled or No Show only
+-- from En Route or Arrived. Anything else is the office's.
 select throws_ok(
   $$ update public.bookings set status = 'Cancelled' where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
   '42501', null, 'driver: cannot cancel a Dispatched job (cancelling tells the customer)'
 );
-select todo_end();
-
-select todo_start('Audit item 4: a driver records a no-show as the No Show status');
+select throws_ok(
+  $$ update public.bookings set status = 'Cancelled' where id = 'aaaaaaaa-0000-4000-8000-00000000b001' $$,
+  '42501', null, 'driver: cannot cancel a job with the passenger on board'
+);
 select lives_ok(
   $$ update public.bookings set status = 'No Show' where id = 'aaaaaaaa-0000-4000-8000-00000000b007' $$,
   'driver: can mark an Arrived job as No Show'
 );
-select todo_end();
+-- The Driver App's current no-show button: Cancelled plus a note, after arriving.
+-- It must keep working until the app sends No Show.
+select lives_ok(
+  $$ update public.bookings set status = 'En Route', tracking_started_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  'driver: can set off on a second job'
+);
+select lives_ok(
+  $$ update public.bookings set status = 'Arrived', arrived_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  'driver: can arrive on a second job'
+);
+select lives_ok(
+  $$ update public.bookings set status = 'Cancelled', driver_notes = '[No Show] Passenger was not at the pickup location.'
+     where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  'driver: the current app''s no-show (Cancelled with a note, after arriving) still works'
+);
 
 reset role;
 
@@ -455,6 +470,11 @@ select is(
   'driver: the job is still assigned to the same driver'
 );
 select is((select driver_notes from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b002'), null, 'driver: an update to another driver''s job changes nothing');
+select is((select status from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b007'), 'No Show', 'driver: the no-show was saved as its own status');
+select lives_ok(
+  $$ update public.bookings set status = 'Unassigned' where id = 'aaaaaaaa-0000-4000-8000-00000000b007' $$,
+  'the office can reopen a no-show'
+);
 
 -- ─── 7. Driver: own record ───────────────────────────────────────────────────
 
@@ -499,6 +519,15 @@ set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000e1"
 set local role authenticated;
 select is((select count(*)::int from public.bookings), 0, 'same-email login: sees no jobs');
 select is((select count(*)::int from public.drivers),  0, 'same-email login: sees no driver record');
+reset role;
+
+-- Cancelling a job that has not started is the office's.
+set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000a1","role":"authenticated","email":"staff.one@rls-test.invalid"}';
+set local role authenticated;
+select lives_ok(
+  $$ update public.bookings set status = 'Cancelled' where id = 'aaaaaaaa-0000-4000-8000-00000000b002' $$,
+  'staff: can cancel a job that has not started'
+);
 reset role;
 
 -- ─── 9. Platform super admin ─────────────────────────────────────────────────

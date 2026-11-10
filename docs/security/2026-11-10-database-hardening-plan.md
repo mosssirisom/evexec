@@ -2,7 +2,7 @@
 
 Date: 10/11/2026. Project: `yoltkmhtxwluqxxpewbl`.
 
-**Status: stages 1, 2 and 3 applied 10/11/2026** (migrations `20261110064237_hardening_stage1_grants_and_driver_booking_policies`, `20261110130556_hardening_stage2_driver_id_only_sequences_functions_maintain` and `20261110131520_hardening_stage3_visitor_table_rights`, all approved by the owner). The decision items are still proposals. See sections 6 to 8 for the results.
+**Status: stages 1, 2 and 3 applied 10/11/2026** (migrations `20261110064237_hardening_stage1_grants_and_driver_booking_policies`, `20261110130556_hardening_stage2_driver_id_only_sequences_functions_maintain` and `20261110131520_hardening_stage3_visitor_table_rights`, all approved by the owner). The driver cancel and No Show rules were applied the same day (migration `20261110133454_driver_no_show_status_and_cancel_rule`). See sections 6 to 9 for the results.
 
 The audit was read-only (SELECT queries on the catalogue, policies, grants,
 usage statistics, plus the three repos' `main` branches). Sections 1 to 5 are
@@ -255,3 +255,34 @@ grant select, insert, update, delete on
   to anon;
 alter default privileges for role postgres in schema public grant select, insert, update, delete on tables to anon;
 ```
+
+## 9. Driver cancel rule and No Show status (10/11/2026)
+
+Approved by the owner; database part only. The Driver App is unchanged and keeps working.
+
+**What changed**
+
+1. `enforce_booking_status_transition`: `No Show` is allowed from En Route or Arrived. The office can reopen a no-show to Unassigned, as it can a cancellation; nothing else leaves No Show.
+2. `guard_driver_booking_update`: a driver-only login may set `Cancelled` or `No Show` only from En Route or Arrived. Cancelling a job that has not started, or one with the passenger on board, is refused with "Drivers can only record a no-show after setting off or arriving. Ask the office to cancel this job."
+3. `prevent_driver_double_booking`: a `No Show` job no longer holds the driver's slot (it was treated as a live job).
+
+**Why the driver may still set Cancelled from En Route or Arrived:** that is what the Driver App's no-show button sends today (Cancelled plus a "[No Show]" note). Refusing it now would break the button.
+
+**Checked before applying** (rolled back): 14 behaviour checks, all as expected, including the app's current no-show button, a normal job through to Completed, the office cancelling an unstarted job, and the double-booking check both ways.
+
+**After:** suite extended to 112 assertions and run against live: 112 pass. No TODO blocks remain. Nothing left behind; live bookings unchanged (81: 60 Completed, 19 Dispatched, 2 Unassigned).
+
+**Found along the way**
+
+- Today a driver's no-show sends the customer "your booking has been cancelled", because it is stored as Cancelled. A real `No Show` status sends the customer nothing. Nothing tells the office about a no-show either way, apart from the status on the booking.
+- The owner's login is also an office admin, so these driver rules do not apply to it.
+
+**Still to do (Driver App, then one more database step)**
+
+1. Driver App: the no-show button sends `status: 'No Show'` (keeping the note), and the job screen treats `No Show` as finished. `isNoShow` should accept either form so old jobs still display.
+2. Decide whether a no-show should alert the office (push) and what, if anything, the customer is sent.
+3. Then remove `Cancelled` from the statuses a driver may set at all.
+
+### Rollback
+
+Re-run the same kind of replacement in reverse: remove `, 'No Show'` from the two transition arrays and the `IF NEW.status = 'Unassigned'` line under No Show; remove the "A driver may end a job only at the pickup stage" block from the guard; change `('Completed', 'Cancelled', 'No Show')` back to `('Completed', 'Cancelled')` in the double-booking check (two places). No data is involved.

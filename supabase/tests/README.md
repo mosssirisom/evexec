@@ -5,10 +5,9 @@ database (website, Operator app, Driver App). It checks who can read and change
 bookings, drivers and the other staff tables, per role and per operator
 business, and that the guard triggers hold.
 
-- 105 assertions. Last run against the live project on 10/11/2026, after
-  hardening stages 1 to 3: 103 pass, 2 are known gaps inside TODO blocks
-  (a driver cancelling a job that has not started, no-show as its own
-  status).
+- 112 assertions. Last run against the live project on 10/11/2026, after
+  hardening stages 1 to 3 and the driver cancel / No Show rules: all 112
+  pass. There are no known gaps (TODO blocks) at present.
   See `docs/security/2026-11-10-database-hardening-plan.md`.
 - It runs in one transaction and rolls back. It creates its own two test
   businesses and does not read or change real rows.
