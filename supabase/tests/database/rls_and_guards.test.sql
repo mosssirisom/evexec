@@ -428,8 +428,8 @@ select throws_ok(
 
 update public.bookings set driver_notes = 'not mine' where id = 'aaaaaaaa-0000-4000-8000-00000000b002';
 
--- Ending a job (applied 10/11/2026): a driver may set Cancelled or No Show only
--- from En Route or Arrived. Anything else is the office's.
+-- Ending a job (applied 10/11/2026): a driver may never set Cancelled, and may
+-- set No Show only from En Route or Arrived. Cancelling is the office's.
 select throws_ok(
   $$ update public.bookings set status = 'Cancelled' where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
   '42501', null, 'driver: cannot cancel a Dispatched job (cancelling tells the customer)'
@@ -442,8 +442,8 @@ select lives_ok(
   $$ update public.bookings set status = 'No Show' where id = 'aaaaaaaa-0000-4000-8000-00000000b007' $$,
   'driver: can mark an Arrived job as No Show'
 );
--- The Driver App's current no-show button: Cancelled plus a note, after arriving.
--- It must keep working until the app sends No Show.
+-- The Driver App's old no-show button sent Cancelled plus a note. The app has
+-- sent No Show since 10/11/2026, so the old form is refused.
 select lives_ok(
   $$ update public.bookings set status = 'En Route', tracking_started_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
   'driver: can set off on a second job'
@@ -452,10 +452,15 @@ select lives_ok(
   $$ update public.bookings set status = 'Arrived', arrived_at = now() where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
   'driver: can arrive on a second job'
 );
-select lives_ok(
+select throws_ok(
   $$ update public.bookings set status = 'Cancelled', driver_notes = '[No Show] Passenger was not at the pickup location.'
      where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
-  'driver: the current app''s no-show (Cancelled with a note, after arriving) still works'
+  '42501', null, 'driver: cannot set Cancelled even after arriving (the old no-show form)'
+);
+select lives_ok(
+  $$ update public.bookings set status = 'No Show', driver_notes = '[No Show] Passenger was not at the pickup location.'
+     where id = 'aaaaaaaa-0000-4000-8000-00000000b009' $$,
+  'driver: the app''s no-show (No Show with a note, after arriving) works'
 );
 
 reset role;
