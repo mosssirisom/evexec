@@ -2,6 +2,7 @@
 -- Cancelled at all. A no-show is recorded as No Show (Driver App, live since
 -- 10/11/2026), and only from En Route or Arrived. Cancelling is the office's.
 --
+-- Applied live 10/11/2026 as migration 20261110200525.
 -- Done as exact text replacements on the live function, each checked to match
 -- once, so nothing else in the guard changes.
 --
