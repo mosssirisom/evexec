@@ -4,8 +4,8 @@
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
 -- per operator business (tenant). Last run against the live project on
--- 10/11/2026, after hardening stage 1: every assertion outside a TODO block
--- passed.
+-- 10/11/2026, after hardening stages 1 and 2: every assertion outside a TODO
+-- block passed.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
 -- two test businesses and never reads or changes real rows.
@@ -135,7 +135,7 @@ select is_empty(
   'new tables created by postgres do not hand TRUNCATE, REFERENCES or TRIGGER to app roles'
 );
 
-select todo_start('Stage 2 (proposed): sequence rights only where needed');
+-- Stage 2, applied 10/11/2026.
 select is_empty(
   $$ select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
      where n.nspname = 'public' and c.relkind = 'S'
@@ -143,7 +143,22 @@ select is_empty(
             or (c.relname <> 'invoice_seq' and has_sequence_privilege('authenticated', c.oid, 'USAGE'))) $$,
   'visitors hold no sequence rights; signed-in users only on invoice_seq'
 );
-select todo_end();
+select is_empty(
+  $$ select tablename || '.' || policyname from pg_policies
+     where schemaname in ('public', 'storage')
+       and (coalesce(qual, '') || coalesce(with_check, '')) ~ 'auth[.]email[(]' $$,
+  'no policy decides access by email address'
+);
+select ok(not has_function_privilege('anon', 'public.get_booking_totals(timestamptz)', 'EXECUTE')
+      and not has_function_privilege('anon', 'public.get_booking_status_breakdown(timestamptz)', 'EXECUTE'), 'visitors cannot call the booking totals functions');
+select ok(has_function_privilege('authenticated', 'public.get_booking_totals(timestamptz)', 'EXECUTE')
+      and has_function_privilege('authenticated', 'public.get_booking_status_breakdown(timestamptz)', 'EXECUTE'), 'signed-in users can still call the booking totals functions');
+select is_empty(
+  $$ select c.relname || ' ' || r
+     from pg_class c join pg_namespace n on n.oid = c.relnamespace, unnest(array['anon', 'authenticated']) r
+     where n.nspname = 'public' and c.relkind in ('r', 'v') and has_table_privilege(r, c.oid, 'MAINTAIN') $$,
+  'app roles hold no MAINTAIN right (vacuum, reindex, lock) on public tables'
+);
 
 select todo_start('Stage 3 (proposed, needs app check first): visitors hold only the table rights their three policies use');
 select is_empty(
@@ -477,9 +492,7 @@ select is((select current_lat from public.drivers where id = 'aaaaaaaa-0000-4000
 set local "request.jwt.claims" to '{"sub":"aaaaaaaa-0000-4000-8000-0000000000e1","role":"authenticated","email":"driver.two@rls-test.invalid"}';
 set local role authenticated;
 select is((select count(*)::int from public.bookings), 0, 'same-email login: sees no jobs');
-select todo_start('Stage 2 (proposed): drivers are matched by login id only, never by email');
 select is((select count(*)::int from public.drivers),  0, 'same-email login: sees no driver record');
-select todo_end();
 reset role;
 
 -- ─── 9. Platform super admin ─────────────────────────────────────────────────

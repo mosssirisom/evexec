@@ -477,12 +477,14 @@ User decisions (19/10/2026): no paid services for any of these. Keep the once-a-
 
 - **Password rule (19/10/2026):** Supabase Auth requires 8+ characters with a letter and a number (set by the user). Every password form checks the same rule first and says so.
 
-## Update — 2026-11-10: database hardening stage 1 (live)
+## Update — 2026-11-10: database hardening stages 1 and 2 (live)
 
-Plan, findings, rollback SQL and results: `docs/security/2026-11-10-database-hardening-plan.md`. Tests: `supabase/tests/database/rls_and_guards.test.sql` (pgTAP, 99 assertions; run against live in one rolled-back transaction, see `supabase/tests/README.md`).
+Plan, findings, rollback SQL and results: `docs/security/2026-11-10-database-hardening-plan.md`. Tests: `supabase/tests/database/rls_and_guards.test.sql` (pgTAP, 103 assertions; run against live in one rolled-back transaction, see `supabase/tests/README.md`).
 
 - **Applied (migration `20261110064237`)**: `anon` and `authenticated` no longer hold TRUNCATE, REFERENCES or TRIGGER on `public` tables, and new tables created by `postgres` no longer grant them. `bookings_driver_select` / `bookings_driver_update` now mean: signed-in, own assigned jobs only, same business only (no "open request" clause, no match by email).
 - **Must stay**: `anon` EXECUTE on `get_push_dispatch_bundle` (the Operator app's push sender calls it without a login), `authenticated` USAGE on `invoice_seq` (`set_invoice_number()` runs as the caller), all `service_role` rights. The suite fails if any of these is removed.
-- **Not applied yet** (need approval): stage 2 (drivers matched by login id only in five more policies, sequence rights, two totals functions), stage 3 (visitor table rights, needs an app check first), a driver cancelling a job that has not started, No Show as a status.
-- **The app driver's login is also an `operator_admin`**, so it reads all bookings and the driver guard does not apply to it.
+- **Stage 2 applied (migration `20261110130556`)**: no policy matches a driver by email any more (login id only, in `drivers`, `driver_locations`, `driver_sms_reminders`, `flight_verifications`, `job_proofs`); app roles hold no sequence rights except `authenticated` USAGE on `invoice_seq`; `get_booking_totals` / `get_booking_status_breakdown` are for signed-in users only (they were open to PUBLIC); app roles hold no MAINTAIN on tables.
+- **Not applied yet** (need approval): stage 3 (visitor table rights, needs an app check first), a driver cancelling a job that has not started, No Show as a status.
+- **The owner's login is both `driver` and `operator_admin`** (user decision 10/11/2026: keep both). It reads all bookings and the driver guard does not apply to it. Any other driver should be driver-only.
+- **A driver's login id must equal their `drivers.id`** (the invite flow does this). A login created any other way gets no driver access.
 - **Drift**: three live migrations are in no repo (`office_push_staff_only`, `driver_alert_webhook_secret`, `driver_write_guards`). The Operator app's real code is on its `main` branch (Next.js); older branches hold a Vite app.

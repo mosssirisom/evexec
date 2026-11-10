@@ -2,7 +2,7 @@
 
 Date: 10/11/2026. Project: `yoltkmhtxwluqxxpewbl`.
 
-**Status: stage 1 applied 10/11/2026** (migration `20261110064237_hardening_stage1_grants_and_driver_booking_policies`, approved by the owner). Stages 2 and 3 and the decision items are still proposals. See section 6 for the results.
+**Status: stages 1 and 2 applied 10/11/2026** (migrations `20261110064237_hardening_stage1_grants_and_driver_booking_policies` and `20261110130556_hardening_stage2_driver_id_only_sequences_functions_maintain`, both approved by the owner). Stage 3 and the decision items are still proposals. See sections 6 and 7 for the results.
 
 The audit was read-only (SELECT queries on the catalogue, policies, grants,
 usage statistics, plus the three repos' `main` branches). Sections 1 to 5 are
@@ -187,3 +187,40 @@ Found along the way:
 - `anon` and `authenticated` also hold MAINTAIN (PostgreSQL 17: VACUUM, ANALYZE, REINDEX, LOCK TABLE) on tables, and default privileges still grant it. Not reachable through the API. Candidate for stage 2.
 
 Still to do for stage 1: a sign-in check in the Driver App and Operator app by a person, and a look at the logs for "permission denied" (42501) after a day of normal use.
+
+## 7. Stage 2 results (10/11/2026)
+
+Applied as one migration, no DROP statements: 2a (drivers matched by login id only in five policies), 2b (sequence rights), 2c (booking-total functions), plus 2d, approved as an extra: MAINTAIN revoked from app roles on tables and from default privileges.
+
+1. **Dry run first.** The statements plus 26 behaviour checks in a rolled-back transaction: all as expected. A driver-only login keeps its own record, job, location, reminders, flight check and proof upload; a login that only shares a driver's email sees nothing and cannot write that driver's location or proofs; staff edits still write the audit log and driver events (identity tables); the push sender's function still answers a visitor; the totals functions refuse a visitor and still work signed in.
+2. **Correction to the plan as written.** The two totals functions were executable by `PUBLIC`, so revoking from `anon` alone would have changed nothing. The migration revokes from `PUBLIC` and `anon`; `authenticated` and `service_role` hold their own grants.
+3. **After.** Suite extended to 103 assertions and re-run against live: 100 pass. The stage 2 checks are enforced, with four new ones (no policy decides by email, visitors cannot call the totals functions, signed-in users still can, no MAINTAIN for app roles). The 3 remaining failures are the open items: visitor table rights (stage 3), a driver cancelling an unstarted job, and No Show as a status.
+4. **Real data.** The owner's login (driver and office admin) reads the same totals as before: 81 bookings, 3 drivers, 24 reminders, 34 flight checks, 12 invoices.
+5. **Left behind:** nothing.
+
+Not tested: staff creating an invoice (a test invoice uses up a real number even when rolled back); the right to draw a number is confirmed held.
+
+Decision recorded 10/11/2026: the owner's login keeps both the `driver` and `operator_admin` roles. Any other driver should be driver-only: an office role on a driver login gives it every booking in the business.
+
+### Rollback for stage 2
+
+```sql
+alter policy drivers_self_select on public.drivers to public
+  using ((email = (select auth.email())) or ((select auth.uid()) = id));
+alter policy driver_own_locations on public.driver_locations
+  using ((driver_id = (select auth.uid())) or (driver_id in (select drivers.id from drivers where drivers.email = (select auth.email()))))
+  with check ((driver_id = (select auth.uid())) or (driver_id in (select drivers.id from drivers where drivers.email = (select auth.email()))));
+alter policy driver_select_own_sms_reminders on public.driver_sms_reminders to public
+  using ((driver_id = auth.uid()) or (driver_id in (select drivers.id from drivers where drivers.email = auth.email())));
+alter policy driver_select_flight_verifications on public.flight_verifications to public
+  using (exists (select 1 from bookings b where b.id = flight_verifications.booking_id
+    and ((b.assigned_driver_id = auth.uid()) or (b.assigned_driver_id in (select drivers.id from drivers where drivers.email = auth.email())))));
+alter policy driver_insert_job_proofs on public.job_proofs
+  with check (exists (select 1 from bookings b where b.id = job_proofs.booking_id
+    and ((b.assigned_driver_id = (select auth.uid())) or (b.assigned_driver_id in (select drivers.id from drivers where drivers.email = (select auth.email()))))));
+grant usage, select, update on all sequences in schema public to anon, authenticated;
+grant execute on function public.get_booking_totals(timestamptz), public.get_booking_status_breakdown(timestamptz) to public, anon;
+alter default privileges for role postgres in schema public grant maintain on tables to anon, authenticated;
+-- MAINTAIN on the same 30 tables and 2 views listed in section 4, plus profiles
+-- (33 objects held it before): grant maintain on <list> to anon, authenticated;
+```
