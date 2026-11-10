@@ -48,6 +48,7 @@ No vulnerability that is exploitable today was found. The items below are ranked
 
 - Live has 158 migrations; the repos hold 39 + 6 + 36 files (and Operator `main` 52), with different version numbers.
 - Three live migrations exist in **no** repo: `office_push_staff_only`, `driver_alert_webhook_secret`, `driver_write_guards`. The last one is the driver guard itself.
+  - **Closed 10/11/2026.** All three are now in `supabase/migrations/` under their live version numbers (`20261015035414`, `20261015071626`, `20261015073851`). Each file's md5 equals the md5 of the statement stored in the live `supabase_migrations.schema_migrations` row. The first two were found unchanged on the unmerged branch `claude/security-fixes-p0` (under planned version numbers `20261015030000` / `20261015031000`); the third is that branch's `20261015032000_driver_write_guard.sql` and `20261015033000_driver_payment_guard.sql` applied as one migration. Rollback files for the first and third are in `supabase/rollback/`; the rollback for the second stays on that branch only, because it embeds the project's public anon key.
 - Operator repo migrations 002/003/004/006 still create open `anon` policies that live has since removed.
 - **Branch bases**: this session's Operator branch was cut from an old Vite app, not from `main` (Next.js). The Operator half of the 09/11/2026 app audit and that branch's ESLint commit therefore describe old code. The Driver App branch is 11 commits behind `main`. The website branch is current.
 
