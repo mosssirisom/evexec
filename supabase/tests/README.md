@@ -16,12 +16,14 @@ business, and that the guard triggers hold.
 
 ## Running it
 
-**Local or CI (standard):** `supabase test db`. This needs a local database
-built from migrations, which is not possible yet: the migration history is
-split across the three repos and has drifted from the live schema. It becomes
-possible once a baseline migration is generated from the live schema.
+**Locally (standard since 10/11/2026):** `scripts/db-test.sh`. It builds a
+throwaway Postgres 17 from `supabase/baseline/` (the structure of the live
+database, see its README), runs the suite and deletes the database. Nothing
+touches the live project. Needs `postgresql-17` and `postgresql-17-pgtap`.
+`supabase test db` is still not possible: the migration history does not build
+from scratch.
 
-**Against the live project (how it was run on 09/11/2026 and 10/11/2026):** run the file as a
+**Against the live project (how it was run on 09/11/2026 and 10/11/2026; still the final check after a migration is applied):** run the file as a
 single query through the Supabase SQL tools. pgTAP 1.3.3 returns one row per
 assertion, and a multi-statement query only returns the last result, so for
 that run each `select is(...)`, `ok`, `lives_ok`, `throws_ok`, `is_empty`, `set_eq`
