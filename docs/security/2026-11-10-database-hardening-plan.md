@@ -2,7 +2,7 @@
 
 Date: 10/11/2026. Project: `yoltkmhtxwluqxxpewbl`.
 
-**Status: stages 1 and 2 applied 10/11/2026** (migrations `20261110064237_hardening_stage1_grants_and_driver_booking_policies` and `20261110130556_hardening_stage2_driver_id_only_sequences_functions_maintain`, both approved by the owner). Stage 3 and the decision items are still proposals. See sections 6 and 7 for the results.
+**Status: stages 1, 2 and 3 applied 10/11/2026** (migrations `20261110064237_hardening_stage1_grants_and_driver_booking_policies`, `20261110130556_hardening_stage2_driver_id_only_sequences_functions_maintain` and `20261110131520_hardening_stage3_visitor_table_rights`, all approved by the owner). The decision items are still proposals. See sections 6 to 8 for the results.
 
 The audit was read-only (SELECT queries on the catalogue, policies, grants,
 usage statistics, plus the three repos' `main` branches). Sections 1 to 5 are
@@ -223,4 +223,35 @@ grant execute on function public.get_booking_totals(timestamptz), public.get_boo
 alter default privileges for role postgres in schema public grant maintain on tables to anon, authenticated;
 -- MAINTAIN on the same 30 tables and 2 views listed in section 4, plus profiles
 -- (33 objects held it before): grant maintain on <list> to anon, authenticated;
+```
+
+## 8. Stage 3 results (10/11/2026)
+
+Visitors who are not signed in now hold only INSERT on `contact_messages` and `quote_requests` and SELECT on `reviews`. New tables created by `postgres` grant visitors nothing.
+
+**App check before applying** (code on `main` of all three apps, plus database usage):
+
+- No app sends a table query without a signed-in user. The website does all table access on its server with the service role (its two calls that carry the visitor key also carry the user's token). The Operator app mounts its data screens only when signed in (`src/app/operator/layout.jsx`). The Driver App redirects to the login page in middleware. Server routes and edge functions that hold the visitor key pass the caller's token with it, or only verify the token.
+- Usage statistics: the visitor role's table-query counts at 13:14 UTC were identical to the 06:00 snapshot, across a day in which both apps were used. The only visitor call in use is `get_push_dispatch_bundle`, which is kept.
+- Not done: a run-through in a browser. The check rests on the code and the usage statistics.
+
+**Behaviour change to expect:** if a session expires while the Operator app or Driver App is open, a background refresh used to return an empty list; it now returns a "permission denied" error until the login screen appears.
+
+**Dry run** (rolled back): visitor reads of ten tables and views refused, reviews readable, contact and quote form inserts pass the permission check, push sender function answers, the owner's login and the service role read the same totals as before.
+
+**After:** suite updated (visitor reads and updates are now refused rather than returning nothing; visitors keep their three rights) and re-run against live: 105 assertions, 103 pass. The 2 remaining failures are the decision items: a driver cancelling a job that has not started, and No Show as a status. Nothing left behind.
+
+### Rollback for stage 3
+
+```sql
+grant select, insert, update, delete on
+  audit_log, booking_audit_log, booking_expenses, booking_photos, bookings, contact_messages,
+  driver_events, driver_locations, driver_messages, driver_shifts, driver_sms_reminders,
+  driver_unavailable_dates, drivers, error_log, flight_verification_settings, flight_verifications,
+  invoices, job_proofs, missed_calls, notification_channel_settings, notification_log,
+  notification_queue, operator_push_subscriptions, operator_sms_tasks, push_subscriptions,
+  quote_requests, reviews, saved_addresses, tenant_users, tenants,
+  notification_log_dashboard, notification_queue_dashboard
+  to anon;
+alter default privileges for role postgres in schema public grant select, insert, update, delete on tables to anon;
 ```

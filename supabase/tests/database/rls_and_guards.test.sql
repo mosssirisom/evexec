@@ -4,7 +4,7 @@
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
 -- per operator business (tenant). Last run against the live project on
--- 10/11/2026, after hardening stages 1 and 2: every assertion outside a TODO
+-- 10/11/2026, after hardening stages 1 to 3: every assertion outside a TODO
 -- block passed.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
@@ -160,7 +160,7 @@ select is_empty(
   'app roles hold no MAINTAIN right (vacuum, reindex, lock) on public tables'
 );
 
-select todo_start('Stage 3 (proposed, needs app check first): visitors hold only the table rights their three policies use');
+-- Stage 3, applied 10/11/2026.
 select is_empty(
   $$ select c.relname || ' ' || p
      from pg_class c join pg_namespace n on n.oid = c.relnamespace,
@@ -169,21 +169,24 @@ select is_empty(
        and (c.relname, p) not in (('contact_messages','INSERT'), ('quote_requests','INSERT'), ('reviews','SELECT')) $$,
   'visitors who are not signed in hold no table rights beyond the contact form, the quote form and reading reviews'
 );
-select todo_end();
+select ok(has_table_privilege('anon', 'public.contact_messages', 'INSERT')
+      and has_table_privilege('anon', 'public.quote_requests', 'INSERT')
+      and has_table_privilege('anon', 'public.reviews', 'SELECT'), 'visitors keep the three rights their policies use');
 
 -- ─── 2. Not signed in ────────────────────────────────────────────────────────
 
 set local role anon;
 set local "request.jwt.claims" to '{"role":"anon"}';
 
-select is((select count(*)::int from public.bookings),     0, 'not signed in: sees no bookings');
-select is((select count(*)::int from public.drivers),      0, 'not signed in: sees no drivers');
-select is((select count(*)::int from public.missed_calls), 0, 'not signed in: sees no missed calls');
-select is((select count(*)::int from public.audit_log),    0, 'not signed in: sees no audit log');
-select is((select count(*)::int from public.error_log),    0, 'not signed in: sees no error log');
-select is((select count(*)::int from public.invoices),     0, 'not signed in: sees no invoices');
-select is((select count(*)::int from public.tenants),      0, 'not signed in: sees no operator businesses');
-select is((select count(*)::int from public.tenant_users), 0, 'not signed in: sees no staff roles');
+select throws_ok($$ select count(*) from public.bookings $$, '42501', null, 'not signed in: reading bookings is refused');
+select throws_ok($$ select count(*) from public.drivers $$, '42501', null, 'not signed in: reading drivers is refused');
+select throws_ok($$ select count(*) from public.missed_calls $$, '42501', null, 'not signed in: reading missed calls is refused');
+select throws_ok($$ select count(*) from public.audit_log $$, '42501', null, 'not signed in: reading the audit log is refused');
+select throws_ok($$ select count(*) from public.error_log $$, '42501', null, 'not signed in: reading the error log is refused');
+select throws_ok($$ select count(*) from public.invoices $$, '42501', null, 'not signed in: reading invoices is refused');
+select throws_ok($$ select count(*) from public.tenants $$, '42501', null, 'not signed in: reading operator businesses is refused');
+select throws_ok($$ select count(*) from public.tenant_users $$, '42501', null, 'not signed in: reading staff roles is refused');
+select lives_ok($$ select count(*) from public.reviews $$, 'not signed in: can read reviews');
 
 select throws_ok(
   $$ insert into public.bookings (tenant_id, ref, customer_name, customer_phone, travel_date, travel_time, status, payment_status)
@@ -192,13 +195,16 @@ select throws_ok(
   'not signed in: cannot insert a booking directly (the website goes through its own server)'
 );
 
-update public.bookings set quoted_price = 1 where id = 'aaaaaaaa-0000-4000-8000-00000000b001';
-update public.drivers  set rating = 1       where id = 'aaaaaaaa-0000-4000-8000-0000000000d1';
+select throws_ok(
+  $$ update public.bookings set quoted_price = 1 where id = 'aaaaaaaa-0000-4000-8000-00000000b001' $$,
+  '42501', null, 'not signed in: an update to a booking is refused'
+);
+select throws_ok(
+  $$ update public.drivers set rating = 1 where id = 'aaaaaaaa-0000-4000-8000-0000000000d1' $$,
+  '42501', null, 'not signed in: an update to a driver is refused'
+);
 
 reset role;
-
-select is((select quoted_price from public.bookings where id = 'aaaaaaaa-0000-4000-8000-00000000b001'), 90::numeric, 'not signed in: an update to a booking changes nothing');
-select is((select rating from public.drivers where id = 'aaaaaaaa-0000-4000-8000-0000000000d1') is distinct from 1, true, 'not signed in: an update to a driver changes nothing');
 
 -- ─── 3. Office staff, business one ───────────────────────────────────────────
 
