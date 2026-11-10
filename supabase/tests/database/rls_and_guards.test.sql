@@ -4,7 +4,7 @@
 -- What it locks in: who can read and change bookings, drivers and the other
 -- staff tables, per role (not signed in, customer, driver, office staff) and
 -- per operator business (tenant). Last run against the live project on
--- 10/11/2026, after hardening stages 1 to 3 and the no-show change: all 112
+-- 10/11/2026, after hardening stages 1 to 3 and the no-show change: all 113
 -- assertions passed. There are no TODO blocks at present.
 --
 -- Everything runs in one transaction that is rolled back: it creates its own
