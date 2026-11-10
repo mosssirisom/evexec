@@ -279,9 +279,11 @@ Approved by the owner; database part only. The Driver App is unchanged and keeps
 
 **Still to do (Driver App, then one more database step)**
 
-1. Driver App: the no-show button sends `status: 'No Show'` (keeping the note), and the job screen treats `No Show` as finished. `isNoShow` should accept either form so old jobs still display.
-2. Decide whether a no-show should alert the office (push) and what, if anything, the customer is sent.
-3. Then remove `Cancelled` from the statuses a driver may set at all.
+1. **Driver App: done 10/11/2026** (branch `claude/sweet-meitner-med7lt` of `evexecdriverapp`, commit `0565756`, after merging its 11 missing `main` commits). The no-show button sends `status: 'No Show'` (keeping the note), the job screen treats `No Show` as finished and still recognises older Cancelled-plus-note no-shows, and the in-app "Job cancelled" pop-up stays quiet for the driver's own no-show. Type check, lint (0 errors) and a production build pass. **Not live until that branch is merged to the Driver App's `main` and deployed.**
+2. **Decision (owner, 10/11/2026: go with the recommendation):**
+   - **Office: yes.** A driver's no-show sends a push to every office device (Operator app), opening that booking. Nothing alerts the office today; the 17/10 migration only silences the driver's own alert. Build: an AFTER UPDATE trigger on `bookings` (status becomes `No Show`) posting to the Operator app's `/api/push/dispatch` with the notification override, the same way the new-booking and payment alerts do. Live database change, not yet built.
+   - **Customer: nothing automatic.** A real `No Show` status sends the customer nothing (the cancellation notice only fires for `Cancelled`). Terms section 7.3 says the office contacts the customer and decides the charge, so a "your booking has been cancelled" message from the app would be wrong. The office can still send a text from Today, Texts to send.
+3. **Then remove `Cancelled` from what a driver may set at all** (live database change). **Only after** the new Driver App is live and open tabs have refreshed, otherwise the old button (which sends `Cancelled`) fails with a permission error. Check first that no `Cancelled` plus "[No Show]" note update has come from a driver since the deploy.
 
 ### Rollback
 
