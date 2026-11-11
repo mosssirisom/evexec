@@ -21,6 +21,14 @@ echo "Loading stand-ins and baseline..."
 run -f "$W/baseline/local_stubs.sql" >/dev/null
 run -f "$W/baseline/schema.sql" >/dev/null
 
+# Draft migrations not yet applied to live (supabase/pending), in name order,
+# so the tests check what the database will look like once they are applied.
+for m in "$W"/pending/*.sql; do
+  [ -e "$m" ] || continue
+  echo "Applying draft $(basename "$m")"
+  run -f "$m" >/dev/null
+done
+
 if [ "${DB_TEST_FINGERPRINT:-}" = "1" ]; then
   echo "Baseline fingerprint (compare with the same query on live):"
   run -A -F ' ' -t -f "$W/baseline/fingerprint.sql"
