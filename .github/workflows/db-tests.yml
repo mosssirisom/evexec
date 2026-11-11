@@ -1,0 +1,40 @@
+name: Database tests
+
+# Runs the pgTAP suite (supabase/tests/database) on a throwaway Postgres 17
+# built from supabase/baseline. Nothing touches the live project and no secrets
+# are used. Only runs when database files change.
+
+on:
+  push:
+    paths:
+      - "supabase/**"
+      - "scripts/db-test.sh"
+      - ".github/workflows/db-tests.yml"
+  pull_request:
+    paths:
+      - "supabase/**"
+      - "scripts/db-test.sh"
+      - ".github/workflows/db-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  db-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL 17 and pgTAP
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q --no-install-recommends postgresql-common
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y -q --no-install-recommends postgresql-17 postgresql-17-pgtap
+
+      - name: Run the database tests
+        run: scripts/db-test.sh
+        env:
+          PG_BIN: /usr/lib/postgresql/17/bin
