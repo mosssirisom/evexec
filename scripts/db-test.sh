@@ -25,6 +25,8 @@ fi
 WORK="$(mktemp -d)"
 cp -r "$ROOT/supabase/baseline" "$WORK/baseline"
 cp -r "$ROOT/supabase/tests/database" "$WORK/tests"
+mkdir -p "$WORK/pending"
+cp "$ROOT"/supabase/pending/*.sql "$WORK/pending/" 2>/dev/null || true
 chmod -R a+rX "$WORK"
 
 # Postgres will not run as root: hand over to the postgres user when we are root.

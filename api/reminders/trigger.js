@@ -1,10 +1,11 @@
 'use strict';
 
 const { refreshPricing } = require('../../lib/pricing');
+const { refreshBrands, brandFor, named } = require('../../lib/brand');
 const { sendEmail } = require('../../lib/notify');
 const { sendPushToCustomer } = require('../../lib/push');
 const E = require('../../lib/emailContent');
-const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, refBadgeHtml, paymentLine } = require('../../lib/format');
+const { journeyLine, fmtDate, fmtTime, emailJourneyHtml, paymentLine } = require('../../lib/format');
 const { logMany } = require('../../lib/notifyLog');
 const { sendOrQueue } = require('../../lib/notificationQueue');
 
@@ -185,9 +186,11 @@ async function sendReminders(due, type, driversById) {
     const daysText  = type === '7day' ? `in ${daysAway} days` : (daysAway === 0 ? 'today' : 'tomorrow');
     const driverTxt = driverClause(driversById, booking);
 
+    const brand     = brandFor(booking.tenant_id);
+    const questions = brand.phone ? `\n\nQuestions: ${brand.phone}` : '';
     const smsBody = type === '7day'
-      ? `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText}.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`
-      : `Hi ${firstName}, reminder: your EV Exec transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}\n\nQuestions: 07721 070370`;
+      ? `Hi ${firstName}, reminder: your ${named(brand)}transfer is ${daysText}.\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}${questions}`
+      : `Hi ${firstName}, reminder: your ${named(brand)}transfer is ${daysText.toUpperCase()}!\n\n${route}\n${date} at ${time}\nPayment: ${method}${driverTxt}${questions}`;
 
     const pushTitle = type === '7day' ? `Transfer in ${daysAway} Days` : `Transfer ${daysText === 'today' ? 'Today' : 'Tomorrow'}`;
     const pushBody  = `${route} ${daysText} at ${time}.`;
@@ -224,6 +227,7 @@ async function sendReminders(due, type, driversById) {
 
 module.exports = async function handler(req, res) {
   await refreshPricing(); // operator's own prices for getPrice()
+  await refreshBrands(); // each business's name, phone and licence for its emails
   res.setHeader('Content-Type', 'application/json');
 
   const auth = req.headers['authorization'] || '';

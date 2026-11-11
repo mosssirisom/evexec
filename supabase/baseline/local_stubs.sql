@@ -84,15 +84,19 @@ $$;
 create schema vault;
 create table vault.decrypted_secrets (id uuid default gen_random_uuid(), name text, decrypted_secret text);
 
--- pg_net: outgoing calls go nowhere.
+-- pg_net: outgoing calls go nowhere, but are remembered in net._sent so tests
+-- can check what the triggers would have sent.
 create schema net;
+create table net._sent (id bigserial primary key, url text, headers jsonb, body jsonb);
 create function net.http_post(
   url text,
   body jsonb default '{}'::jsonb,
   params jsonb default '{}'::jsonb,
   headers jsonb default '{"Content-Type": "application/json"}'::jsonb,
   timeout_milliseconds integer default 5000
-) returns bigint language sql as $$ select 0::bigint $$;
+) returns bigint language sql as $$
+  insert into net._sent (url, headers, body) values (url, headers, body) returning id
+$$;
 grant usage on schema net to anon, authenticated, service_role;
 
 create publication supabase_realtime;

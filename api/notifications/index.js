@@ -1,6 +1,7 @@
 'use strict';
 
 const { refreshPricing } = require('../../lib/pricing');
+const { refreshBrands } = require('../../lib/brand');
 const crypto = require('crypto');
 const { parseBody } = require('../../lib/parse');
 const { verifyAuth } = require('../../lib/auth');
@@ -179,7 +180,7 @@ async function handleHealth(req, res) {
   if (channels.includes('sms')) {
     try {
       if (!toPhone) throw new Error('No SMS recipient provided and OPERATOR_PHONE is missing');
-      await sendSMS(toPhone, `EV Exec notification health test successful. ${stamp}`);
+      await sendSMS(toPhone, `Notification health test successful. ${stamp}`);
       tests.push({ channel: 'sms', ok: true, to: mask(normaliseUkPhone(toPhone)) });
     } catch (err) {
       console.error('Notification health SMS test failed:', err);
@@ -190,7 +191,7 @@ async function handleHealth(req, res) {
   if (channels.includes('email')) {
     try {
       if (!toEmail) throw new Error('No email recipient provided and OPERATOR_EMAIL is missing');
-      await sendEmail({ to: toEmail, subject: 'EV Exec notification health test', html: `<p>EV Exec notification health test successful.</p><p>${stamp}</p>` });
+      await sendEmail({ to: toEmail, subject: 'Notification health test', html: `<p>Notification health test successful.</p><p>${stamp}</p>` });
       tests.push({ channel: 'email', ok: true, to: mask(toEmail) });
     } catch (err) {
       console.error('Notification health email test failed:', err);
@@ -304,6 +305,7 @@ function serverError(res, error) {
 
 module.exports = async function handler(req, res) {
   await refreshPricing(); // operator's own prices for getPrice()
+  await refreshBrands(); // each business's name, phone and licence for its emails
   res.setHeader('Content-Type', 'application/json');
   const path = (req.url || '').split('?')[0];
 
