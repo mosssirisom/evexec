@@ -8,6 +8,7 @@
 // all of this now).
 
 const { refreshPricing } = require('../../lib/pricing');
+const { refreshBrands } = require('../../lib/brand');
 const { dbGet, dbUpdate, dbUpdateMatching, isValidUUID } = require('../../lib/supabase');
 const { sendRejectionNotice, sendBookingConfirmed } = require('../../lib/notify');
 const { verifyToken } = require('../../lib/token');
@@ -92,6 +93,7 @@ async function handleAction(req, res) {
 
 module.exports = async function handler(req, res) {
   await refreshPricing(); // operator's own prices for getPrice()
+  await refreshBrands(); // each business's name, phone and licence for its emails
   const path = (req.url || '').split('?')[0];
   if (path.endsWith('/accept') || path.endsWith('/reject')) return handleAction(req, res);
   res.statusCode = 404;

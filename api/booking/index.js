@@ -5,7 +5,7 @@ const {sendSMS,sendEmail,sendWhatsApp,whatsAppReady,normaliseUkPhone,handOffSmsT
 const {logMany}=require('../../lib/notifyLog');
 const {enqueueNotification,sendOrQueue}=require('../../lib/notificationQueue');
 const {generateToken,verifyToken}=require('../../lib/token');
-const {refreshPricing,currentPricing}=require('../../lib/pricing');
+const {refreshPricing,currentPricing}=require('../../lib/pricing');const {refreshBrands}=require('../../lib/brand');
 const {journeyLine,fmtDate,fmtTime,lookupPrice,getPrice,buildOperatorJobOfferSms,emailJourneyHtml,refBadgeHtml,singleLineSubject,isReturnLeg}=require('../../lib/format');
 const {parseBody}=require('../../lib/parse');
 const P=require('../../lib/cancellation');
@@ -61,7 +61,7 @@ async function handleCancel(req,res){
     try{await dbUpdate('bookings',id,{status:'Cancelled',cancelled_at:now.toISOString(),cancelled_by:'customer',cancellation_charge:q.charge});}
     catch(_){await dbUpdate('bookings',id,{status:'Cancelled',notes:[booking.notes,record].filter(Boolean).join('\n')});}
     const opCancel=E.staffCustomerCancelled(booking,q),opEmail=(process.env.OPERATOR_EMAIL||'').trim();
-    sendPushToOperatorDevices('Booking Cancelled',`${booking.customer_name} cancelled their transfer on ${fmtDate(booking.travel_date)}${q.charge?` (charge ${P.money(q.charge)})`:''}`,`/operator/bookings?q=${encodeURIComponent(booking.ref||'')}`,`cancelled-${booking.ref}`).catch(()=>{});
+    sendPushToOperatorDevices('Booking Cancelled',`${booking.customer_name} cancelled their transfer on ${fmtDate(booking.travel_date)}${q.charge?` (charge ${P.money(q.charge)})`:''}`,`/operator/bookings?q=${encodeURIComponent(booking.ref||'')}`,`cancelled-${booking.ref}`,booking.tenant_id).catch(()=>{});
     if(opEmail)sendOrQueue(()=>sendEmail({to:opEmail,subject:opCancel.subject,html:opCancel.html,text:opCancel.text}),{booking_id:booking.id,type:'cancelled',channel:'email',recipient:opEmail,subject:opCancel.subject,html:opCancel.html,body:opCancel.text,meta:{label:'operator_cancel'}}).catch(e=>console.error('Cancel operator email failed:',e));
     // No SMS-to-operator fallback when there's no operator email -- the push
     // above already covers that case, and this isn't a customer-facing send
@@ -126,4 +126,4 @@ async function lookup(req,res){if(req.method!=='POST')return j(res,405,{error:'M
 // trigger, which handles En Route/Arrived/Cancelled via email or the
 // two-tap handoff. Keeping dead-but-Twilio-capable code around was a
 // landmine for future accidental wiring, not a live gap.
-module.exports=async function handler(req,res){try{await refreshPricing();const r=route(req);if(r==='config')return config(req,res);if(r==='create')return create(req,res);if(r==='get')return get(req,res);if(r==='cancel')return handleCancel(req,res);if(r==='lookup')return lookup(req,res);return j(res,200,{ok:true,service:'booking'});}catch(err){console.error('Booking router error:',err);return j(res,500,{error:route(req)==='create'?'Failed to save booking. Please contact us directly.':'Failed to load booking'});}};
+module.exports=async function handler(req,res){try{await refreshPricing();await refreshBrands();const r=route(req);if(r==='config')return config(req,res);if(r==='create')return create(req,res);if(r==='get')return get(req,res);if(r==='cancel')return handleCancel(req,res);if(r==='lookup')return lookup(req,res);return j(res,200,{ok:true,service:'booking'});}catch(err){console.error('Booking router error:',err);return j(res,500,{error:route(req)==='create'?'Failed to save booking. Please contact us directly.':'Failed to load booking'});}};

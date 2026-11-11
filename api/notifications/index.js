@@ -1,6 +1,7 @@
 'use strict';
 
 const { refreshPricing } = require('../../lib/pricing');
+const { refreshBrands } = require('../../lib/brand');
 const crypto = require('crypto');
 const { parseBody } = require('../../lib/parse');
 const { verifyAuth } = require('../../lib/auth');
@@ -304,6 +305,7 @@ function serverError(res, error) {
 
 module.exports = async function handler(req, res) {
   await refreshPricing(); // operator's own prices for getPrice()
+  await refreshBrands(); // each business's name, phone and licence for its emails
   res.setHeader('Content-Type', 'application/json');
   const path = (req.url || '').split('?')[0];
 

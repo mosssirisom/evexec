@@ -103,6 +103,7 @@ global.fetch = async (url, opts = {}) => {
 
   if (u.host === 'operator.test' && u.pathname === '/api/push/dispatch') {
     calls.operatorPush.push(body.notification);
+    (calls.operatorPushTenants ||= []).push(body.tenant_id);
     return json({ ok: true });
   }
 
@@ -581,4 +582,19 @@ test('flow: operator-made return is confirmed, charged once at £160, return leg
   const again = await checkout();
   assert.match(JSON.parse(again.body).url, /payment=success&session_id=cs_test_new1$/);
   assert.equal(stripe.created, 1);
+});
+
+test('the payment alert goes to the booking\'s own business, and to the default business when none is set', async () => {
+  const OTHER = 'cccccccc-0000-4000-8000-000000000002';
+  booking().tenant_id = OTHER;
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1));
+  assert.equal(res.status, 200);
+  assert.deepEqual(calls.operatorPushTenants, [OTHER]);
+});
+
+test('a booking with no business set alerts this site\'s own business', async () => {
+  delete booking().tenant_id;
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1));
+  assert.equal(res.status, 200);
+  assert.deepEqual(calls.operatorPushTenants, ['00000000-0000-0000-0000-000000000001']);
 });

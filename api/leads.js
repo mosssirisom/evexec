@@ -80,6 +80,7 @@ const escHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').re
 // emails and push-notifies the operator so a request is never missed, and
 // acknowledges the customer by email when they gave one.
 async function notifyQuoteRequest(q) {
+  await require('../lib/brand').refreshBrands(); // this site's business details for the emails
   const { sendEmail } = require('../lib/notify');
   const { sendPushToOperatorDevices } = require('../lib/push');
   const tasks = [];

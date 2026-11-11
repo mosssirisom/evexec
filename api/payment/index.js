@@ -2,6 +2,7 @@
 
 
 const { refreshPricing } = require('../../lib/pricing');
+const { refreshBrands } = require('../../lib/brand');
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
@@ -332,6 +333,7 @@ async function handleStripeWebhook(req, res) {
 // Awaited so an error inside a route is caught here and answered with a 500.
 module.exports = async function handler(req, res) {
   await refreshPricing(); // operator's own prices for getPrice()
+  await refreshBrands(); // each business's name, phone and licence for its emails
   try {
     const route = routeName(req);
     if (route === 'create-checkout-session') return await handleCreateCheckoutSession(req, res);
