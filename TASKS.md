@@ -47,7 +47,10 @@ Branches: `evexec` `claude/sweet-meitner-med7lt`, `evexecoperator` `claude/opera
 - `notify-operator-new-booking` edge function in the Operator repo looks unused (no trigger calls it); consider deleting.
 - Stripe webhook tables are platform-wide (one Stripe account); needs a business mapping when each business has its own Stripe.
 
-## Step 2: Driver App test suite (not started)
+## Step 2: Driver App test suite (done, awaiting review)
+
+Branch `claude/sweet-meitner-med7lt` in `evexecdriverapp`. Vitest 4 + jsdom. 56 tests in 5 files: `lib/format` (house date/time style, UK time, payment labels), `lib/customer-sms` (update and reminder texts, today/tomorrow/in N days, clock-change-safe day counts), `lib/job` (status flow, timestamps, wait grace, preferences; checks the app only sets statuses the database lets a driver set and never `Cancelled`), `middleware` (sign-in guard and matcher), `lib/push` (push state machine). The job page's pure rules moved to `lib/job.ts` unchanged. CI now runs `npm test` and `npm run test:functions`. Lint 0 errors (9 old warnings), typecheck clean, production build passes.
+Gap: the customer texts still say "EV Exec" (needs the business name passed in).
 
 ## Step 3: Operator app clean-up (not started)
 
@@ -63,4 +66,4 @@ Stale branch `claude/sweet-meitner-med7lt` in `evexecoperator` (Vite-era, 281 co
 
 - `evexec`: unit 97 pass; database 113 + 46 pass (local, `scripts/db-test.sh`).
 - `evexecoperator`: 278 pass; lint 0 warnings; typecheck clean.
-- `evexecdriverapp`: 14 function tests pass; typecheck clean.
+- `evexecdriverapp`: 56 unit + 14 function tests pass; typecheck clean; build passes.
