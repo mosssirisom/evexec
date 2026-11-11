@@ -28,6 +28,12 @@ Postgres does not: the `anon`, `authenticated` and `service_role` roles, the
 `auth` helpers (`auth.uid()` and friends), a minimal `auth.users`, storage
 tables, an empty vault, and a `net.http_post` that sends nothing.
 
+## CI
+
+`.github/workflows/db-tests.yml` runs the same script on GitHub for every push or pull
+request that touches `supabase/` or `scripts/db-test.sh`. It installs Postgres 17
+and pgTAP on the runner, uses no secrets and cannot reach the live project.
+
 ## Keep it in step with live
 
 Whenever a migration is applied to the live project, rebuild the baseline:
