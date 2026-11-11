@@ -1,9 +1,10 @@
 -- Tenant scoping for the shared tables that had no tenant column.
 --
--- DRAFT: not applied to the live project. Reviewed and tested locally only
--- (scripts/db-test.sh applies every file in supabase/pending after the
--- baseline). When approved, apply it to live, then rebuild the baseline and
--- move this file into supabase/migrations (see supabase/baseline/README.md).
+-- APPLIED to the live project on 11/11/2026 by the owner, in the Supabase SQL
+-- editor (so it is not listed in supabase_migrations; the Supabase tool hangs on
+-- the DROP statements). Verified read-only afterwards: columns, functions,
+-- policies and EV Exec's brand row all present. The test baseline
+-- (supabase/baseline/schema.sql) includes it.
 --
 -- Why: of the 18 tables listed in the SaaS audit as having no tenant_id, most
 -- are already safe (see the table comments at the end). Four were not:

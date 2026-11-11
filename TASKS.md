@@ -27,7 +27,7 @@ Branches: `evexec` `claude/sweet-meitner-med7lt`, `evexecoperator` `claude/opera
 
 | Piece | State |
 |---|---|
-| Draft migration `supabase/pending/20261111120000_tenant_scoping.sql`: office push devices per business, per-business notification settings, tenant on the notification queue and log, no-show alert names its business, 14 other tables documented as already safe | Written, **46 new database checks + existing 113 pass locally. NOT applied to live.** |
+| Migration `20261111120000_tenant_scoping`: office push devices per business, per-business notification settings, tenant on the notification queue and log, no-show alert names its business, 14 other tables documented as already safe | **Applied to live 11/11/2026**; 46 new + 113 existing database checks pass; live fingerprint matches (14/15, last differs only by line endings). |
 | Push alerts go to one business's devices (website, Operator route, Driver App functions) | Done and tested; falls back to the old all-business list until the migration is applied, so nothing is lost either way |
 | Email branding (name, phone, licence, website, tagline, colours) from the business's own row: website and Operator app | Done. EV Exec's 29 + 28 email types are byte-identical; another business shows none of EV Exec's details (tested across every email type) |
 | Operator confirmation and payment-link texts, Stripe product name | Done, EV Exec wording identical (tested) |
@@ -35,9 +35,9 @@ Branches: `evexec` `claude/sweet-meitner-med7lt`, `evexecoperator` `claude/opera
 
 ### To go live (owner decisions)
 
-1. Apply the draft migration to live. Contains `DROP CONSTRAINT`/`DROP POLICY`/`DROP TRIGGER IF EXISTS` (the Supabase tool hangs on DROP; apply in the SQL editor). Then rebuild the baseline (`supabase/baseline/README.md`) and move the file to `supabase/migrations/`.
-2. Merge the three branches (website to `main` deploys to production).
-3. Afterwards: remove the all-business fallbacks and the old `get_push_dispatch_bundle`.
+1. ~~Apply the draft migration to live~~ **Done 11/11/2026** (owner, in the SQL editor). Verified read-only. Baseline rebuilt and the file is now `supabase/migrations/20261111120000_tenant_scoping.sql`.
+2. ~~Merge the three branches~~ **Done 11/11/2026** (evexec #37, driver app #11, operator #24).
+3. Still to do: redeploy the three Driver App edge functions (`send-journey-receipt`, `send-driver-reminders`, `notify-job-update`); delete the two unused live functions; later remove the all-business fallbacks and the old `get_push_dispatch_bundle`.
 
 ### Template clean-up (12/11/2026, owner: "remove all hardcoded EV Exec so it becomes a template")
 

@@ -354,7 +354,8 @@ create table public.notification_channel_settings (
   whatsapp_enabled boolean default false not null,
   push_enabled boolean default false not null,
   sms_only_when_necessary boolean default true not null,
-  updated_at timestamp with time zone default now() not null
+  updated_at timestamp with time zone default now() not null,
+  tenant_id uuid not null
 );
 
 create table public.notification_log (
@@ -363,7 +364,8 @@ create table public.notification_log (
   type text not null,
   channel text not null,
   recipient text,
-  sent_at timestamp with time zone default now()
+  sent_at timestamp with time zone default now(),
+  tenant_id uuid default '00000000-0000-0000-0000-000000000001'::uuid not null
 );
 
 create table public.notification_queue (
@@ -383,7 +385,8 @@ create table public.notification_queue (
   next_attempt_at timestamp with time zone default now(),
   sent_at timestamp with time zone,
   last_error text,
-  created_at timestamp with time zone default now()
+  created_at timestamp with time zone default now(),
+  tenant_id uuid default '00000000-0000-0000-0000-000000000001'::uuid not null
 );
 
 create table public.operator_push_subscriptions (
@@ -393,7 +396,8 @@ create table public.operator_push_subscriptions (
   auth text not null,
   label text,
   user_id uuid,
-  created_at timestamp with time zone default now() not null
+  created_at timestamp with time zone default now() not null,
+  tenant_id uuid
 );
 
 create table public.operator_sms_tasks (
@@ -605,8 +609,7 @@ alter table only public.job_proofs add constraint job_proofs_pkey PRIMARY KEY (i
 alter table only public.missed_calls add constraint missed_calls_attempts_check CHECK ((attempts >= 0));
 alter table only public.missed_calls add constraint missed_calls_pkey PRIMARY KEY (id);
 alter table only public.missed_calls add constraint missed_calls_ref_key UNIQUE (ref);
-alter table only public.notification_channel_settings add constraint notification_channel_settings_pkey PRIMARY KEY (id);
-alter table only public.notification_channel_settings add constraint notification_channel_settings_singleton CHECK (id);
+alter table only public.notification_channel_settings add constraint notification_channel_settings_pkey PRIMARY KEY (tenant_id);
 alter table only public.notification_log add constraint notification_log_pkey PRIMARY KEY (id);
 alter table only public.notification_queue add constraint notification_queue_pkey PRIMARY KEY (id);
 alter table only public.operator_push_subscriptions add constraint operator_push_subscriptions_endpoint_key UNIQUE (endpoint);
@@ -669,6 +672,10 @@ alter table only public.invoices add constraint invoices_booking_id_fkey FOREIGN
 alter table only public.invoices add constraint invoices_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
 alter table only public.job_proofs add constraint job_proofs_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE;
 alter table only public.missed_calls add constraint missed_calls_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+alter table only public.notification_channel_settings add constraint notification_channel_settings_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
+alter table only public.notification_log add constraint notification_log_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+alter table only public.notification_queue add constraint notification_queue_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
+alter table only public.operator_push_subscriptions add constraint operator_push_subscriptions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE;
 alter table only public.operator_sms_tasks add constraint operator_sms_tasks_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE CASCADE;
 alter table only public.operator_sms_tasks add constraint operator_sms_tasks_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES tenants(id);
 alter table only public.points_transactions add constraint points_transactions_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES bookings(id) ON DELETE SET NULL;
@@ -732,6 +739,9 @@ CREATE INDEX invoices_tenant_id_idx ON public.invoices USING btree (tenant_id);
 CREATE INDEX missed_calls_tenant_id_idx ON public.missed_calls USING btree (tenant_id);
 CREATE INDEX notification_log_booking_id_idx ON public.notification_log USING btree (booking_id);
 CREATE INDEX notification_log_sent_at_idx ON public.notification_log USING btree (sent_at DESC);
+CREATE INDEX notification_log_tenant_idx ON public.notification_log USING btree (tenant_id);
+CREATE INDEX notification_queue_tenant_idx ON public.notification_queue USING btree (tenant_id);
+CREATE INDEX operator_push_subscriptions_tenant_idx ON public.operator_push_subscriptions USING btree (tenant_id);
 CREATE INDEX operator_sms_tasks_pending_push_idx ON public.operator_sms_tasks USING btree (id) WHERE ((status = 'pending'::text) AND (pushed_at IS NULL));
 CREATE INDEX operator_sms_tasks_tenant_id_idx ON public.operator_sms_tasks USING btree (tenant_id);
 CREATE UNIQUE INDEX points_transactions_one_award_per_booking ON public.points_transactions USING btree (booking_id) WHERE (type = 'journey_completed'::text);
@@ -1207,6 +1217,40 @@ end;
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.get_push_dispatch_bundle_for_tenant(p_secret text, p_tenant_id uuid)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$
+declare c public.push_config; v jsonb;
+begin
+  select * into c from public.push_config where id = true;
+  if c.webhook_secret is null or p_secret is distinct from c.webhook_secret then
+    return null;
+  end if;
+  if p_tenant_id is null then
+    return null; -- the caller must say which business the alert is for
+  end if;
+  select jsonb_build_object(
+    'vapid_public',  c.vapid_public,
+    'vapid_private', c.vapid_private,
+    'vapid_subject', coalesce(c.vapid_subject, 'mailto:book@evexec.co.uk'),
+    'subscriptions', coalesce((
+      select jsonb_agg(jsonb_build_object('endpoint', s.endpoint, 'p256dh', s.p256dh, 'auth', s.auth))
+      from public.operator_push_subscriptions s
+      where (s.tenant_id = p_tenant_id or s.tenant_id is null)
+        and exists (
+          select 1 from public.tenant_users tu
+          where tu.user_id = s.user_id
+            and tu.role in ('super_admin', 'operator_admin', 'dispatcher')
+        )), '[]'::jsonb)
+  ) into v;
+  return v;
+end;
+$function$
+;
+
 CREATE OR REPLACE FUNCTION public.get_push_public_key()
  RETURNS text
  LANGUAGE sql
@@ -1385,48 +1429,31 @@ CREATE OR REPLACE FUNCTION public.notify_operator_no_show()
  SECURITY DEFINER
  SET search_path TO 'public', 'pg_temp'
 AS $function$
-declare
-  v_secret text;
-  v_driver text;
-  v_when   text;
-  v_where  text;
+declare v_secret text; v_driver text; v_when text; v_where text;
 begin
-  -- A no-show: the No Show status, or (older Driver App) Cancelled with the "[No Show]" note.
-  if not (
-    (new.status = 'No Show' and old.status is distinct from 'No Show')
+  if not ((new.status = 'No Show' and old.status is distinct from 'No Show')
     or (new.status = 'Cancelled' and old.status is distinct from 'Cancelled'
-        and coalesce(new.driver_notes, '') like '%[No Show]%')
-  ) then
-    return new;
-  end if;
-
+        and coalesce(new.driver_notes, '') like '%[No Show]%')) then return new; end if;
   begin
     select webhook_secret into v_secret from public.push_config where id = true;
     if v_secret is null then return new; end if;
-
-    select coalesce(nullif(d.full_name, ''), d.name) into v_driver
-    from public.drivers d where d.id = new.assigned_driver_id;
-
+    select coalesce(nullif(d.full_name, ''), d.name) into v_driver from public.drivers d where d.id = new.assigned_driver_id;
     v_when  := concat_ws(' ', left(new.travel_time, 5), to_char(new.travel_date, 'DD/MM/YYYY'));
     v_where := coalesce(nullif(new.pickup_location, ''), new.airport);
-
     perform net.http_post(
-      url     := 'https://evexecoperator.vercel.app/api/push/dispatch',
+      url := 'https://evexecoperator.vercel.app/api/push/dispatch',
       headers := jsonb_build_object('Content-Type', 'application/json', 'x-webhook-secret', v_secret),
-      body    := jsonb_build_object('notification', jsonb_build_object(
-        'title', 'No-show: ' || coalesce(new.customer_name, 'customer'),
-        'body',  concat_ws(' · ', v_where, nullif(v_when, ''), 'Driver ' || v_driver, 'Ref ' || new.ref),
-        'url',   '/operator/bookings?q=' || new.ref,
-        'tag',   'noshow-' || new.ref
-      ))
-    );
-  exception when others then
-    -- An alert must never stop the driver recording the no-show.
-    null;
+      body := jsonb_build_object(
+        'tenant_id', new.tenant_id,
+        'notification', jsonb_build_object(
+          'title', 'No-show: ' || coalesce(new.customer_name, 'customer'),
+          'body',  concat_ws(' · ', v_where, nullif(v_when, ''), 'Driver ' || v_driver, 'Ref ' || new.ref),
+          'url',   '/operator/bookings?q=' || new.ref,
+          'tag',   'noshow-' || new.ref)));
+  exception when others then null; -- An alert must never stop the driver recording the no-show.
   end;
   return new;
-end;
-$function$
+end; $function$
 ;
 
 CREATE OR REPLACE FUNCTION public.prevent_driver_double_booking()
@@ -1847,6 +1874,42 @@ begin
     new.tenant_id := coalesce(
       (select tu.tenant_id from public.tenant_users tu where tu.user_id = new.actor_id and tu.tenant_id is not null limit 1),
       '00000000-0000-0000-0000-000000000001'
+    );
+  end if;
+  return new;
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION private.set_push_subscription_tenant()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$
+begin
+  new.tenant_id := (
+    select tu.tenant_id from public.tenant_users tu
+    where tu.user_id = new.user_id and tu.tenant_id is not null
+    order by tu.created_at
+    limit 1
+  );
+  return new;
+end;
+$function$
+;
+
+CREATE OR REPLACE FUNCTION private.set_tenant_from_booking()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$
+begin
+  if new.booking_id is not null then
+    new.tenant_id := coalesce(
+      (select b.tenant_id from public.bookings b where b.id = new.booking_id),
+      new.tenant_id
     );
   end if;
   return new;
@@ -2414,6 +2477,9 @@ CREATE TRIGGER drivers_updated_at BEFORE UPDATE ON public.drivers FOR EACH ROW E
 CREATE TRIGGER zz_guard_driver_record_update BEFORE UPDATE ON public.drivers FOR EACH ROW WHEN (((CURRENT_USER = ANY (ARRAY['authenticated'::name, 'anon'::name])) AND (NOT private.staff_for_tenant(old.tenant_id)))) EXECUTE FUNCTION private.guard_driver_record_update();
 CREATE TRIGGER trg_set_invoice_number BEFORE INSERT OR UPDATE ON public.invoices FOR EACH ROW EXECUTE FUNCTION set_invoice_number();
 CREATE TRIGGER missed_calls_updated_at BEFORE UPDATE ON public.missed_calls FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER notification_log_set_tenant BEFORE INSERT ON public.notification_log FOR EACH ROW EXECUTE FUNCTION private.set_tenant_from_booking();
+CREATE TRIGGER notification_queue_set_tenant BEFORE INSERT ON public.notification_queue FOR EACH ROW EXECUTE FUNCTION private.set_tenant_from_booking();
+CREATE TRIGGER set_push_subscription_tenant BEFORE INSERT OR UPDATE OF user_id ON public.operator_push_subscriptions FOR EACH ROW EXECUTE FUNCTION private.set_push_subscription_tenant();
 
 -- ─── Row-level security ────────────────────────────────────────────────────
 
@@ -2630,21 +2696,29 @@ create policy staff_all_missed_calls on public.missed_calls as PERMISSIVE for AL
   using (private.staff_for_tenant(tenant_id))
   with check (private.staff_for_tenant(tenant_id));
 
-create policy staff_write_notification_channel_settings on public.notification_channel_settings as PERMISSIVE for ALL to authenticated
-  using ((EXISTS ( SELECT 1
-   FROM tenant_users tu
-  WHERE ((tu.user_id = auth.uid()) AND (tu.role = ANY (ARRAY['super_admin'::text, 'operator_admin'::text, 'dispatcher'::text]))))))
-  with check ((EXISTS ( SELECT 1
-   FROM tenant_users tu
-  WHERE ((tu.user_id = auth.uid()) AND (tu.role = ANY (ARRAY['super_admin'::text, 'operator_admin'::text, 'dispatcher'::text]))))));
+create policy staff_insert_notification_channel_settings on public.notification_channel_settings as PERMISSIVE for INSERT to authenticated
+  with check (private.staff_for_tenant(tenant_id));
+
+create policy staff_select_notification_channel_settings on public.notification_channel_settings as PERMISSIVE for SELECT to authenticated
+  using (private.staff_for_tenant(tenant_id));
+
+create policy staff_update_notification_channel_settings on public.notification_channel_settings as PERMISSIVE for UPDATE to authenticated
+  using (private.staff_for_tenant(tenant_id))
+  with check (private.staff_for_tenant(tenant_id));
 
 create policy "service role only" on public.notification_log as PERMISSIVE for ALL to public
   using ((( SELECT auth.role() AS role) = 'service_role'::text))
   with check ((( SELECT auth.role() AS role) = 'service_role'::text));
 
+create policy staff_select_notification_log on public.notification_log as PERMISSIVE for SELECT to authenticated
+  using (private.staff_for_tenant(tenant_id));
+
 create policy service_role_full_access_notification_queue on public.notification_queue as PERMISSIVE for ALL to public
   using ((( SELECT auth.role() AS role) = 'service_role'::text))
   with check ((( SELECT auth.role() AS role) = 'service_role'::text));
+
+create policy staff_select_notification_queue on public.notification_queue as PERMISSIVE for SELECT to authenticated
+  using (private.staff_for_tenant(tenant_id));
 
 create policy staff_manage_own_push_subscription on public.operator_push_subscriptions as PERMISSIVE for ALL to authenticated
   using (((user_id = auth.uid()) AND (EXISTS ( SELECT 1
@@ -2895,6 +2969,7 @@ revoke all on function evexec_notification_email(text,text,text,text,jsonb,text)
 revoke all on function get_booking_status_breakdown(timestamp with time zone) from public, anon, authenticated, service_role;
 revoke all on function get_booking_totals(timestamp with time zone) from public, anon, authenticated, service_role;
 revoke all on function get_push_dispatch_bundle(text) from public, anon, authenticated, service_role;
+revoke all on function get_push_dispatch_bundle_for_tenant(text,uuid) from public, anon, authenticated, service_role;
 revoke all on function get_push_public_key() from public, anon, authenticated, service_role;
 revoke all on function handle_new_user() from public, anon, authenticated, service_role;
 revoke all on function notif_pick_channel(boolean,boolean,boolean) from public, anon, authenticated, service_role;
@@ -2915,6 +2990,8 @@ revoke all on function private.is_super_admin() from anon, authenticated, servic
 revoke all on function private.log_booking_changes() from public, anon, authenticated, service_role;
 revoke all on function private.run_evexec_backup() from public, anon, authenticated, service_role;
 revoke all on function private.set_audit_log_tenant() from anon, authenticated, service_role;
+revoke all on function private.set_push_subscription_tenant() from public, anon, authenticated, service_role;
+revoke all on function private.set_tenant_from_booking() from public, anon, authenticated, service_role;
 revoke all on function private.staff_for_tenant(uuid) from anon, authenticated, service_role;
 revoke all on function private.trg_award_journey_points() from public, anon, authenticated, service_role;
 revoke all on function private.trg_ensure_invoice() from public, anon, authenticated, service_role;
@@ -2953,6 +3030,9 @@ grant execute on function get_booking_totals(timestamp with time zone) to servic
 grant execute on function get_push_dispatch_bundle(text) to anon;
 grant execute on function get_push_dispatch_bundle(text) to authenticated;
 grant execute on function get_push_dispatch_bundle(text) to service_role;
+grant execute on function get_push_dispatch_bundle_for_tenant(text,uuid) to anon;
+grant execute on function get_push_dispatch_bundle_for_tenant(text,uuid) to authenticated;
+grant execute on function get_push_dispatch_bundle_for_tenant(text,uuid) to service_role;
 grant execute on function get_push_public_key() to authenticated;
 grant execute on function get_push_public_key() to service_role;
 grant execute on function handle_new_user() to service_role;

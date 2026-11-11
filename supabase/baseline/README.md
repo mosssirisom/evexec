@@ -5,7 +5,10 @@ indexes, functions, triggers, row-level security, policies and access rights.
 It lets the database tests run on a throwaway local Postgres, without touching
 the live project.
 
-- Taken from the live project on 10/11/2026, after migration `20261110200525`.
+- Taken from the live project on 10/11/2026, after migration `20261110200525`,
+  then brought up to date on 11/11/2026 with `20261111120000_tenant_scoping` (the
+  structure change it makes, generated locally on a throwaway database; access-rights lines for the
+  `private` helper functions follow the existing pattern).
 - It holds no customer data, no secrets and no scheduled jobs. The only row it
   adds is the first business (`ev-exec`, name only) and the four storage buckets.
 - It is **not a migration**. It is never applied to the live project, and it
@@ -58,3 +61,7 @@ and compare with `DB_TEST_FINGERPRINT=1 scripts/db-test.sh`. Every row
 - Supabase's own schemas (`auth`, `storage`, `realtime`) are stand-ins, so
   sign-in, file upload and realtime behaviour are not tested here.
 - Local Postgres is 17.x from apt; live is Supabase Postgres 17.6.
+- Fingerprint on 11/11/2026: 14 of 15 rows equal live. `functions` differs only
+  because the four functions from `20261111120000_tenant_scoping` were pasted into
+  the browser SQL editor and live stores them with Windows line endings (`\r\n`);
+  the logic is identical. It resolves itself the next time they are replaced.
