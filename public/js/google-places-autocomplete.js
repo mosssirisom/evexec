@@ -43,6 +43,7 @@
       const PlaceAutocompleteElement = placesLib.PlaceAutocompleteElement;
 
       initBookingAutocomplete(PlaceAutocompleteElement);
+      initQuoteAutocomplete(PlaceAutocompleteElement);
     } catch (err) {
       console.error('Places autocomplete failed', err);
     }
@@ -85,6 +86,74 @@
       hiddenFields.street.value = parsed.street;
       hiddenFields.city.value = parsed.city;
       hiddenFields.postcode.value = parsed.postcode;
+    });
+  }
+
+  // Quote page (/quote): suggestions on the pickup and destination fields.
+  // The real input stays in the form (hidden) and always holds what the visitor
+  // typed or picked, so a postcode typed without choosing a suggestion is still
+  // sent, the form's own checks still work, and reset() clears it.
+  function initQuoteAutocomplete(PlaceAutocompleteElement) {
+    var form = document.getElementById('quoteForm');
+    if (!form) return;
+
+    ['pickup_location', 'destination'].forEach(function (name) {
+      var input = form.querySelector('[name="' + name + '"]');
+      if (!input || input.dataset.googleAttached === 'true') return;
+      // Never swap the field out from under someone who is typing in it. Try
+      // again as soon as they leave it, if it is still empty.
+      if (input.value || document.activeElement === input) {
+        if (!input.dataset.googleRetry) {
+          input.dataset.googleRetry = 'true';
+          input.addEventListener('blur', function () { initQuoteAutocomplete(PlaceAutocompleteElement); }, { once: true });
+        }
+        return;
+      }
+      input.dataset.googleAttached = 'true';
+
+      var placeholder = input.placeholder || '';
+      var cls = input.className;
+      input.type = 'hidden';
+      var box = null;
+
+      function mount() {
+        box = new PlaceAutocompleteElement({ componentRestrictions: { country: ['gb'] } });
+        box.placeholder = placeholder;
+        box.className = cls;
+        box.setAttribute('aria-label', input.closest('label') ? input.closest('label').textContent.replace('*', '').trim() : name);
+        input.insertAdjacentElement('afterend', box);
+
+        // What is typed in the box (the text field is inside it).
+        box.addEventListener('input', function (event) {
+          var source = event.composedPath && event.composedPath()[0];
+          if (source && typeof source.value === 'string') input.value = source.value;
+          else if (typeof box.value === 'string') input.value = box.value;
+        });
+
+        box.addEventListener('gmp-select', async function (event) {
+          try {
+            var place = event.placePrediction.toPlace();
+            await place.fetchFields({ fields: ['displayName', 'formattedAddress'] });
+            var address = place.formattedAddress || '';
+            var title = place.displayName || '';
+            // Keep the name of a place (an airport, a venue) as well as its address.
+            input.value = title && address.indexOf(title) !== 0 ? title + ', ' + address : address || title;
+          } catch (_) { /* keep whatever was typed */ }
+        });
+      }
+
+      // The form script focuses the first empty required field.
+      input.focus = function () { if (box && box.focus) box.focus(); };
+
+      mount();
+
+      // A reset (after a successful send) must empty the box as well. Browsers
+      // do not clear hidden fields on reset, so clear this one by hand.
+      form.addEventListener('reset', function () {
+        input.value = '';
+        if (box) box.remove();
+        mount();
+      });
     });
   }
 
@@ -132,7 +201,7 @@
 
   // Google Maps is large, so it loads only when someone starts using the
   // booking form (the address field is on step 2, after they pick a
-  // direction), not on every page view.
+  // direction) or the quote form, not on every page view.
   var started = false;
   function start() {
     if (started) return;
@@ -140,10 +209,15 @@
     loadGooglePlaces();
   }
   function arm() {
-    var form = document.getElementById('quote');
-    if (!form) return;
-    ['pointerdown', 'focusin', 'keydown', 'touchstart'].forEach(function (t) {
-      form.addEventListener(t, start, { once: true, passive: true });
+    // The quote page is only a form: load the maps library shortly after the
+    // page opens so the suggestions are ready by the time someone types.
+    if (document.getElementById('quoteForm')) setTimeout(start, 1200);
+    var forms = [document.getElementById('quote'), document.getElementById('quoteForm')];
+    forms.forEach(function (form) {
+      if (!form) return;
+      ['pointerdown', 'focusin', 'keydown', 'touchstart'].forEach(function (t) {
+        form.addEventListener(t, start, { once: true, passive: true });
+      });
     });
   }
   if (document.readyState === 'loading') {

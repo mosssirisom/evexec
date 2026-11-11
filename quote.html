@@ -273,7 +273,14 @@
         <option value="other">Something else</option>
       </select>
     </label>
-    <label>Passengers<input name="passengers" type="number" min="1" max="8" value="1" inputmode="numeric"></label>
+    <label>Passengers
+      <select name="passengers">
+        <option value="1" selected>1 passenger</option>
+        <option value="2">2 passengers</option>
+        <option value="3">3 passengers</option>
+        <option value="4">4 passengers</option>
+      </select>
+    </label>
   </div>
   <div class="row two">
     <label>Pickup address or postcode *<input name="pickup_location" required autocomplete="street-address" placeholder="e.g. FY8 1AA or a full address"></label>
@@ -282,7 +289,15 @@
   <div class="row three">
     <label>Date *<input name="pickup_date" type="date" required></label>
     <label>Pickup time<input name="pickup_time" type="time"></label>
-    <label>Luggage<input name="luggage" placeholder="e.g. 2 suitcases"></label>
+    <label>Luggage
+      <select name="luggage">
+        <option value="" selected>No luggage</option>
+        <option value="1 bag">1 bag</option>
+        <option value="2 bags">2 bags</option>
+        <option value="3 bags">3 bags</option>
+        <option value="4 bags">4 bags</option>
+      </select>
+    </label>
   </div>
   <label class="check"><input type="checkbox" name="return_required" id="qReturn"> I need a return journey</label>
   <div class="row two hidden" id="qReturnRow">
@@ -294,7 +309,7 @@
     <label>Mobile number *<input name="phone" type="tel" required autocomplete="tel" inputmode="tel"></label>
     <label>Email<input name="email" type="email" autocomplete="email"></label>
   </div>
-  <label>Anything else we should know?<textarea name="notes" placeholder="Event name, flight number, child seats, extra luggage, number of stops..."></textarea></label>
+  <label>Anything else we should know?<textarea name="notes" placeholder="More than 4 passengers or extra luggage? Event name, flight number, child seats, number of stops..."></textarea></label>
   <div style="position:absolute;left:-9999px" aria-hidden="true"><label>Leave this empty<input name="company_website" tabindex="-1" autocomplete="off"></label></div>
   <button class="btn btn-gold" type="submit">Request my quote</button>
   <p class="form-msg" id="quoteMsg" role="status" aria-live="polite"></p>
@@ -347,5 +362,6 @@
   });
 })();
 </script>
+<script defer src="/public/js/google-places-autocomplete.js?v=evexec-20261111"></script>
 </body>
 </html>
