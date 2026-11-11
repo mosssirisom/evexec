@@ -372,7 +372,7 @@ async function handleInvoice(req, res, user) {
         booking: { id: booking.id, ref: booking.ref, status: booking.status }
       },
       business: {
-        name: biz.business_name || (tenant && tenant.name) || 'EV Exec',
+        name: biz.business_name || (tenant && tenant.name) || '',
         addressLines: biz.address_lines || [],
         phone: biz.phone || '',
         email: biz.email || '',

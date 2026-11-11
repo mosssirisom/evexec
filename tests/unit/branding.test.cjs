@@ -200,3 +200,64 @@ test('businesses are loaded once a minute and an outage keeps the last good copy
     global.fetch = realFetch;
   }
 });
+
+// ── pages, texts and the rest of the website ────────────────────────────────
+const { operatorPage } = require('../../lib/pages');
+const bookingHandler = require('../../api/booking/index.js');
+
+test('accept/decline pages carry the business\'s own name and website', () => {
+  const ev = operatorPage('Booking Confirmed', '<p>x</p>', true, brand.brandFor(EV));
+  assert.match(ev, /<title>Booking Confirmed \| EV Exec<\/title>/);
+  assert.match(ev, /class="logo" href="\/">EV <span>EXEC<\/span><\/a>/);
+  assert.match(ev, /← Back to www\.evexec\.co\.uk/);
+  const co = operatorPage('Booking Confirmed', '<p>x</p>', true, brand.brandFor(COASTAL));
+  assert.match(co, /<title>Booking Confirmed \| Coastal Cars<\/title>/);
+  assert.match(co, /EXEC|COASTAL/);
+  assert.match(co, /class="logo" href="\/">COASTAL <span>CARS<\/span><\/a>/);
+  assert.match(co, /← Back to coastal\.test/);
+  assert.doesNotMatch(co, LEAKS);
+  const bare = operatorPage('Not Found', '<p>x</p>', false, brand.brandFor(BARE));
+  assert.match(bare, /← Back</);
+  assert.doesNotMatch(bare, LEAKS);
+});
+
+test('the self-cancel page shows the right help line for each business', () => {
+  const cancelPage = bookingHandler._cancelPage;
+  const co = cancelPage('Booking Cancelled', 'Done.', true, '', brand.brandFor(COASTAL));
+  assert.match(co, /<title>Booking Cancelled \| Coastal Cars<\/title>/);
+  assert.match(co, /wa\.me\/447123456789/);
+  assert.match(co, /tel:\+447123456789">07123 456789</);
+  assert.doesNotMatch(co, LEAKS);
+  const ev = cancelPage('Booking Cancelled', 'Done.', true, '', brand.brandFor(EV));
+  assert.match(ev, /wa\.me\/447721070370/);
+  assert.match(ev, />07721 070370</);
+  const bare = cancelPage('Error', 'Oops', false, '', brand.brandFor(BARE));
+  assert.match(bare, /Reply to your booking email/);
+  assert.doesNotMatch(bare, LEAKS);
+  assert.doesNotMatch(bare, /wa\.me|tel:/);
+});
+
+// Guard: the website's own code must not grow new hardcoded EV Exec details.
+// Business details come from the business's row (lib/brand.js). The few
+// allowed spots are platform settings read from the environment first.
+test('no hardcoded EV Exec name, number or licence in the website code', () => {
+  const fs = require('node:fs'); const path = require('node:path');
+  const ALLOWED = new Set([
+    'lib/brand.js',            // EV Exec's built-in details (this deployment's own business)
+    'lib/channels.js',         // sender / reply-to defaults (RESEND_FROM, REPLY_TO env)
+    'lib/push.js',             // push contact default (VAPID_EMAIL env)
+    'api/notifications/index.js', // same env defaults, admin diagnostic
+  ]);
+  const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]));
+  const root = path.join(__dirname, '..', '..');
+  const bad = [];
+  for (const file of [...walk(path.join(root, 'lib')), ...walk(path.join(root, 'api'))].filter((f) => f.endsWith('.js'))) {
+    const rel = path.relative(root, file).split(path.sep).join('/');
+    if (ALLOWED.has(rel)) continue;
+    fs.readFileSync(file, 'utf8').split('\n').forEach((line, i) => {
+      if (/^\s*(\/\/|\*)/.test(line)) return;
+      if (/07721|070370|EV Exec|EV EXEC|PHO0079|evexec\.co\.uk/.test(line)) bad.push(`${rel}:${i + 1}: ${line.trim().slice(0, 90)}`);
+    });
+  }
+  assert.deepEqual(bad, [], 'hardcoded EV Exec details:\n' + bad.join('\n'));
+});

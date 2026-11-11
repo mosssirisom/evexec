@@ -247,3 +247,17 @@ comment on table public.driver_shifts is 'Tenant: servers only (no client policy
 comment on table public.push_config is 'Platform-wide on purpose: the push keys and webhook secret are shared by all businesses. Servers only.';
 comment on table public.stripe_webhook_events is 'Platform-wide on purpose: one Stripe account today. Servers only. Needs a tenant (or Connect account) mapping if each business gets its own Stripe account.';
 comment on table public.stripe_webhook_rejections is 'Platform-wide on purpose: failed signature checks. Servers only.';
+
+-- ─── 6. EV Exec's own letterhead details live in its business row ───────────
+-- The apps used to carry EV Exec's licence number, website and tagline in code.
+-- They now read them from tenants.brand, so another business gets its own and
+-- nothing of EV Exec's. This fills only keys that are not already set, so it is
+-- safe to run twice and never overwrites something EV Exec has since changed.
+
+update public.tenants
+set brand = jsonb_build_object(
+      'licence',  'PHO0079',
+      'site_url', 'https://www.evexec.co.uk',
+      'tagline',  'Premium airport transfers from Blackpool & the Fylde Coast')
+    || coalesce(brand, '{}'::jsonb)
+where id = '00000000-0000-0000-0000-000000000001';

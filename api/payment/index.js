@@ -2,7 +2,7 @@
 
 
 const { refreshPricing } = require('../../lib/pricing');
-const { refreshBrands } = require('../../lib/brand');
+const { refreshBrands, brandFor, named } = require('../../lib/brand');
 const crypto = require('crypto');
 const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
@@ -52,11 +52,11 @@ function routeName(req) {
   return 'index';
 }
 
-async function createStripeSession({ price, description, bookingId, customerEmail, successUrl, cancelUrl }) {
+async function createStripeSession({ price, description, productName, bookingId, customerEmail, successUrl, cancelUrl }) {
   const params = new URLSearchParams();
   params.set('payment_method_types[]', 'card');
   params.set('line_items[0][price_data][currency]', 'gbp');
-  params.set('line_items[0][price_data][product_data][name]', 'EV Exec Airport Transfer');
+  params.set('line_items[0][price_data][product_data][name]', productName || 'Airport Transfer');
   params.set('line_items[0][price_data][product_data][description]', description);
   params.set('line_items[0][price_data][unit_amount]', String(Math.round(price * 100)));
   params.set('line_items[0][quantity]', '1');
@@ -105,7 +105,7 @@ async function handleCreateCheckoutSession(req, res) {
   const notAccepted = await ensurePolicyAccepted(booking, body);
   if (notAccepted) return json(res, 400, { error: notAccepted });
 
-  const siteUrl = process.env.SITE_URL || 'https://evexec.co.uk';
+  const siteUrl = process.env.SITE_URL || brandFor(booking.tenant_id).site;
   const successUrl = `${siteUrl}/booking?id=${bookingId}&payment=success`;
 
   // The checkout already started for this booking: reuse it while it is open
@@ -133,11 +133,12 @@ async function handleCreateCheckoutSession(req, res) {
   if (!readyForPayment(booking)) return json(res, 400, { error: 'Booking is not ready for payment' });
 
   const price = getPrice(booking);
-  if (!price) return json(res, 400, { error: 'Price not available yet. Please contact EV Exec.' });
+  if (!price) return json(res, 400, { error: `Price not available yet. Please contact ${brandFor(booking.tenant_id).name || 'us'}.` });
 
   const session = await createStripeSession({
     price,
     description: journeyLine(booking),
+    productName: `${named(brandFor(booking.tenant_id))}Airport Transfer`,
     bookingId,
     customerEmail: booking.customer_email,
     // Stripe fills in {CHECKOUT_SESSION_ID}, so the return check knows exactly

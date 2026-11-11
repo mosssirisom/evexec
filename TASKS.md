@@ -1,6 +1,6 @@
 # EV Exec platform: progress tracker
 
-One tracker for all three repos (`evexec` website and database, `evexecoperator` Operator app, `evexecdriverapp` Driver App) and the shared Supabase project. Update it as work moves. Last updated 11/11/2026.
+One tracker for all three repos (`evexec` website and database, `evexecoperator` Operator app, `evexecdriverapp` Driver App) and the shared Supabase project. Update it as work moves. Last updated 12/11/2026.
 
 ## Objective
 
@@ -39,22 +39,27 @@ Branches: `evexec` `claude/sweet-meitner-med7lt`, `evexecoperator` `claude/opera
 2. Merge the three branches (website to `main` deploys to production).
 3. Afterwards: remove the all-business fallbacks and the old `get_push_dispatch_bundle`.
 
-### Not done in step 1 (known gaps, ranked)
+### Template clean-up (12/11/2026, owner: "remove all hardcoded EV Exec so it becomes a template")
 
-- Sender identity: the Operator app still sends email `From`/`Reply-To` as EV Exec (`INVOICE_FROM`). Another business needs its own verified sending domain in Resend (a setup task, may cost money, owner decision).
-- `evexec/lib/notify.js` (two-tap texts, a legacy HTML footer), `lib/emailLayout.js`, `lib/pages.js` (accept/decline web pages) and the self-cancel page still say EV Exec.
-- The Driver App's own email/HTML fallbacks (used only if the website's re-render fails) still say EV Exec.
-- `notify-operator-new-booking` edge function in the Operator repo looks unused (no trigger calls it); consider deleting.
+- **Website:** accept/decline pages, self-cancel page, confirmation/rejection/reminder/cancel texts, Stripe product name, post-payment prompts, quote note and sample-email tooling now use the booking's business. Dead code removed (`lib/emailLayout.js`, `refBadgeHtml`, unused `CLOSE`). A unit test fails if a hardcoded EV Exec name, number, licence or domain is added to `lib/` or `api/`.
+- **Driver App:** `lib/brand.ts` is the one deployment file (env-overridable); the signed-in driver's own business (name, dispatch number) comes from their `tenants` row. Customer texts, receipts, dispatch buttons, sign-in, manifest and push prompts follow. Edge-function emails take the booking's business. `notify-passenger-arrived` source removed.
+- **Operator app:** `src/lib/deploymentBrand.ts` (env-overridable) for sign-in, app name, post-payment pages and portal links; invoice letterhead no longer falls back to EV Exec's address/number. `notify-operator-new-booking` source removed.
+- **Data, not code:** EV Exec's licence, website and tagline move into `tenants.brand` (section 6 of the pending migration).
+- **Left as platform settings (env, documented):** email sender and reply-to (`RESEND_FROM`, `REPLY_TO`, `INVOICE_FROM`), push contact (`VAPID_EMAIL`, `VAPID_SUBJECT`). A second business needs its own verified sending domain in Resend (owner: later, with bespoke sites).
+- **Live edge functions still deployed** (no tool here can delete them): `notify-operator-new-booking`, `notify-passenger-arrived`. Neither is called by any trigger, cron job, code or logs. Delete in the Supabase dashboard. Not called by the Operator app either, and candidates to review: `create-payment-link`, `check-flight`, `track-flight`.
+- **Deploy order:** apply the migration first; deploy the Driver App edge functions (`send-journey-receipt`, `send-driver-reminders`, `notify-job-update`) after it, so their emails read EV Exec's licence/tagline from the database.
+
+### Still open from step 1
+
 - Stripe webhook tables are platform-wide (one Stripe account); needs a business mapping when each business has its own Stripe.
 
 ## Step 2: Driver App test suite (done, awaiting review)
 
-Branch `claude/sweet-meitner-med7lt` in `evexecdriverapp`. Vitest 4 + jsdom. 56 tests in 5 files: `lib/format` (house date/time style, UK time, payment labels), `lib/customer-sms` (update and reminder texts, today/tomorrow/in N days, clock-change-safe day counts), `lib/job` (status flow, timestamps, wait grace, preferences; checks the app only sets statuses the database lets a driver set and never `Cancelled`), `middleware` (sign-in guard and matcher), `lib/push` (push state machine). The job page's pure rules moved to `lib/job.ts` unchanged. CI now runs `npm test` and `npm run test:functions`. Lint 0 errors (9 old warnings), typecheck clean, production build passes.
-Gap: the customer texts still say "EV Exec" (needs the business name passed in).
+Branch `claude/sweet-meitner-med7lt` in `evexecdriverapp`. Vitest 4 + jsdom. 56 tests in 5 files: `lib/format` (house date/time style, UK time, payment labels), `lib/customer-sms` (update and reminder texts, today/tomorrow/in N days, clock-change-safe day counts), `lib/job` (status flow, timestamps, wait grace, preferences; checks the app only sets statuses the database lets a driver set and never `Cancelled`), `middleware` (sign-in guard and matcher), `lib/push` (push state machine). The job page's pure rules moved to `lib/job.ts` unchanged. CI now runs `npm test` and `npm run test:functions`. Lint 0 errors and 0 warnings (the 9 old ones cleared), typecheck clean, production build passes.
 
-## Step 3: Operator app clean-up (not started)
+## Step 3: Operator app clean-up (done)
 
-Stale branch `claude/sweet-meitner-med7lt` in `evexecoperator` (Vite-era, 281 commits behind `main`).
+The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was superseded by `main` and deleted by the owner on 11/11/2026. Remaining 28 old branches there are not yet reviewed.
 
 ## Other open items
 
@@ -64,6 +69,6 @@ Stale branch `claude/sweet-meitner-med7lt` in `evexecoperator` (Vite-era, 281 co
 
 ## Test results (11/11/2026)
 
-- `evexec`: unit 97 pass; database 113 + 46 pass (local, `scripts/db-test.sh`).
-- `evexecoperator`: 278 pass; lint 0 warnings; typecheck clean.
-- `evexecdriverapp`: 56 unit + 14 function tests pass; typecheck clean; build passes.
+- `evexec`: unit 100 pass; database 113 + 46 pass (local, `scripts/db-test.sh`).
+- `evexecoperator`: 280 pass; lint 0 warnings; typecheck clean.
+- `evexecdriverapp`: 67 unit + 22 function tests pass; typecheck clean; build passes.
