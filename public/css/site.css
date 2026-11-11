@@ -198,7 +198,7 @@ a.card .more{display:inline-block;margin-top:14px;color:var(--gold);font-size:14
 .form input,.form select,.form textarea{width:100%;min-height:48px;border-radius:7px;border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.08);color:#fff;padding:12px 14px;font:400 16px Jost,Arial,sans-serif;outline:none;transition:border-color .2s,box-shadow .2s,background .2s}
 .form textarea{min-height:110px;resize:vertical}
 .form select option{color:#06101c}
-.form gmp-place-autocomplete{display:block;width:100%;min-height:48px;border-radius:7px;border:1px solid rgba(255,255,255,.10);color-scheme:dark;overflow:hidden}
+.form gmp-place-autocomplete{display:block;position:relative;z-index:2;width:100%;min-height:48px;border-radius:7px;border:1px solid rgba(255,255,255,.10);color-scheme:dark}
 .form input::placeholder,.form textarea::placeholder{color:rgba(255,255,255,.4)}
 .form input:focus,.form select:focus,.form textarea:focus{border-color:rgba(213,165,56,.55);box-shadow:0 0 0 3px rgba(213,165,56,.10);background:rgba(255,255,255,.12)}
 .form .check{display:flex;align-items:center;gap:10px;font-weight:500}
