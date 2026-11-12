@@ -2373,6 +2373,9 @@ declare
   v_prev_hours numeric := null;
   v_prev_pct numeric := -1;
   v_i int;
+  v_existing jsonb;
+  v_final jsonb;
+  v_text text;
 begin
   if not exists (
     select 1 from public.tenant_users tu
@@ -2381,6 +2384,12 @@ begin
            or (tu.tenant_id = p_tenant_id and tu.role = 'operator_admin'))
   ) then
     raise exception 'Only an operator admin can change the legal details' using errcode = '42501';
+  end if;
+
+  select coalesce(t.brand -> 'legal', '{}'::jsonb) into v_existing
+    from public.tenants t where t.id = p_tenant_id for update;
+  if v_existing is null then
+    raise exception 'Unknown tenant' using errcode = 'P0002';
   end if;
 
   foreach v_key in array v_text_fields loop
@@ -2449,11 +2458,60 @@ begin
     )));
   end if;
 
+
+  if v_in ? 'terms_mode' then
+    if v_in ->> 'terms_mode' not in ('standard', 'custom') then
+      raise exception 'Terms must be standard or custom' using errcode = '22023';
+    end if;
+    v_clean := v_clean || jsonb_build_object('terms_mode', v_in ->> 'terms_mode');
+  end if;
+
+  if v_in ? 'custom_terms' then
+    v_text := replace(btrim(coalesce(v_in ->> 'custom_terms', '')), E'\r', '');
+    if length(v_text) > 30000 then
+      raise exception 'Your terms are too long (up to 30000 characters)' using errcode = '22001';
+    end if;
+    v_clean := v_clean || jsonb_build_object('custom_terms', v_text);
+    -- A new version each time the text changes, so each booking keeps the version it accepted.
+    if v_text is distinct from coalesce(v_existing ->> 'custom_terms', '') then
+      v_clean := v_clean || jsonb_build_object(
+        'custom_terms_version', coalesce((v_existing ->> 'custom_terms_version')::int, 0) + 1,
+        'custom_terms_updated_at', now()::text);
+    end if;
+  end if;
+
+  if v_in ? 'privacy_extra' then
+    v_text := replace(btrim(coalesce(v_in ->> 'privacy_extra', '')), E'\r', '');
+    if length(v_text) > 4000 then
+      raise exception 'The extra privacy section is too long (up to 4000 characters)' using errcode = '22001';
+    end if;
+    v_clean := v_clean || jsonb_build_object('privacy_extra', v_text);
+  end if;
+
+  if v_in ? 'numbers_confirmed' then
+    if jsonb_typeof(v_in -> 'numbers_confirmed') <> 'boolean' then
+      raise exception 'The confirmation must be true or false' using errcode = '22023';
+    end if;
+    v_clean := v_clean || jsonb_build_object('numbers_confirmed', (v_in ->> 'numbers_confirmed')::boolean);
+  end if;
+
+  -- Their own terms need real text and the operator's confirmation that the terms
+  -- and the cancellation numbers say the same thing.
+  v_final := v_existing || v_clean;
+  if v_final ->> 'terms_mode' = 'custom' then
+    if length(coalesce(btrim(v_final ->> 'custom_terms'), '')) < 100 then
+      raise exception 'Write your terms before switching to them (at least 100 characters)' using errcode = '22023';
+    end if;
+    if coalesce((v_final ->> 'numbers_confirmed')::boolean, false) is not true then
+      raise exception 'Confirm that your terms match the cancellation charges you set' using errcode = '22023';
+    end if;
+  end if;
+
   update public.tenants t
      set brand = jsonb_set(
            coalesce(t.brand, '{}'::jsonb),
            '{legal}',
-           (coalesce(t.brand -> 'legal', '{}'::jsonb) || v_clean)
+           (v_existing || v_clean)
              || case
                   when v_insured is true then jsonb_build_object('insurance_confirmed_at', now()::text)
                   when v_insured is false then jsonb_build_object('insurance_confirmed_at', null)
