@@ -83,3 +83,7 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - `evexec`: unit 100 pass; database 113 + 46 pass (local, `scripts/db-test.sh`).
 - `evexecoperator`: 280 pass; lint 0 warnings; typecheck clean.
 - `evexecdriverapp`: 67 unit + 22 function tests pass; typecheck clean; build passes.
+
+## Website files customer rows under its own business (12/11/2026)
+- Bookings (outbound and return leg), quote requests and contact messages now carry `tenant_id` = the site's `TENANT_ID` (EV Exec when unset). Tests: `tenant-site.test.cjs`, `tenant-site-default.test.cjs`.
+- Still open: customer profiles on signup default to EV Exec; booking reference prefix `EVX-` is platform-wide.
