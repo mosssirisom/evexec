@@ -1,8 +1,8 @@
 # Operator Services Agreement (version 1, 12/11/2026)
 
-**Status: ready-to-use draft. Not legal advice and not a guarantee. No solicitor was used (owner decision).** Drafted from, and checked against, official UK sources: Unfair Contract Terms Act 1977 ss.2, 3, 11 and Sch.2; Late Payment of Commercial Debts (Interest) Act 1998 ss.1, 6, 7, 8; UK GDPR Art 28 (in the separate data terms); and the sources listed in `operator-responsibilities.md`. Items in [square brackets] are facts only the supplier knows (its legal form, number, address, VAT status). They are listed in section "Fill in before first use" at the end. What was and was not verified is in `audit-2026-11-12.md`.
+**Status: ready-to-use draft. Not legal advice and not a guarantee. No solicitor was used (owner decision).** Drafted from, and checked against, official UK sources: Unfair Contract Terms Act 1977 ss.2, 3, 11 and Sch.2; Late Payment of Commercial Debts (Interest) Act 1998 ss.1, 6, 7, 8; UK GDPR Art 28 (in the separate data terms); and the sources listed in `operator-responsibilities.md`. The Supplier's details are taken from its published terms (https://winjodigital.co.uk/terms, version 2026-11-12.1). Anything still missing is listed in section "Fill in before first use" at the end. What was and was not verified is in `audit-2026-11-12.md`.
 
-**The parties.** The **Supplier** is Winjo Digital ("we", "us"). The **Operator** is the business named in the Order Details ("you"). EV Exec is one of the Supplier's customers and is treated exactly like any other Operator.
+**The parties.** The **Supplier** is Nitisat Sirisom, a sole trader trading as WINJO DIGITAL, of 3 Knoxwood Close, Thornton-Cleveleys, FY5 3UP ("Winjo Digital", "we", "us"). The **Operator** is the business named in the Order Details ("you"). EV Exec is one of the Supplier's customers and is treated exactly like any other Operator.
 
 ---
 
@@ -32,7 +32,7 @@
 
 3.2 **Monthly fee: £49 per month**, for as long as this agreement runs, paid monthly in advance from the date your Service is made available to you.
 
-3.3 [All prices exclude VAT. If we are registered for VAT, VAT is added at the rate in force.] We will invoice you; you pay within 14 days of the invoice date by the method on the invoice.
+3.3 We are not registered for VAT, so no VAT is charged. We will invoice you; you pay within 14 days of the invoice date by the method on the invoice.
 
 3.4 **Late payment.** If you do not pay on time, we may charge statutory interest and compensation under the Late Payment of Commercial Debts (Interest) Act 1998 and may suspend the Service after 7 days' written notice until you pay.
 
@@ -120,7 +120,7 @@
 
 13.5 **Assignment.** You may not transfer this agreement without our written consent. We may transfer it to a business that takes over the Service, on written notice.
 
-13.6 **Notices** are in writing, by email to the address in the Order Details (or the address later notified), and are treated as received on the next working day after sending.
+13.6 **Notices** are in writing, by email to hello@winjodigital.co.uk, or by post to 3 Knoxwood Close, Thornton-Cleveleys, FY5 3UP (or the address later notified). Email notices are treated as received on the next working day after sending.
 
 13.7 **No partnership.** Nothing here makes us partners, joint venturers, employer and employee, or agents of each other. You have no authority to bind us, and we have none to bind you.
 
@@ -177,16 +177,15 @@ The full wording is `docs/legal/operator-responsibilities.md` (version 1), secti
 | Set-up fee | £999 | In full before set-up work starts |
 | Monthly fee | £49 per month | Monthly in advance from the date the Service is made available |
 
-Prices exclude VAT [if the Supplier is VAT registered]. Changes to the monthly fee: clause 3.5.
+No VAT is charged (clause 3.3). Changes to the monthly fee: clause 3.5.
 
 ---
 
-## Fill in before first use (facts only the Supplier knows)
+## Fill in before first use
 
-1. Winjo Digital's legal form, company number (if any), registered address and contact email (parties paragraph and clause 13.6).
-2. Whether Winjo Digital is VAT registered (clause 3.3 and Schedule B). Delete the square-bracketed wording if it is not.
-3. How the Operator pays (bank transfer, invoice link): state it on the invoice.
-4. The same legal name must be written into `operator-data-terms.md` section 1 and `brand.legal.platform_provider` for each business that publishes customer terms.
+1. **Winjo Digital:** all supplier details are now filled in from its terms. Company number: none (sole trader). VAT: not registered. Phone for notices is not in its terms (its website call link is +44 7474 144600); add it if you want it on the contract.
+2. **Each Operator:** complete its Order Details table (see EV Exec's above for what is still blank for EV Exec).
+3. The same supplier name must be used in `operator-data-terms.md` section 1 and `brand.legal.platform_provider` for each business that publishes customer terms.
 
 ## Notes on how this was built (honest limits)
 

@@ -5,7 +5,7 @@
 ## 1. Who is who
 
 - **Controller:** the operator (the business that takes the booking and owns the customer relationship).
-- **Processor:** Winjo Digital ([legal form, company number and registered address: fill in before first use]), the supplier of the booking website, Operator app and Driver App the operator uses, under the Operator Services Agreement (`operator-contract.md`), which these terms form part of.
+- **Processor:** Nitisat Sirisom, a sole trader trading as WINJO DIGITAL, of 3 Knoxwood Close, Thornton-Cleveleys, FY5 3UP, the supplier of the booking website, Operator app and Driver App the operator uses, under the Operator Services Agreement (`operator-contract.md`), which these terms form part of.
 - Each operator is a controller in its own right. The platform only processes data on the operator's instructions.
 - **Roles beyond data:** the platform is software only. It is not a private hire operator, is not a party to the operator's bookings, and does not provide, check or supervise the operator's licences, insurance, vehicles or drivers. Those are the operator's alone, as set out in `operator-responsibilities.md`, which forms part of these terms.
 
