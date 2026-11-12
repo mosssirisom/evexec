@@ -48,5 +48,18 @@ select throws_ok($$select public.update_tenant_legal((select id from biz), '{"le
 select set_config('request.jwt.claims', '{"sub":"cccccccc-0000-4000-8000-000000000013","role":"authenticated"}', true);
 select throws_ok($$select public.update_tenant_legal((select id from biz), '{"legal_name":"Hijack"}'::jsonb)$$, '42501', null, 'a stranger cannot change the legal details');
 
+-- Cancellation policy (three standard bands; the 100% band is implied).
+select set_config('request.jwt.claims', '{"sub":"cccccccc-0000-4000-8000-000000000011","role":"authenticated"}', true);
+select lives_ok(
+  $$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":24,"pct":50},{"hours":4,"pct":75}]}}'::jsonb)$$,
+  'the business admin can set its own cancellation bands');
+select is((select (brand #>> '{legal,policy,standard,1,pct}')::int from public.tenants where id = (select id from biz)), 50, 'the operator''s band is stored');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":24,"pct":50}]}}'::jsonb)$$, '22023', null, 'three bands are required');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":5},{"hours":24,"pct":50},{"hours":4,"pct":75}]}}'::jsonb)$$, '22023', null, 'the first band must be 0 percent');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":96,"pct":50},{"hours":4,"pct":75}]}}'::jsonb)$$, '22023', null, 'notice hours must get smaller');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":24,"pct":50},{"hours":4,"pct":40}]}}'::jsonb)$$, '22023', null, 'the percentage must rise with each band');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":24,"pct":150},{"hours":4,"pct":175}]}}'::jsonb)$$, '22023', null, 'a percentage over 100 is refused');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":0,"pct":0},{"hours":24,"pct":50},{"hours":4,"pct":75}]}}'::jsonb)$$, '22023', null, 'zero notice hours are refused');
+
 select * from finish();
 rollback;
