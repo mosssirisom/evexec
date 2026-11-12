@@ -25,7 +25,9 @@ function cards(file) {
 }
 
 // EV Exec as it is on live (shared with scripts/legal/build.js).
-const EV = require('../../scripts/legal/ev-exec-tenant');
+const EV_RECORD = require('../../scripts/legal/ev-exec-tenant');
+// The template tests need a business that has confirmed the operator responsibilities statement.
+const EV = { ...EV_RECORD, brand: { ...EV_RECORD.brand, legal: { ...EV_RECORD.brand.legal, responsibilities_confirmed: true } } };
 
 test('with EV Exec\'s details the terms reproduce every section of terms.html', () => {
   const doc = termsDocument(EV);
@@ -61,7 +63,7 @@ const COASTAL = {
   brand: {
     licence: 'PHO1234',
     legal: {
-      insurance_confirmed: true, status: 'limited company', legal_name: 'Coastal Cars Ltd', company_number: '12345678', registered_address: '1 High Street, Southport PR8 1AA',
+      insurance_confirmed: true, responsibilities_confirmed: true, status: 'limited company', legal_name: 'Coastal Cars Ltd', company_number: '12345678', registered_address: '1 High Street, Southport PR8 1AA',
       base: 'Southport, Merseyside', area: 'Southport and Sefton', service: 'airport transfers and private hire',
       licensing_authority: 'Sefton Council', fleet: 'a fleet of three saloon cars', max_passengers: 3, jurisdiction: 'england-wales',
       policy: { standard: [{ hours: 72, pct: 0 }, { hours: 24, pct: 50 }, { hours: 4, pct: 75 }], free_changes: 1, change_fee: 15, wait_address: 10, wait_airport: 45 },
@@ -104,7 +106,7 @@ test('a business that has set nothing gets visible placeholders and a list of wh
   const bare = { id: 'eeeeeeee-0000-4000-8000-000000000003', name: 'Bare Business', brand: {} };
   const t = termsDocument(bare);
   const keys = t.gaps.map((g) => g.key).sort();
-  assert.deepEqual(keys, ['area', 'email', 'insurance', 'licence', 'phone', 'status'].sort());
+  assert.deepEqual(keys, ['area', 'email', 'insurance', 'licence', 'phone', 'responsibilities', 'status'].sort());
   assert.equal(t.ready, false);
   assert.match(t.html, /legal-gap/);
   assert.doesNotMatch(t.html + t.text, LEAK);
@@ -223,4 +225,15 @@ test('insurance and DBS statements appear only once the operator has confirmed t
   const ok = termsDocument(COASTAL);
   assert.match(ok.text, /We are fully licensed, insured and enhanced DBS checked/);
   assert.doesNotMatch(ok.text, /to be added\]\s*and/);
+});
+
+test('the operator responsibilities confirmation is listed until given, and a named provider is not a party to the booking', () => {
+  const unconfirmed = { ...EV_RECORD };
+  assert.ok(termsDocument(unconfirmed).gaps.some((g) => g.key === 'responsibilities'));
+  assert.ok(!termsDocument(EV).gaps.some((g) => g.key === 'responsibilities'));
+  const named = { ...EV, brand: { ...EV.brand, legal: { ...EV.brand.legal, platform_provider: 'Example Software Ltd' } } };
+  const t = termsDocument(named);
+  assert.equal(t.sections.length, termsDocument(EV).sections.length + 1);
+  assert.match(t.text, /Example Software Ltd is not a party to your booking/);
+  assert.match(t.text, /not responsible for your journey, our drivers or vehicles, our licences or our insurance/);
 });
