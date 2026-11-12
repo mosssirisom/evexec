@@ -78,5 +78,14 @@ select is((select brand #>> '{legal,privacy_extra}' from public.tenants where id
 select throws_ok($$select public.update_tenant_legal((select id from biz), '{"custom_terms":"too short"}'::jsonb)$$, '22023', null, 'text cannot shrink below the minimum while custom is on');
 select lives_ok($$select public.update_tenant_legal((select id from biz), '{"terms_mode":"standard"}'::jsonb)$$, 'switching back to standard works');
 
+-- Operator responsibilities confirmation.
+select lives_ok($$select public.update_tenant_legal((select id from biz), '{"responsibilities_confirmed":true}'::jsonb)$$, 'the operator can confirm its responsibilities');
+select is((select (brand #>> '{legal,responsibilities_confirmed}')::boolean from public.tenants where id = (select id from biz)), true, 'confirmation stored');
+select isnt((select brand #>> '{legal,responsibilities_confirmed_at}' from public.tenants where id = (select id from biz)), null, 'time recorded');
+select is((select (brand #>> '{legal,responsibilities_version}')::int from public.tenants where id = (select id from biz)), 1, 'version recorded');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"responsibilities_confirmed":"yes"}'::jsonb)$$, '22023', null, 'must be true or false');
+select lives_ok($$select public.update_tenant_legal((select id from biz), '{"responsibilities_confirmed":false}'::jsonb)$$, 'it can be cleared');
+select is((select brand #>> '{legal,responsibilities_confirmed_at}' from public.tenants where id = (select id from biz)), null, 'clearing clears the time');
+
 select * from finish();
 rollback;

@@ -2368,6 +2368,7 @@ declare
   v_val text;
   v_limits jsonb := '{"legal_name":100,"company_number":20,"registered_address":200,"base":100,"area":150,"service":150,"fleet":300,"luggage":300,"points_name":40,"ico_registration":40}';
   v_insured boolean;
+  v_resp boolean;
   v_policy jsonb;
   v_pb jsonb;
   v_prev_hours numeric := null;
@@ -2424,6 +2425,14 @@ begin
     v_clean := v_clean || jsonb_build_object('insurance_confirmed', v_insured);
   end if;
 
+
+  if v_in ? 'responsibilities_confirmed' then
+    if jsonb_typeof(v_in -> 'responsibilities_confirmed') <> 'boolean' then
+      raise exception 'The responsibilities confirmation must be true or false' using errcode = '22023';
+    end if;
+    v_resp := (v_in ->> 'responsibilities_confirmed')::boolean;
+    v_clean := v_clean || jsonb_build_object('responsibilities_confirmed', v_resp);
+  end if;
 
   if v_in ? 'policy' then
     v_policy := v_in -> 'policy';
@@ -2515,6 +2524,11 @@ begin
              || case
                   when v_insured is true then jsonb_build_object('insurance_confirmed_at', now()::text)
                   when v_insured is false then jsonb_build_object('insurance_confirmed_at', null)
+                  else '{}'::jsonb
+                end
+             || case
+                  when v_resp is true then jsonb_build_object('responsibilities_confirmed_at', now()::text, 'responsibilities_version', 1)
+                  when v_resp is false then jsonb_build_object('responsibilities_confirmed_at', null, 'responsibilities_version', null)
                   else '{}'::jsonb
                 end
          ),

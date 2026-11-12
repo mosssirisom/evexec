@@ -7,6 +7,7 @@
 - **Controller:** the operator (the business that takes the booking and owns the customer relationship).
 - **Processor:** [Platform owner's legal name and trading name], which provides the booking, dispatch, invoicing and app platform the operator uses.
 - Each operator is a controller in its own right. The platform only processes data on the operator's instructions.
+- **Roles beyond data:** the platform is software only. It is not a private hire operator, is not a party to the operator's bookings, and does not provide, check or supervise the operator's licences, insurance, vehicles or drivers. Those are the operator's alone, as set out in `operator-responsibilities.md`, which forms part of these terms.
 
 ## 2. Subject matter, duration, nature and purpose (Art 28(3)(a))
 
@@ -44,6 +45,7 @@ h. **Make information available and allow audits (Art 28(3)(h)).** The processor
 - Give lawful instructions and keep its own privacy notice accurate. The operator's privacy policy must name the platform as a processor, using the standard policy's section on who we share data with.
 - Hold its own ICO registration if required, and pay the ICO fee where it applies.
 - Make sure its own customers, staff and drivers are told how their data is used.
+- Be solely responsible for its licences, insurance, vehicles, driver checks and compliance with licensing law and conditions, as set out in `operator-responsibilities.md`, and confirm this in writing (Settings → Legal). The platform does not check any of it.
 - Confirm in writing that it holds the insurance and DBS checks it states in its terms (see the Legal section in its Settings).
 
 ## 6. Sub-processors (the list the operator agrees to)
