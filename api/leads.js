@@ -93,7 +93,7 @@ async function notifyQuoteRequest(q) {
   tasks.push(sendPushToOperatorDevices('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator/inbox', 'quote-request'));
   if (q.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) {
     const m = E.quoteReceived(q);
-    tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text }));
+    tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text, tenantId: require('../lib/brand').tenantId() }));
   }
   const results = await Promise.allSettled(tasks);
   results.filter((r) => r.status === 'rejected').forEach((r) => console.error('quote notify failed:', r.reason && r.reason.message));
