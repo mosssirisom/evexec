@@ -1,7 +1,9 @@
 -- One row per kind of object, with a count and a checksum of every definition
 -- in schemas public and private (plus policies on storage). Run it on the live
 -- project and on a database built from schema.sql: equal rows mean the baseline
--- still matches live. Read-only.
+-- still matches live. Read-only. Items are sorted with collation "C" so the live
+-- database and a local one order text the same way (without it a new function name
+-- could sort differently and make equal data look different).
 with ns as (select oid, nspname from pg_namespace where nspname in ('public','private')),
 rel as (select c.oid, c.relkind, c.relacl, c.relowner, c.relrowsecurity, c.reloptions, format('%I.%I', n.nspname, c.relname) as fq
         from pg_class c join ns n on n.oid = c.relnamespace
@@ -49,4 +51,4 @@ items(kind, item) as (
   union all
   select 'buckets', concat_ws(' ', b.id, b.public::text, b.file_size_limit::text, b.allowed_mime_types::text) from storage.buckets b
 )
-select kind, count(*) as items, md5(string_agg(item, E'\n' order by item)) as checksum from items group by kind order by kind;
+select kind, count(*) as items, md5(string_agg(item, E'\n' order by item collate "C")) as checksum from items group by kind order by kind;

@@ -60,6 +60,13 @@ Fix **applied to live 12/11/2026** (`supabase/migrations/20261112090000_tenant_a
 
 Also found: `bookings_ref_format` requires every booking reference to start `EVX-`, so every business's references carry EV Exec's prefix. Needs a per-business reference prefix (database check, the website's reference generator, and the Operator app). Not started; a design decision.
 
+### Step 2: business setup flow (12/11/2026)
+
+- **Database:** `public.provision_tenant(slug, name, contact_email, contact_phone)` (migration `20261112120000_provision_tenant.sql`, **applied to live 12/11/2026**, verified in a rolled-back transaction): creates the business with checked slug and name, an invoice name, an **empty** price list, and its own notification settings with **SMS, WhatsApp and push off** (the table default would have turned SMS on; Twilio stays dormant). Server-only. 19 checks in `provision_tenant.test.sql`.
+- **Website:** the built-in price list (`FALLBACK`) is now EV Exec's only. A business with no prices set gets an empty list ("price not available, please contact us"), never EV Exec's. Test added (101 unit tests pass).
+- **Found:** the live `manage-tenants` edge function (super-admin create / list / invite) was in no repo, creates a bare row, and invites through Supabase's built-in mailer. Replaced by an Operator app route (see the Operator `CLAUDE.md`).
+- The fingerprint query now sorts with collation "C" (live and local order text differently, which made equal data look different).
+
 ### Still open from step 1
 
 - Stripe webhook tables are platform-wide (one Stripe account); needs a business mapping when each business has its own Stripe.
