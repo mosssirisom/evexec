@@ -46,3 +46,9 @@ test('a quote request and a contact message are filed under this site\'s busines
   assert.equal(tables('quote_requests')[0].body.tenant_id, COASTAL);
   assert.equal(tables('contact_messages')[0].body.tenant_id, COASTAL);
 });
+
+test('the site config names this site\'s business, so sign-ups are filed under it', async () => {
+  const r = await H.call(booking, '/api/config', null, 'GET');
+  assert.equal(r.status, 200);
+  assert.equal(JSON.parse(r.body).tenantId, COASTAL);
+});

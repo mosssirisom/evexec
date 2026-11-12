@@ -114,3 +114,8 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Merged today: evexec #41, #42, #43, #44, #45; Operator #26, #27, #28; Driver #13.
 - Not checked: a browser walk through the Operator and Driver app screens with a second business login (needs a real test login per business; the screens' business details are unit-tested). Suggested next: create a real test business from Settings, Platform and sign in as its admin.
 - Parked (owner decisions, may cost): per-business sending domain, per-business Stripe, SaaS billing, legal documents, marketing sites.
+
+## Customer profile sign-up (12/11/2026, DONE and live)
+- `handle_new_user()` files a new customer's profile under the business named in the sign-up data (`tenant_id`, from `/api/config` `tenantId`), if it is an active business; none, malformed, unknown or suspended fall back to EV Exec and never block a sign-up. Migration `20261112170000_profile_tenant_at_signup.sql` applied live; rolled-back probe on live confirmed all three cases. Website sign-up forms (home page and My Account) send it.
+- Note: auth is shared, so one login works on every business's website; a customer who signs up on a second business's site is filed under it, and keeps that business for their profile.
+- Existing 4 profiles are EV Exec's and unchanged.

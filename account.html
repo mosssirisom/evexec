@@ -1070,7 +1070,7 @@ $('suBtn').onclick = async () => {
   const pw = $('suPassword').value;
   if (pw.length < 8 || !/[A-Za-z]/.test(pw) || !/[0-9]/.test(pw)) return msg(m, 'Password must be at least 8 characters, with a letter and a number.');
   m.textContent = 'Creating account…';
-  const { error } = await sb.auth.signUp({ email: $('suEmail').value.trim(), password: $('suPassword').value, options: { data: { full_name: $('suName').value.trim(), phone: $('suPhone').value.trim() } } });
+  const { error } = await sb.auth.signUp({ email: $('suEmail').value.trim(), password: $('suPassword').value, options: { data: { full_name: $('suName').value.trim(), phone: $('suPhone').value.trim(), tenant_id: cfg.tenantId || undefined } } });
   error ? msg(m, error.message) : msg(m, 'Account created. Check your email if confirmation is required.', true);
 };
 $('rpBtn').onclick = async () => {
