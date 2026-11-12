@@ -1236,12 +1236,13 @@ main,footer{position:relative;z-index:1}
       <p class="text-xs text-white/70 leading-relaxed">Free more than 48 hours before pickup. 25% of the fare from 48 hours before, 50% from 24 hours before, and the full fare from 2 hours before, once the driver has set off, or if no one is there to be picked up. If someone you booked for cancels, it counts as your cancellation. Changing flight details or the passenger's name is free. If we cancel, you get a full refund.</p>
       <label class="flex items-start gap-3 mt-3 text-sm text-white/80" style="cursor:pointer">
         <input type="checkbox" id="bwTerms" style="width:18px;height:18px;margin-top:2px;accent-color:#d5a538;flex-shrink:0">
-        <span>I have read and accept the <a href="/terms#cancellation" target="_blank" rel="noopener" style="color:#d5a538">Booking, Payment, Changes and Cancellation Policy</a> and the <a href="/terms" target="_blank" rel="noopener" style="color:#d5a538">Terms &amp; Conditions</a>, including the cancellation charges above.</span>
+        <span>I have read and accept the <a href="/terms#cancellation" target="_blank" rel="noopener" style="color:#d5a538">Booking, Payment, Changes and Cancellation Policy</a> and the <a href="/terms" target="_blank" rel="noopener" style="color:#d5a538">Terms &amp; Conditions</a>, including the cancellation charges above. I understand that if my booking is confirmed I must pay the price and any cancellation charge due under these terms.</span>
       </label>
     </div>
 
+    <p class="text-sm text-white/80 leading-relaxed mb-3" id="bwOrderLine" aria-live="polite"></p>
     <button class="btn-gold w-full rounded-md py-4 font-bold text-base" id="bwSubmit" type="button" style="border:none">
-      Request My Transfer
+      Request Transfer &middot; I Agree to Pay if Confirmed
     </button>
     <p id="formMsg" class="text-xs text-center mt-3 min-h-[18px]"></p>
   </div>
@@ -1677,6 +1678,12 @@ main,footer{position:relative;z-index:1}
       var stopCount  = (bw.stops || []).filter(function(s){ return s.trim(); }).length;
       var priceVal   = priceBase ? priceBase + stopCount * BW_EXTRA_STOP : null;
       var priceLabel = priceVal ? '£' + priceVal + (stopCount ? ' (inc. ' + stopCount + ' stop' + (stopCount > 1 ? 's' : '') + ')' : '') : 'Price on request';
+      var orderLine = document.getElementById('bwOrderLine');
+      if (orderLine) {
+        orderLine.textContent = priceVal
+          ? 'Total price: \u00a3' + priceVal + ' for ' + (bw.journeyType === 'return' ? 'your return journey' : 'this journey') + ', fixed' + (stopCount ? ', including your ' + stopCount + ' extra stop' + (stopCount > 1 ? 's' : '') : '') + '. Nothing extra is charged unless you agree it first (for example a longer wait). You pay once we confirm.'
+          : 'We will confirm the price before your booking is confirmed. Nothing extra is charged unless you agree it first. You pay once we confirm.';
+      }
       pills.innerHTML =
         '<span class="bw-pill" style="background:rgba(2,8,19,.85);border:1px solid rgba(213,165,56,.35);color:var(--gold)">' + bwEsc(bw.airport||'') + '</span>' +
         '<span class="bw-pill" style="background:' + dirBg + ';border:1px solid ' + dirBorder + ';color:' + dirColor + '">' + dirLabel + '</span>' +
@@ -1924,7 +1931,7 @@ main,footer{position:relative;z-index:1}
       bwShowMsg(err.message || 'Failed to send. Please contact us directly.', 'error');
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Request My Transfer';
+      btn.textContent = 'Request Transfer \u00b7 I Agree to Pay if Confirmed';
     }
   }
 

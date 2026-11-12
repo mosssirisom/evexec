@@ -47,7 +47,15 @@ test('version 3: same bands, and 100% once the driver has set off', () => {
   assert.equal(P.cancellationQuote({ ...b, status: 'En Route' }, hoursBefore(30)).pct, 100);
   // Version 2 had no set-off rule.
   assert.equal(P.cancellationQuote({ ...b, terms_version: '2', status: 'En Route' }, hoursBefore(30)).pct, 25);
-  assert.equal(P.policyPath('3'), '/terms'); assert.equal(P.policyPath('2'), '/terms-v2'); assert.equal(P.policyPath('1'), '/terms-v1');
+  assert.equal(P.policyPath('4'), '/terms'); assert.equal(P.policyPath('3'), '/terms-v3'); assert.equal(P.policyPath('2'), '/terms-v2'); assert.equal(P.policyPath('1'), '/terms-v1');
+});
+
+test('version 4: the same charges as version 3, and a version 3 booking keeps its own terms', () => {
+  const b4 = booking({ terms_version: '4' });
+  assert.equal(P.cancellationQuote(b4, hoursBefore(30)).pct, 25);
+  assert.equal(P.cancellationQuote({ ...b4, status: 'En Route' }, hoursBefore(30)).pct, 100);
+  assert.equal(P.cancellationQuote(booking({ terms_version: '3' }), hoursBefore(10)).pct, 50);
+  assert.equal(P.policyVersion(booking({ terms_version: '3' })), '3', 'an accepted version 3 stays version 3');
 });
 
 test('version 1 (made before version 2, no acceptance recorded): free over 24h, 50%, 100%', () => {
@@ -63,12 +71,14 @@ test('a booking made after version 2 went live without the tick box is held to t
 
 test('confirmation email lists the booking\'s own cancellation deadlines', () => {
   const E = require('../../lib/emailContent');
-  const early = E.bookingConfirmed(booking({ terms_version: '3' }), { now: new Date('2026-10-20T10:00:00Z') }).text;
+  const early = E.bookingConfirmed(booking({ terms_version: '4' }), { now: new Date('2026-10-20T10:00:00Z') }).text;
   assert.match(early, /Free cancellation until: 06:00 on 18\/11\/2026/);
   assert.match(early, /50% of the fare from: 06:00 on 19\/11\/2026/);
   assert.match(early, /Full fare from: 04:00 on 20\/11\/2026, or once your driver sets off/);
-  assert.match(early, /Terms: Version 3: https:\/\/www\.evexec\.test\/terms#cancellation/);
-  const late = E.bookingConfirmed(booking({ terms_version: '3' }), { now: hoursBefore(10) }).text;
+  assert.match(early, /Terms: Version 4: https:\/\/www\.evexec\.test\/terms#cancellation/);
+  const v3 = E.bookingConfirmed(booking({ terms_version: '3' }), { now: new Date('2026-10-20T10:00:00Z') }).text;
+  assert.match(v3, /Terms: Version 3: https:\/\/www\.evexec\.test\/terms-v3#cancellation/);
+  const late = E.bookingConfirmed(booking({ terms_version: '4' }), { now: hoursBefore(10) }).text;
   assert.match(late, /If you cancel now: 50% of the fare/);
   assert.doesNotMatch(late, /Free cancellation until/);
   const quoted = E.bookingConfirmed(booking({ airport: null, quoted_price: 650 })).text;
@@ -113,7 +123,7 @@ test('recordAcceptance falls back to notes when the columns are missing', async 
   const dbUpdate = async (t, id, data) => { writes.push(data); if ('terms_version' in data) throw new Error('column does not exist'); };
   const how = await P.recordAcceptance({ id: ID, notes: 'Stop 1: X' }, dbUpdate, new Date('2026-10-17T09:05:00Z'));
   assert.equal(how, 'notes');
-  assert.equal(writes[1].notes, 'Stop 1: X\nAccepted cancellation policy v3 at 10:05 on 17/10/2026.');
+  assert.equal(writes[1].notes, 'Stop 1: X\nAccepted cancellation policy v4 at 10:05 on 17/10/2026.');
 });
 
 // ── /api/booking/cancel ────────────────────────────────────────────────────
