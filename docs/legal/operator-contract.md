@@ -134,20 +134,21 @@
 
 ## Order Details (completed for each Operator)
 
-### EV Exec (a customer like any other; details taken from its published terms and privacy policy, version 4, effective 12/11/2026)
+### EV Exec (a customer like any other; details from its published terms, privacy policy and database)
 
 | | |
 |---|---|
-| Operator (legal name, status, company number, registered address) | Sole trader. Status and address from the terms: "EV Exec is a sole trader"; based in Blackpool, Lancashire. **Not in the terms: the owner's full legal name and the full address. To fill in.** |
+| Operator (legal name, status, company number, registered address) | Sole trader, trading as EV Exec, Blackpool, Lancashire (terms and privacy policy, version 4, 12/11/2026). **Owner's full legal name and full postal address: not published on evexec.co.uk or findable by search; to be supplied by the owner.** |
 | Trading name | EV Exec |
-| Contact name and email for notices | Email book@evexec.co.uk. **Contact name: to fill in.** |
-| Start Date | **To fill in.** |
-| What is set up | Booking website (evexec.co.uk), Operator app, Driver App; driver logins per the Driver App invites. **Number of driver logins: to fill in.** |
-| Support hours and contact | Phone 07721 070370; WhatsApp. **Support hours: to fill in.** |
-| Anything extra agreed in writing | **To fill in** (none recorded in the repository). |
-| Operator's licensing authority and operator licence number | Private hire operator licence **PHO0079** (terms, privacy policy, emails). **Licensing authority (the council that issued it): not stated in the terms; to fill in.** |
-| Signed for the Operator (name, date) | **To fill in.** |
-| Signed for Winjo Digital (name, date) | **To fill in.** |
+| Contact name and email for notices | book@evexec.co.uk. **Contact name: to be supplied by the owner.** |
+| Start Date | First live job 02/06/2026; first booking 04/06/2026 (from the database). |
+| What is set up | Booking website (www.evexec.co.uk), Operator app, Driver App. |
+| Driver logins | 1 driver login (the owner, who is also the office login; see the 10/11/2026 note in the hardening plan). |
+| Support hours | **Not stated on the website or terms; to be supplied by the owner.** (The website chat widget's "24/7 · Typically instant" is a widget label, not a stated support commitment.) Contact: phone 07721 070370; WhatsApp; book@evexec.co.uk. |
+| Anything extra agreed in writing | None recorded in the repository. |
+| Operator's licensing authority and operator licence number | Private hire operator licence **PHO0079** (terms, privacy policy, emails, database). **Licensing authority (the council that issued it): not published; to be supplied by the owner, or confirmed from the licence document.** |
+| Signed for the Operator (name, date) | Signature: ____________________  Name: ____________________  Date: __/__/____ |
+| Signed for Winjo Digital (name, date) | Signature: ____________________  Name: ____________________  Date: __/__/____ |
 
 Also on record for EV Exec: ICO registration C2085772 (application, stored in the business details; not printed in its privacy policy); insurance and responsibilities confirmations recorded 12/11/2026 on the owner's instruction.
 
