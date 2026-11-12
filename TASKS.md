@@ -94,3 +94,8 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 ## Website files customer rows under its own business (12/11/2026)
 - Bookings (outbound and return leg), quote requests and contact messages now carry `tenant_id` = the site's `TENANT_ID` (EV Exec when unset). Tests: `tenant-site.test.cjs`, `tenant-site-default.test.cjs`.
 - Still open: customer profiles on signup default to EV Exec; booking reference prefix `EVX-` is platform-wide.
+
+## Driver attestation engine and merged PRs (12/11/2026)
+- Merged: evexec #41 (provision_tenant) and #42 (website files under its own business); evexecoperator #26 (platform tenants route); evexecdriverapp #13 (attestation alert uses the booking's own business shell). CI was green before each merge.
+- `attestation-engine` redeployed as v12 from Driver App main (JWT off, as before). Logs show it running every minute with no errors or exceptions since 06:50 UTC.
+- Next: booking-reference prefix per business (needs owner to run a DROP CONSTRAINT in the SQL editor), then remaining hard-coded fallbacks, then second-business checks on the Operator and Driver apps.
