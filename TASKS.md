@@ -168,3 +168,8 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - To check before any launch: the repo has a `nightly_backup` migration that sends a backup to another project, and the notes say the Supabase plan has none. Confirm what really runs before saying anything to an operator about backups. Verifying this costs nothing.
 ## Database backups: do not act (owner instruction, 12/11/2026)
 - Do not pay for backups, and do not check, change or set up backups on the owner's behalf. The existing nightly backup stays as it is; nothing about it is to be investigated or altered unless the owner asks.
+## ICO data protection fee: registered (12/11/2026)
+- Registration complete by direct debit. Application number **C2085772**. The ICO confirms the direct debit within three working days, or at least 10 days before the first payment. Check the confirmation email and that the amount matches the legislation's direct debit figure (£47 a year for a micro organisation).
+- Registered as the business taking bookings. Nature of work and person completing the form are recorded in the ICO account, not here.
+- Each operator with its own controller role must register separately, using the same steps.
+- Record the ICO registration number against EV Exec's business details (Settings → Business, or `brand.legal.ico_registration`) so the privacy policy and the terms show it.
