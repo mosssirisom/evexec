@@ -10,6 +10,10 @@ This applies to all three repos in this project (`evexec`, `evexecoperator`, `ev
 - **Prefer free tiers and already-provisioned infrastructure.** When a task could be done either by spinning up a paid resource (e.g. a Supabase branch to test a migration) or by a slower/more careful free alternative (e.g. read-only validation queries plus additive, reversible migrations applied directly, with review), default to the free alternative unless the user has explicitly approved the paid one.
 - Abandon or redesign any plan that turns out to require a new cost, rather than proceeding and asking forgiveness after the fact.
 
+# Legal wording (hard rule, user decision 12/11/2026)
+
+**No solicitor or lawyer is used, and none can be afforded.** Terms, privacy policies and any other legal or compliance wording are drafted from, and checked against, official UK sources (legislation.gov.uk, the CMA, the ICO, gov.uk), with the sources, the changes made and the residual risks recorded in `evexec/docs/legal/audit-2026-11-12.md`. Never suggest "have a solicitor review this". Say what was checked, what could not be verified, and what the owner must do. Not legal advice and not a guarantee: be honest about that.
+
 # Date and time format (hard rule, user decision)
 
 **Every date anywhere in EV Exec is DD/MM/YYYY. Every time is 24-hour HH:MM, UK time.** This applies to all three repos (`evexec`, `evexecoperator`, `evexecdriverapp`) and the shared Supabase project: screens, emails, texts (including two-tap `sms:` messages), push notifications, PDFs/invoices, subjects, toasts and database templates. Never show `YYYY-MM-DD`, US order, or a written-out month.
