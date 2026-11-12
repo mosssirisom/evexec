@@ -214,7 +214,7 @@ async function sendReminders(due, type, driversById) {
       // assigned driver to send from their own phone -- EV Exec no longer
       // sends customer reminder SMS via Twilio (see handOffSmsToDriver above).
       hasEmail
-        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml, text: mail.text }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml, body: mail.text, meta: { label: 'customer_reminder' } })
+        ? sendOrQueue(() => sendEmail({ to: booking.customer_email, subject: emailSubject, html: emailHtml, text: mail.text, tenantId: booking.tenant_id }), { booking_id: booking.id, type: logType, channel: 'email', recipient: booking.customer_email, subject: emailSubject, html: emailHtml, body: mail.text, meta: { label: 'customer_reminder' } })
         : null,
       hasPhone ? handOffSmsToDriver(booking, smsBody, type) : null,
       sendPushToCustomer(booking, pushTitle, pushBody, '/booking?id=' + booking.id),
