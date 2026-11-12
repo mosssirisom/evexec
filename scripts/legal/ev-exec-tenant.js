@@ -15,6 +15,7 @@ module.exports = {
       fleet: 'a fleet of electric vehicles (currently a Tesla Model Y, a Tesla Model Y Juniper and a Škoda Enyaq)',
       price_includes: ['Up to 4 passengers', 'Standard luggage (see section 13)', 'Live flight monitoring on all inbound transfers', 'Airport drop-off and pickup charges', 'All charging and running costs', 'Any extra stops you booked'],
       points_name: 'Privilege Points',
+      insurance_confirmed: true,
     },
   },
   pricing: { extra_stop: 5 },
