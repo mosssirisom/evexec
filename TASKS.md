@@ -163,3 +163,6 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - The website charges a booking by its operator's own standard bands (`brand.legal.policy.standard`) when the booking is on the current terms version. Older versions keep their fixed bands. EV Exec and any business without its own bands keep the standard bands, so nothing changes for them.
 - `update_tenant_legal` accepts `policy` (three bands, stricter each time, first band 0%). Applied live. Database tests: 23 pass.
 - Still to do: the Operator app's copy of the charge rules (`src/lib/email/cancellation.js`) must read the same bands before any operator uses custom numbers; the Legal screen needs the three-band entry fields; the database baseline needs regenerating for the new function.
+## Database backups: owner rule (12/11/2026)
+- **Never pay for database backups.** Do not buy, enable or upgrade any paid backup, plan, add-on or project, and do not attempt anything that would charge the owner. Recorded in the cost policy (`CLAUDE.md`).
+- To check before any launch: the repo has a `nightly_backup` migration that sends a backup to another project, and the notes say the Supabase plan has none. Confirm what really runs before saying anything to an operator about backups. Verifying this costs nothing.
