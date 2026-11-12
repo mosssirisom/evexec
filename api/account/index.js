@@ -217,7 +217,7 @@ function invoiceStatus(inv, booking) {
 }
 
 function outboundRefOf(booking) {
-  const m = String(booking.notes || '').match(/Outbound ref: (EVX-[A-Z0-9]+)/);
+  const m = String(booking.notes || '').match(/Outbound ref: ([A-Z]{2,5}-[A-Z0-9]+)/);
   return m ? m[1] : null;
 }
 
@@ -478,7 +478,7 @@ async function handleClaimBooking(req, res, user) {
 
   const ref = String(body.ref || '').trim().toUpperCase();
   const phone = normaliseUkPhone(body.phone || '');
-  if (!ref.startsWith('EVX-') || ref.length < 7) {
+  if (!/^[A-Z]{2,5}-[A-Z0-9]{3,}$/.test(ref)) {
     res.statusCode = 400;
     return res.end(JSON.stringify({ error: 'Invalid booking reference. Format: EVX-XXXXXX' }));
   }

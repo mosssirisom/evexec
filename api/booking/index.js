@@ -5,7 +5,7 @@ const {sendSMS,sendEmail,sendWhatsApp,whatsAppReady,normaliseUkPhone,handOffSmsT
 const {logMany}=require('../../lib/notifyLog');
 const {enqueueNotification,sendOrQueue}=require('../../lib/notificationQueue');
 const {generateToken,verifyToken}=require('../../lib/token');
-const {refreshPricing,currentPricing}=require('../../lib/pricing');const {refreshBrands,brandFor,siteDomain,named,tenantId}=require('../../lib/brand');
+const {refreshPricing,currentPricing}=require('../../lib/pricing');const {refreshBrands,brandFor,siteDomain,named,tenantId,refPrefix}=require('../../lib/brand');
 const {journeyLine,fmtDate,fmtTime,lookupPrice,getPrice,buildOperatorJobOfferSms,emailJourneyHtml,singleLineSubject,isReturnLeg}=require('../../lib/format');
 const {parseBody}=require('../../lib/parse');
 const P=require('../../lib/cancellation');
@@ -105,7 +105,7 @@ function validateBooking(body){
   if(Array.isArray(body.additional_stops)&&(body.additional_stops.length>5||body.additional_stops.some(x=>String(x).length>300)))return 'Please contact us for journeys with more than five stops.';
   return null;
 }
-function ref(){return 'EVX-'+(Date.now().toString(36)+Math.random().toString(36).slice(2,6)).toUpperCase();}
+function ref(){return refPrefix(tenantId())+'-'+(Date.now().toString(36)+Math.random().toString(36).slice(2,6)).toUpperCase();}
 function returnLegPayload(body,base,totalPrice){const airport=body.return_airport||body.airport||null;
 // The return leg runs the opposite direction of the outbound leg (an
 // outbound "To Airport" trip returns "From Airport", and vice versa).

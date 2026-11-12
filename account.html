@@ -421,7 +421,7 @@ function wireHome() {
     const ref = ($('claimRefInput').value || '').trim().toUpperCase();
     const phone = ($('claimPhoneInput').value || '').trim();
     const m = $('claimRefMsg');
-    if (!ref.startsWith('EVX-') || ref.length < 7) { m.textContent = 'Enter a valid booking reference (e.g. EVX-XXXXXXXX).'; m.style.color = 'var(--danger)'; return; }
+    if (!/^[A-Z]{2,5}-[A-Z0-9]{3,}$/.test(ref)) { m.textContent = 'Enter a valid booking reference (e.g. EVX-XXXXXXXX).'; m.style.color = 'var(--danger)'; return; }
     m.style.color = ''; m.textContent = 'Adding…';
     try {
       const d = await api('/api/account/claim-booking', { method: 'POST', body: JSON.stringify({ ref, phone }) });

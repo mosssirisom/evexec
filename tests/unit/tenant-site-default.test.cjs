@@ -20,6 +20,7 @@ test('EV Exec\'s website files a booking, a quote request and a message under EV
   await H.call(leads, '/api/quote-request', { customer_name: 'Jo', phone: '07000000001', pickup_location: 'A', destination: 'B' });
   await H.call(leads, '/api/contact', { name: 'Jo', message: 'Hello' });
   assert.equal(tables('bookings')[0].body.tenant_id, EV);
+  assert.match(tables('bookings')[0].body.ref, /^EVX-[A-Z0-9]+$/, 'EV Exec keeps the EVX- prefix');
   assert.equal(tables('quote_requests')[0].body.tenant_id, EV);
   assert.equal(tables('contact_messages')[0].body.tenant_id, EV);
   assert.equal(tables('bookings')[0].body.quoted_price, 90, 'EV Exec\'s built-in prices still apply');
