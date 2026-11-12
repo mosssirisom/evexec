@@ -3477,3 +3477,26 @@ on conflict (id) do nothing;
 -- cron job (not created by the baseline): driver-reminder-sweep  schedule * * * * *
 -- cron job (not created by the baseline): nightly-database-backup  schedule 17 2 * * *
 -- cron job (not created by the baseline): notification-queue-sweep  schedule * * * * *
+
+-- business_signin_brand (20261112240000)
+
+create or replace function public.business_signin_brand(p_slug text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path to 'public'
+as $fn$
+  select jsonb_build_object(
+    'name', t.name,
+    'logo_url', nullif(t.brand ->> 'logo_url', ''),
+    'primary', case when t.brand #>> '{colors,primary}' ~ '^#[0-9A-Fa-f]{6}$' then t.brand #>> '{colors,primary}' end,
+    'accent', case when t.brand #>> '{colors,accent}' ~ '^#[0-9A-Fa-f]{6}$' then t.brand #>> '{colors,accent}' end
+  )
+  from public.tenants t
+  where t.slug = lower(btrim(coalesce(p_slug, ''))) and t.status = 'active'
+  limit 1;
+$fn$;
+
+revoke all on function public.business_signin_brand(text) from public;
+grant execute on function public.business_signin_brand(text) to anon, authenticated, service_role;
