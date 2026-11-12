@@ -2226,7 +2226,8 @@ window.evexecConfig = window.evexecConfig || (function(){ var p; return function
       if(!name||!email||!pwd){ msg.style.color='#f87171'; msg.textContent='Name, email and password required.'; return; }
       if(pwd.length<8||!/[A-Za-z]/.test(pwd)||!/[0-9]/.test(pwd)){ msg.style.color='#f87171'; msg.textContent='Password must be at least 8 characters, with a letter and a number.'; return; }
       msg.style.color='rgba(255,255,255,.5)'; msg.textContent='Creating account…';
-      var r = await sb.auth.signUp({ email, password: pwd, options:{ data:{ full_name: name, phone } } });
+      var scfg = {}; try { scfg = await window.evexecConfig(); } catch(e) {}
+      var r = await sb.auth.signUp({ email, password: pwd, options:{ data:{ full_name: name, phone, tenant_id: scfg.tenantId || undefined } } });
       if(r.error){ msg.style.color='#f87171'; msg.textContent=r.error.message; }
       else { msg.style.color='#4ade80'; msg.textContent='Account created! Check your email to confirm, then sign in.'; }
     });

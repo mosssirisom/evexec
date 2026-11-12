@@ -25,3 +25,8 @@ test('EV Exec\'s website files a booking, a quote request and a message under EV
   assert.equal(tables('contact_messages')[0].body.tenant_id, EV);
   assert.equal(tables('bookings')[0].body.quoted_price, 90, 'EV Exec\'s built-in prices still apply');
 });
+
+test('EV Exec\'s site config names EV Exec as the business', async () => {
+  const r = await H.call(booking, '/api/config', null, 'GET');
+  assert.equal(JSON.parse(r.body).tenantId, EV);
+});

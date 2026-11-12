@@ -1241,12 +1241,20 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
  SECURITY DEFINER
  SET search_path TO 'public'
 AS $function$
-BEGIN
-  INSERT INTO public.profiles (id, full_name)
-  VALUES (NEW.id, NEW.raw_user_meta_data->>'full_name')
-  ON CONFLICT (id) DO NOTHING;
-  RETURN NEW;
-END;
+declare
+  v_raw text := NEW.raw_user_meta_data->>'tenant_id';
+  v_tenant uuid;
+begin
+  if v_raw ~* '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$' then
+    select id into v_tenant from public.tenants where id = v_raw::uuid and status = 'active';
+  end if;
+
+  insert into public.profiles (id, full_name, tenant_id)
+  values (NEW.id, NEW.raw_user_meta_data->>'full_name',
+          coalesce(v_tenant, '00000000-0000-0000-0000-000000000001'::uuid))
+  on conflict (id) do nothing;
+  return NEW;
+end;
 $function$
 ;
 
