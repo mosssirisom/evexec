@@ -61,5 +61,22 @@ select throws_ok($$select public.update_tenant_legal((select id from biz), '{"po
 select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":72,"pct":0},{"hours":24,"pct":150},{"hours":4,"pct":175}]}}'::jsonb)$$, '22023', null, 'a percentage over 100 is refused');
 select throws_ok($$select public.update_tenant_legal((select id from biz), '{"policy":{"standard":[{"hours":0,"pct":0},{"hours":24,"pct":50},{"hours":4,"pct":75}]}}'::jsonb)$$, '22023', null, 'zero notice hours are refused');
 
+-- Own terms: mode, text, version, confirmation, privacy extra.
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"terms_mode":"custom"}'::jsonb)$$, '22023', null, 'custom terms need text first');
+select throws_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('terms_mode','custom','custom_terms',repeat('x',150)))$$, '22023', null, 'custom terms need the confirmation tick');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"terms_mode":"other"}'::jsonb)$$, '22023', null, 'an unknown terms mode is refused');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"numbers_confirmed":"yes"}'::jsonb)$$, '22023', null, 'the confirmation must be true or false');
+select throws_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('custom_terms',repeat('x',30001)))$$, '22001', null, 'terms over 30000 characters are refused');
+select throws_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('privacy_extra',repeat('x',4001)))$$, '22001', null, 'a long privacy extra is refused');
+select lives_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('terms_mode','custom','custom_terms',repeat('x',150),'numbers_confirmed',true,'privacy_extra','We also keep a log.'))$$, 'custom terms save with text and confirmation');
+select is((select (brand #>> '{legal,custom_terms_version}')::int from public.tenants where id = (select id from biz)), 1, 'first text is version 1');
+select lives_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('custom_terms',repeat('x',150)))$$, 'saving the same text again works');
+select is((select (brand #>> '{legal,custom_terms_version}')::int from public.tenants where id = (select id from biz)), 1, 'unchanged text keeps its version');
+select lives_ok($$select public.update_tenant_legal((select id from biz), jsonb_build_object('custom_terms',repeat('y',150)))$$, 'changed text saves');
+select is((select (brand #>> '{legal,custom_terms_version}')::int from public.tenants where id = (select id from biz)), 2, 'changed text is version 2');
+select is((select brand #>> '{legal,privacy_extra}' from public.tenants where id = (select id from biz)), 'We also keep a log.', 'privacy extra is stored');
+select throws_ok($$select public.update_tenant_legal((select id from biz), '{"custom_terms":"too short"}'::jsonb)$$, '22023', null, 'text cannot shrink below the minimum while custom is on');
+select lives_ok($$select public.update_tenant_legal((select id from biz), '{"terms_mode":"standard"}'::jsonb)$$, 'switching back to standard works');
+
 select * from finish();
 rollback;
