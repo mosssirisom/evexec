@@ -100,6 +100,11 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - `attestation-engine` redeployed as v12 from Driver App main (JWT off, as before). Logs show it running every minute with no errors or exceptions since 06:50 UTC.
 - Next: booking-reference prefix per business (needs owner to run a DROP CONSTRAINT in the SQL editor), then remaining hard-coded fallbacks, then second-business checks on the Operator and Driver apps.
 
-## Booking reference prefix per business (12/11/2026, in progress)
+## Booking reference prefix per business (12/11/2026, DONE and live)
 - Draft `supabase/pending/20261112150000_booking_ref_prefix.sql`: `tenants.ref_prefix` (EV Exec = EVX), new reference rule `^[A-Z]{2,5}-[A-Z0-9]+$`, `provision_tenant` derives a prefix. Part A (no DROP) applied by the tool; part B (`drop constraint bookings_ref_format`) is for the owner in the SQL editor. Order: part A, then deploy code, then part B.
 - Website (`lib/brand.js` `refPrefix`, `api/booking`), claim-a-booking checks accept any prefix. Operator app to follow.
+- Both parts applied live 12/11/2026 (part A by the tool, part B by the owner). Migration moved to `supabase/migrations/20261112150000_booking_ref_prefix.sql`, baseline updated. Website #43 and Operator #27 merged.
+
+## Emails: sender name and reply-to per business (12/11/2026)
+- Website `sendEmail` takes `tenantId`: the display name is the business's name (sending address stays the platform's `RESEND_FROM`), replies go to its own contact email. EV Exec keeps its `REPLY_TO`. A business with no contact email gets no reply-to (never EV Exec's inbox). Operator app: `src/lib/server/sender.ts` `senderFor()` used by invoice, payment-link, booking-response and staff/invite emails.
+- Still platform-wide (parked, may cost): one verified sending domain (`RESEND_FROM`), VAPID subject, notification health-test sender.
