@@ -134,20 +134,20 @@
 
 ## Order Details (completed for each Operator)
 
-### EV Exec (a customer like any other; details from its published terms, privacy policy and database)
+### EV Exec (a customer like any other; details from the owner, its published terms and database)
 
 | | |
 |---|---|
-| Operator (legal name, status, company number, registered address) | Sole trader, trading as EV Exec, Blackpool, Lancashire (terms and privacy policy, version 4, 12/11/2026). **Owner's full legal name and full postal address: not published on evexec.co.uk or findable by search; to be supplied by the owner.** |
+| Operator (legal name, status, company number, registered address) | Nitisat Sirisom, a sole trader trading as EV Exec. Address: Wheeler Hub Drive, Blackpool FY2 0FD. No company number (sole trader). (Owner's statement of business details.) |
 | Trading name | EV Exec |
-| Contact name and email for notices | book@evexec.co.uk. **Contact name: to be supplied by the owner.** |
+| Contact name and email for notices | Nitisat Sirisom; book@evexec.co.uk |
 | Start Date | First live job 02/06/2026; first booking 04/06/2026 (from the database). |
 | What is set up | Booking website (www.evexec.co.uk), Operator app, Driver App. |
 | Driver logins | 1 driver login (the owner, who is also the office login; see the 10/11/2026 note in the hardening plan). |
-| Support hours | **Not stated on the website or terms; to be supplied by the owner.** (The website chat widget's "24/7 · Typically instant" is a widget label, not a stated support commitment.) Contact: phone 07721 070370; WhatsApp; book@evexec.co.uk. |
+| Support hours | 24 hours a day, every day (owner's statement). Contact: phone 07721 070370; WhatsApp; book@evexec.co.uk. |
 | Anything extra agreed in writing | None recorded in the repository. |
-| Operator's licensing authority and operator licence number | Private hire operator licence **PHO0079** (terms, privacy policy, emails, database). **Licensing authority (the council that issued it): not published; to be supplied by the owner, or confirmed from the licence document.** |
-| Signed for the Operator (name, date) | Signature: ____________________  Name: ____________________  Date: __/__/____ |
+| Operator's licensing authority and operator licence number | Blackpool Council; private hire operator licence **PHO0079** (owner's statement; also on the terms, privacy policy, emails and database). |
+| Signed for the Operator (name, date) | Signature: ____________________  Name: Nitisat Sirisom  Date: __/__/____ |
 | Signed for Winjo Digital (name, date) | Signature: ____________________  Name: ____________________  Date: __/__/____ |
 
 Also on record for EV Exec: ICO registration C2085772 (application, stored in the business details; not printed in its privacy policy); insurance and responsibilities confirmations recorded 12/11/2026 on the owner's instruction.
