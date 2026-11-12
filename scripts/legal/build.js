@@ -24,8 +24,13 @@ const PRIVACY_UPDATED = '12/11/2026';
 const PREVIOUS = `Previous versions: <a class="gold" href="/terms-v3">Version 3</a> (bookings accepted from 16/10/2026 until version 4 took effect on ${TERMS_EFFECTIVE}), <a class="gold" href="/terms-v2">Version 2</a> (bookings accepted on 16/10/2026 before version 3) and <a class="gold" href="/terms-v1">Version 1</a> (bookings made before 16/10/2026).`;
 
 function replaceCards(html, startMarker, sections, ids, tail, comment) {
-  const start = html.indexOf(startMarker);
-  if (start < 0) throw new Error(`marker not found: ${startMarker}`);
+  // Start at the first numbered card, and take the build comment above it with it,
+  // so the build can run again on its own output.
+  let start = html.indexOf('<div class="content-card"');
+  if (start < 0) throw new Error(`no section cards found (${startMarker})`);
+  const before = html.slice(0, start);
+  const comment_ = before.match(/<!-- (?:Terms|Privacy policy): built from lib\/legal[^]*?-->\n$/);
+  if (comment_) start -= comment_[0].length;
   const lastCard = html.lastIndexOf('<div class="content-card"');
   const cards = renderSections(sections, ids);
   return html.slice(0, start) + `<!-- ${comment} -->\n` + cards.replace(/\n<\/div>$/, tail ? `\n${tail}\n</div>` : '\n</div>') + '\n\n' + html.slice(lastCard);

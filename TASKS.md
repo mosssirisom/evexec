@@ -153,3 +153,8 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - **Rules for custom terms:** the operator is responsible for them (shown clearly when they switch); the platform still records which version a customer accepted (custom versions numbered per business, old ones kept and viewable); the booking form still requires the tick and the obligation-to-pay wording (Consumer Contracts Regs reg 14), which belongs to the form, not the terms; the charge calculation must follow the numbers the operator enters (`brand.legal.policy`), so custom mode asks for them and the operator confirms their text matches.
 - **Privacy policy:** recommended to stay standard (it lists the platform's processors: Supabase, Vercel, Stripe, Resend, Google, AeroDataBox), with an optional "additional information" section the operator can add.
 - **Open questions for the owner:** (1) custom privacy policy too, or standard plus additional section? (recommended: standard plus additional section). (2) Custom terms and cancellation charges: charges follow the numbers the operator enters? (recommended: yes).
+
+## Insurance and DBS: the operator's own responsibility (12/11/2026)
+- Operators confirm in their Legal details (`brand.legal.insurance_confirmed`) that they hold hire & reward and public liability insurance and that their drivers are DBS checked. Until confirmed, the terms show a highlighted placeholder and the business is listed as not ready. EV Exec is confirmed.
+- To build in the Operator app's Legal section (with the custom-terms build).
+- Legal build fixed to run more than once without changing the published pages.

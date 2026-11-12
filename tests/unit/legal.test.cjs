@@ -61,7 +61,7 @@ const COASTAL = {
   brand: {
     licence: 'PHO1234',
     legal: {
-      status: 'limited company', legal_name: 'Coastal Cars Ltd', company_number: '12345678', registered_address: '1 High Street, Southport PR8 1AA',
+      insurance_confirmed: true, status: 'limited company', legal_name: 'Coastal Cars Ltd', company_number: '12345678', registered_address: '1 High Street, Southport PR8 1AA',
       base: 'Southport, Merseyside', area: 'Southport and Sefton', service: 'airport transfers and private hire',
       licensing_authority: 'Sefton Council', fleet: 'a fleet of three saloon cars', max_passengers: 3, jurisdiction: 'england-wales',
       policy: { standard: [{ hours: 72, pct: 0 }, { hours: 24, pct: 50 }, { hours: 4, pct: 75 }], free_changes: 1, change_fee: 15, wait_address: 10, wait_airport: 45 },
@@ -104,7 +104,7 @@ test('a business that has set nothing gets visible placeholders and a list of wh
   const bare = { id: 'eeeeeeee-0000-4000-8000-000000000003', name: 'Bare Business', brand: {} };
   const t = termsDocument(bare);
   const keys = t.gaps.map((g) => g.key).sort();
-  assert.deepEqual(keys, ['area', 'email', 'licence', 'phone', 'status'].sort());
+  assert.deepEqual(keys, ['area', 'email', 'insurance', 'licence', 'phone', 'status'].sort());
   assert.equal(t.ready, false);
   assert.match(t.html, /legal-gap/);
   assert.doesNotMatch(t.html + t.text, LEAK);
@@ -211,4 +211,16 @@ test('the booking form makes the obligation to pay clear before the request is s
   assert.match(html, /id="bwOrderLine"/);
   assert.match(html, /Request Transfer &middot; I Agree to Pay if Confirmed/);
   assert.ok(html.indexOf('id="bwOrderLine"') < html.indexOf('id="bwSubmit"'), 'the total price line sits directly before the button');
+});
+
+test('insurance and DBS statements appear only once the operator has confirmed them', () => {
+  const bare = { ...COASTAL, brand: { ...COASTAL.brand, legal: { ...COASTAL.brand.legal, insurance_confirmed: false } } };
+  const t = termsDocument(bare);
+  assert.ok(t.gaps.some((g) => g.key === 'insurance'), 'the confirmation is listed as missing');
+  assert.equal(t.ready, false);
+  assert.match(t.text, /We are fully licensed, \[insurance confirmation to be added\] and \[DBS confirmation to be added\]/);
+  assert.match(t.html, /legal-gap/);
+  const ok = termsDocument(COASTAL);
+  assert.match(ok.text, /We are fully licensed, insured and enhanced DBS checked/);
+  assert.doesNotMatch(ok.text, /to be added\]\s*and/);
 });
