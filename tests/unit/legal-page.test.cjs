@@ -67,3 +67,12 @@ test('this website\'s own business is sent to its own published pages', async ()
   assert.equal(res.statusCode, 302);
   assert.equal(res.headers.Location, '/privacy');
 });
+
+test('the /t/ route points at a function that is actually built', () => {
+  const cfg = JSON.parse(require('node:fs').readFileSync(require('node:path').join(__dirname, '..', '..', 'vercel.json'), 'utf8'));
+  const route = cfg.routes.find((r) => r.src && r.src.startsWith('/t/'));
+  assert.ok(route, 'route exists');
+  const target = route.dest.split('?')[0].replace(/^\//, '');
+  assert.ok(cfg.builds.some((b) => b.src === target), `${target} is a build entry`);
+  assert.match(route.dest, /[?&]r=legal(&|$)/);
+});
