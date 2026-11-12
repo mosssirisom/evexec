@@ -108,3 +108,9 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 ## Emails: sender name and reply-to per business (12/11/2026)
 - Website `sendEmail` takes `tenantId`: the display name is the business's name (sending address stays the platform's `RESEND_FROM`), replies go to its own contact email. EV Exec keeps its `REPLY_TO`. A business with no contact email gets no reply-to (never EV Exec's inbox). Operator app: `src/lib/server/sender.ts` `senderFor()` used by invoice, payment-link, booking-response and staff/invite emails.
 - Still platform-wide (parked, may cost): one verified sending domain (`RESEND_FROM`), VAPID subject, notification health-test sender.
+
+## Step 5: second-business check on the live database (12/11/2026)
+- Rolled-back probe on live: `provision_tenant('probe-biz', ...)` then a driver and two bookings (one with email, one without) taken through Dispatched, En Route, Arrived, Cancelled. Result: prefix `PROB`, refs `PROB-PROBE1/2`, 8 queued notifications and 2 office text tasks, **0 rows mentioning EV Exec / evexec / 07721 / PHO0079**; notification settings email on, SMS/WhatsApp/push off. Rolled back, nothing left behind.
+- Merged today: evexec #41, #42, #43, #44, #45; Operator #26, #27, #28; Driver #13.
+- Not checked: a browser walk through the Operator and Driver app screens with a second business login (needs a real test login per business; the screens' business details are unit-tested). Suggested next: create a real test business from Settings, Platform and sign in as its admin.
+- Parked (owner decisions, may cost): per-business sending domain, per-business Stripe, SaaS billing, legal documents, marketing sites.
