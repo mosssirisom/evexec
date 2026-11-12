@@ -6,7 +6,8 @@ It lets the database tests run on a throwaway local Postgres, without touching
 the live project.
 
 - Taken from the live project on 10/11/2026, after migration `20261110200525`,
-  then brought up to date on 11/11/2026 with `20261111120000_tenant_scoping` (the
+  then brought up to date with `20261111120000_tenant_scoping` (11/11/2026) and
+  `20261112090000_tenant_aware_messages` (12/11/2026) (the
   structure change it makes, generated locally on a throwaway database; access-rights lines for the
   `private` helper functions follow the existing pattern).
 - It holds no customer data, no secrets and no scheduled jobs. The only row it
