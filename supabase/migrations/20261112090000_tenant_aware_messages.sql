@@ -1,6 +1,8 @@
 -- Messages built inside the database name the booking's own business.
 --
--- DRAFT (12/11/2026): not applied to live. Found by a second-business test run
+-- APPLIED to the live project on 12/11/2026 (Supabase tool, no DROP statements) and
+-- verified in a rolled-back transaction: another business gets its own name, EV Exec's
+-- texts are unchanged, the helpers are server-only. Found by a second-business test run
 -- on live inside a rolled-back transaction: a business other than EV Exec got
 -- "EV Exec: Hi ..." customer texts, "EV Exec NEW JOB / REMINDER" driver text and
 -- an EV Exec email footer, because three functions carried EV Exec's name,
