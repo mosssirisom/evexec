@@ -176,3 +176,14 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 1. **Privacy policy: standard plus an operator section.** Every operator uses the standard policy (naming the platform's services and rights, unchanged). Each operator may add an "about us / additional information" section for anything specific to their business. No fully custom privacy policies.
 2. **Terms and cancellation charges: charges follow the operator's numbers.** An operator writing its own terms enters its own cancellation percentages and deadlines, and the booking system charges by those numbers. Safeguards: the operator confirms in writing that the numbers are its own decision; the system refuses charges above 100% of the fare or charges taken before the booking exists.
 - Build order: (a) charge calculation reads each business's own policy; (b) operator Settings, Legal section (standard/custom switch, numbers, confirmation tick, gaps list); (c) terms page per business from its own text or the standard template.
+
+## Decisions and completed items (12/11/2026, owner instruction)
+
+- **Operator pricing (agreed):** £999 set-up fee paid up front, then £49 a month. In `docs/legal/operator-contract.md` (Schedule B).
+- **Supplier:** the platform is run by **Winjo Digital** (separate repo and business), not EV Exec. EV Exec is a customer on the same contract as any other operator. The bespoke website set-up process belongs to Winjo Digital's own repo and is not tracked here.
+- **ICO:** the registration form has been sent (application C2085772). Nothing more to do here; the number is stored in EV Exec's business details and is not printed on the published privacy page.
+- **Operator contract:** written (`docs/legal/operator-contract.md`, version 1). Winjo Digital's legal details are in square brackets to fill in.
+- **Public terms and privacy page for each operator:** built (`/t/<short name>/terms`, `/t/<short name>/privacy`).
+- **EV Exec's confirmations:** the responsibilities and insurance confirmations were recorded for EV Exec on the owner's instruction (12/11/2026). The responsibility for all of it is the operator's, as the contract and `operator-responsibilities.md` say.
+- **Stripe Connect:** still waiting on whether enabling it costs anything and whether the platform keeps a percentage per payment.
+

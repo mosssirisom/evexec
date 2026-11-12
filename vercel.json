@@ -23,6 +23,7 @@
     { "src": "/((?!api/).+)/", "status": 308, "headers": {"Location": "/$1"} },
     { "src": "/(booking|account)", "headers": {"X-Robots-Tag": "noindex"}, "continue": true },
     { "src": "/(.*)", "has": [{"type": "host", "value": "evexec.vercel.app"}], "headers": {"X-Robots-Tag": "noindex"}, "continue": true },
+    { "src": "/t/([a-z0-9-]+)/(terms|privacy)", "dest": "/api/booking/legal?b=$1&kind=$2" },
     { "src": "/api/booking/(.*)", "dest": "/api/booking/index.js" },
     { "src": "/api/operator/(.*)", "dest": "/api/operator/index.js" },
     { "src": "/api/payment/(.*)", "dest": "/api/payment/index.js" },
