@@ -8,6 +8,7 @@
 
 const E = require('../lib/emailContent');
 const crypto = require('crypto');
+const { tenantId } = require('../lib/brand');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -65,7 +66,7 @@ async function handleContact(req, res) {
   const name = body.name || body.customer_name; const message = body.message;
   if (!name || !message) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Name and message are required' })); }
   try {
-    const r = await fetch(`${SUPABASE_URL()}/rest/v1/contact_messages`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ name, phone: body.phone || '', email: body.email || '', message, status: 'new' }) });
+    const r = await fetch(`${SUPABASE_URL()}/rest/v1/contact_messages`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ name, phone: body.phone || '', email: body.email || '', message, status: 'new', tenant_id: tenantId() }) });
     if (!r.ok) throw new Error(await r.text());
     res.end(JSON.stringify({ success: true, message: await r.json() }));
   } catch (err) { res.statusCode = 500; res.end(JSON.stringify({ error: err.message })); }
@@ -108,7 +109,7 @@ async function handleQuoteRequest(req, res) {
   const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
   try {
     const payload = { customer_name: name, phone, email: clip(body.email, 200), pickup_location: clip(body.pickup_location, 300), destination: clip(body.destination, 300), pickup_date: isDate(body.pickup_date) ? body.pickup_date : null, pickup_time: clip(body.pickup_time, 10), passengers: Math.min(Math.max(parseInt(body.passengers || 1, 10) || 1, 1), 16), luggage: clip(body.luggage, 200), return_required: Boolean(body.return_required), return_date: isDate(body.return_date) ? body.return_date : null, return_time: clip(body.return_time, 10), notes: clip(body.notes, 2000), status: 'new' };
-    const r = await fetch(`${SUPABASE_URL()}/rest/v1/quote_requests`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify(payload) });
+    const r = await fetch(`${SUPABASE_URL()}/rest/v1/quote_requests`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ ...payload, tenant_id: tenantId() }) });
     if (!r.ok) throw new Error(await r.text());
     const lead = await r.json();
     await notifyQuoteRequest(payload).catch((e) => console.error('quote notify failed:', e.message));
