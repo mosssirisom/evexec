@@ -8,7 +8,7 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
 const { getPrice, journeyLine, isReturnLeg } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
-const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES } = require('../../lib/payments');
+const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES, cardPaymentsAllowed } = require('../../lib/payments');
 const stripeEvents = require('../../lib/stripeEvents');
 const policy = require('../../lib/cancellation');
 
@@ -102,6 +102,9 @@ async function handleCreateCheckoutSession(req, res) {
 
   const booking = await dbGet('bookings', bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found' });
+  if (!cardPaymentsAllowed(booking.tenant_id)) {
+    return json(res, 400, { error: `${brandFor(booking.tenant_id).name || 'This business'} does not take card payments online yet. Please pay in cash or by bank transfer, or contact them.` });
+  }
   const notAccepted = await ensurePolicyAccepted(booking, body);
   if (notAccepted) return json(res, 400, { error: notAccepted });
 
