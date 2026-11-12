@@ -66,3 +66,51 @@ test('with no earlier text, the confirmed text is created and pushed once', asyn
   assert.equal(f.rows[0].status, 'pending');
   assert.equal(pushes(f.calls), 1);
 });
+
+// sendBookingConfirmed: the email and the text both go when the customer has both.
+test('accepting sends the email AND queues the text when the customer has an email and a phone', async () => {
+  process.env.RESEND_API_KEY = 're_test';
+  const { sendBookingConfirmed } = require('../../lib/notify');
+  const seen = [];
+  const rows = [];
+  global.fetch = async (url, opts = {}) => {
+    const u = String(url); const method = opts.method || 'GET';
+    seen.push(`${method} ${u.replace(/^https?:\/\/[^/]+/, '').split('?')[0]}`);
+    const json = (b) => ({ ok: true, status: 200, json: async () => b, text: async () => JSON.stringify(b) });
+    if (u.includes('api.resend.com')) return json({ id: 'email_1' });
+    if (u.includes('/push_config')) return json([{ webhook_secret: 's' }]);
+    if (u.includes('/operator_sms_tasks')) {
+      if (method === 'GET') return json(rows.map(({ id, message }) => ({ id, message })));
+      if (method === 'POST') { const r = { id: 't1', ...JSON.parse(opts.body) }; rows.push(r); return json([r]); }
+    }
+    return json([]);
+  };
+  const b = { id: 'b0000000-0000-4000-8000-000000000002', ref: 'EVX-TEST', customer_name: 'Sam Smith', customer_email: 'sam@example.invalid', customer_phone: '07123456789',
+    pickup_location: 'Blackpool', airport: 'Manchester Airport', travel_date: '2027-01-05', travel_time: '10:30', quoted_price: 90, tenant_id: '00000000-0000-0000-0000-000000000001' };
+  await sendBookingConfirmed(b);
+  assert.ok(seen.some((c) => c === 'POST /emails'), 'email sent');
+  assert.equal(rows.length, 1, 'text queued');
+  assert.match(rows[0].message, /EVX-TEST/);
+  assert.match(rows[0].message, /confirmed/);
+});
+
+test('accepting with a phone but no email queues only the text', async () => {
+  const { sendBookingConfirmed } = require('../../lib/notify');
+  const seen = [];
+  const rows = [];
+  global.fetch = async (url, opts = {}) => {
+    const u = String(url); const method = opts.method || 'GET';
+    seen.push(u);
+    const json = (b) => ({ ok: true, status: 200, json: async () => b, text: async () => JSON.stringify(b) });
+    if (u.includes('/push_config')) return json([{ webhook_secret: 's' }]);
+    if (u.includes('/operator_sms_tasks')) {
+      if (method === 'GET') return json(rows.map(({ id, message }) => ({ id, message })));
+      if (method === 'POST') { const r = { id: 't1', ...JSON.parse(opts.body) }; rows.push(r); return json([r]); }
+    }
+    return json([]);
+  };
+  await sendBookingConfirmed({ id: 'b0000000-0000-4000-8000-000000000003', ref: 'EVX-TEST2', customer_name: 'Sam', customer_email: '', customer_phone: '07123456789',
+    pickup_location: 'Blackpool', airport: 'Manchester Airport', travel_date: '2027-01-05', travel_time: '10:30', quoted_price: 90 });
+  assert.equal(rows.length, 1);
+  assert.ok(!seen.some((u) => u.includes('api.resend.com')), 'no email');
+});
