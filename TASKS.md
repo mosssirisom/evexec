@@ -49,6 +49,17 @@ Branches: `evexec` `claude/sweet-meitner-med7lt`, `evexecoperator` `claude/opera
 - **Live edge functions still deployed** (no tool here can delete them): `notify-operator-new-booking`, `notify-passenger-arrived`. Neither is called by any trigger, cron job, code or logs. Delete in the Supabase dashboard. Not called by the Operator app either, and candidates to review: `create-payment-link`, `check-flight`, `track-flight`.
 - **Deploy order:** apply the migration first; deploy the Driver App edge functions (`send-journey-receipt`, `send-driver-reminders`, `notify-job-update`) after it, so their emails read EV Exec's licence/tagline from the database.
 
+### Second-business test (12/11/2026)
+
+Ran on live inside a rolled-back transaction (a made-up business "Coastal Cars" with a driver and booking, run through Dispatched, En Route, Arrived and Cancelled; nothing was left behind). Found that three database functions still carried EV Exec's name, number or address:
+- `enqueue_operator_customer_notifications`: the two-tap texts to customers said "EV Exec: Hi ..." (customer-facing, the worst one).
+- `enqueue_driver_notifications`: stored driver text said "EV Exec NEW JOB / REMINDER" (the website re-renders the email at send time).
+- `evexec_notification_email`: the staff email shell (header, footer, number, address).
+
+Fix drafted (not applied): `supabase/pending/20261112090000_tenant_aware_messages.sql` plus `supabase/tests/database/tenant_messages.test.sql` (25 checks: EV Exec, a full second business and a bare one). EV Exec's texts and subjects read exactly as before; its email shell footer now matches the apps' canonical footer. No DROP statements. After applying: switch `attestation-engine` in the Driver App to `tenant_notification_email` (it still calls the old name, which keeps working for EV Exec), then rebuild the baseline.
+
+Also found: `bookings_ref_format` requires every booking reference to start `EVX-`, so every business's references carry EV Exec's prefix. Needs a per-business reference prefix (database check, the website's reference generator, and the Operator app). Not started; a design decision.
+
 ### Still open from step 1
 
 - Stripe webhook tables are platform-wide (one Stripe account); needs a business mapping when each business has its own Stripe.
