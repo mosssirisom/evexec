@@ -135,3 +135,9 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 ## Stripe (owner's choice, 12/11/2026)
 - **Standard Connect accounts with Stripe's hosted onboarding**: each business creates and owns its own Stripe account; the platform does not manage their money. Before building: confirm Stripe's current Connect fees for a platform that takes no per-transaction cut (billing is a flat monthly fee, option 3A) and ask the owner before anything that costs.
 - Next: monthly fee (Stripe Billing), then the rest.
+
+## Legal audit, no solicitor (12/11/2026)
+- Owner rule: **no solicitor**; legal wording is checked against official UK sources. Audit and owner actions: `docs/legal/audit-2026-11-12.md`.
+- Fixed: online order wording and total-price line on the booking form (Consumer Contracts Regs reg 14), consumer liability and luggage clauses (CRA 2015 s.57), assistance dogs (Equality Act 2010 s.170), privacy notice contents and one-month response, complaints to us (DUAA 2025, in force 19/06/2026). EV Exec terms are now **version 4** (version 3 archived at `/terms-v3`); the charges are unchanged.
+- Owner actions: ICO data protection fee (check and pay or confirm exempt), complaints process, council record-keeping conditions, claims must be true (insurance, DBS, flight monitoring).
+- Operator app copy of `lib/cancellation.js` must move to version 4 too.

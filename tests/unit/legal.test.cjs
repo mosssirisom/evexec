@@ -24,21 +24,8 @@ function cards(file) {
   return out;
 }
 
-// EV Exec as it is on live.
-const EV = {
-  name: 'EV Exec', contact_email: 'book@evexec.co.uk', contact_phone: '07721070370',
-  brand: {
-    licence: 'PHO0079',
-    legal: {
-      status: 'sole trader', base: 'Blackpool, Lancashire', area: 'Blackpool and the Fylde Coast',
-      service: 'premium airport transfers and private hire',
-      fleet: 'a fleet of electric vehicles (currently a Tesla Model Y, a Tesla Model Y Juniper and a Škoda Enyaq)',
-      price_includes: ['Up to 4 passengers', 'Standard luggage (see section 13)', 'Live flight monitoring on all inbound transfers', 'Airport drop-off and pickup charges', 'All charging and running costs', 'Any extra stops you booked'],
-      points_name: 'Privilege Points',
-    },
-  },
-  pricing: { extra_stop: 5 },
-};
+// EV Exec as it is on live (shared with scripts/legal/build.js).
+const EV = require('../../scripts/legal/ev-exec-tenant');
 
 test('with EV Exec\'s details the terms reproduce every section of terms.html', () => {
   const doc = termsDocument(EV);
@@ -64,13 +51,7 @@ test('with EV Exec\'s details the privacy policy matches privacy.html', () => {
   const re = /<div class="content-card"[^>]*>\s*<p class="section-label">(\d+)<\/p>([\s\S]*?)\n<\/div>/g;
   let m; while ((m = re.exec(html))) mine[+m[1]] = m[0];
   assert.equal(doc.sections.length, 10);
-  for (let i = 1; i <= 10; i++) {
-    let want = flat(live[i]);
-    // The one intended difference: the template describes the service the same way the terms do
-    // ("premium airport transfers and private hire") instead of "premium airport transfer services".
-    if (i === 1) want = want.replace('premiumairporttransferservicesbased', 'premiumairporttransfersandprivatehire,based');
-    assert.equal(flat(mine[i]), want, `privacy section ${i} differs from privacy.html`);
-  }
+  for (let i = 1; i <= 10; i++) assert.equal(flat(mine[i]), flat(live[i]), `privacy section ${i} differs from privacy.html`);
 });
 
 // ── Another business ────────────────────────────────────────────────────────
@@ -159,4 +140,75 @@ test('invalid policy numbers fall back to the defaults', () => {
   const t = termsDocument(bad).text;
   assert.match(t, /More than 48 hours before the scheduled pickup time/, 'unordered bands fall back to the defaults');
   assert.match(t, /wait free for 15 minutes/);
+});
+
+
+// ── The audit fixes (docs/legal/audit-2026-11-12.md) ─────────────────────────
+
+test('the published pages are built from the templates (run npm run build:legal after changing them)', () => {
+  const t = fs.readFileSync(path.join(ROOT, 'terms.html'), 'utf8');
+  assert.match(t, /Version 4 &middot; effective 12\/11\/2026/);
+  assert.match(t, /href="\/terms-v3">Version 3<\/a>/);
+  const v3 = fs.readFileSync(path.join(ROOT, 'terms-v3.html'), 'utf8');
+  assert.match(v3, /<meta name="robots" content="noindex, follow"\/>/);
+  assert.match(v3, /canonical" href="https:\/\/www\.evexec\.co\.uk\/terms-v3"/);
+  assert.match(v3, /Version 3\. These terms applied to bookings accepted from 16\/10\/2026 until version 4/);
+  const P = require('../../lib/cancellation');
+  assert.equal(P.TERMS_VERSION, '4');
+  assert.equal(P.policyPath('3'), '/terms-v3');
+  assert.equal(P.policyPath('4'), '/terms');
+  assert.deepEqual(P.BANDS['4'], P.BANDS['3'], 'version 4 charges are the same as version 3');
+});
+
+test('terms: consumers are not stripped of rights the law gives them', () => {
+  const t = termsDocument(EV).text;
+  assert.match(t, /Assistance dogs\. We always accept a booking from a disabled passenger who travels with an assistance dog, and we never charge extra/);
+  assert.match(t, /you agree that if we confirm your booking you are obliged to pay the price shown and any charge due under section 5/);
+  assert.match(t, /unless it was caused by our failure to take reasonable care\. Please insure valuable items/);
+  assert.match(t, /Losses that were not reasonably foreseeable when you booked/);
+  assert.doesNotMatch(t, /Any indirect, consequential or economic loss arising from use of our service/, 'no blanket exclusion for consumers');
+  assert.match(t, /Business customers only: we are not liable for loss of profit, loss of business or any other indirect or consequential loss/);
+  assert.match(t, /Nothing in these terms limits our liability for death, personal injury caused by our negligence/);
+  assert.match(t, /reasonable cost of repair or professional valeting/);
+  assert.match(t, /Normal wear and tear is not charged, and this does not apply to an assistance dog/);
+  assert.match(t, /We add no fee for paying by card/);
+  assert.match(t, /If we cancel for a reason within our control, or fail to turn up, we refund in full/);
+  assert.match(t, /A later version applies to your booking only if you agree to it/);
+});
+
+test('privacy: carries what the ICO says a privacy notice must contain', () => {
+  const t = privacyDocument(EV).text;
+  assert.match(t, /Your right to object\. You can object at any time/);
+  assert.match(t, /Withdrawing consent\. Where we rely on your consent/);
+  assert.match(t, /without undue delay and within one month/);
+  assert.doesNotMatch(t, /within 30 days\.\s*$/m);
+  assert.match(t, /Complaints to us\.[^\n]*acknowledge your complaint within 30 days and tell you the outcome without undue delay/);
+  assert.match(t, /Information Commissioner's Office \(ICO\)/);
+  assert.match(t, /You do not have to give us your information, but we cannot arrange a booking without/);
+  assert.match(t, /do not use automated decision-making or profiling/);
+  assert.match(t, /enquiries, quote requests and messages, only for as long as we need it/);
+  assert.match(t, /keep booking and invoice records for six years/);
+  assert.match(t, /contact us for details of the safeguards/);
+  assert.doesNotMatch(t, /constitutes acceptance/, 'a privacy notice is not something people agree to');
+});
+
+test('the ICO data protection fee is flagged, not guessed', () => {
+  const doc = privacyDocument(EV);
+  assert.equal(doc.ready, true);
+  assert.equal(doc.advice.length, 1);
+  assert.match(doc.advice[0].label, /ICO data protection fee/);
+  const withNumber = privacyDocument({ ...EV, brand: { ...EV.brand, legal: { ...EV.brand.legal, ico_registration: 'ZA123456' } } });
+  assert.equal(withNumber.advice.length, 0);
+  assert.match(withNumber.text, /ICO registration number: ZA123456/);
+  const exempt = privacyDocument({ ...EV, brand: { ...EV.brand, legal: { ...EV.brand.legal, ico_registration: 'exempt' } } });
+  assert.equal(exempt.advice.length, 0);
+  assert.doesNotMatch(exempt.text, /ICO registration number/);
+});
+
+test('the booking form makes the obligation to pay clear before the request is sent', () => {
+  const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+  assert.match(html, /I understand that if my booking is confirmed I must pay the price and any cancellation charge/);
+  assert.match(html, /id="bwOrderLine"/);
+  assert.match(html, /Request Transfer &middot; I Agree to Pay if Confirmed/);
+  assert.ok(html.indexOf('id="bwOrderLine"') < html.indexOf('id="bwSubmit"'), 'the total price line sits directly before the button');
 });
