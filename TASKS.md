@@ -119,3 +119,11 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - `handle_new_user()` files a new customer's profile under the business named in the sign-up data (`tenant_id`, from `/api/config` `tenantId`), if it is an active business; none, malformed, unknown or suspended fall back to EV Exec and never block a sign-up. Migration `20261112170000_profile_tenant_at_signup.sql` applied live; rolled-back probe on live confirmed all three cases. Website sign-up forms (home page and My Account) send it.
 - Note: auth is shared, so one login works on every business's website; a customer who signs up on a second business's site is filed under it, and keeps that business for their profile.
 - Existing 4 profiles are EV Exec's and unchanged.
+
+## Parked decisions: owner's choices (12/11/2026)
+1. **Legal documents: B**, a template per business (terms, privacy, cancellation policy) filled from the business's own details; owner/solicitor reviews the template once.
+2. **Stripe: B**, Stripe Connect, one connected account per business, paid directly to them.
+3. **Billing: A**, a flat monthly fee per business through Stripe Billing (price to be set by the owner).
+4. **Sending domain: expand**: each business can use its own domain (see design below), platform domain with the business's name until it is verified.
+5. **Websites: B**, a bespoke branded website per business (own domain, own Vercel project, `TENANT_ID` set to that business), all using the shared database and the business's own branded Operator and Driver apps. Owner has a Vercel Pro account.
+- Cost rule still applies: creating a new Vercel project, verifying a paid Resend domain, or any Stripe fee is asked about first, per business.
