@@ -1,6 +1,9 @@
 -- Each business gets its own booking-reference prefix (EV Exec stays "EVX").
 --
--- DRAFT. Apply in two parts:
+-- APPLIED 12/11/2026 in two parts (part A live as 20261112070609 booking_ref_prefix_part_a;
+-- part B run by the owner in the SQL editor). Verified live: only bookings_ref_format_any
+-- remains, EV Exec's prefix is EVX, all 82 existing references pass.
+-- Applied in two parts:
 --   PART A (no DROP): the Supabase tool can apply it.
 --   PART B (one DROP CONSTRAINT): paste into the Supabase SQL editor yourself;
 --          the tool hangs on DROP statements. Until B is run, a booking with any

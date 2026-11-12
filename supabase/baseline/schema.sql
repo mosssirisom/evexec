@@ -552,7 +552,8 @@ create table public.tenants (
   status text default 'active'::text not null,
   created_at timestamp with time zone default now() not null,
   updated_at timestamp with time zone default now() not null,
-  pricing jsonb
+  pricing jsonb,
+  ref_prefix text default 'EVX'::text not null
 );
 
 
@@ -568,7 +569,7 @@ alter table only public.bookings add constraint bookings_operator_response_check
 alter table only public.bookings add constraint bookings_payment_method_check CHECK ((payment_method = ANY (ARRAY['card'::text, 'cash'::text, 'Card'::text, 'Card machine'::text, 'Payment link'::text, 'Cash'::text, 'Bank transfer'::text, 'Bank Transfer'::text])));
 alter table only public.bookings add constraint bookings_payment_status_check CHECK ((payment_status = ANY (ARRAY['Unpaid'::text, 'Paid'::text, 'Invoiced'::text])));
 alter table only public.bookings add constraint bookings_pkey PRIMARY KEY (id);
-alter table only public.bookings add constraint bookings_ref_format CHECK ((ref ~ '^EVX-[A-Z0-9]+$'::text));
+alter table only public.bookings add constraint bookings_ref_format_any CHECK ((ref ~ '^[A-Z]{2,5}-[A-Z0-9]+$'::text));
 alter table only public.bookings add constraint bookings_ref_unique UNIQUE (ref);
 alter table only public.bookings add constraint bookings_require_travel_datetime CHECK (((travel_date IS NOT NULL) AND (NULLIF(btrim(travel_time), ''::text) IS NOT NULL)));
 alter table only public.bookings add constraint bookings_status_check CHECK ((status = ANY (ARRAY['pending'::text, 'accepted'::text, 'confirmed'::text, 'Dispatched'::text, 'rejected'::text, 'cancelled'::text, 'Cancelled'::text, 'en_route'::text, 'En Route'::text, 'arrived'::text, 'Arrived'::text, 'active'::text, 'Active'::text, 'Passenger On Board'::text, 'No Show'::text, 'completed'::text, 'Completed'::text, 'Unassigned'::text, 'Unassigned / Missed Call Recovery'::text, 'CRITICAL_UNALLOCATED'::text])));
@@ -636,6 +637,7 @@ alter table only public.tenant_users add constraint tenant_users_role_check CHEC
 alter table only public.tenant_users add constraint tenant_users_tenant_id_user_id_role_key UNIQUE (tenant_id, user_id, role);
 alter table only public.tenant_users add constraint tenant_users_tenant_role_consistency CHECK ((((role = 'super_admin'::text) AND (tenant_id IS NULL)) OR ((role <> 'super_admin'::text) AND (tenant_id IS NOT NULL))));
 alter table only public.tenants add constraint tenants_pkey PRIMARY KEY (id);
+alter table only public.tenants add constraint tenants_ref_prefix_format CHECK ((ref_prefix ~ '^[A-Z]{2,5}$'::text));
 alter table only public.tenants add constraint tenants_slug_key UNIQUE (slug);
 alter table only public.tenants add constraint tenants_status_check CHECK ((status = ANY (ARRAY['active'::text, 'suspended'::text])));
 
@@ -1957,6 +1959,7 @@ declare
   v_name text := btrim(coalesce(p_name, ''));
   v_email text := nullif(btrim(coalesce(p_contact_email, '')), '');
   v_phone text := nullif(btrim(coalesce(p_contact_phone, '')), '');
+  v_prefix text;
   t public.tenants;
 begin
   if v_slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$' or length(v_slug) > 40 then
@@ -1969,10 +1972,14 @@ begin
     raise exception 'The contact email is not valid.' using errcode = '22023';
   end if;
 
-  insert into public.tenants (slug, name, contact_email, contact_phone, brand, pricing)
+  v_prefix := left(regexp_replace(upper(v_slug), '[^A-Z]', '', 'g'), 4);
+  if length(v_prefix) < 2 then v_prefix := 'BKG'; end if;
+
+  insert into public.tenants (slug, name, contact_email, contact_phone, brand, pricing, ref_prefix)
   values (v_slug, v_name, v_email, v_phone,
           jsonb_build_object('invoice', jsonb_build_object('business_name', v_name)),
-          jsonb_build_object('airports', '[]'::jsonb, 'extra_stop', 0))
+          jsonb_build_object('airports', '[]'::jsonb, 'extra_stop', 0),
+          v_prefix)
   returning * into t;
 
   insert into public.notification_channel_settings
