@@ -158,3 +158,6 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Operators confirm in their Legal details (`brand.legal.insurance_confirmed`) that they hold hire & reward and public liability insurance and that their drivers are DBS checked. Until confirmed, the terms show a highlighted placeholder and the business is listed as not ready. EV Exec is confirmed.
 - To build in the Operator app's Legal section (with the custom-terms build).
 - Legal build fixed to run more than once without changing the published pages.
+
+## Database backups: do not act (owner instruction, 12/11/2026)
+- Do not pay for backups, and do not check, change or set up backups on the owner's behalf. The existing nightly backup stays as it is; nothing about it is to be investigated or altered unless the owner asks.
