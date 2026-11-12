@@ -173,3 +173,7 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Registered as the business taking bookings. Nature of work and person completing the form are recorded in the ICO account, not here.
 - Each operator with its own controller role must register separately, using the same steps.
 - Record the ICO registration number against EV Exec's business details (Settings → Business, or `brand.legal.ico_registration`) so the privacy policy and the terms show it.
+## Custom terms: owner decisions (12/11/2026)
+1. **Privacy policy: standard plus an operator section.** Every operator uses the standard policy (naming the platform's services and rights, unchanged). Each operator may add an "about us / additional information" section for anything specific to their business. No fully custom privacy policies.
+2. **Terms and cancellation charges: charges follow the operator's numbers.** An operator writing its own terms enters its own cancellation percentages and deadlines, and the booking system charges by those numbers. Safeguards: the operator confirms in writing that the numbers are its own decision; the system refuses charges above 100% of the fare or charges taken before the booking exists.
+- Build order: (a) charge calculation reads each business's own policy; (b) operator Settings, Legal section (standard/custom switch, numbers, confirmation tick, gaps list); (c) terms page per business from its own text or the standard template.
