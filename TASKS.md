@@ -127,3 +127,11 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 4. **Sending domain: expand**: each business can use its own domain (see design below), platform domain with the business's name until it is verified.
 5. **Websites: B**, a bespoke branded website per business (own domain, own Vercel project, `TENANT_ID` set to that business), all using the shared database and the business's own branded Operator and Driver apps. Owner has a Vercel Pro account.
 - Cost rule still applies: creating a new Vercel project, verifying a paid Resend domain, or any Stripe fee is asked about first, per business.
+
+## Legal templates (12/11/2026, drafted)
+- `lib/legal/` (terms 20 sections, privacy 10) built from a business's own details; reproduces EV Exec's live terms and privacy word for word (tests), shows no EV Exec detail for another business, lists what a business still has to fill in. Review notes and solicitor questions: `docs/legal/template-review.md`.
+- Still to do: charge calculation (`lib/cancellation.js`) reading the business's own bands, Operator app Settings, Legal section, serving `/terms` and `/privacy` on each business's website, per-business terms versions.
+
+## Stripe (owner's choice, 12/11/2026)
+- **Standard Connect accounts with Stripe's hosted onboarding**: each business creates and owns its own Stripe account; the platform does not manage their money. Before building: confirm Stripe's current Connect fees for a platform that takes no per-transaction cut (billing is a flat monthly fee, option 3A) and ask the owner before anything that costs.
+- Next: monthly fee (Stripe Billing), then the rest.
