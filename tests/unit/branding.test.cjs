@@ -64,7 +64,7 @@ test('another business gets only what its own row holds, never EV Exec\'s', () =
   const b = brand.fromRow({ id: COASTAL, ...COASTAL_ROW });
   assert.deepEqual({ ...b }, {
     name: 'Coastal Cars', wordmark: 'COASTAL CARS', phone: '07123 456789', email: 'hello@coastal.test', licence: 'PHO1234',
-    site: 'https://coastal.test', tagline: 'Airport transfers from Southport', primary: '#123456', accent: '#FF8800',
+    site: 'https://coastal.test', tagline: 'Airport transfers from Southport', primary: '#123456', accent: '#FF8800', policy: null,
   });
   const bare = brand.fromRow({ id: BARE, ...BARE_ROW });
   assert.equal(bare.phone, '');

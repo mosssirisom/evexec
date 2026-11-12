@@ -158,3 +158,8 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Operators confirm in their Legal details (`brand.legal.insurance_confirmed`) that they hold hire & reward and public liability insurance and that their drivers are DBS checked. Until confirmed, the terms show a highlighted placeholder and the business is listed as not ready. EV Exec is confirmed.
 - To build in the Operator app's Legal section (with the custom-terms build).
 - Legal build fixed to run more than once without changing the published pages.
+
+## Charge calculation per business (12/11/2026, website side done)
+- The website charges a booking by its operator's own standard bands (`brand.legal.policy.standard`) when the booking is on the current terms version. Older versions keep their fixed bands. EV Exec and any business without its own bands keep the standard bands, so nothing changes for them.
+- `update_tenant_legal` accepts `policy` (three bands, stricter each time, first band 0%). Applied live. Database tests: 23 pass.
+- Still to do: the Operator app's copy of the charge rules (`src/lib/email/cancellation.js`) must read the same bands before any operator uses custom numbers; the Legal screen needs the three-band entry fields; the database baseline needs regenerating for the new function.
