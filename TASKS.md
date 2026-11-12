@@ -158,3 +158,9 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Operators confirm in their Legal details (`brand.legal.insurance_confirmed`) that they hold hire & reward and public liability insurance and that their drivers are DBS checked. Until confirmed, the terms show a highlighted placeholder and the business is listed as not ready. EV Exec is confirmed.
 - To build in the Operator app's Legal section (with the custom-terms build).
 - Legal build fixed to run more than once without changing the published pages.
+
+## ICO data protection fee: registered (12/11/2026)
+- Registration complete by direct debit. Application number **C2085772**. The ICO confirms the direct debit within three working days, or at least 10 days before the first payment. Check the confirmation email and that the amount matches the legislation's direct debit figure (£47 a year for a micro organisation).
+- Registered as the business taking bookings. Nature of work and person completing the form are recorded in the ICO account, not here.
+- Each operator with its own controller role must register separately, using the same steps.
+- Record the ICO registration number against EV Exec's business details (Settings → Business, or `brand.legal.ico_registration`) so the privacy policy and the terms show it.
