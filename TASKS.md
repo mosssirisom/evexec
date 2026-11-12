@@ -99,3 +99,7 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Merged: evexec #41 (provision_tenant) and #42 (website files under its own business); evexecoperator #26 (platform tenants route); evexecdriverapp #13 (attestation alert uses the booking's own business shell). CI was green before each merge.
 - `attestation-engine` redeployed as v12 from Driver App main (JWT off, as before). Logs show it running every minute with no errors or exceptions since 06:50 UTC.
 - Next: booking-reference prefix per business (needs owner to run a DROP CONSTRAINT in the SQL editor), then remaining hard-coded fallbacks, then second-business checks on the Operator and Driver apps.
+
+## Booking reference prefix per business (12/11/2026, in progress)
+- Draft `supabase/pending/20261112150000_booking_ref_prefix.sql`: `tenants.ref_prefix` (EV Exec = EVX), new reference rule `^[A-Z]{2,5}-[A-Z0-9]+$`, `provision_tenant` derives a prefix. Part A (no DROP) applied by the tool; part B (`drop constraint bookings_ref_format`) is for the owner in the SQL editor. Order: part A, then deploy code, then part B.
+- Website (`lib/brand.js` `refPrefix`, `api/booking`), claim-a-booking checks accept any prefix. Operator app to follow.

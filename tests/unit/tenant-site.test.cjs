@@ -9,7 +9,7 @@ const H = require('./_siteHarness.cjs');
 
 const COASTAL = process.env.TENANT_ID;
 H.install([{
-  id: COASTAL, name: 'Coastal Cars', contact_email: 'hello@coastal.test', contact_phone: '07123456789', brand: {},
+  id: COASTAL, name: 'Coastal Cars', ref_prefix: 'COAS', contact_email: 'hello@coastal.test', contact_phone: '07123456789', brand: {},
   pricing: { airports: [{ name: 'Manchester Airport', code: 'MAN', one_way: 50, return_fare: 90 }], extra_stop: 2 },
 }]);
 
@@ -24,6 +24,7 @@ test('a booking is filed under this site\'s business, not EV Exec', async () => 
   const rows = tables('bookings');
   assert.equal(rows.length, 1);
   assert.equal(rows[0].body.tenant_id, COASTAL);
+  assert.match(rows[0].body.ref, /^COAS-[A-Z0-9]+$/, 'reference uses this business\'s own prefix');
   assert.equal(rows[0].body.quoted_price, 50, 'priced from this business\'s own price list');
 });
 
@@ -33,7 +34,7 @@ test('both legs of a return booking are filed under this site\'s business', asyn
   assert.ok(r.status < 400, `create failed: ${r.status} ${r.body}`);
   const rows = tables('bookings');
   assert.equal(rows.length, 2, 'outbound and return leg');
-  for (const row of rows) assert.equal(row.body.tenant_id, COASTAL);
+  for (const row of rows) { assert.equal(row.body.tenant_id, COASTAL); assert.match(row.body.ref, /^COAS-/); }
 });
 
 test('a quote request and a contact message are filed under this site\'s business', async () => {
