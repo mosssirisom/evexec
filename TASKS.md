@@ -165,14 +165,13 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 - Still to do: the Operator app's copy of the charge rules (`src/lib/email/cancellation.js`) must read the same bands before any operator uses custom numbers; the Legal screen needs the three-band entry fields; the database baseline needs regenerating for the new function.
 ## Database backups: owner rule (12/11/2026)
 - **Never pay for database backups.** Do not buy, enable or upgrade any paid backup, plan, add-on or project, and do not attempt anything that would charge the owner. Recorded in the cost policy (`CLAUDE.md`).
-- To check before any launch: the repo has a `nightly_backup` migration that sends a backup to another project, and the notes say the Supabase plan has none. Confirm what really runs before saying anything to an operator about backups. Verifying this costs nothing.
 ## Database backups: do not act (owner instruction, 12/11/2026)
 - Do not pay for backups, and do not check, change or set up backups on the owner's behalf. The existing nightly backup stays as it is; nothing about it is to be investigated or altered unless the owner asks.
 ## ICO data protection fee: registered (12/11/2026)
 - Registration complete by direct debit. Application number **C2085772**. The ICO confirms the direct debit within three working days, or at least 10 days before the first payment. Check the confirmation email and that the amount matches the legislation's direct debit figure (£47 a year for a micro organisation).
 - Registered as the business taking bookings. Nature of work and person completing the form are recorded in the ICO account, not here.
 - Each operator with its own controller role must register separately, using the same steps.
-- Record the ICO registration number against EV Exec's business details (Settings → Business, or `brand.legal.ico_registration`) so the privacy policy and the terms show it.
+- Recorded 12/11/2026 in EV Exec's business details (`brand.legal.ico_registration` = C2085772, live database). It is not yet on the published privacy page; adding it there is a separate decision (it is an application number until the ICO confirms the registration).
 ## Custom terms: owner decisions (12/11/2026)
 1. **Privacy policy: standard plus an operator section.** Every operator uses the standard policy (naming the platform's services and rights, unchanged). Each operator may add an "about us / additional information" section for anything specific to their business. No fully custom privacy policies.
 2. **Terms and cancellation charges: charges follow the operator's numbers.** An operator writing its own terms enters its own cancellation percentages and deadlines, and the booking system charges by those numbers. Safeguards: the operator confirms in writing that the numbers are its own decision; the system refuses charges above 100% of the fare or charges taken before the booking exists.
