@@ -1946,6 +1946,44 @@ end;
 $function$
 ;
 
+CREATE OR REPLACE FUNCTION public.provision_tenant(p_slug text, p_name text, p_contact_email text DEFAULT NULL::text, p_contact_phone text DEFAULT NULL::text)
+ RETURNS tenants
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_temp'
+AS $function$
+declare
+  v_slug text := lower(btrim(coalesce(p_slug, '')));
+  v_name text := btrim(coalesce(p_name, ''));
+  v_email text := nullif(btrim(coalesce(p_contact_email, '')), '');
+  v_phone text := nullif(btrim(coalesce(p_contact_phone, '')), '');
+  t public.tenants;
+begin
+  if v_slug !~ '^[a-z0-9]+(-[a-z0-9]+)*$' or length(v_slug) > 40 then
+    raise exception 'The short name must be lowercase letters, numbers and hyphens (up to 40 characters).' using errcode = '22023';
+  end if;
+  if v_name = '' or length(v_name) > 100 then
+    raise exception 'The business name is required (up to 100 characters).' using errcode = '22023';
+  end if;
+  if v_email is not null and v_email !~ '^[^\s@]+@[^\s@]+\.[^\s@]+$' then
+    raise exception 'The contact email is not valid.' using errcode = '22023';
+  end if;
+
+  insert into public.tenants (slug, name, contact_email, contact_phone, brand, pricing)
+  values (v_slug, v_name, v_email, v_phone,
+          jsonb_build_object('invoice', jsonb_build_object('business_name', v_name)),
+          jsonb_build_object('airports', '[]'::jsonb, 'extra_stop', 0))
+  returning * into t;
+
+  insert into public.notification_channel_settings
+    (tenant_id, email_enabled, sms_enabled, whatsapp_enabled, push_enabled, sms_only_when_necessary)
+  values (t.id, true, false, false, false, true);
+
+  return t;
+end;
+$function$
+;
+
 CREATE OR REPLACE FUNCTION public.queue_customer_sms(p_ref text, p_recipient text, p_body text, p_type text DEFAULT 'operator_response'::text)
  RETURNS void
  LANGUAGE plpgsql
@@ -3058,6 +3096,7 @@ revoke all on function private.set_tenant_from_booking() from public, anon, auth
 revoke all on function private.staff_for_tenant(uuid) from anon, authenticated, service_role;
 revoke all on function private.trg_award_journey_points() from public, anon, authenticated, service_role;
 revoke all on function private.trg_ensure_invoice() from public, anon, authenticated, service_role;
+revoke all on function provision_tenant(text,text,text,text) from public, anon, authenticated, service_role;
 revoke all on function queue_customer_sms(text,text,text,text) from public, anon, authenticated, service_role;
 revoke all on function register_operator_push(text,text,text,text) from public, anon, authenticated, service_role;
 revoke all on function set_invoice_number() from public, anon, authenticated, service_role;
@@ -3122,6 +3161,7 @@ grant execute on function private.is_staff() to authenticated;
 grant execute on function private.is_staff() to public;
 grant execute on function private.log_booking_changes() to authenticated;
 grant execute on function private.log_booking_changes() to public;
+grant execute on function provision_tenant(text,text,text,text) to service_role;
 grant execute on function queue_customer_sms(text,text,text,text) to authenticated;
 grant execute on function queue_customer_sms(text,text,text,text) to service_role;
 grant execute on function register_operator_push(text,text,text,text) to authenticated;

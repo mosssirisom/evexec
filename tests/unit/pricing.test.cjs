@@ -82,3 +82,23 @@ test('/api/config gives the booking form the operator prices', async () => {
     extraStop: 7,
   });
 });
+
+test('a business other than EV Exec never falls back to EV Exec\'s prices', () => {
+  const saved = process.env.TENANT_ID;
+  process.env.TENANT_ID = 'dddddddd-0000-4000-8000-000000000002';
+  const path = require.resolve('../../lib/pricing');
+  delete require.cache[path];
+  try {
+    const other = require('../../lib/pricing');
+    assert.deepEqual(other.currentPricing(), { airports: [], extraStop: 0 });
+    other._setPricing(null);
+    assert.deepEqual(other.currentPricing(), { airports: [], extraStop: 0 }, 'still empty after a failed lookup');
+    assert.equal(other.findAirport('Manchester Airport'), null);
+    other._setPricing({ airports: [{ name: 'Southport', code: null, oneWay: 40, ret: 70 }], extraStop: 3 });
+    assert.equal(other.findAirport('southport').oneWay, 40, 'its own prices still work');
+  } finally {
+    if (saved === undefined) delete process.env.TENANT_ID; else process.env.TENANT_ID = saved;
+    delete require.cache[path];
+    require('../../lib/pricing');
+  }
+});
