@@ -497,6 +497,7 @@ const CHROME_PAGES = {
   'terms.html': {},
   'terms-v1.html': {},
   'terms-v2.html': {},
+  'terms-v3.html': {},
   'privacy.html': {},
   'booking.html': {},
   'blog.html': {},
@@ -505,7 +506,7 @@ const CHROME_PAGES = {
 
 // Hand-maintained pages also share the icon/font block. Old Google Fonts links,
 // their preconnects and the old non-square icon are replaced by headCommon().
-const HEAD_PAGES = ['index.html', 'terms.html', 'terms-v1.html', 'terms-v2.html', 'privacy.html', 'booking.html', 'manchester-airport-parking-vs-private-transfer.html', 'blog.html', 'account.html'];
+const HEAD_PAGES = ['index.html', 'terms.html', 'terms-v1.html', 'terms-v2.html', 'terms-v3.html', 'privacy.html', 'booking.html', 'manchester-airport-parking-vs-private-transfer.html', 'blog.html', 'account.html'];
 
 function normalizeHead(file, html) {
   const block = headCommon();

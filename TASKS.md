@@ -127,3 +127,23 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 4. **Sending domain: expand**: each business can use its own domain (see design below), platform domain with the business's name until it is verified.
 5. **Websites: B**, a bespoke branded website per business (own domain, own Vercel project, `TENANT_ID` set to that business), all using the shared database and the business's own branded Operator and Driver apps. Owner has a Vercel Pro account.
 - Cost rule still applies: creating a new Vercel project, verifying a paid Resend domain, or any Stripe fee is asked about first, per business.
+
+## Legal templates (12/11/2026, drafted)
+- `lib/legal/` (terms 20 sections, privacy 10) built from a business's own details; reproduces EV Exec's live terms and privacy word for word (tests), shows no EV Exec detail for another business, lists what a business still has to fill in. Review notes and solicitor questions: `docs/legal/template-review.md`.
+- Still to do: charge calculation (`lib/cancellation.js`) reading the business's own bands, Operator app Settings, Legal section, serving `/terms` and `/privacy` on each business's website, per-business terms versions.
+
+## Stripe (owner's choice, 12/11/2026)
+- **Standard Connect accounts with Stripe's hosted onboarding**: each business creates and owns its own Stripe account; the platform does not manage their money. Before building: confirm Stripe's current Connect fees for a platform that takes no per-transaction cut (billing is a flat monthly fee, option 3A) and ask the owner before anything that costs.
+- Next: monthly fee (Stripe Billing), then the rest.
+
+## Legal audit, no solicitor (12/11/2026)
+- Owner rule: **no solicitor**; legal wording is checked against official UK sources. Audit and owner actions: `docs/legal/audit-2026-11-12.md`.
+- Fixed: online order wording and total-price line on the booking form (Consumer Contracts Regs reg 14), consumer liability and luggage clauses (CRA 2015 s.57), assistance dogs (Equality Act 2010 s.170), privacy notice contents and one-month response, complaints to us (DUAA 2025, in force 19/06/2026). EV Exec terms are now **version 4** (version 3 archived at `/terms-v3`); the charges are unchanged.
+- Owner actions: ICO data protection fee (check and pay or confirm exempt), complaints process, council record-keeping conditions, claims must be true (insurance, DBS, flight monitoring).
+- Operator app copy of `lib/cancellation.js` must move to version 4 too.
+
+## Standard terms with an option for the operator's own (owner idea, 12/11/2026; design agreed in principle, two questions open)
+- **Default:** every business uses the standard template (`lib/legal`). **Option:** an operator can switch to its own terms (`brand.legal.terms_mode` = `standard` | `custom`, own text in `brand.legal.custom_terms`, basic formatting only, sanitised).
+- **Rules for custom terms:** the operator is responsible for them (shown clearly when they switch); the platform still records which version a customer accepted (custom versions numbered per business, old ones kept and viewable); the booking form still requires the tick and the obligation-to-pay wording (Consumer Contracts Regs reg 14), which belongs to the form, not the terms; the charge calculation must follow the numbers the operator enters (`brand.legal.policy`), so custom mode asks for them and the operator confirms their text matches.
+- **Privacy policy:** recommended to stay standard (it lists the platform's processors: Supabase, Vercel, Stripe, Resend, Google, AeroDataBox), with an optional "additional information" section the operator can add.
+- **Open questions for the owner:** (1) custom privacy policy too, or standard plus additional section? (recommended: standard plus additional section). (2) Custom terms and cancellation charges: charges follow the numbers the operator enters? (recommended: yes).
