@@ -166,3 +166,5 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 ## Database backups: owner rule (12/11/2026)
 - **Never pay for database backups.** Do not buy, enable or upgrade any paid backup, plan, add-on or project, and do not attempt anything that would charge the owner. Recorded in the cost policy (`CLAUDE.md`).
 - To check before any launch: the repo has a `nightly_backup` migration that sends a backup to another project, and the notes say the Supabase plan has none. Confirm what really runs before saying anything to an operator about backups. Verifying this costs nothing.
+## Database backups: do not act (owner instruction, 12/11/2026)
+- Do not pay for backups, and do not check, change or set up backups on the owner's behalf. The existing nightly backup stays as it is; nothing about it is to be investigated or altered unless the owner asks.
