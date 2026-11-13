@@ -82,6 +82,7 @@ global.fetch = async (url, opts = {}) => {
   const body = opts.body ? (typeof opts.body === 'string' && opts.body.startsWith('{') ? JSON.parse(opts.body) : opts.body) : null;
 
   if (u.host === 'api.stripe.com') {
+    (stripe.seen ||= []).push({ method, path: u.pathname, auth: opts.headers?.Authorization, account: opts.headers?.['Stripe-Account'] || null });
     let m = /^\/v1\/checkout\/sessions\/([^/]+)$/.exec(u.pathname);
     if (m && method === 'GET') return stripe.sessions[m[1]] ? json(stripe.sessions[m[1]]) : json({ error: {} }, 404);
     m = /^\/v1\/checkout\/sessions\/([^/]+)\/expire$/.exec(u.pathname);
@@ -153,6 +154,10 @@ test.before(async () => {
 });
 test.after(() => server.close());
 test.beforeEach(() => reset());
+test.afterEach(() => {
+  delete process.env.STRIPE_PLATFORM_SECRET_KEY;
+  require('../../lib/stripeAccount')._setConnected([]);
+});
 
 function request(pathname, { body = '', headers = {} } = {}) {
   return new Promise((resolve, reject) => {
@@ -164,9 +169,9 @@ function request(pathname, { body = '', headers = {} } = {}) {
   });
 }
 
-function stripeEvent(sessionObj, { id = 'evt_1UnitTest0001', type = 'checkout.session.completed', created = Math.floor(Date.now() / 1000) - 7200 } = {}) {
+function stripeEvent(sessionObj, { id = 'evt_1UnitTest0001', type = 'checkout.session.completed', created = Math.floor(Date.now() / 1000) - 7200, account } = {}) {
   // Pretty-printed, like Stripe's own payloads, so the exact bytes matter.
-  return JSON.stringify({ id, object: 'event', type, livemode: false, created, data: { object: sessionObj } }, null, 2);
+  return JSON.stringify({ id, object: 'event', type, livemode: false, created, ...(account ? { account } : {}), data: { object: sessionObj } }, null, 2);
 }
 
 function sign(payload, secret = SECRET, t = Math.floor(Date.now() / 1000)) {
@@ -587,7 +592,9 @@ test('flow: operator-made return is confirmed, charged once at £160, return leg
 test('the payment alert goes to the booking\'s own business, and to the default business when none is set', async () => {
   const OTHER = 'cccccccc-0000-4000-8000-000000000002';
   booking().tenant_id = OTHER;
-  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1));
+  process.env.STRIPE_PLATFORM_SECRET_KEY = 'sk_test_platform';
+  require('../../lib/stripeAccount')._setConnected([{ id: OTHER, stripe_connect_account_id: 'acct_other1', stripe_connect_charges_enabled: true }]);
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1, { account: 'acct_other1' }));
   assert.equal(res.status, 200);
   assert.deepEqual(calls.operatorPushTenants, [OTHER]);
 });
@@ -597,4 +604,100 @@ test('a booking with no business set alerts this site\'s own business', async ()
   const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1));
   assert.equal(res.status, 200);
   assert.deepEqual(calls.operatorPushTenants, ['00000000-0000-0000-0000-000000000001']);
+});
+
+
+// ── Stripe Connect: card payments on an operator's own account ─────────────
+const OTHER_T = 'cccccccc-0000-4000-8000-000000000002';
+const sa = require('../../lib/stripeAccount');
+const brandLib = require('../../lib/brand');
+function otherBusiness({ ready = true, site = 'https://other.example', platformKey = true, connected = true } = {}) {
+  booking().tenant_id = OTHER_T;
+  booking().stripe_session_id = null;
+  brandLib._setBrands({ [OTHER_T]: { name: 'Other Co', contact_email: 'ops@other.test', brand: site ? { site_url: site } : {} } });
+  if (platformKey) process.env.STRIPE_PLATFORM_SECRET_KEY = 'sk_test_platform';
+  sa._setConnected(connected ? [{ id: OTHER_T, stripe_connect_account_id: 'acct_other1', stripe_connect_charges_enabled: ready }] : []);
+}
+const created = () => (stripe.seen || []).filter(c => c.method === 'POST' && c.path === '/v1/checkout/sessions');
+
+test('connect: a business with a ready connected account is charged on ITS account and returns to its own site', async () => {
+  otherBusiness();
+  const r = await checkout();
+  assert.equal(r.status, 200);
+  assert.equal(created().length, 1);
+  assert.equal(created()[0].auth, 'Bearer sk_test_platform');
+  assert.equal(created()[0].account, 'acct_other1');
+  assert.match(stripe.sessions.cs_test_new1.success_url, /^https:\/\/other\.example\/booking\?id=/);
+});
+
+test('connect: EV Exec\'s own bookings still use EV Exec\'s own Stripe key and no connected account', async () => {
+  booking().stripe_session_id = null;
+  delete booking().tenant_id;
+  const r = await checkout();
+  assert.equal(r.status, 200);
+  assert.equal(created()[0].auth, 'Bearer sk_test_unit');
+  assert.equal(created()[0].account, null);
+});
+
+test('connect: card payment is refused, and Stripe is never called, when the account is not ready, missing, there is no platform key, or no website', async () => {
+  for (const opts of [{ ready: false }, { connected: false }, { platformKey: false }, { site: '' }]) {
+    reset();
+    delete process.env.STRIPE_PLATFORM_SECRET_KEY;
+    otherBusiness(opts);
+    const r = await checkout();
+    assert.equal(r.status, 400, JSON.stringify(opts));
+    assert.equal(created().length, 0, JSON.stringify(opts));
+    assert.equal(stripe.created, 0, JSON.stringify(opts));
+  }
+});
+
+test('connect: a payment on the business\'s own account marks its booking Paid', async () => {
+  otherBusiness();
+  booking().stripe_session_id = 'cs_test_paid1';
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1, { account: 'acct_other1' }));
+  assert.equal(res.status, 200);
+  assert.equal(booking().payment_status, 'Paid');
+  assert.equal(db.stripe_webhook_events[0].status, 'recorded');
+  // The receipt was looked up on the connected account.
+  const receipt = (stripe.seen || []).find(c => c.path.startsWith('/v1/payment_intents/'));
+  assert.equal(receipt.account, 'acct_other1');
+});
+
+test('connect: a payment on one business\'s account can never mark another business\'s booking Paid', async () => {
+  otherBusiness();
+  sa._setConnected([
+    { id: OTHER_T, stripe_connect_account_id: 'acct_other1', stripe_connect_charges_enabled: true },
+    { id: 'dddddddd-0000-4000-8000-000000000003', stripe_connect_account_id: 'acct_two', stripe_connect_charges_enabled: true },
+  ]);
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1, { account: 'acct_two' }));
+  assert.equal(res.status, 200);
+  assert.equal(booking().payment_status, 'Unpaid');
+  assert.equal(db.stripe_webhook_events[0].status, 'wrong_business');
+  assert.equal(customerEmails().length, 0);
+});
+
+test('connect: a payment on EV Exec\'s own account cannot mark another business\'s booking Paid', async () => {
+  booking().tenant_id = OTHER_T;
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1));
+  assert.equal(res.status, 200);
+  assert.equal(booking().payment_status, 'Unpaid');
+  assert.equal(db.stripe_webhook_events[0].status, 'wrong_business');
+});
+
+test('connect: an event from a connected account we do not know is acknowledged and ignored', async () => {
+  process.env.STRIPE_PLATFORM_SECRET_KEY = 'sk_test_platform';
+  const res = await sendWebhook(stripeEvent(stripe.sessions.cs_test_paid1, { account: 'acct_stranger' }));
+  assert.equal(res.status, 200);
+  assert.equal(booking().payment_status, 'Unpaid');
+  assert.equal(db.stripe_webhook_events[0].status, 'ignored');
+});
+
+test('connect: the payment check on the booking page reads the session on the business\'s account', async () => {
+  otherBusiness();
+  booking().stripe_session_id = 'cs_test_paid1';
+  const res = await verify();
+  assert.equal(JSON.parse(res.body).paid, true);
+  const read = (stripe.seen || []).find(c => c.path === '/v1/checkout/sessions/cs_test_paid1');
+  assert.equal(read.auth, 'Bearer sk_test_platform');
+  assert.equal(read.account, 'acct_other1');
 });
