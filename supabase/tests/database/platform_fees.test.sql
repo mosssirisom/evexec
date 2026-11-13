@@ -12,13 +12,13 @@ insert into public.tenant_users (tenant_id, user_id, role) values
   (null, 'eeeeeeee-0000-4000-8000-000000000031', 'super_admin'),
   ((select id from biz), 'eeeeeeee-0000-4000-8000-000000000032', 'operator_admin');
 
-select is((select default_monthly_pence from public.platform_fees where id), 4900, 'the default monthly fee starts at £49');
+select is((select default_monthly_pence from public.platform_fees where id), 9900, 'the default monthly fee starts at £99');
 select is((select default_setup_pence from public.platform_fees where id), 99900, 'the default set-up fee starts at £999');
 
 -- The platform owner.
 set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"eeeeeeee-0000-4000-8000-000000000031","role":"authenticated"}', true);
-select is((public.get_platform_fees() ->> 'default_monthly_pence')::int, 4900, 'the owner can read the default fees');
+select is((public.get_platform_fees() ->> 'default_monthly_pence')::int, 9900, 'the owner can read the default fees');
 select lives_ok($$select public.set_default_fees(5900, 79900)$$, 'the owner can change the default fees');
 select is((public.get_platform_fees() ->> 'default_setup_pence')::int, 79900, 'the new default is saved');
 select throws_ok($$select public.set_default_fees(-1, 100)$$, '22023', null, 'a negative fee is refused');

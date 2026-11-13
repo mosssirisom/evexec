@@ -3565,7 +3565,7 @@ grant execute on function public.update_tenant_licence(uuid, text) to authentica
 
 create table if not exists public.platform_fees (
   id boolean primary key default true check (id),
-  default_monthly_pence integer not null default 4900 check (default_monthly_pence between 0 and 1000000),
+  default_monthly_pence integer not null default 9900 check (default_monthly_pence between 0 and 1000000),
   default_setup_pence integer not null default 99900 check (default_setup_pence between 0 and 10000000),
   updated_at timestamptz not null default now()
 );

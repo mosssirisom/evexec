@@ -19,7 +19,7 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 
 ### Done since the last update
 - [x] Winjo Digital platform page copy drafted (copy-ready file, not yet published).
-- [x] Price options for operators drafted, with competitor research (see options: keep £49 flat, £49 plus per extra driver, or £79 plus per extra driver).
+- [x] Price options for operators drafted, with competitor research (see options: the owner chose £99 a month and £999 set-up on 13/11/2026).
 - [ ] Confirm the Operator app's latest production build shows the fees screen (Settings, Platform, Fees). Not yet confirmed: the Platform tab is hidden for the current login.
 
 ### Blocked on the owner
@@ -42,7 +42,7 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 - [ ] Fix the contradictions in the website terms and FAQ (WINJO Refresh levels, hosting cancellation notice, terms date).
 
 ### Needs the owner's decision
-- [ ] Public platform pricing: keep £49 flat, or the per-driver option.
+- [x] Public platform pricing: £99 a month and £999 set-up (owner, 13/11/2026). The live default needs the migration `20261113160000` applied once Supabase is back.
 - [ ] Support hours and contact for operators.
 - [ ] VAT wording on the platform page.
 - [ ] Typical set-up time and whether the platform can run on an existing domain.
