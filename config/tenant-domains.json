@@ -1,0 +1,4 @@
+{
+  "_about": "Each business that has its own domain on this website, one entry per domain (no www, no https). The domain must also be added to the Vercel project's Domains, and the same address saved for the business in the Operator app (Settings, Platform). Then run: npm run build:domains",
+  "domains": []
+}
