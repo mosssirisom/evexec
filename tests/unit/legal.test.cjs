@@ -188,7 +188,7 @@ test('privacy: carries what the ICO says a privacy notice must contain', () => {
   assert.match(t, /Information Commissioner's Office \(ICO\)/);
   assert.match(t, /You do not have to give us your information, but we cannot arrange a booking without/);
   assert.match(t, /do not use automated decision-making or profiling/);
-  assert.match(t, /enquiries, quote requests and messages, only for as long as we need it/);
+  assert.match(t, /Enquiries, quote requests and contact messages:<\/strong> 12 months|Enquiries, quote requests and contact messages: 12 months/);
   assert.match(t, /keep booking and invoice records for six years/);
   assert.match(t, /contact us for details of the safeguards/);
   assert.doesNotMatch(t, /constitutes acceptance/, 'a privacy notice is not something people agree to');

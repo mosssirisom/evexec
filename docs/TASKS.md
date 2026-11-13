@@ -28,6 +28,14 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 - [x] Price options for operators drafted, with competitor research (see options: the owner chose £99 a month and £999 set-up on 13/11/2026).
 - [ ] Confirm the Operator app's latest production build shows the fees screen (Settings, Platform, Fees). Not yet confirmed: the Platform tab is hidden for the current login.
 
+### Launch-readiness checklist (13/11/2026)
+- [x] Production redeploy confirmed: website `dpl_2o3j2ay…`, Operator app `dpl_Fz8gyxF…`, Driver App `dpl_82ATSPN…` all READY and aliased.
+- [x] Privacy retention periods written (12 months enquiries and logs, 24 months idle accounts, six years bookings); recorded in `docs/legal/audit-2026-11-12.md`. Owner must do the yearly clear-out by hand.
+- [ ] Supabase size: needs owner approval for VACUUM FULL, a 5-minute job schedule and a keep period.
+- [ ] One test-mode payment through a second business: needs the Test Operator login and Stripe test onboarding.
+- [ ] Automatic billing: needs owner approval (Stripe Billing has fees).
+- [ ] After launch: automatic domain routing, self-serve sign-up.
+
 ### Blocked on the owner
 - [x] Add `STRIPE_PLATFORM_SECRET_KEY` (test) to the website's Vercel project, Sensitive, Production and Preview. *Done by owner; website redeployed and READY.*
 - [x] Add `STRIPE_CONNECT_WEBHOOK_SECRET` to the website's Vercel project. *Done by owner.*
