@@ -156,6 +156,7 @@ test.after(() => server.close());
 test.beforeEach(() => reset());
 test.afterEach(() => {
   delete process.env.STRIPE_PLATFORM_SECRET_KEY;
+  require('../../lib/pricing')._setPricing(null, 'cccccccc-0000-4000-8000-000000000002');
   require('../../lib/stripeAccount')._setConnected([]);
 });
 
@@ -615,6 +616,8 @@ function otherBusiness({ ready = true, site = 'https://other.example', platformK
   booking().tenant_id = OTHER_T;
   booking().stripe_session_id = null;
   brandLib._setBrands({ [OTHER_T]: { name: 'Other Co', contact_email: 'ops@other.test', brand: site ? { site_url: site } : {} } });
+  // This business sets its own prices (a business with none gets no fixed price, never EV Exec's).
+  require('../../lib/pricing')._setPricing({ airports: [{ name: 'Manchester Airport', code: 'MAN', oneWay: 90, ret: 160 }], extraStop: 0 }, OTHER_T);
   if (platformKey) process.env.STRIPE_PLATFORM_SECRET_KEY = 'sk_test_platform';
   sa._setConnected(connected ? [{ id: OTHER_T, stripe_connect_account_id: 'acct_other1', stripe_connect_charges_enabled: ready }] : []);
 }
@@ -674,9 +677,11 @@ test('connect: a payment on one business\'s account can never mark another busin
   assert.equal(booking().payment_status, 'Unpaid');
   assert.equal(db.stripe_webhook_events[0].status, 'wrong_business');
   assert.equal(customerEmails().length, 0);
-  // Staff are told so the money can be refunded.
-  assert.equal(operatorEmails().length, 1);
-  assert.match(operatorEmails()[0].subject, /^Check Stripe: payment on the wrong account/);
+  // The booking's own business is told so the money can be refunded (not EV Exec's address).
+  const otherStaff = calls.emails.filter(e => e.to.includes('ops@other.test'));
+  assert.equal(otherStaff.length, 1);
+  assert.match(otherStaff[0].subject, /^Check Stripe: payment on the wrong account/);
+  assert.equal(operatorEmails().length, 0, "EV Exec's staff address is not used for another business");
 });
 
 test('connect: a payment on EV Exec\'s own account cannot mark another business\'s booking Paid', async () => {
