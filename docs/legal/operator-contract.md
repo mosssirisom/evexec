@@ -38,7 +38,7 @@
 
 3.5 **Changes to the monthly fee.** We may change the monthly fee on at least 30 days' written notice. If you do not accept the change, you may end this agreement before it takes effect under clause 8.
 
-3.6 **Not included** unless the Order Details say so: your own Stripe account and Stripe's charges to you; your domain name, email sending domain and any third-party charges; SMS or messaging charges (the Service sends none: texts to customers are sent by you or your drivers from your own phones); custom design or development beyond the Order Details.
+3.6 **Not included** unless the Order Details say so: your own Stripe account and Stripe's charges to you; the registration fee for your domain name (you buy it in your own name, usually for a few pounds a year, and we set it up for you as part of the set-up fee), your email sending domain, and any third-party charges; SMS or messaging charges (the Service sends none: texts to customers are sent by you or your drivers from your own phones); custom design or development beyond the Order Details.
 
 3.7 The set-up fee is not refundable once we have started the set-up work, except where we fail to provide the Service as described in the Order Details and do not put it right after written notice.
 
@@ -176,6 +176,8 @@ The full wording is `docs/legal/operator-responsibilities.md` (version 1), secti
 | Fee | Amount | When |
 |---|---|---|
 | Set-up fee | £999 | In full before set-up work starts |
+
+**What the set-up fee covers (clause 3.1):** one website deployment for your business on your own domain (you buy the domain; we configure it); your logo and colours across the website, Operator app, Driver App and invoices; invoicing set-up with your letterhead and invoice numbering; your Terms and Privacy pages built from your details; the Operator app and Driver App set up for you; and your first drivers and office staff invited. It does not cover custom design or development beyond this list (clause 3.6).
 | Monthly fee | £99 per month | Monthly in advance from the date the Service is made available |
 
 No VAT is charged (clause 3.3). Changes to the monthly fee: clause 3.5.

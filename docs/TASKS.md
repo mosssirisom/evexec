@@ -45,7 +45,7 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 - [x] Public platform pricing: £99 a month and £999 set-up (owner, 13/11/2026). The live default needs the migration `20261113160000` applied once Supabase is back.
 - [ ] Support hours and contact for operators.
 - [ ] VAT wording on the platform page.
-- [ ] Typical set-up time and whether the platform can run on an existing domain.
+- [x] Domain: the customer buys their own domain (a few pounds a year), and the £999 set-up covers configuring it. Recorded in the contract, clause 3.6 and Schedule B (owner decision, 13/11/2026).
 
 ### Needs the owner's approval before any work
 - Automatic monthly billing of operators (Stripe Billing has its own fees).
