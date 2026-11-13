@@ -83,10 +83,8 @@ select is_empty(
 select set_eq(
   $$ select tablename || '.' || policyname from pg_policies
      where schemaname = 'public' and 'anon' = any (roles) $$,
-  $$ values ('contact_messages.anon_insert_contact_messages'),
-            ('quote_requests.anon_insert'),
-            ('reviews.public_read_reviews') $$,
-  'the only policies written for visitors who are not signed in are the contact form, the quote form and reading reviews'
+  $$ values ('reviews.public_read_reviews') $$,
+  'the only policy written for visitors who are not signed in is reading reviews (the contact and quote forms write through the website server)'
 );
 
 select has_trigger('public', 'bookings', 'zz_guard_driver_booking_update', 'bookings has the driver guard trigger');
@@ -165,12 +163,12 @@ select is_empty(
      from pg_class c join pg_namespace n on n.oid = c.relnamespace,
           unnest(array['SELECT','INSERT','UPDATE','DELETE']) p
      where n.nspname = 'public' and c.relkind in ('r','v') and has_table_privilege('anon', c.oid, p)
-       and (c.relname, p) not in (('contact_messages','INSERT'), ('quote_requests','INSERT'), ('reviews','SELECT')) $$,
-  'visitors who are not signed in hold no table rights beyond the contact form, the quote form and reading reviews'
+       and (c.relname, p) not in (('reviews','SELECT')) $$,
+  'visitors who are not signed in hold no table rights beyond reading reviews'
 );
-select ok(has_table_privilege('anon', 'public.contact_messages', 'INSERT')
-      and has_table_privilege('anon', 'public.quote_requests', 'INSERT')
-      and has_table_privilege('anon', 'public.reviews', 'SELECT'), 'visitors keep the three rights their policies use');
+select ok(has_table_privilege('anon', 'public.reviews', 'SELECT')
+      and not has_table_privilege('anon', 'public.contact_messages', 'INSERT')
+      and not has_table_privilege('anon', 'public.quote_requests', 'INSERT'), 'visitors keep reading reviews and can no longer insert contact or quote rows directly');
 
 -- ─── 2. Not signed in ────────────────────────────────────────────────────────
 

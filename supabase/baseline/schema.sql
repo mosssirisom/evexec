@@ -3189,7 +3189,6 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, SELECT, UPDATE on table public.bookings to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.contact_messages to service_role;
 grant DELETE, INSERT, SELECT, UPDATE on table public.contact_messages to authenticated;
-grant INSERT on table public.contact_messages to anon;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.driver_events to service_role;
 grant DELETE, INSERT, SELECT, UPDATE on table public.driver_events to authenticated;
 grant SELECT, UPDATE, USAGE on sequence public.driver_events_id_seq to service_role;
@@ -3243,7 +3242,6 @@ grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on
 grant DELETE, INSERT, SELECT, UPDATE on table public.push_subscriptions to authenticated;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.quote_requests to service_role;
 grant DELETE, INSERT, SELECT, UPDATE on table public.quote_requests to authenticated;
-grant INSERT on table public.quote_requests to anon;
 grant DELETE, INSERT, MAINTAIN, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE on table public.reviews to service_role;
 grant DELETE, INSERT, SELECT, UPDATE on table public.reviews to authenticated;
 grant SELECT on table public.reviews to anon;

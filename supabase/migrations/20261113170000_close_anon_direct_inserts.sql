@@ -8,3 +8,7 @@
 drop policy if exists anon_insert_contact_messages on public.contact_messages;
 drop policy if exists auth_insert_contact_messages on public.contact_messages;
 drop policy if exists anon_insert on public.quote_requests;
+
+-- Visitors keep no table right on these two tables, only the reading of reviews elsewhere.
+revoke insert on public.contact_messages from anon;
+revoke insert on public.quote_requests from anon;
