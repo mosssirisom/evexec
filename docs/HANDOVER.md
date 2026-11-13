@@ -56,6 +56,17 @@ Until they are applied: the Fees screen shows £49, anonymous direct inserts rem
 - Operator app: `npm test`, `npx tsc --noEmit`, `npm run lint`.
 - Driver App: `npm test`, `npm run test:functions`, `npm run typecheck`, `npm run lint`.
 
+## Deployment status (checked 13/11/2026, read-only)
+
+- **Production is behind main in all three projects.** The last production build in each Vercel project is an older commit: website `44878db` (PR #75; main is now at `949398b`), Operator app `2f69ca6` (PR #47; main is at `ea19f18`), Driver App `9b02c2a` (PR #20; main is at `b6577f9`). No deployment exists for the newer commits, and a few earlier ones show as cancelled. Preview builds of branches were still succeeding, and all three stopped at the same time, which looks like a Vercel platform limit rather than a code problem (I could not confirm the cause). Everything merged is tested; it simply is not live yet.
+- **What is not live yet:** the website's per-business domain matching and branded business website, the booking look-up fix for other prefixes, the Operator app's website address field and density changes, the Driver App's phone polish.
+- **To fix:** in Vercel, open each project's Deployments, check why the latest `main` commit has no build (an alert or limit notice, or an ignored-build setting), then redeploy `main`. A redeploy is a production action, so it needs the owner's go-ahead.
+
+## Visual review (13/11/2026)
+
+Ran the signed-in Operator app and Driver App locally against stand-in data and reviewed screenshots at phone (390 and 360 wide), iPad portrait and landscape, and desktop widths. No sideways scrolling anywhere. Fixed and merged: booking rows on iPad landscape (names were cut to three letters), shorter setup checklist, tile label, drivers screen (three per row, repeated tags removed), Driver App notification prompt (slim, hidden on a job), Jobs opens on Upcoming, neutral search hint, Settings tab cue.
+Still open (small, judgement calls): on a phone the setup checklist sits above "Needs you" on Today; driver cards on the Drivers screen are tall; the text-message link format needs a real iPhone test; real-device checks (touch targets, keyboard, push) are not covered by screenshots.
+
 ## Known limits (honest list)
 
 - Not yet tested on a real second domain (needs a domain and a hosting decision).
