@@ -33,7 +33,9 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 - [ ] Give the owner's login the platform owner role so the Platform screen shows (needs Supabase).
 - [ ] Review the Connect payment code before live mode.
 - [ ] Tidy two `react-hooks/set-state-in-effect` lint warnings in the Operator app (`FeesSection.jsx`, `PaymentsSettings.jsx`).
-- [ ] Driver App has no automated tests (known gap).
+- [x] Driver App tests: it has 74 unit tests and 22 function tests, all passing (earlier notes saying none were out of date). Coverage of the job screens is still thin.
+- [ ] Rate limiting on the public forms is open for review (evexec PR #67).
+- [ ] Two Operator app pull requests are open for review: #42 (lint tidy) and #43 (payment link closes open checkouts when the account is not ready).
 
 ### Winjo Digital website (not in these repos)
 - [ ] Publish the platform page (draft in the scratchpad).
