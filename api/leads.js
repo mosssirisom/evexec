@@ -6,6 +6,7 @@
 //          POST /api/contact        → save contact message
 //          POST /api/quote-request  → save quote request
 
+const { tooMany } = require('../lib/rateLimit');
 const E = require('../lib/emailContent');
 const crypto = require('crypto');
 const { tenantId } = require('../lib/brand');
@@ -62,6 +63,7 @@ async function handleUpdateStatus(req, res) {
 
 async function handleContact(req, res) {
   if (req.method !== 'POST') { res.statusCode = 405; return res.end(JSON.stringify({ error: 'Method not allowed' })); }
+  if (tooMany(req, res, 'contact', 5, 3600)) return;
   let body; try { body = await readBody(req); } catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid JSON' })); }
   const name = body.name || body.customer_name; const message = body.message;
   if (!name || !message) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Name and message are required' })); }
@@ -101,6 +103,7 @@ async function notifyQuoteRequest(q) {
 
 async function handleQuoteRequest(req, res) {
   if (req.method !== 'POST') { res.statusCode = 405; return res.end(JSON.stringify({ error: 'Method not allowed' })); }
+  if (tooMany(req, res, 'quote-request', 5, 3600)) return;
   let body; try { body = await readBody(req); } catch { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Invalid JSON' })); }
   // Honeypot: real visitors never see or fill this field.
   if (body.company_website) return res.end(JSON.stringify({ success: true }));
