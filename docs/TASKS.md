@@ -15,21 +15,37 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 - Staff alert (email and push) for a `wrong_business` payment. Website #65.
 - Operator app CI lint fixed (pre-existing `no-explicit-any` in four files).
 
-## Blocked on the owner (secrets only the owner can add)
+## Next steps (checkboxes updated 13/11/2026)
 
-1. `STRIPE_PLATFORM_SECRET_KEY` (Winjo Digital Stripe test key) on the website's Vercel project, Sensitive, Production and Preview. The Operator app already has it.
-2. `STRIPE_CONNECT_WEBHOOK_SECRET` (signing secret of the Connect endpoint `we_1UbIPYLEEs7hsljuOXvMDJ4c` in Winjo's test-mode Stripe Dashboard) on the website's Vercel project, Sensitive, Production and Preview.
-3. Then redeploy the website, and the end-to-end test-mode payment can run.
+### Done since the last update
+- [x] Winjo Digital platform page copy drafted (copy-ready file, not yet published).
+- [x] Price options for operators drafted, with competitor research (see options: keep £49 flat, £49 plus per extra driver, or £79 plus per extra driver).
+- [x] Operator app production build contains the fees screen (Settings, Platform, Fees), confirmed by the owner.
 
-## Outstanding (no owner input needed)
+### Blocked on the owner
+- [ ] Add `STRIPE_PLATFORM_SECRET_KEY` (test) to the website's Vercel project, Sensitive, Production and Preview. *Done by owner 13/11/2026; website redeployed and READY.*
+- [x] Add `STRIPE_CONNECT_WEBHOOK_SECRET` to the website's Vercel project. *Done by owner.*
+- [ ] Create a Test Operator admin login (Supabase dashboard steps given; needs owner's platform role or the manual steps).
+- [ ] Complete Stripe test onboarding for Test Operator in the Operator app (Settings → Payments).
 
-- End-to-end test of a connected-account payment in Stripe test mode (needs the two secrets above).
-- Review pass over the Connect code for live mode.
-- Operator app: tidy two `react-hooks/set-state-in-effect` lint warnings (`FeesSection.jsx`, `PaymentsSettings.jsx`).
-- Driver App has no automated tests (known gap).
+### Outstanding (engineering, no owner input needed)
+- [ ] Run one test-mode card payment on the Test Operator's connected account, and confirm the booking is marked Paid on that account (needs Stripe, Supabase and Vercel connections back).
+- [ ] Give the owner's login the platform owner role so the Platform screen shows (needs Supabase).
+- [ ] Review the Connect payment code before live mode.
+- [ ] Tidy two `react-hooks/set-state-in-effect` lint warnings in the Operator app (`FeesSection.jsx`, `PaymentsSettings.jsx`).
+- [ ] Driver App has no automated tests (known gap).
 
-## Needs the owner's approval before any work
+### Winjo Digital website (not in these repos)
+- [ ] Publish the platform page (draft in the scratchpad).
+- [ ] Fix the contradictions in the website terms and FAQ (WINJO Refresh levels, hosting cancellation notice, terms date).
 
+### Needs the owner's decision
+- [ ] Public platform pricing: keep £49 flat, or the per-driver option.
+- [ ] Support hours and contact for operators.
+- [ ] VAT wording on the platform page.
+- [ ] Typical set-up time and whether the platform can run on an existing domain.
+
+### Needs the owner's approval before any work
 - Automatic monthly billing of operators (Stripe Billing has its own fees).
 - Live mode for Stripe Connect (after the test payment passes).
 - Anything that costs money or turns Twilio on.
