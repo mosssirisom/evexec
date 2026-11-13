@@ -68,7 +68,7 @@
 
 7.1 We will provide the Service with reasonable skill and care and will work to keep it available. We **do not promise** that it will be uninterrupted or error free. The Service depends on third-party services (for example hosting, database, email and payment providers). We are not responsible for their failures, but we will help you work around them where we reasonably can.
 
-7.2 Support is by email during our normal working hours, as described in the Order Details. We may update, improve or change the Service from time to time. If a change would seriously reduce what you are paying for, we will give you reasonable notice.
+7.2 Support is by email at hello@winjodigital.co.uk. The support hours, reply times and what support covers are set out in the Order Details for your business, in the same way as Winjo Digital's published terms leave booking systems and apps to their own written proposal (section 20 of those terms). We may update, improve or change the Service from time to time. If a change would seriously reduce what you are paying for, we will give you reasonable notice.
 
 7.3 You are responsible for having a way to take and run bookings if the Service is unavailable (for example by phone).
 
