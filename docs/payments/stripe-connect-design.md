@@ -45,3 +45,10 @@ Each operator gets its own Stripe account (a "connected account") through Stripe
 - **Known gap:** a `wrong_business` payment is logged only (`stripe_webhook_events`), staff are not emailed. It should not happen (checkout refuses those payments), but if it does the money is on the wrong account and must be refunded by hand. An alert for this is a follow-up.
 - **Still to do:** the Operator app payment link (its own copy of the same logic), the Connect webhook endpoint in Stripe, and a full test in Stripe test mode. Set `STRIPE_PLATFORM_SECRET_KEY` and `STRIPE_CONNECT_WEBHOOK_SECRET` as **Sensitive** variables on the website's Vercel project too (test keys first).
 
+## Owner decisions (13/11/2026)
+
+- **EV Exec and Winjo Digital are separate businesses.** EV Exec is an airport taxi business and is a **customer** of the platform like any other operator, with its **own Stripe account**, kept as it is. Winjo Digital is the software and web-design business: it owns the platform, has its **own Stripe account**, and collects the monthly fee from each operator.
+- **EV Exec's payments stay in its own Stripe account.** The "owner tenant" setting (`STRIPE_PLATFORM_TENANT_ID`) and the own-key path in the code mean "the business whose own Stripe key is used", not "the business that owns the platform". Nothing needs to move.
+- **Fees:** a default monthly and set-up rate, changeable per business (larger or smaller operators). EV Exec is charged **£0**; it is simply not billed, with no zero-value direct debit or subscription (a Stripe subscription would cost money). Rates are recorded in `platform_fees` and `tenants.monthly_fee_pence` / `setup_fee_pence` (migration `20261113150000`); the Fees screen is in the Operator app (Settings → Platform).
+- **Not built, and not to be turned on without the owner's approval:** automatic monthly billing (Stripe Billing has its own fees). VAT: the owner is not VAT registered and does not expect to exceed the registration threshold; the threshold depends on taxable income over a rolling 12 months, so check the current figure on gov.uk and with an accountant as the number of operators grows. Not legal or tax advice.
+
