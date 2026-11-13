@@ -20,10 +20,10 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 ### Done since the last update
 - [x] Winjo Digital platform page copy drafted (copy-ready file, not yet published).
 - [x] Price options for operators drafted, with competitor research (see options: keep £49 flat, £49 plus per extra driver, or £79 plus per extra driver).
-- [x] Operator app production build contains the fees screen (Settings, Platform, Fees), confirmed by the owner.
+- [ ] Confirm the Operator app's latest production build shows the fees screen (Settings, Platform, Fees). Not yet confirmed: the Platform tab is hidden for the current login.
 
 ### Blocked on the owner
-- [ ] Add `STRIPE_PLATFORM_SECRET_KEY` (test) to the website's Vercel project, Sensitive, Production and Preview. *Done by owner 13/11/2026; website redeployed and READY.*
+- [x] Add `STRIPE_PLATFORM_SECRET_KEY` (test) to the website's Vercel project, Sensitive, Production and Preview. *Done by owner; website redeployed and READY.*
 - [x] Add `STRIPE_CONNECT_WEBHOOK_SECRET` to the website's Vercel project. *Done by owner.*
 - [ ] Create a Test Operator admin login (Supabase dashboard steps given; needs owner's platform role or the manual steps).
 - [ ] Complete Stripe test onboarding for Test Operator in the Operator app (Settings → Payments).
