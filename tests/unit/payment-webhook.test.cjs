@@ -674,6 +674,9 @@ test('connect: a payment on one business\'s account can never mark another busin
   assert.equal(booking().payment_status, 'Unpaid');
   assert.equal(db.stripe_webhook_events[0].status, 'wrong_business');
   assert.equal(customerEmails().length, 0);
+  // Staff are told so the money can be refunded.
+  assert.equal(operatorEmails().length, 1);
+  assert.match(operatorEmails()[0].subject, /^Check Stripe: payment on the wrong account/);
 });
 
 test('connect: a payment on EV Exec\'s own account cannot mark another business\'s booking Paid', async () => {
