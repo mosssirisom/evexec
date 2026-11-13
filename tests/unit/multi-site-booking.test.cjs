@@ -96,3 +96,44 @@ test('a preview address files under this deployment\'s own business', async () =
   assert.equal(r.status, 200, JSON.stringify(r.body));
   assert.equal(inserts[0].tenant_id, EV);
 });
+
+// ── references from any business ─────────────────────────────────────────────
+function mkReq(method, url, host, body) {
+  const chunks = body ? [Buffer.from(JSON.stringify(body))] : [];
+  return { method, url, query: Object.fromEntries(new URL(`http://x${url}`).searchParams), headers: { host, 'content-type': 'application/json', 'x-forwarded-for': '8.8.4.4' }, socket: { remoteAddress: '1.1.1.1' }, [Symbol.asyncIterator]: async function* () { for (const c of chunks) yield c; } };
+}
+const mkRes = () => ({ headers: {}, setHeader(k, v) { this.headers[k] = v; }, end(b) { this.body = b; } });
+
+test('a booking look-up accepts another business\'s reference prefix', async () => {
+  const handler = require('../../api/booking/index.js');
+  const prev = global.fetch;
+  global.fetch = async (url) => {
+    const u = String(url);
+    const data = u.includes('/rest/v1/bookings') && u.includes('ref=eq.OCB-ABC123')
+      ? [{ id: 'bbbbbbbb-0000-4000-8000-000000000009', customer_phone: '07700900123' }] : [];
+    return { ok: true, status: 200, json: async () => data, text: async () => JSON.stringify(data) };
+  };
+  try {
+    const res = mkRes();
+    await handler(mkReq('POST', '/api/booking/lookup', 'www.othercabs.co.uk', { ref: 'ocb-abc123', phone: '07700 900123' }), res);
+    assert.equal(res.statusCode, 200, res.body);
+    assert.equal(JSON.parse(res.body).id, 'bbbbbbbb-0000-4000-8000-000000000009');
+    const bad = mkRes();
+    await handler(mkReq('POST', '/api/booking/lookup', 'www.othercabs.co.uk', { ref: 'nonsense', phone: '07700 900123' }), bad);
+    assert.equal(bad.statusCode, 400, 'a reference in no business\'s format is refused');
+  } finally { global.fetch = prev; }
+});
+
+test('a return leg finds its outbound booking whatever the prefix', async () => {
+  const handler = require('../../api/booking/index.js');
+  const prev = global.fetch;
+  const ID = 'bbbbbbbb-0000-4000-8000-000000000010';
+  const row = { id: ID, ref: 'OCB-LEG111', status: 'Unassigned', tenant_id: OTHER, notes: 'Return leg created automatically from return booking. Outbound ref: OCB-OUT222', quoted_price: 0, payment_status: 'Unpaid' };
+  global.fetch = async () => ({ ok: true, status: 200, json: async () => [row], text: async () => '[]' });
+  try {
+    const res = mkRes();
+    await handler(mkReq('GET', `/api/booking/get?id=${ID}`, 'www.othercabs.co.uk'), res);
+    assert.equal(res.statusCode, 200, res.body);
+    assert.equal(JSON.parse(res.body).outbound_ref, 'OCB-OUT222');
+  } finally { global.fetch = prev; }
+});
