@@ -2884,12 +2884,6 @@ create policy staff_all_bookings on public.bookings as PERMISSIVE for ALL to pub
   using (private.staff_for_tenant(tenant_id))
   with check (private.staff_for_tenant(tenant_id));
 
-create policy anon_insert_contact_messages on public.contact_messages as PERMISSIVE for INSERT to anon
-  with check (true);
-
-create policy auth_insert_contact_messages on public.contact_messages as PERMISSIVE for INSERT to authenticated
-  with check (true);
-
 create policy staff_all_contact_messages on public.contact_messages as PERMISSIVE for ALL to public
   using (private.staff_for_tenant(tenant_id))
   with check (private.staff_for_tenant(tenant_id));
@@ -3063,9 +3057,6 @@ create policy "Users can view own profile" on public.profiles as PERMISSIVE for 
 create policy driver_own_subs on public.push_subscriptions as PERMISSIVE for ALL to public
   using ((driver_id = ( SELECT auth.uid() AS uid)))
   with check ((driver_id = ( SELECT auth.uid() AS uid)));
-
-create policy anon_insert on public.quote_requests as PERMISSIVE for INSERT to anon
-  with check (true);
 
 create policy staff_all_quote_requests on public.quote_requests as PERMISSIVE for ALL to public
   using (private.staff_for_tenant(tenant_id))
