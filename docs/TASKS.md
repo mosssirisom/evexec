@@ -17,7 +17,13 @@ A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the p
 
 ## Next steps (checkboxes updated 13/11/2026)
 
+> The full onboarding runbook and what is pending on the live database are in `docs/HANDOVER.md`.
+
 ### Done since the last update
+- [x] One website serves many businesses by domain (prices, references, links, alerts per business), merged (#73, #75, #77).
+- [x] A business's own website: branded home page with booking form, and booking and payment page; explicit per-domain routing (#78). 18 browser tests and 22 unit tests.
+- [x] Owner-only website address per business with a one-domain-per-business guard (#75, Operator app #47).
+- [x] Rate limiting on public forms; silent-update fixes in the Driver App and Operator app; direct public inserts closed (migration pending).
 - [x] Winjo Digital platform page copy drafted (copy-ready file, not yet published).
 - [x] Price options for operators drafted, with competitor research (see options: the owner chose £99 a month and £999 set-up on 13/11/2026).
 - [ ] Confirm the Operator app's latest production build shows the fees screen (Settings, Platform, Fees). Not yet confirmed: the Platform tab is hidden for the current login.
