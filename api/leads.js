@@ -9,7 +9,7 @@
 const { tooMany } = require('../lib/rateLimit');
 const E = require('../lib/emailContent');
 const crypto = require('crypto');
-const { tenantId } = require('../lib/brand');
+const { tenantId, tenantIdFor, staffEmailFor } = require('../lib/brand');
 
 const SUPABASE_URL = () => process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://yoltkmhtxwluqxxpewbl.supabase.co';
 const SERVICE_KEY  = () => process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -68,7 +68,7 @@ async function handleContact(req, res) {
   const name = body.name || body.customer_name; const message = body.message;
   if (!name || !message) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Name and message are required' })); }
   try {
-    const r = await fetch(`${SUPABASE_URL()}/rest/v1/contact_messages`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ name, phone: body.phone || '', email: body.email || '', message, status: 'new', tenant_id: tenantId() }) });
+    const r = await fetch(`${SUPABASE_URL()}/rest/v1/contact_messages`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ name, phone: body.phone || '', email: body.email || '', message, status: 'new', tenant_id: tenantIdFor(req) }) });
     if (!r.ok) throw new Error(await r.text());
     res.end(JSON.stringify({ success: true, message: await r.json() }));
   } catch (err) { res.statusCode = 500; res.end(JSON.stringify({ error: err.message })); }
@@ -87,15 +87,15 @@ async function notifyQuoteRequest(q) {
   const { sendEmail } = require('../lib/notify');
   const { sendPushToOperatorDevices } = require('../lib/push');
   const tasks = [];
-  const opEmail = (process.env.OPERATOR_EMAIL || '').trim();
+  const opEmail = staffEmailFor(q.tenant_id);
   if (opEmail) {
     const m = E.staffNewQuote(q);
     tasks.push(sendEmail({ to: opEmail, subject: m.subject, html: m.html, text: m.text }));
   }
-  tasks.push(sendPushToOperatorDevices('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator/inbox', 'quote-request'));
+  tasks.push(sendPushToOperatorDevices('New quote request', `${q.customer_name}: ${q.pickup_location} to ${q.destination}`, '/operator/inbox', 'quote-request', q.tenant_id));
   if (q.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(q.email)) {
     const m = E.quoteReceived(q);
-    tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text, tenantId: require('../lib/brand').tenantId() }));
+    tasks.push(sendEmail({ to: q.email, subject: m.subject, html: m.html, text: m.text, tenantId: q.tenant_id }));
   }
   const results = await Promise.allSettled(tasks);
   results.filter((r) => r.status === 'rejected').forEach((r) => console.error('quote notify failed:', r.reason && r.reason.message));
@@ -111,11 +111,12 @@ async function handleQuoteRequest(req, res) {
   if (!name || !phone) { res.statusCode = 400; return res.end(JSON.stringify({ error: 'Name and phone are required' })); }
   const isDate = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
   try {
+    const tid = tenantIdFor(req);
     const payload = { customer_name: name, phone, email: clip(body.email, 200), pickup_location: clip(body.pickup_location, 300), destination: clip(body.destination, 300), pickup_date: isDate(body.pickup_date) ? body.pickup_date : null, pickup_time: clip(body.pickup_time, 10), passengers: Math.min(Math.max(parseInt(body.passengers || 1, 10) || 1, 1), 16), luggage: clip(body.luggage, 200), return_required: Boolean(body.return_required), return_date: isDate(body.return_date) ? body.return_date : null, return_time: clip(body.return_time, 10), notes: clip(body.notes, 2000), status: 'new' };
-    const r = await fetch(`${SUPABASE_URL()}/rest/v1/quote_requests`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ ...payload, tenant_id: tenantId() }) });
+    const r = await fetch(`${SUPABASE_URL()}/rest/v1/quote_requests`, { method: 'POST', headers: dbHeaders({ Prefer: 'return=representation' }), body: JSON.stringify({ ...payload, tenant_id: tid }) });
     if (!r.ok) throw new Error(await r.text());
     const lead = await r.json();
-    await notifyQuoteRequest(payload).catch((e) => console.error('quote notify failed:', e.message));
+    await notifyQuoteRequest({ ...payload, tenant_id: tid }).catch((e) => console.error('quote notify failed:', e.message));
     res.end(JSON.stringify({ success: true, lead }));
   } catch (err) { console.error('quote-request failed:', err.message); res.statusCode = 500; res.end(JSON.stringify({ error: 'Could not save your request' })); }
 }

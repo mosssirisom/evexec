@@ -13,6 +13,7 @@ process.env.SUPABASE_URL = 'https://db.test';
 const pricing = require('../../lib/pricing');
 const { lookupPrice, getPrice } = require('../../lib/format');
 
+const EV = '00000000-0000-0000-0000-000000000001';
 const ROW = {
   airports: [
     { name: 'Manchester Airport', code: 'MAN', one_way: 99, return_fare: 180 },
@@ -37,9 +38,9 @@ test('built-in prices are used until the operator list is loaded', () => {
 });
 
 test('loads the operator prices and uses them everywhere', async () => {
-  const calls = fakeFetch(() => ok([{ pricing: ROW }]));
+  const calls = fakeFetch(() => ok([{ id: EV, pricing: ROW }]));
   await pricing.refreshPricing({ force: true });
-  assert.match(calls[0], /\/rest\/v1\/tenants\?id=eq\.00000000-0000-0000-0000-000000000001&select=pricing/);
+  assert.match(calls[0], /\/rest\/v1\/tenants\?select=id,pricing/);
   assert.equal(lookupPrice('Manchester Airport', false), 99);
   assert.equal(lookupPrice('manchester airport', true), 180);
   assert.equal(lookupPrice('Preston Station', false), 40);
@@ -50,7 +51,7 @@ test('loads the operator prices and uses them everywhere', async () => {
 });
 
 test('loads at most once a minute', async () => {
-  const calls = fakeFetch(() => ok([{ pricing: ROW }]));
+  const calls = fakeFetch(() => ok([{ id: EV, pricing: ROW }]));
   await pricing.refreshPricing({ force: true });
   await pricing.refreshPricing();
   await pricing.refreshPricing();
@@ -62,17 +63,17 @@ test('falls back to the built-in list when the database fails or has no prices',
   await pricing.refreshPricing({ force: true });
   assert.equal(lookupPrice('Manchester Airport', false), 90);
 
-  fakeFetch(() => ok([{ pricing: null }]));
+  fakeFetch(() => ok([{ id: EV, pricing: null }]));
   await pricing.refreshPricing({ force: true });
   assert.equal(lookupPrice('Leeds Bradford Airport', false), 135);
 
-  fakeFetch(() => ok([{ pricing: { airports: [{ name: 'Bad', one_way: '90', return_fare: 1 }] } }]));
+  fakeFetch(() => ok([{ id: EV, pricing: { airports: [{ name: 'Bad', one_way: '90', return_fare: 1 }] } }]));
   await pricing.refreshPricing({ force: true });
   assert.equal(lookupPrice('Manchester Airport', false), 90, 'unusable rows are ignored');
 });
 
 test('/api/config gives the booking form the operator prices', async () => {
-  fakeFetch(() => ok([{ pricing: ROW }]));
+  fakeFetch(() => ok([{ id: EV, pricing: ROW }]));
   const handler = require('../../api/booking/index.js');
   const res = { headers: {}, statusCode: 0, body: '', setHeader(k, v) { this.headers[k] = v; }, end(b) { this.body = b; } };
   await handler({ method: 'GET', url: '/api/config', headers: {} }, res);
