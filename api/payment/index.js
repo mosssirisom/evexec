@@ -8,7 +8,8 @@ const { dbGet, dbUpdate, isValidUUID } = require('../../lib/supabase');
 const { sendConfirmations } = require('../../lib/notify');
 const { getPrice, journeyLine, isReturnLeg } = require('../../lib/format');
 const { parseBody, getRawBody } = require('../../lib/parse');
-const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES, cardPaymentsAllowed } = require('../../lib/payments');
+const { reconcileCheckoutSession, getStripeSession, expireStripeSession, expectedPence, PAID_OUTCOMES } = require('../../lib/payments');
+const { stripeContext, contextForAccount, ownerTenant, isOwner } = require('../../lib/stripeAccount');
 const stripeEvents = require('../../lib/stripeEvents');
 const policy = require('../../lib/cancellation');
 
@@ -52,7 +53,7 @@ function routeName(req) {
   return 'index';
 }
 
-async function createStripeSession({ price, description, productName, bookingId, customerEmail, successUrl, cancelUrl }) {
+async function createStripeSession({ price, description, productName, bookingId, customerEmail, successUrl, cancelUrl, ctx }) {
   const params = new URLSearchParams();
   params.set('payment_method_types[]', 'card');
   params.set('line_items[0][price_data][currency]', 'gbp');
@@ -69,7 +70,7 @@ async function createStripeSession({ price, description, productName, bookingId,
   const stripeRes = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+      ...ctx.headers,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     body: params.toString()
@@ -102,13 +103,19 @@ async function handleCreateCheckoutSession(req, res) {
 
   const booking = await dbGet('bookings', bookingId);
   if (!booking) return json(res, 404, { error: 'Booking not found' });
-  if (!cardPaymentsAllowed(booking.tenant_id)) {
+  // The business's own Stripe account: EV Exec's own, or an operator's connected account
+  // once Stripe says it can take card payments. Otherwise the payment is refused, so
+  // money never goes to a different business's account.
+  const ctx = await stripeContext(booking.tenant_id);
+  if (!ctx) {
     return json(res, 400, { error: `${brandFor(booking.tenant_id).name || 'This business'} does not take card payments online yet. Please pay in cash or by bank transfer, or contact them.` });
   }
   const notAccepted = await ensurePolicyAccepted(booking, body);
   if (notAccepted) return json(res, 400, { error: notAccepted });
 
-  const siteUrl = process.env.SITE_URL || brandFor(booking.tenant_id).site;
+  // EV Exec's SITE_URL override (previews) applies to EV Exec only.
+  const siteUrl = (isOwner(booking.tenant_id) && process.env.SITE_URL) || brandFor(booking.tenant_id).site;
+  if (!siteUrl) return json(res, 400, { error: `${brandFor(booking.tenant_id).name || 'This business'} has no website address set up for card payments yet. Please pay in cash or by bank transfer, or contact them.` });
   const successUrl = `${siteUrl}/booking?id=${bookingId}&payment=success`;
 
   // The checkout already started for this booking: reuse it while it is open
@@ -118,7 +125,7 @@ async function handleCreateCheckoutSession(req, res) {
   // this booking's too: if it is still open it is closed before a new one is
   // made here, so the booking never has two payable checkouts.
   if (booking.stripe_session_id) {
-    const existing = await getStripeSession(booking.stripe_session_id);
+    const existing = await getStripeSession(booking.stripe_session_id, ctx);
     const ours = existing && existing.metadata?.bookingId === bookingId;
     const operatorLink = existing && booking.ref && (existing.metadata?.booking_ref === booking.ref || existing.client_reference_id === booking.ref);
     if (ours) {
@@ -126,10 +133,10 @@ async function handleCreateCheckoutSession(req, res) {
       if (existing.status === 'open' && readyForPayment(booking) && existing.amount_total === expectedPence(booking) && existing.url) {
         return json(res, 200, { url: existing.url });
       }
-      if (existing.status === 'open') await expireStripeSession(existing.id);
+      if (existing.status === 'open') await expireStripeSession(existing.id, ctx);
     } else if (operatorLink) {
       if (existing.payment_status === 'paid') return json(res, 400, { error: 'This booking has already been paid. The payment is being recorded.' });
-      if (existing.status === 'open') await expireStripeSession(existing.id);
+      if (existing.status === 'open') await expireStripeSession(existing.id, ctx);
     }
   }
 
@@ -147,7 +154,8 @@ async function handleCreateCheckoutSession(req, res) {
     // Stripe fills in {CHECKOUT_SESSION_ID}, so the return check knows exactly
     // which checkout was paid.
     successUrl: `${successUrl}&session_id={CHECKOUT_SESSION_ID}`,
-    cancelUrl: `${siteUrl}/booking?id=${bookingId}&payment=cancelled`
+    cancelUrl: `${siteUrl}/booking?id=${bookingId}&payment=cancelled`,
+    ctx
   });
 
   await dbUpdate('bookings', bookingId, { stripe_session_id: session.id });
@@ -170,10 +178,12 @@ async function handleVerify(req, res) {
 
   const sessionId = typeof body.sessionId === 'string' && body.sessionId ? body.sessionId : booking.stripe_session_id;
   if (!sessionId) return json(res, 200, { paid: false });
-  const session = await getStripeSession(sessionId);
+  const ctx = await stripeContext(booking.tenant_id, { requireReady: false });
+  if (!ctx) return json(res, 200, { paid: false });
+  const session = await getStripeSession(sessionId, ctx);
   // Only a checkout created for this booking can mark it paid.
   if (!session || session.metadata?.bookingId !== bookingId) return json(res, 200, { paid: false });
-  const out = await reconcileCheckoutSession(session);
+  const out = await reconcileCheckoutSession(session, { ctx, expectedTenant: ctx.tenantId });
   return json(res, 200, { paid: PAID_OUTCOMES.has(out.outcome) });
 }
 
@@ -195,8 +205,9 @@ async function handleConfirmCash(req, res) {
 
   // Close any card checkout still open for this booking so it can't also be paid.
   if (booking.stripe_session_id) {
-    const open = await getStripeSession(booking.stripe_session_id);
-    if (open && open.status === 'open') await expireStripeSession(open.id);
+    const cashCtx = await stripeContext(booking.tenant_id, { requireReady: false });
+    const open = cashCtx ? await getStripeSession(booking.stripe_session_id, cashCtx) : null;
+    if (open && open.status === 'open') await expireStripeSession(open.id, cashCtx);
   }
 
   // Cash is recorded the way the Operator app records it: method Cash, still
@@ -238,8 +249,12 @@ function verifyStripeSignature(rawBody, sigHeader, secrets) {
   return JSON.parse(rawBody.toString('utf8'));
 }
 
+// EV Exec's own endpoint secret, plus the Connect endpoint's (events from operators'
+// connected accounts). Either may hold several comma-separated secrets while rotating.
 function webhookSecrets() {
-  return String(process.env.STRIPE_WEBHOOK_SECRET || '').split(',').map(s => s.trim()).filter(Boolean);
+  return [process.env.STRIPE_WEBHOOK_SECRET, process.env.STRIPE_CONNECT_WEBHOOK_SECRET]
+    .flatMap(v => String(v || '').split(','))
+    .map(s => s.trim()).filter(Boolean);
 }
 
 // What a rejected delivery looked like, without any secret or payload content,
@@ -309,9 +324,21 @@ async function handleStripeWebhook(req, res) {
     return json(res, 200, { received: true, duplicate: true });
   }
 
+  // Which Stripe account took the payment: EV Exec's own (no event.account), or an
+  // operator's connected account. A connected account we don't know is acknowledged and
+  // ignored; a payment only ever marks its own business's bookings Paid.
+  let ctx;
+  if (event.account) {
+    ctx = await contextForAccount(event.account);
+    if (!ctx) {
+      await stripeEvents.eventResult(event.id, { status: 'ignored', detail: `unknown connected account ${String(event.account).slice(0, 40)}` });
+      return json(res, 200, { received: true, ignored: true });
+    }
+  }
+
   let out;
   try {
-    out = await reconcileCheckoutSession(session);
+    out = await reconcileCheckoutSession(session, { ctx, expectedTenant: ctx ? ctx.tenantId : ownerTenant() });
   } catch (err) {
     console.error(`Webhook ${event.id} processing error:`, err);
     await stripeEvents.eventResult(event.id, { status: 'failed', detail: String(err.message || err).slice(0, 500) });

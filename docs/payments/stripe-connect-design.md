@@ -35,3 +35,13 @@ Each operator gets its own Stripe account (a "connected account") through Stripe
 
 - Whether EV Exec itself later connects as an ordinary operator (it is a customer like any other). Until then it keeps its own Stripe account and flow.
 - Refund handling for operator payments beyond what Stripe does by default.
+
+## Phase 2 as built (website, 13/11/2026)
+
+- `lib/stripeAccount.js` decides the Stripe account for a business: EV Exec (the account owner) keeps its own key (`STRIPE_SECRET_KEY`, no `Stripe-Account` header); any other business is charged **directly on its connected account** with the platform key (`STRIPE_PLATFORM_SECRET_KEY`) plus a `Stripe-Account` header, only once Stripe says the account can take card payments. Otherwise the card payment is **refused and Stripe is not called**.
+- Checkout, the booking-page payment check, closing a card checkout when cash is chosen, and receipt look-ups all use that account. A business's checkout returns to **its own website** (`brand.site_url`); a business with no website is refused (EV Exec's `SITE_URL` override applies to EV Exec only).
+- **Webhook:** accepts events signed with `STRIPE_WEBHOOK_SECRET` (EV Exec's endpoint) or `STRIPE_CONNECT_WEBHOOK_SECRET` (the Connect endpoint). An event with an `account` field is matched to the business that owns that connected account; an unknown account is acknowledged and ignored.
+- **A payment can only mark its own business's booking Paid.** If a payment on one account arrives for a booking of a different business (or EV Exec's own account is paid for another business's booking), nothing is recorded and the event is saved as `wrong_business`.
+- **Known gap:** a `wrong_business` payment is logged only (`stripe_webhook_events`), staff are not emailed. It should not happen (checkout refuses those payments), but if it does the money is on the wrong account and must be refunded by hand. An alert for this is a follow-up.
+- **Still to do:** the Operator app payment link (its own copy of the same logic), the Connect webhook endpoint in Stripe, and a full test in Stripe test mode. Set `STRIPE_PLATFORM_SECRET_KEY` and `STRIPE_CONNECT_WEBHOOK_SECRET` as **Sensitive** variables on the website's Vercel project too (test keys first).
+
