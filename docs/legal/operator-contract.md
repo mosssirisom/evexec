@@ -30,7 +30,7 @@
 
 3.1 **Set-up fee: £999**, paid in full **before** we start the set-up work. It covers setting up your business in the Service as described in the Order Details.
 
-3.2 **Monthly fee: £49 per month**, for as long as this agreement runs, paid monthly in advance from the date your Service is made available to you.
+3.2 **Monthly fee: £99 per month**, for as long as this agreement runs, paid monthly in advance from the date your Service is made available to you.
 
 3.3 We are not registered for VAT, so no VAT is charged. We will invoice you; you pay within 14 days of the invoice date by the method on the invoice.
 
@@ -176,7 +176,7 @@ The full wording is `docs/legal/operator-responsibilities.md` (version 1), secti
 | Fee | Amount | When |
 |---|---|---|
 | Set-up fee | £999 | In full before set-up work starts |
-| Monthly fee | £49 per month | Monthly in advance from the date the Service is made available |
+| Monthly fee | £99 per month | Monthly in advance from the date the Service is made available |
 
 No VAT is charged (clause 3.3). Changes to the monthly fee: clause 3.5.
 
@@ -190,7 +190,7 @@ No VAT is charged (clause 3.3). Changes to the monthly fee: clause 3.5.
 
 ## Notes on how this was built (honest limits)
 
-- **Fees** are the owner's decision (12/11/2026): £999 up front, £49 a month.
+- **Fees** are the owner's decision: £999 up front (12/11/2026); the monthly fee was changed from £49 to £99 on 13/11/2026.
 - **Liability and reimbursement (clauses 10, 11)** are business-to-business terms on the Supplier's standard terms, so they must pass the reasonableness test in the Unfair Contract Terms Act 1977 (ss.3 and 11; the burden is on the party relying on the term, s.11(5)). The cap is in a fixed sum, which s.11(4) says the court looks at against the resources and insurance available. Death or personal injury caused by negligence cannot be excluded at all (s.2(1)); clause 10.1 says so. Whether a court would find the cap reasonable cannot be promised.
 - **Late payment (clause 3.4)** uses statutory interest under the 1998 Act (s.1). The rate is set by an order under s.6, which was **not** read, so no rate is quoted.
 - **Not verified:** the sources named in `operator-responsibilities.md` section 5, individual councils' conditions, and any rule that applies to a software supplier to licensed operators that was not found in the sources read.

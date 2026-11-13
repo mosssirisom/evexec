@@ -179,7 +179,7 @@ The stale Vite-era branch `claude/sweet-meitner-med7lt` in `evexecoperator` was 
 
 ## Decisions and completed items (12/11/2026, owner instruction)
 
-- **Operator pricing (agreed):** £999 set-up fee paid up front, then £49 a month. In `docs/legal/operator-contract.md` (Schedule B).
+- **Operator pricing (agreed):** £999 set-up fee paid up front, then £99 a month (changed from £49 on 13/11/2026). In `docs/legal/operator-contract.md` (Schedule B).
 - **Supplier:** the platform is run by **Winjo Digital** (separate repo and business), not EV Exec. EV Exec is a customer on the same contract as any other operator. The bespoke website set-up process belongs to Winjo Digital's own repo and is not tracked here.
 - **ICO:** the registration form has been sent (application C2085772). Nothing more to do here; the number is stored in EV Exec's business details and is not printed on the published privacy page.
 - **Operator contract:** written (`docs/legal/operator-contract.md`, version 1). Winjo Digital's legal details are in square brackets to fill in.
