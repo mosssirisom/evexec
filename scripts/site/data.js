@@ -40,11 +40,11 @@ const REVIEWS = [
 
 // Fixed prices from anywhere on the Fylde Coast (same as lib/format.js).
 const PRICES = {
-  manchester: { name: 'Manchester Airport', oneWay: 90, ret: 160, slug: 'manchester-airport-transfer-blackpool' },
-  liverpool: { name: 'Liverpool John Lennon Airport', short: 'Liverpool Airport', oneWay: 95, ret: 170, slug: 'liverpool-airport-transfer-blackpool' },
-  leeds: { name: 'Leeds Bradford Airport', oneWay: 135, ret: 250, slug: 'leeds-bradford-airport-transfer-blackpool' },
-  birmingham: { name: 'Birmingham Airport', oneWay: 215, ret: 410 },
-  newcastle: { name: 'Newcastle Airport', oneWay: 250, ret: 480 },
+  manchester: { name: 'Manchester Airport', oneWay: 90, ret: 170, slug: 'manchester-airport-transfer-blackpool' },
+  liverpool: { name: 'Liverpool John Lennon Airport', short: 'Liverpool Airport', oneWay: 95, ret: 180, slug: 'liverpool-airport-transfer-blackpool' },
+  leeds: { name: 'Leeds Bradford Airport', oneWay: 135, ret: 260, slug: 'leeds-bradford-airport-transfer-blackpool' },
+  birmingham: { name: 'Birmingham Airport', oneWay: 215, ret: 420 },
+  newcastle: { name: 'Newcastle Airport', oneWay: 250, ret: 490 },
 };
 
 const FLEET = [

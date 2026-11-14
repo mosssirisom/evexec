@@ -33,7 +33,7 @@ test.afterEach(() => { pricing._setPricing(null); delete global.fetch; });
 
 test('built-in prices are used until the operator list is loaded', () => {
   assert.equal(lookupPrice('Manchester Airport', false), 90);
-  assert.equal(lookupPrice('Manchester Airport', true), 160);
+  assert.equal(lookupPrice('Manchester Airport', true), 170);
   assert.equal(lookupPrice('Nowhere', false), null);
 });
 
