@@ -17,7 +17,6 @@ The SaaS build is paused. This repo serves EV Exec's own business. Winjo Digital
 **Paused (not for EV Exec's current business):**
 - Stripe Connect live mode and the test-operator payment test.
 - Platform set-up of new businesses, billing and fees, automatic domain routing, self-serve sign-up, per-business sending domains.
-- Vercel team transfer (left on the current account by owner decision).
 
 ## Objective
 
