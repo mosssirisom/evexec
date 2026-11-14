@@ -2,6 +2,23 @@
 
 Kept up to date by the engineering loop (assess, plan, build, test, fix, review, repeat). Read this first to pick up the work.
 
+## Scope (decided 14/11/2026): EV Exec only, tightened
+
+The SaaS build is paused. This repo serves EV Exec's own business. Winjo Digital, other operators and multi-business sales are out of scope until the owner reopens them. Nothing below is removed from the code; it is simply no longer being built.
+
+**Open for this scope, in priority order:**
+1. Deploy the merged, tested work to production once the daily deploy limit allows it, with the owner's approval each time: privacy retention wording (#82), Driver App (#22) and the sign-in fix in the Operator app (#50, already live).
+2. Confirm each Vercel project still deploys from its repo on a push, after the GitHub owner change. Record the repo each project uses.
+3. Database: keep the 60-day log history, check size monthly, and leave the cron jobs as set (three every 5 minutes, notification queue every minute).
+4. Legal: have the owner tick the responsibilities confirmation for EV Exec, and do the yearly clear-out of old enquiries and logs (`docs/legal/audit-2026-11-12.md`).
+5. Real-device checks on iPhone and Android: the `sms:` text links, push notifications and the Driver App sign-in.
+6. Automatic flight checks stay off (they cost money per call).
+
+**Paused (not for EV Exec's current business):**
+- Stripe Connect live mode and the test-operator payment test.
+- Platform set-up of new businesses, billing and fees, automatic domain routing, self-serve sign-up, per-business sending domains.
+- Vercel team transfer (left on the current account by owner decision).
+
 ## Objective
 
 A multi-tenant booking, dispatch and payments platform. Winjo Digital owns the platform and sells it to operators; EV Exec is one customer (£0, own Stripe account). Operators take card payments directly on their own Stripe account (Stripe Connect, no platform percentage). Platform fees are recorded, not billed. Cost rule: nothing may create a billed resource without the owner's approval. Twilio stays dormant.
