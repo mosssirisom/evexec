@@ -2,6 +2,16 @@
 
 Kept up to date by the engineering loop (assess, plan, build, test, fix, review, repeat). Read this first to pick up the work.
 
+## Built 14/11/2026 (merged to main; deploy waits for the owner's go-ahead)
+
+- **Quote pricing:** in the Operator app Inbox, tap a quote, type the price, and Confirm. The price is saved and a two-tap text (with yes and no links) goes to Texts to send. Website evexec #85, Operator app evexecoperator #51. The migration `20261114120000_quote_pricing_and_texts.sql` is applied to the live database (columns checked).
+- **Customer reply:** `/api/booking/quote-response` shows the quote and two buttons. Only the button press records the reply, once, and the office is pushed. A yes does not create a booking or take payment.
+- **Tests:** website 215 pass; Operator app 416 pass; typecheck and lint clean.
+
+**Still open for quotes:** quotes with no phone number get no text (the office must email the price by hand); the two-tap text link is not yet checked on a real iPhone; the reply page has not been checked on the live site.
+
+**Waiting on the owner:** the deploy of both apps, and the return fares in Settings → Prices (see the price section below).
+
 ## Scope (decided 14/11/2026): EV Exec only, tightened
 
 The SaaS build is paused. This repo serves EV Exec's own business. Winjo Digital, other operators and multi-business sales are out of scope until the owner reopens them. Nothing below is removed from the code; it is simply no longer being built.
